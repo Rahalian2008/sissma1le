@@ -119,264 +119,344 @@
             <nav class="flex-1 overflow-y-auto px-3.5 py-3 space-y-1">
                 @php $role = Auth::user()->role ?? 'guest'; @endphp
 
-                <div class="sidebar-heading text-[11px] font-semibold text-slate-500 uppercase tracking-wider px-3 mb-2">Menu Utama</div>
+                <div class="sidebar-heading text-[10px] font-bold text-slate-500 uppercase tracking-wider px-3 mb-1">Menu Utama</div>
 
-                <a href="{{ route('dashboard') }}" data-tooltip="Dashboard" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition {{ request()->routeIs('dashboard') || request()->is('/') ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
-                    <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <!-- Dashboard -->
+                <a href="{{ route('dashboard') }}" data-tooltip="Dashboard" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold transition {{ request()->routeIs('dashboard') || request()->is('/') ? 'bg-indigo-600 text-white shadow-xs shadow-indigo-600/30' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
                     </svg>
                     <span class="sidebar-label">Dashboard</span>
                 </a>
 
-                <!-- 1. Presensi Terpadu -->
-                <div class="pt-2">
-                    <div class="sidebar-heading text-[11px] font-semibold text-slate-500 uppercase tracking-wider px-3 mb-1">Presensi Terpadu</div>
-                    
-                    @if(in_array($role, ['siswa', 'admin', 'super_admin']))
-                    <a href="{{ route('attendance.selfie') }}" data-tooltip="Presensi Selfie" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-sm font-medium transition {{ request()->routeIs('attendance.selfie') ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
-                        <svg class="w-5 h-5 shrink-0 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                <!-- 1. Presensi Terpadu Accordion -->
+                @php
+                    $isPresensiActive = request()->routeIs('attendance.*');
+                @endphp
+                <div class="sidebar-accordion-group pt-1.5">
+                    <button type="button" onclick="toggleSidebarMenu('menu-presensi', 'chevron-presensi')" data-tooltip="Presensi Terpadu" class="sidebar-accordion-btn w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition cursor-pointer select-none group {{ $isPresensiActive ? 'text-indigo-300 bg-slate-800/70' : 'text-slate-300 hover:text-white hover:bg-slate-800/50' }}">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <svg class="w-4 h-4 shrink-0 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                            </svg>
+                            <span class="sidebar-label truncate">Presensi Terpadu</span>
+                        </div>
+                        <svg id="chevron-presensi" class="sidebar-chevron w-3.5 h-3.5 shrink-0 text-slate-400 group-hover:text-slate-200 transition-transform duration-200 {{ $isPresensiActive ? 'rotate-180' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                         </svg>
-                        <span class="sidebar-label">Presensi Selfie (Kamera)</span>
-                    </a>
-                    @endif
+                    </button>
+                    <div id="menu-presensi" class="sidebar-accordion-menu space-y-0.5 mt-1 pl-2.5 ml-3 border-l border-slate-800/80 {{ $isPresensiActive ? '' : 'hidden' }}">
+                        @if(in_array($role, ['siswa', 'admin', 'super_admin']))
+                        <a href="{{ route('attendance.selfie') }}" data-tooltip="Presensi Selfie" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition {{ request()->routeIs('attendance.selfie') ? 'bg-indigo-600 text-white font-semibold shadow-xs shadow-indigo-600/30' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50' }}">
+                            <svg class="w-3.5 h-3.5 shrink-0 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                            <span class="sidebar-label truncate">Presensi Selfie (Kamera)</span>
+                        </a>
+                        @endif
 
-                    @if(in_array($role, ['siswa', 'guru', 'admin', 'super_admin']))
-                    <a href="{{ route('attendance.qr.scanner') }}" data-tooltip="Scan QR Code" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-sm font-medium transition {{ request()->routeIs('attendance.qr.scanner') ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
-                        <svg class="w-5 h-5 shrink-0 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/>
-                        </svg>
-                        <span class="sidebar-label">Scan QR Code</span>
-                    </a>
-                    @endif
+                        @if(in_array($role, ['siswa', 'guru', 'admin', 'super_admin']))
+                        <a href="{{ route('attendance.qr.scanner') }}" data-tooltip="Scan QR Code" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition {{ request()->routeIs('attendance.qr.scanner') ? 'bg-indigo-600 text-white font-semibold shadow-xs shadow-indigo-600/30' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50' }}">
+                            <svg class="w-3.5 h-3.5 shrink-0 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/>
+                            </svg>
+                            <span class="sidebar-label truncate">Scan QR Code</span>
+                        </a>
+                        @endif
 
-                    @if($role === 'siswa')
-                    <a href="{{ route('attendance.leave') }}" data-tooltip="Izin, Sakit & Pulang Cepat" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-sm font-medium transition {{ request()->routeIs('attendance.leave*') ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
-                        <svg class="w-5 h-5 shrink-0 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                        </svg>
-                        <span class="sidebar-label">Izin / Sakit / Pulang Cepat</span>
-                    </a>
-                    @endif
+                        @if($role === 'siswa')
+                        <a href="{{ route('attendance.leave') }}" data-tooltip="Izin, Sakit & Pulang Cepat" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition {{ request()->routeIs('attendance.leave*') ? 'bg-indigo-600 text-white font-semibold shadow-xs shadow-indigo-600/30' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50' }}">
+                            <svg class="w-3.5 h-3.5 shrink-0 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                            <span class="sidebar-label truncate">Izin / Sakit / Pulang Cepat</span>
+                        </a>
+                        @endif
 
-                    @if(in_array($role, ['guru', 'kesiswaan', 'admin', 'super_admin']))
-                    <a href="{{ route('attendance.qr.session') }}" data-tooltip="Proyektor QR Sesi" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-sm font-medium transition {{ request()->routeIs('attendance.qr.session*') ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
-                        <svg class="w-5 h-5 shrink-0 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"/>
-                        </svg>
-                        <span class="sidebar-label">Proyektor QR Sesi</span>
-                    </a>
-                    @endif
+                        @if(in_array($role, ['guru', 'kesiswaan', 'admin', 'super_admin']))
+                        <a href="{{ route('attendance.qr.session') }}" data-tooltip="Proyektor QR Sesi" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition {{ request()->routeIs('attendance.qr.session*') ? 'bg-indigo-600 text-white font-semibold shadow-xs shadow-indigo-600/30' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50' }}">
+                            <svg class="w-3.5 h-3.5 shrink-0 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"/>
+                            </svg>
+                            <span class="sidebar-label truncate">Proyektor QR Sesi</span>
+                        </a>
+                        @endif
 
-                    @if(in_array($role, ['wali_kelas', 'admin', 'super_admin']))
-                    <a href="{{ route('attendance.manual') }}" data-tooltip="Absen Manual" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-sm font-medium transition {{ request()->routeIs('attendance.manual*') ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
-                        <svg class="w-5 h-5 shrink-0 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                        </svg>
-                        <span class="sidebar-label">Absen Manual</span>
-                    </a>
+                        @if(in_array($role, ['wali_kelas', 'admin', 'super_admin']))
+                        <a href="{{ route('attendance.manual') }}" data-tooltip="Absen Manual" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition {{ request()->routeIs('attendance.manual*') ? 'bg-indigo-600 text-white font-semibold shadow-xs shadow-indigo-600/30' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50' }}">
+                            <svg class="w-3.5 h-3.5 shrink-0 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                            </svg>
+                            <span class="sidebar-label truncate">Absen Manual</span>
+                        </a>
 
-                    <a href="{{ route('attendance.leaves.index') }}" data-tooltip="Persetujuan Izin & Pulang Cepat" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-sm font-medium transition {{ request()->routeIs('attendance.leaves*') ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
-                        <svg class="w-5 h-5 shrink-0 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
-                        </svg>
-                        <span class="sidebar-label">Persetujuan Izin & Pulang Cepat</span>
-                    </a>
-                    @endif
+                        <a href="{{ route('attendance.leaves.index') }}" data-tooltip="Persetujuan Izin & Pulang Cepat" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition {{ request()->routeIs('attendance.leaves*') ? 'bg-indigo-600 text-white font-semibold shadow-xs shadow-indigo-600/30' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50' }}">
+                            <svg class="w-3.5 h-3.5 shrink-0 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                            </svg>
+                            <span class="sidebar-label truncate">Persetujuan Izin & Pulang</span>
+                        </a>
+                        @endif
 
-                    @if(in_array($role, ['admin', 'super_admin']))
-                    <a href="{{ route('attendance.rfid.simulator') }}" data-tooltip="Integrasi RFID / Kiosk" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-sm font-medium transition {{ request()->routeIs('attendance.rfid.simulator') ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
-                        <svg class="w-5 h-5 shrink-0 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"/>
-                        </svg>
-                        <span class="sidebar-label">Integrasi RFID / Kiosk</span>
-                    </a>
-                    @endif
+                        @if(in_array($role, ['admin', 'super_admin']))
+                        <a href="{{ route('attendance.rfid.simulator') }}" data-tooltip="Integrasi RFID / Kiosk" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition {{ request()->routeIs('attendance.rfid.simulator') ? 'bg-indigo-600 text-white font-semibold shadow-xs shadow-indigo-600/30' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50' }}">
+                            <svg class="w-3.5 h-3.5 shrink-0 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"/>
+                            </svg>
+                            <span class="sidebar-label truncate">Integrasi RFID / Kiosk</span>
+                        </a>
+                        @endif
 
-                    @if(in_array($role, ['siswa', 'guru', 'orang_tua', 'kepala_sekolah', 'admin', 'super_admin']))
-                    <a href="{{ route('attendance.history') }}" data-tooltip="Riwayat Presensi" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-sm font-medium transition {{ request()->routeIs('attendance.history') ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
-                        <svg class="w-5 h-5 shrink-0 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                        <span class="sidebar-label">Riwayat Presensi</span>
-                    </a>
-                    @endif
+                        @if(in_array($role, ['siswa', 'guru', 'orang_tua', 'kepala_sekolah', 'admin', 'super_admin']))
+                        <a href="{{ route('attendance.history') }}" data-tooltip="Riwayat Presensi" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition {{ request()->routeIs('attendance.history') ? 'bg-indigo-600 text-white font-semibold shadow-xs shadow-indigo-600/30' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50' }}">
+                            <svg class="w-3.5 h-3.5 shrink-0 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <span class="sidebar-label truncate">Riwayat Presensi</span>
+                        </a>
+                        @endif
 
-                    @if(in_array($role, ['wali_kelas', 'guru', 'kepala_sekolah', 'admin', 'super_admin']))
-                    <a href="{{ route('attendance.report') }}" data-tooltip="Laporan Presensi Real-Time" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-sm font-medium transition {{ request()->routeIs('attendance.report') ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
-                        <svg class="w-5 h-5 shrink-0 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                        </svg>
-                        <span class="sidebar-label">Laporan Presensi Real-Time</span>
-                    </a>
-                    @endif
+                        @if(in_array($role, ['wali_kelas', 'guru', 'kepala_sekolah', 'admin', 'super_admin']))
+                        <a href="{{ route('attendance.report') }}" data-tooltip="Laporan Presensi Real-Time" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition {{ request()->routeIs('attendance.report') ? 'bg-indigo-600 text-white font-semibold shadow-xs shadow-indigo-600/30' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50' }}">
+                            <svg class="w-3.5 h-3.5 shrink-0 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                            <span class="sidebar-label truncate">Laporan Presensi</span>
+                        </a>
+                        @endif
+                    </div>
                 </div>
 
-                <!-- 2. Tata Tertib -->
-                <div class="pt-2">
-                    <div class="sidebar-heading text-[11px] font-semibold text-slate-500 uppercase tracking-wider px-3 mb-1">Tata Tertib</div>
-
-                    <a href="{{ route('achievements.index') }}" data-tooltip="Prestasi Siswa (R1-R10)" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-sm font-medium transition {{ request()->routeIs('achievements.*') ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
-                        <svg class="w-5 h-5 shrink-0 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
+                <!-- 2. Tata Tertib Accordion -->
+                @php
+                    $isTatibActive = request()->routeIs('achievements.*', 'violations.*', 'guidance.*', 'discipline.*');
+                @endphp
+                <div class="sidebar-accordion-group pt-1.5">
+                    <button type="button" onclick="toggleSidebarMenu('menu-tatib', 'chevron-tatib')" data-tooltip="Tata Tertib Siswa" class="sidebar-accordion-btn w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition cursor-pointer select-none group {{ $isTatibActive ? 'text-indigo-300 bg-slate-800/70' : 'text-slate-300 hover:text-white hover:bg-slate-800/50' }}">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <svg class="w-4 h-4 shrink-0 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                            </svg>
+                            <span class="sidebar-label truncate">Tata Tertib Siswa</span>
+                        </div>
+                        <svg id="chevron-tatib" class="sidebar-chevron w-3.5 h-3.5 shrink-0 text-slate-400 group-hover:text-slate-200 transition-transform duration-200 {{ $isTatibActive ? 'rotate-180' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                         </svg>
-                        <span class="sidebar-label">Prestasi Siswa (R1-R10)</span>
-                    </a>
+                    </button>
+                    <div id="menu-tatib" class="sidebar-accordion-menu space-y-0.5 mt-1 pl-2.5 ml-3 border-l border-slate-800/80 {{ $isTatibActive ? '' : 'hidden' }}">
+                        <a href="{{ route('achievements.index') }}" data-tooltip="Prestasi Siswa (R1-R10)" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition {{ request()->routeIs('achievements.*') ? 'bg-indigo-600 text-white font-semibold shadow-xs shadow-indigo-600/30' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50' }}">
+                            <svg class="w-3.5 h-3.5 shrink-0 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
+                            </svg>
+                            <span class="sidebar-label truncate">Prestasi Siswa (R1-R10)</span>
+                        </a>
 
-                    <a href="{{ route('violations.index') }}" data-tooltip="Pelanggaran Siswa (P1-P6)" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-sm font-medium transition {{ request()->routeIs('violations.*') ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
-                        <svg class="w-5 h-5 shrink-0 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-                        </svg>
-                        <span class="sidebar-label">Pelanggaran Siswa (P1-P6)</span>
-                    </a>
+                        <a href="{{ route('violations.index') }}" data-tooltip="Pelanggaran Siswa (P1-P6)" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition {{ request()->routeIs('violations.*') ? 'bg-indigo-600 text-white font-semibold shadow-xs shadow-indigo-600/30' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50' }}">
+                            <svg class="w-3.5 h-3.5 shrink-0 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                            </svg>
+                            <span class="sidebar-label truncate">Pelanggaran Siswa (P1-P6)</span>
+                        </a>
 
-                    @if(in_array($role, ['guru', 'wali_kelas', 'kepala_sekolah', 'admin', 'super_admin']))
-                    <a href="{{ route('guidance.index') }}" data-tooltip="Catatan Pembinaan" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-sm font-medium transition {{ request()->routeIs('guidance.*') ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
-                        <svg class="w-5 h-5 shrink-0 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                        </svg>
-                        <span class="sidebar-label">Catatan Pembinaan</span>
-                    </a>
-                    @endif
+                        @if(in_array($role, ['guru', 'wali_kelas', 'kepala_sekolah', 'admin', 'super_admin']))
+                        <a href="{{ route('guidance.index') }}" data-tooltip="Catatan Pembinaan" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition {{ request()->routeIs('guidance.*') ? 'bg-indigo-600 text-white font-semibold shadow-xs shadow-indigo-600/30' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50' }}">
+                            <svg class="w-3.5 h-3.5 shrink-0 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                            <span class="sidebar-label truncate">Catatan Pembinaan</span>
+                        </a>
+                        @endif
 
-                    @if($role !== 'siswa')
-                    <a href="{{ route('discipline.ranking') }}" data-tooltip="Papan Peringkat (Rangking)" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-sm font-medium transition {{ request()->routeIs('discipline.ranking') ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
-                        <svg class="w-5 h-5 shrink-0 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
-                        </svg>
-                        <span class="sidebar-label">Papan Peringkat (Rangking)</span>
-                    </a>
-                    @endif
+                        @if($role !== 'siswa')
+                        <a href="{{ route('discipline.ranking') }}" data-tooltip="Papan Peringkat (Rangking)" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition {{ request()->routeIs('discipline.ranking') ? 'bg-indigo-600 text-white font-semibold shadow-xs shadow-indigo-600/30' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50' }}">
+                            <svg class="w-3.5 h-3.5 shrink-0 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                            </svg>
+                            <span class="sidebar-label truncate">Papan Peringkat (Rangking)</span>
+                        </a>
+                        @endif
 
-                    @if(in_array($role, ['guru', 'wali_kelas', 'kepala_sekolah', 'admin', 'super_admin']))
-                    <a href="{{ route('discipline.report') }}" data-tooltip="Laporan Tata Tertib" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-sm font-medium transition {{ request()->routeIs('discipline.report') ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
-                        <svg class="w-5 h-5 shrink-0 text-indigo-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                        </svg>
-                        <span class="sidebar-label">Laporan Tata Tertib</span>
-                    </a>
-                    @endif
+                        @if(in_array($role, ['guru', 'wali_kelas', 'kepala_sekolah', 'admin', 'super_admin']))
+                        <a href="{{ route('discipline.report') }}" data-tooltip="Laporan Tata Tertib" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition {{ request()->routeIs('discipline.report') ? 'bg-indigo-600 text-white font-semibold shadow-xs shadow-indigo-600/30' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50' }}">
+                            <svg class="w-3.5 h-3.5 shrink-0 text-indigo-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                            <span class="sidebar-label truncate">Laporan Tata Tertib</span>
+                        </a>
+                        @endif
+                    </div>
                 </div>
 
-                <!-- 3. Karakter -->
-                <div class="pt-2">
-                    <div class="sidebar-heading text-[11px] font-semibold text-slate-500 uppercase tracking-wider px-3 mb-1">Karakter</div>
-
-                    <a href="{{ route('habits.journal') }}" data-tooltip="7 Kebiasaan Anak Hebat" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-sm font-medium transition {{ request()->routeIs('habits.journal') ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
-                        <svg class="w-5 h-5 shrink-0 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                <!-- 3. Karakter Accordion -->
+                @php
+                    $isHabitsActive = request()->routeIs('habits.*');
+                @endphp
+                <div class="sidebar-accordion-group pt-1.5">
+                    <button type="button" onclick="toggleSidebarMenu('menu-karakter', 'chevron-karakter')" data-tooltip="Karakter (7 Kebiasaan)" class="sidebar-accordion-btn w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition cursor-pointer select-none group {{ $isHabitsActive ? 'text-indigo-300 bg-slate-800/70' : 'text-slate-300 hover:text-white hover:bg-slate-800/50' }}">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <svg class="w-4 h-4 shrink-0 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
+                            </svg>
+                            <span class="sidebar-label truncate">Karakter (7 Kebiasaan)</span>
+                        </div>
+                        <svg id="chevron-karakter" class="sidebar-chevron w-3.5 h-3.5 shrink-0 text-slate-400 group-hover:text-slate-200 transition-transform duration-200 {{ $isHabitsActive ? 'rotate-180' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                         </svg>
-                        <span class="sidebar-label">7 Kebiasaan Anak Hebat</span>
-                    </a>
+                    </button>
+                    <div id="menu-karakter" class="sidebar-accordion-menu space-y-0.5 mt-1 pl-2.5 ml-3 border-l border-slate-800/80 {{ $isHabitsActive ? '' : 'hidden' }}">
+                        <a href="{{ route('habits.journal') }}" data-tooltip="7 Kebiasaan Anak Hebat" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition {{ request()->routeIs('habits.journal') ? 'bg-indigo-600 text-white font-semibold shadow-xs shadow-indigo-600/30' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50' }}">
+                            <svg class="w-3.5 h-3.5 shrink-0 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                            </svg>
+                            <span class="sidebar-label truncate">7 Kebiasaan Anak Hebat</span>
+                        </a>
 
-                    <a href="{{ route('habits.summary') }}" data-tooltip="Ringkasan Karakter" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-sm font-medium transition {{ request()->routeIs('habits.summary') ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
-                        <svg class="w-5 h-5 shrink-0 text-teal-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-                        </svg>
-                        <span class="sidebar-label">Ringkasan Karakter</span>
-                    </a>
+                        <a href="{{ route('habits.summary') }}" data-tooltip="Ringkasan Karakter" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition {{ request()->routeIs('habits.summary') ? 'bg-indigo-600 text-white font-semibold shadow-xs shadow-indigo-600/30' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50' }}">
+                            <svg class="w-3.5 h-3.5 shrink-0 text-teal-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                            </svg>
+                            <span class="sidebar-label truncate">Ringkasan Karakter</span>
+                        </a>
 
-                    @if(in_array($role, ['wali_kelas', 'guru', 'kepala_sekolah', 'admin', 'super_admin']))
-                    <a href="{{ route('habits.charts') }}" data-tooltip="Diagram & Persentase" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-sm font-medium transition {{ request()->routeIs('habits.charts') ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
-                        <svg class="w-5 h-5 shrink-0 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"/>
-                        </svg>
-                        <span class="sidebar-label">Diagram & Persentase</span>
-                    </a>
+                        @if(in_array($role, ['wali_kelas', 'guru', 'kepala_sekolah', 'admin', 'super_admin']))
+                        <a href="{{ route('habits.charts') }}" data-tooltip="Diagram & Persentase" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition {{ request()->routeIs('habits.charts') ? 'bg-indigo-600 text-white font-semibold shadow-xs shadow-indigo-600/30' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50' }}">
+                            <svg class="w-3.5 h-3.5 shrink-0 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"/>
+                            </svg>
+                            <span class="sidebar-label truncate">Diagram & Persentase</span>
+                        </a>
 
-                    <a href="{{ route('habits.report') }}" data-tooltip="Laporan Karakter" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-sm font-medium transition {{ request()->routeIs('habits.report') ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
-                        <svg class="w-5 h-5 shrink-0 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                        </svg>
-                        <span class="sidebar-label">Laporan Karakter</span>
-                    </a>
-                    @endif
+                        <a href="{{ route('habits.report') }}" data-tooltip="Laporan Karakter" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition {{ request()->routeIs('habits.report') ? 'bg-indigo-600 text-white font-semibold shadow-xs shadow-indigo-600/30' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50' }}">
+                            <svg class="w-3.5 h-3.5 shrink-0 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                            <span class="sidebar-label truncate">Laporan Karakter</span>
+                        </a>
+                        @endif
+                    </div>
                 </div>
 
-                <!-- 4. Laporan & Analisis -->
+                <!-- 4. Laporan & Analisis Accordion -->
                 @if(in_array($role, ['wali_kelas', 'guru', 'kepala_sekolah', 'admin', 'super_admin']))
-                <div class="pt-2">
-                    <div class="sidebar-heading text-[11px] font-semibold text-slate-500 uppercase tracking-wider px-3 mb-1">Laporan & Cetak</div>
-
-                    <a href="{{ route('ai.analysis') }}" data-tooltip="AI Analisis Perkembangan" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-sm font-medium transition {{ request()->routeIs('ai.analysis') ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
-                        <svg class="w-5 h-5 shrink-0 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                @php
+                    $isLaporanActive = request()->routeIs('ai.analysis', 'reports.*');
+                @endphp
+                <div class="sidebar-accordion-group pt-1.5">
+                    <button type="button" onclick="toggleSidebarMenu('menu-laporan', 'chevron-laporan')" data-tooltip="Laporan & Cetak" class="sidebar-accordion-btn w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition cursor-pointer select-none group {{ $isLaporanActive ? 'text-indigo-300 bg-slate-800/70' : 'text-slate-300 hover:text-white hover:bg-slate-800/50' }}">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <svg class="w-4 h-4 shrink-0 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                            <span class="sidebar-label truncate">Laporan & Cetak</span>
+                        </div>
+                        <svg id="chevron-laporan" class="sidebar-chevron w-3.5 h-3.5 shrink-0 text-slate-400 group-hover:text-slate-200 transition-transform duration-200 {{ $isLaporanActive ? 'rotate-180' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                         </svg>
-                        <span class="sidebar-label">AI Analisis Perkembangan</span>
-                    </a>
+                    </button>
+                    <div id="menu-laporan" class="sidebar-accordion-menu space-y-0.5 mt-1 pl-2.5 ml-3 border-l border-slate-800/80 {{ $isLaporanActive ? '' : 'hidden' }}">
+                        <a href="{{ route('ai.analysis') }}" data-tooltip="AI Analisis Perkembangan" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition {{ request()->routeIs('ai.analysis') ? 'bg-indigo-600 text-white font-semibold shadow-xs shadow-indigo-600/30' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50' }}">
+                            <svg class="w-3.5 h-3.5 shrink-0 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                            </svg>
+                            <span class="sidebar-label truncate">AI Analisis Perkembangan</span>
+                        </a>
 
-                    <a href="{{ route('reports.index') }}" data-tooltip="Rekap & Laporan Cetak" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-sm font-medium transition {{ request()->routeIs('reports.*') ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
-                        <svg class="w-5 h-5 shrink-0 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                        </svg>
-                        <span class="sidebar-label">Rekap & Laporan Cetak</span>
-                    </a>
+                        <a href="{{ route('reports.index') }}" data-tooltip="Rekap & Laporan Cetak" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition {{ request()->routeIs('reports.*') ? 'bg-indigo-600 text-white font-semibold shadow-xs shadow-indigo-600/30' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50' }}">
+                            <svg class="w-3.5 h-3.5 shrink-0 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+                            </svg>
+                            <span class="sidebar-label truncate">Rekap & Laporan Cetak</span>
+                        </a>
+                    </div>
                 </div>
                 @endif
 
+                <!-- 5. Master Data Terpadu Accordion -->
                 @if(in_array($role, ['admin', 'super_admin']))
-                <!-- 5. Master Data Terpadu -->
-                <div class="pt-2">
-                    <div class="sidebar-heading text-[11px] font-semibold text-slate-500 uppercase tracking-wider px-3 mb-1">Master Data</div>
-
-                    <a href="{{ route('master.school_profile') }}" data-tooltip="Identitas Sekolah" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-sm font-medium transition {{ request()->routeIs('master.school_profile') ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
-                        <svg class="w-5 h-5 shrink-0 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                @php
+                    $isMasterActive = request()->routeIs('master.*');
+                @endphp
+                <div class="sidebar-accordion-group pt-1.5">
+                    <button type="button" onclick="toggleSidebarMenu('menu-master', 'chevron-master')" data-tooltip="Master Data" class="sidebar-accordion-btn w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition cursor-pointer select-none group {{ $isMasterActive ? 'text-indigo-300 bg-slate-800/70' : 'text-slate-300 hover:text-white hover:bg-slate-800/50' }}">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <svg class="w-4 h-4 shrink-0 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"/>
+                            </svg>
+                            <span class="sidebar-label truncate">Master Data</span>
+                        </div>
+                        <svg id="chevron-master" class="sidebar-chevron w-3.5 h-3.5 shrink-0 text-slate-400 group-hover:text-slate-200 transition-transform duration-200 {{ $isMasterActive ? 'rotate-180' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                         </svg>
-                        <span class="sidebar-label">Identitas Sekolah Lengkap</span>
-                    </a>
+                    </button>
+                    <div id="menu-master" class="sidebar-accordion-menu space-y-0.5 mt-1 pl-2.5 ml-3 border-l border-slate-800/80 {{ $isMasterActive ? '' : 'hidden' }}">
+                        <a href="{{ route('master.school_profile') }}" data-tooltip="Identitas Sekolah" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition {{ request()->routeIs('master.school_profile') ? 'bg-indigo-600 text-white font-semibold shadow-xs shadow-indigo-600/30' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50' }}">
+                            <svg class="w-3.5 h-3.5 shrink-0 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                            </svg>
+                            <span class="sidebar-label truncate">Identitas Sekolah</span>
+                        </a>
 
-                    <a href="{{ route('master.branding') }}" data-tooltip="Logo & KOP Surat" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-sm font-medium transition {{ request()->routeIs('master.branding*') ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
-                        <svg class="w-5 h-5 shrink-0 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                        </svg>
-                        <span class="sidebar-label">Logo & KOP Surat</span>
-                    </a>
+                        <a href="{{ route('master.branding') }}" data-tooltip="Logo & KOP Surat" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition {{ request()->routeIs('master.branding*') ? 'bg-indigo-600 text-white font-semibold shadow-xs shadow-indigo-600/30' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50' }}">
+                            <svg class="w-3.5 h-3.5 shrink-0 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                            <span class="sidebar-label truncate">Logo & KOP Surat</span>
+                        </a>
 
-                    <a href="{{ route('master.classes') }}" data-tooltip="Data Kelas" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-sm font-medium transition {{ request()->routeIs('master.classes*') ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
-                        <svg class="w-5 h-5 shrink-0 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
-                        </svg>
-                        <span class="sidebar-label">Data Kelas</span>
-                    </a>
+                        <a href="{{ route('master.classes') }}" data-tooltip="Data Kelas" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition {{ request()->routeIs('master.classes*') ? 'bg-indigo-600 text-white font-semibold shadow-xs shadow-indigo-600/30' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50' }}">
+                            <svg class="w-3.5 h-3.5 shrink-0 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                            </svg>
+                            <span class="sidebar-label truncate">Data Kelas</span>
+                        </a>
 
-                    <a href="{{ route('master.students') }}" data-tooltip="Data Siswa & RFID" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-sm font-medium transition {{ request()->routeIs('master.students*') ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
-                        <svg class="w-5 h-5 shrink-0 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
-                        </svg>
-                        <span class="sidebar-label">Data Siswa & RFID</span>
-                    </a>
+                        <a href="{{ route('master.students') }}" data-tooltip="Data Siswa & RFID" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition {{ request()->routeIs('master.students*') ? 'bg-indigo-600 text-white font-semibold shadow-xs shadow-indigo-600/30' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50' }}">
+                            <svg class="w-3.5 h-3.5 shrink-0 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                            </svg>
+                            <span class="sidebar-label truncate">Data Siswa & RFID</span>
+                        </a>
 
-                    <a href="{{ route('master.teachers') }}" data-tooltip="Data Guru & Akun" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-sm font-medium transition {{ request()->routeIs('master.teachers*') ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
-                        <svg class="w-5 h-5 shrink-0 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
-                        </svg>
-                        <span class="sidebar-label">Data Guru & Role Akun</span>
-                    </a>
+                        <a href="{{ route('master.teachers') }}" data-tooltip="Data Guru & Akun" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition {{ request()->routeIs('master.teachers*') ? 'bg-indigo-600 text-white font-semibold shadow-xs shadow-indigo-600/30' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50' }}">
+                            <svg class="w-3.5 h-3.5 shrink-0 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                            </svg>
+                            <span class="sidebar-label truncate">Data Guru & Akun</span>
+                        </a>
 
-                    <a href="{{ route('master.academic_years') }}" data-tooltip="Tahun Pelajaran" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-sm font-medium transition {{ request()->routeIs('master.academic_years*') ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
-                        <svg class="w-5 h-5 shrink-0 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                        </svg>
-                        <span class="sidebar-label">Tahun Pelajaran</span>
-                    </a>
+                        <a href="{{ route('master.academic_years') }}" data-tooltip="Tahun Pelajaran" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition {{ request()->routeIs('master.academic_years*') ? 'bg-indigo-600 text-white font-semibold shadow-xs shadow-indigo-600/30' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50' }}">
+                            <svg class="w-3.5 h-3.5 shrink-0 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                            <span class="sidebar-label truncate">Tahun Pelajaran</span>
+                        </a>
 
-                    <a href="{{ route('master.settings') }}" data-tooltip="Pengaturan Sistem" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-sm font-medium transition {{ request()->routeIs('master.settings') ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
-                        <svg class="w-5 h-5 shrink-0 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                        </svg>
-                        <span class="sidebar-label">Pengaturan Sistem & Geofence</span>
-                    </a>
+                        <!-- Hari Libur & Tanggal Merah (NEW) -->
+                        <a href="{{ route('master.holidays') }}" data-tooltip="Hari Libur & Tanggal Merah" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition {{ request()->routeIs('master.holidays*') ? 'bg-indigo-600 text-white font-semibold shadow-xs shadow-indigo-600/30' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50' }}">
+                            <svg class="w-3.5 h-3.5 shrink-0 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                <circle cx="12" cy="15" r="2" fill="currentColor"/>
+                            </svg>
+                            <span class="sidebar-label truncate">Hari Libur & Tanggal Merah</span>
+                        </a>
 
-                    <a href="{{ route('master.categories') }}" data-tooltip="Butir Tata Tertib" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-sm font-medium transition {{ request()->routeIs('master.categories') ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
-                        <svg class="w-5 h-5 shrink-0 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
-                        </svg>
-                        <span class="sidebar-label">Master Butir Tata Tertib</span>
-                    </a>
+                        <a href="{{ route('master.settings') }}" data-tooltip="Pengaturan Sistem" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition {{ request()->routeIs('master.settings') ? 'bg-indigo-600 text-white font-semibold shadow-xs shadow-indigo-600/30' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50' }}">
+                            <svg class="w-3.5 h-3.5 shrink-0 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                            <span class="sidebar-label truncate">Pengaturan & Geofence</span>
+                        </a>
+
+                        <a href="{{ route('master.categories') }}" data-tooltip="Butir Tata Tertib" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition {{ request()->routeIs('master.categories') ? 'bg-indigo-600 text-white font-semibold shadow-xs shadow-indigo-600/30' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50' }}">
+                            <svg class="w-3.5 h-3.5 shrink-0 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                            </svg>
+                            <span class="sidebar-label truncate">Master Butir Tatib</span>
+                        </a>
+                    </div>
                 </div>
                 @endif
             </nav>
@@ -591,144 +671,283 @@
         <!-- Navigation items list -->
         <nav class="flex-1 overflow-y-auto px-3.5 py-3 space-y-1">
             @php $role = Auth::user()->role ?? 'guest'; @endphp
-            <a href="{{ route('dashboard') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition {{ request()->routeIs('dashboard') || request()->is('/') ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
-                <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <a href="{{ route('dashboard') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold transition {{ request()->routeIs('dashboard') || request()->is('/') ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
                 </svg>
                 <span>Dashboard</span>
             </a>
 
-            <!-- 1. Presensi Terpadu -->
-            <div class="text-[10px] font-bold text-slate-500 uppercase px-3 pt-3">Presensi Terpadu</div>
-            @if(in_array($role, ['siswa', 'admin', 'super_admin']))
-            <a href="{{ route('attendance.selfie') }}" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium text-emerald-400 hover:bg-slate-800">
-                Presensi Selfie (Kamera)
-            </a>
+            <!-- 1. Presensi Terpadu Accordion -->
+            @php
+                $isMobPresensiActive = request()->routeIs('attendance.*');
+            @endphp
+            <div class="pt-1.5">
+                <button type="button" onclick="toggleSidebarMenu('mob-menu-presensi', 'mob-chevron-presensi')" class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition cursor-pointer select-none {{ $isMobPresensiActive ? 'text-indigo-300 bg-slate-800/70' : 'text-slate-300 hover:text-white hover:bg-slate-800/50' }}">
+                    <div class="flex items-center gap-2.5 min-w-0">
+                        <svg class="w-4 h-4 shrink-0 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                        </svg>
+                        <span class="truncate">Presensi Terpadu</span>
+                    </div>
+                    <svg id="mob-chevron-presensi" class="w-3.5 h-3.5 shrink-0 text-slate-400 transition-transform duration-200 {{ $isMobPresensiActive ? 'rotate-180' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </button>
+                <div id="mob-menu-presensi" class="space-y-0.5 mt-1 pl-2.5 ml-3 border-l border-slate-800/80 {{ $isMobPresensiActive ? '' : 'hidden' }}">
+                    @if(in_array($role, ['siswa', 'admin', 'super_admin']))
+                    <a href="{{ route('attendance.selfie') }}" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition {{ request()->routeIs('attendance.selfie') ? 'bg-indigo-600 text-white font-semibold shadow-xs' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50' }}">
+                        <svg class="w-3.5 h-3.5 shrink-0 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                        <span class="truncate">Presensi Selfie (Kamera)</span>
+                    </a>
+                    @endif
+
+                    @if(in_array($role, ['siswa', 'guru', 'admin', 'super_admin']))
+                    <a href="{{ route('attendance.qr.scanner') }}" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition {{ request()->routeIs('attendance.qr.scanner') ? 'bg-indigo-600 text-white font-semibold shadow-xs' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50' }}">
+                        <svg class="w-3.5 h-3.5 shrink-0 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>
+                        <span class="truncate">Scan QR Code</span>
+                    </a>
+                    @endif
+
+                    @if($role === 'siswa')
+                    <a href="{{ route('attendance.leave') }}" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition {{ request()->routeIs('attendance.leave*') ? 'bg-indigo-600 text-white font-semibold shadow-xs' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50' }}">
+                        <svg class="w-3.5 h-3.5 shrink-0 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        <span class="truncate">Izin / Sakit / Pulang Cepat</span>
+                    </a>
+                    @endif
+
+                    @if(in_array($role, ['guru', 'kesiswaan', 'admin', 'super_admin']))
+                    <a href="{{ route('attendance.qr.session') }}" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition {{ request()->routeIs('attendance.qr.session*') ? 'bg-indigo-600 text-white font-semibold shadow-xs' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50' }}">
+                        <svg class="w-3.5 h-3.5 shrink-0 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"/></svg>
+                        <span class="truncate">Proyektor QR Sesi</span>
+                    </a>
+                    @endif
+
+                    @if(in_array($role, ['wali_kelas', 'admin', 'super_admin']))
+                    <a href="{{ route('attendance.manual') }}" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition {{ request()->routeIs('attendance.manual*') ? 'bg-indigo-600 text-white font-semibold shadow-xs' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50' }}">
+                        <svg class="w-3.5 h-3.5 shrink-0 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                        <span class="truncate">Absen Manual</span>
+                    </a>
+
+                    <a href="{{ route('attendance.leaves.index') }}" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition {{ request()->routeIs('attendance.leaves*') ? 'bg-indigo-600 text-white font-semibold shadow-xs' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50' }}">
+                        <svg class="w-3.5 h-3.5 shrink-0 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+                        <span class="truncate">Persetujuan Izin & Pulang</span>
+                    </a>
+                    @endif
+
+                    @if(in_array($role, ['admin', 'super_admin']))
+                    <a href="{{ route('attendance.rfid.simulator') }}" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition {{ request()->routeIs('attendance.rfid.simulator') ? 'bg-indigo-600 text-white font-semibold shadow-xs' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50' }}">
+                        <svg class="w-3.5 h-3.5 shrink-0 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"/></svg>
+                        <span class="truncate">Integrasi RFID / Kiosk</span>
+                    </a>
+                    @endif
+
+                    @if(in_array($role, ['siswa', 'guru', 'orang_tua', 'kepala_sekolah', 'admin', 'super_admin']))
+                    <a href="{{ route('attendance.history') }}" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition {{ request()->routeIs('attendance.history') ? 'bg-indigo-600 text-white font-semibold shadow-xs' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50' }}">
+                        <svg class="w-3.5 h-3.5 shrink-0 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <span class="truncate">Riwayat Presensi</span>
+                    </a>
+                    @endif
+
+                    @if(in_array($role, ['wali_kelas', 'guru', 'kepala_sekolah', 'admin', 'super_admin']))
+                    <a href="{{ route('attendance.report') }}" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition {{ request()->routeIs('attendance.report') ? 'bg-indigo-600 text-white font-semibold shadow-xs' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50' }}">
+                        <svg class="w-3.5 h-3.5 shrink-0 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        <span class="truncate">Laporan Presensi</span>
+                    </a>
+                    @endif
+                </div>
+            </div>
+
+            <!-- 2. Tata Tertib Accordion -->
+            @php
+                $isMobTatibActive = request()->routeIs('achievements.*', 'violations.*', 'guidance.*', 'discipline.*');
+            @endphp
+            <div class="pt-1.5">
+                <button type="button" onclick="toggleSidebarMenu('mob-menu-tatib', 'mob-chevron-tatib')" class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition cursor-pointer select-none {{ $isMobTatibActive ? 'text-indigo-300 bg-slate-800/70' : 'text-slate-300 hover:text-white hover:bg-slate-800/50' }}">
+                    <div class="flex items-center gap-2.5 min-w-0">
+                        <svg class="w-4 h-4 shrink-0 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                        </svg>
+                        <span class="truncate">Tata Tertib Siswa</span>
+                    </div>
+                    <svg id="mob-chevron-tatib" class="w-3.5 h-3.5 shrink-0 text-slate-400 transition-transform duration-200 {{ $isMobTatibActive ? 'rotate-180' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </button>
+                <div id="mob-menu-tatib" class="space-y-0.5 mt-1 pl-2.5 ml-3 border-l border-slate-800/80 {{ $isMobTatibActive ? '' : 'hidden' }}">
+                    <a href="{{ route('achievements.index') }}" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition {{ request()->routeIs('achievements.*') ? 'bg-indigo-600 text-white font-semibold shadow-xs' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50' }}">
+                        <svg class="w-3.5 h-3.5 shrink-0 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+                        <span class="truncate">Prestasi Siswa (R1-R10)</span>
+                    </a>
+
+                    <a href="{{ route('violations.index') }}" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition {{ request()->routeIs('violations.*') ? 'bg-indigo-600 text-white font-semibold shadow-xs' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50' }}">
+                        <svg class="w-3.5 h-3.5 shrink-0 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                        <span class="truncate">Pelanggaran Siswa (P1-P6)</span>
+                    </a>
+
+                    @if(in_array($role, ['guru', 'wali_kelas', 'kepala_sekolah', 'admin', 'super_admin']))
+                    <a href="{{ route('guidance.index') }}" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition {{ request()->routeIs('guidance.*') ? 'bg-indigo-600 text-white font-semibold shadow-xs' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50' }}">
+                        <svg class="w-3.5 h-3.5 shrink-0 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        <span class="truncate">Catatan Pembinaan</span>
+                    </a>
+                    @endif
+
+                    @if($role !== 'siswa')
+                    <a href="{{ route('discipline.ranking') }}" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition {{ request()->routeIs('discipline.ranking') ? 'bg-indigo-600 text-white font-semibold shadow-xs' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50' }}">
+                        <svg class="w-3.5 h-3.5 shrink-0 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+                        <span class="truncate">Papan Peringkat (Rangking)</span>
+                    </a>
+                    @endif
+
+                    @if(in_array($role, ['guru', 'wali_kelas', 'kepala_sekolah', 'admin', 'super_admin']))
+                    <a href="{{ route('discipline.report') }}" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition {{ request()->routeIs('discipline.report') ? 'bg-indigo-600 text-white font-semibold shadow-xs' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50' }}">
+                        <svg class="w-3.5 h-3.5 shrink-0 text-indigo-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        <span class="truncate">Laporan Tata Tertib</span>
+                    </a>
+                    @endif
+                </div>
+            </div>
+
+            <!-- 3. Karakter Accordion -->
+            @php
+                $isMobHabitsActive = request()->routeIs('habits.*');
+            @endphp
+            <div class="pt-1.5">
+                <button type="button" onclick="toggleSidebarMenu('mob-menu-karakter', 'mob-chevron-karakter')" class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition cursor-pointer select-none {{ $isMobHabitsActive ? 'text-indigo-300 bg-slate-800/70' : 'text-slate-300 hover:text-white hover:bg-slate-800/50' }}">
+                    <div class="flex items-center gap-2.5 min-w-0">
+                        <svg class="w-4 h-4 shrink-0 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
+                        </svg>
+                        <span class="truncate">Karakter (7 Kebiasaan)</span>
+                    </div>
+                    <svg id="mob-chevron-karakter" class="w-3.5 h-3.5 shrink-0 text-slate-400 transition-transform duration-200 {{ $isMobHabitsActive ? 'rotate-180' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </button>
+                <div id="mob-menu-karakter" class="space-y-0.5 mt-1 pl-2.5 ml-3 border-l border-slate-800/80 {{ $isMobHabitsActive ? '' : 'hidden' }}">
+                    <a href="{{ route('habits.journal') }}" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition {{ request()->routeIs('habits.journal') ? 'bg-indigo-600 text-white font-semibold shadow-xs' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50' }}">
+                        <svg class="w-3.5 h-3.5 shrink-0 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+                        <span class="truncate">7 Kebiasaan Anak Hebat</span>
+                    </a>
+
+                    <a href="{{ route('habits.summary') }}" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition {{ request()->routeIs('habits.summary') ? 'bg-indigo-600 text-white font-semibold shadow-xs' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50' }}">
+                        <svg class="w-3.5 h-3.5 shrink-0 text-teal-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                        <span class="truncate">Ringkasan Karakter</span>
+                    </a>
+
+                    @if(in_array($role, ['wali_kelas', 'guru', 'kepala_sekolah', 'admin', 'super_admin']))
+                    <a href="{{ route('habits.charts') }}" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition {{ request()->routeIs('habits.charts') ? 'bg-indigo-600 text-white font-semibold shadow-xs' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50' }}">
+                        <svg class="w-3.5 h-3.5 shrink-0 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"/></svg>
+                        <span class="truncate">Diagram & Persentase</span>
+                    </a>
+
+                    <a href="{{ route('habits.report') }}" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition {{ request()->routeIs('habits.report') ? 'bg-indigo-600 text-white font-semibold shadow-xs' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50' }}">
+                        <svg class="w-3.5 h-3.5 shrink-0 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        <span class="truncate">Laporan Karakter</span>
+                    </a>
+                    @endif
+                </div>
+            </div>
+
+            <!-- 4. Laporan & Analisis Accordion -->
+            @if(in_array($role, ['wali_kelas', 'guru', 'kepala_sekolah', 'admin', 'super_admin']))
+            @php
+                $isMobLaporanActive = request()->routeIs('ai.analysis', 'reports.*');
+            @endphp
+            <div class="pt-1.5">
+                <button type="button" onclick="toggleSidebarMenu('mob-menu-laporan', 'mob-chevron-laporan')" class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition cursor-pointer select-none {{ $isMobLaporanActive ? 'text-indigo-300 bg-slate-800/70' : 'text-slate-300 hover:text-white hover:bg-slate-800/50' }}">
+                    <div class="flex items-center gap-2.5 min-w-0">
+                        <svg class="w-4 h-4 shrink-0 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                        <span class="truncate">Laporan & Cetak</span>
+                    </div>
+                    <svg id="mob-chevron-laporan" class="w-3.5 h-3.5 shrink-0 text-slate-400 transition-transform duration-200 {{ $isMobLaporanActive ? 'rotate-180' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </button>
+                <div id="mob-menu-laporan" class="space-y-0.5 mt-1 pl-2.5 ml-3 border-l border-slate-800/80 {{ $isMobLaporanActive ? '' : 'hidden' }}">
+                    <a href="{{ route('ai.analysis') }}" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition {{ request()->routeIs('ai.analysis') ? 'bg-indigo-600 text-white font-semibold shadow-xs' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50' }}">
+                        <svg class="w-3.5 h-3.5 shrink-0 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                        <span class="truncate">AI Analisis Perkembangan</span>
+                    </a>
+
+                    <a href="{{ route('reports.index') }}" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition {{ request()->routeIs('reports.*') ? 'bg-indigo-600 text-white font-semibold shadow-xs' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50' }}">
+                        <svg class="w-3.5 h-3.5 shrink-0 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                        <span class="truncate">Rekap & Laporan Cetak</span>
+                    </a>
+                </div>
+            </div>
             @endif
 
-            @if(in_array($role, ['siswa', 'guru', 'admin', 'super_admin']))
-            <a href="{{ route('attendance.qr.scanner') }}" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium text-sky-400 hover:bg-slate-800">
-                Scan QR Code
-            </a>
-            @endif
-
-            @if($role === 'siswa')
-            <a href="{{ route('attendance.leave') }}" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium text-amber-400 hover:bg-slate-800">
-                Izin / Sakit / Pulang Cepat
-            </a>
-            @endif
-
-            @if(in_array($role, ['guru', 'kesiswaan', 'admin', 'super_admin']))
-            <a href="{{ route('attendance.qr.session') }}" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium text-amber-400 hover:bg-slate-800">
-                Proyektor QR Sesi
-            </a>
-            @endif
-
-            @if(in_array($role, ['wali_kelas', 'admin', 'super_admin']))
-            <a href="{{ route('attendance.manual') }}" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium text-cyan-400 hover:bg-slate-800">
-                Absen Manual
-            </a>
-            <a href="{{ route('attendance.leaves.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium text-yellow-400 hover:bg-slate-800">
-                Persetujuan Izin & Pulang Cepat
-            </a>
-            @endif
-
+            <!-- 5. Master Data Accordion -->
             @if(in_array($role, ['admin', 'super_admin']))
-            <a href="{{ route('attendance.rfid.simulator') }}" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium text-purple-400 hover:bg-slate-800">
-                Simulator RFID / Kiosk
-            </a>
-            @endif
+            @php
+                $isMobMasterActive = request()->routeIs('master.*');
+            @endphp
+            <div class="pt-1.5">
+                <button type="button" onclick="toggleSidebarMenu('mob-menu-master', 'mob-chevron-master')" class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition cursor-pointer select-none {{ $isMobMasterActive ? 'text-indigo-300 bg-slate-800/70' : 'text-slate-300 hover:text-white hover:bg-slate-800/50' }}">
+                    <div class="flex items-center gap-2.5 min-w-0">
+                        <svg class="w-4 h-4 shrink-0 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"/>
+                        </svg>
+                        <span class="truncate">Master Data</span>
+                    </div>
+                    <svg id="mob-chevron-master" class="w-3.5 h-3.5 shrink-0 text-slate-400 transition-transform duration-200 {{ $isMobMasterActive ? 'rotate-180' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </button>
+                <div id="mob-menu-master" class="space-y-0.5 mt-1 pl-2.5 ml-3 border-l border-slate-800/80 {{ $isMobMasterActive ? '' : 'hidden' }}">
+                    <a href="{{ route('master.school_profile') }}" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition {{ request()->routeIs('master.school_profile') ? 'bg-indigo-600 text-white font-semibold shadow-xs' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50' }}">
+                        <svg class="w-3.5 h-3.5 shrink-0 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                        <span class="truncate">Identitas Sekolah</span>
+                    </a>
 
-            @if(in_array($role, ['siswa', 'guru', 'orang_tua', 'kepala_sekolah', 'admin', 'super_admin']))
-            <a href="{{ route('attendance.history') }}" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium text-slate-300 hover:bg-slate-800">
-                Riwayat Presensi
-            </a>
-            @endif
+                    <a href="{{ route('master.branding') }}" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition {{ request()->routeIs('master.branding*') ? 'bg-indigo-600 text-white font-semibold shadow-xs' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50' }}">
+                        <svg class="w-3.5 h-3.5 shrink-0 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                        <span class="truncate">Logo & KOP Surat</span>
+                    </a>
 
-            @if(in_array($role, ['wali_kelas', 'guru', 'kepala_sekolah', 'admin', 'super_admin']))
-            <a href="{{ route('attendance.report') }}" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium text-emerald-400 hover:bg-slate-800">
-                Laporan Presensi Real-Time
-            </a>
-            @endif
+                    <a href="{{ route('master.classes') }}" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition {{ request()->routeIs('master.classes*') ? 'bg-indigo-600 text-white font-semibold shadow-xs' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50' }}">
+                        <svg class="w-3.5 h-3.5 shrink-0 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                        <span class="truncate">Data Kelas</span>
+                    </a>
 
-            <!-- 2. Tata Tertib -->
-            <div class="text-[10px] font-bold text-slate-500 uppercase px-3 pt-3">Tata Tertib</div>
-            <a href="{{ route('achievements.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium text-amber-400 hover:bg-slate-800">
-                Prestasi Siswa (R1-R10)
-            </a>
-            <a href="{{ route('violations.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium text-rose-400 hover:bg-slate-800">
-                Pelanggaran Siswa (P1-P6)
-            </a>
-            @if(in_array($role, ['guru', 'wali_kelas', 'kepala_sekolah', 'admin', 'super_admin']))
-            <a href="{{ route('guidance.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium text-indigo-400 hover:bg-slate-800">
-                Catatan Pembinaan
-            </a>
-            @endif
-            @if($role !== 'siswa')
-            <a href="{{ route('discipline.ranking') }}" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium text-amber-300 hover:bg-slate-800">
-                Papan Peringkat (Rangking)
-            </a>
-            @endif
-            @if(in_array($role, ['guru', 'wali_kelas', 'kepala_sekolah', 'admin', 'super_admin']))
-            <a href="{{ route('discipline.report') }}" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium text-indigo-300 hover:bg-slate-800">
-                Laporan Tata Tertib
-            </a>
-            @endif
+                    <a href="{{ route('master.students') }}" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition {{ request()->routeIs('master.students*') ? 'bg-indigo-600 text-white font-semibold shadow-xs' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50' }}">
+                        <svg class="w-3.5 h-3.5 shrink-0 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                        <span class="truncate">Data Siswa & RFID</span>
+                    </a>
 
-            <!-- 3. Karakter -->
-            <div class="text-[10px] font-bold text-slate-500 uppercase px-3 pt-3">Karakter</div>
-            <a href="{{ route('habits.journal') }}" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium text-teal-400 hover:bg-slate-800">
-                7 Kebiasaan Anak Hebat
-            </a>
-            <a href="{{ route('habits.summary') }}" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium text-teal-300 hover:bg-slate-800">
-                Ringkasan Karakter
-            </a>
-            @if(in_array($role, ['wali_kelas', 'guru', 'kepala_sekolah', 'admin', 'super_admin']))
-            <a href="{{ route('habits.charts') }}" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium text-emerald-400 hover:bg-slate-800">
-                Diagram & Persentase
-            </a>
-            <a href="{{ route('habits.report') }}" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium text-teal-400 hover:bg-slate-800">
-                Laporan Karakter
-            </a>
-            @endif
+                    <a href="{{ route('master.teachers') }}" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition {{ request()->routeIs('master.teachers*') ? 'bg-indigo-600 text-white font-semibold shadow-xs' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50' }}">
+                        <svg class="w-3.5 h-3.5 shrink-0 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                        <span class="truncate">Data Guru & Akun</span>
+                    </a>
 
-            <!-- 4. Laporan & Analisis -->
-            @if(in_array($role, ['wali_kelas', 'guru', 'kepala_sekolah', 'admin', 'super_admin']))
-            <div class="text-[10px] font-bold text-slate-500 uppercase px-3 pt-3">Laporan & Cetak</div>
-            <a href="{{ route('ai.analysis') }}" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium text-pink-400 hover:bg-slate-800">
-                AI Analisis Perkembangan
-            </a>
-            <a href="{{ route('reports.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium text-teal-400 hover:bg-slate-800">
-                Rekap & Laporan Cetak
-            </a>
-            @endif
+                    <a href="{{ route('master.academic_years') }}" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition {{ request()->routeIs('master.academic_years*') ? 'bg-indigo-600 text-white font-semibold shadow-xs' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50' }}">
+                        <svg class="w-3.5 h-3.5 shrink-0 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                        <span class="truncate">Tahun Pelajaran</span>
+                    </a>
 
-            @if(in_array($role, ['admin', 'super_admin']))
-            <div class="text-[10px] font-bold text-slate-500 uppercase px-3 pt-3">Master Data</div>
-            <a href="{{ route('master.school_profile') }}" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium text-blue-400 hover:bg-slate-800">
-                Identitas Sekolah
-            </a>
-            <a href="{{ route('master.branding') }}" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium text-pink-400 hover:bg-slate-800">
-                Logo & KOP Surat
-            </a>
-            <a href="{{ route('master.classes') }}" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium text-indigo-400 hover:bg-slate-800">
-                Data Kelas
-            </a>
-            <a href="{{ route('master.students') }}" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium text-sky-400 hover:bg-slate-800">
-                Data Siswa & RFID
-            </a>
-            <a href="{{ route('master.teachers') }}" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium text-emerald-400 hover:bg-slate-800">
-                Data Guru & Role Akun
-            </a>
-            <a href="{{ route('master.academic_years') }}" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium text-amber-400 hover:bg-slate-800">
-                Tahun Pelajaran
-            </a>
-            <a href="{{ route('master.settings') }}" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium text-slate-400 hover:bg-slate-800">
-                Pengaturan Sistem
-            </a>
-            <a href="{{ route('master.categories') }}" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium text-slate-400 hover:bg-slate-800">
-                Butir Tata Tertib
-            </a>
+                    <!-- Hari Libur & Tanggal Merah (NEW) -->
+                    <a href="{{ route('master.holidays') }}" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition {{ request()->routeIs('master.holidays*') ? 'bg-indigo-600 text-white font-semibold shadow-xs' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50' }}">
+                        <svg class="w-3.5 h-3.5 shrink-0 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            <circle cx="12" cy="15" r="2" fill="currentColor"/>
+                        </svg>
+                        <span class="truncate">Hari Libur & Tanggal Merah</span>
+                    </a>
+
+                    <a href="{{ route('master.settings') }}" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition {{ request()->routeIs('master.settings') ? 'bg-indigo-600 text-white font-semibold shadow-xs' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50' }}">
+                        <svg class="w-3.5 h-3.5 shrink-0 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                        <span class="truncate">Pengaturan & Geofence</span>
+                    </a>
+
+                    <a href="{{ route('master.categories') }}" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition {{ request()->routeIs('master.categories') ? 'bg-indigo-600 text-white font-semibold shadow-xs' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50' }}">
+                        <svg class="w-3.5 h-3.5 shrink-0 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                        <span class="truncate">Master Butir Tatib</span>
+                    </a>
+                </div>
+            </div>
             @endif
         </nav>
 
@@ -891,6 +1110,22 @@
 
     <!-- Global Scripts: Theme Toggle, Desktop Sidebar Toggle, Mobile Drawer, Keyboard navigation, Scroll to Top -->
     <script>
+        // Sidebar & Mobile Drawer Accordion Menu Toggle Controller
+        function toggleSidebarMenu(menuId, chevronId) {
+            const menu = document.getElementById(menuId);
+            const chevron = document.getElementById(chevronId);
+            if (!menu) return;
+
+            const isHidden = menu.classList.contains('hidden');
+            if (isHidden) {
+                menu.classList.remove('hidden');
+                if (chevron) chevron.classList.add('rotate-180');
+            } else {
+                menu.classList.add('hidden');
+                if (chevron) chevron.classList.remove('rotate-180');
+            }
+        }
+
         // Desktop Sidebar Collapse Controller (Responsive compact icon mode)
         function toggleDesktopSidebar(forceCollapse) {
             const sidebar = document.getElementById('desktop-sidebar');

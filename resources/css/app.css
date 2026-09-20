@@ -250,6 +250,43 @@ img, video, canvas {
     position: relative;
 }
 
+#desktop-sidebar.is-compact .sidebar-chevron {
+    display: none !important;
+}
+
+#desktop-sidebar.is-compact .sidebar-accordion-btn {
+    justify-content: center !important;
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
+    position: relative;
+}
+
+#desktop-sidebar.is-compact .sidebar-accordion-btn:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    left: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    margin-left: 0.75rem;
+    background-color: #0f172a;
+    color: #f8fafc;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.35rem 0.65rem;
+    border-radius: 0.5rem;
+    white-space: nowrap;
+    z-index: 60;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+    border: 1px solid #334155;
+    pointer-events: none;
+}
+
+#desktop-sidebar.is-compact .sidebar-accordion-menu {
+    border-left: none !important;
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+}
+
 #desktop-sidebar.is-compact .brand-container {
     justify-content: center;
 }

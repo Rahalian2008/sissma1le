@@ -9,6 +9,7 @@ use App\Models\AttendanceDevice;
 use App\Models\AttendanceLocation;
 use App\Models\AuditLog;
 use App\Models\SchoolClass;
+use App\Models\SchoolHoliday;
 use App\Models\SchoolSetting;
 use App\Models\Student;
 use App\Models\Teacher;
@@ -939,5 +940,205 @@ class MasterDataController extends Controller
         $result = $this->csvImportService->importViolationItems($rows);
 
         return back()->with('success', "Impor Butir Pelanggaran Berhasil: {$result['imported']} butir baru ditambahkan, {$result['updated']} diperbarui, {$result['skipped']} dilewati.");
+    }
+
+    /**
+     * Master Data Hari Libur & Tanggal Merah
+     */
+    public function holidays(Request $request): View
+    {
+        $year = (int) $request->input('year', date('Y'));
+        $month = $request->input('month');
+        $type = $request->input('type');
+        $search = $request->input('search');
+
+        $query = SchoolHoliday::query();
+
+        if ($year) {
+            $query->where(function ($q) use ($year) {
+                $q->whereYear('start_date', $year)
+                    ->orWhereYear('end_date', $year);
+            });
+        }
+
+        if ($month) {
+            $query->where(function ($q) use ($month) {
+                $q->whereMonth('start_date', $month)
+                    ->orWhereMonth('end_date', $month);
+            });
+        }
+
+        if ($type) {
+            $query->where('type', $type);
+        }
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+
+        $holidays = $query->orderBy('start_date', 'asc')->get();
+
+        $stats = [
+            'total' => SchoolHoliday::whereYear('start_date', $year)->count(),
+            'nasional' => SchoolHoliday::whereYear('start_date', $year)->where('type', 'nasional')->count(),
+            'khusus' => SchoolHoliday::whereYear('start_date', $year)->where('type', 'khusus')->count(),
+            'sekolah' => SchoolHoliday::whereYear('start_date', $year)->where('type', 'sekolah')->count(),
+        ];
+
+        return view('master.holidays', compact('holidays', 'stats', 'year', 'month', 'type', 'search'));
+    }
+
+    /**
+     * Simpan Hari Libur / Tanggal Merah Baru
+     */
+    public function storeHoliday(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'start_date' => ['required', 'date'],
+            'end_date' => ['nullable', 'date', 'after_or_equal:start_date'],
+            'type' => ['required', 'in:nasional,khusus,sekolah'],
+            'description' => ['nullable', 'string', 'max:1000'],
+            'is_active' => ['nullable', 'boolean'],
+        ]);
+
+        $holiday = SchoolHoliday::create([
+            'name' => $validated['name'],
+            'start_date' => $validated['start_date'],
+            'end_date' => $validated['end_date'] ?? $validated['start_date'],
+            'type' => $validated['type'],
+            'description' => $validated['description'] ?? null,
+            'is_active' => (bool) ($validated['is_active'] ?? true),
+        ]);
+
+        AuditLog::log('CREATE_HOLIDAY', 'SchoolHoliday', $holiday->id, null, $validated);
+
+        return back()->with('success', "Hari Libur '{$holiday->name}' ({$holiday->formatted_range}) berhasil ditambahkan. Absensi otomatis tidak berlaku pada tanggal ini.");
+    }
+
+    /**
+     * Perbarui Hari Libur / Tanggal Merah
+     */
+    public function updateHoliday(Request $request, SchoolHoliday $schoolHoliday): RedirectResponse
+    {
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'start_date' => ['required', 'date'],
+            'end_date' => ['nullable', 'date', 'after_or_equal:start_date'],
+            'type' => ['required', 'in:nasional,khusus,sekolah'],
+            'description' => ['nullable', 'string', 'max:1000'],
+            'is_active' => ['nullable', 'boolean'],
+        ]);
+
+        $schoolHoliday->update([
+            'name' => $validated['name'],
+            'start_date' => $validated['start_date'],
+            'end_date' => $validated['end_date'] ?? $validated['start_date'],
+            'type' => $validated['type'],
+            'description' => $validated['description'] ?? null,
+            'is_active' => (bool) ($validated['is_active'] ?? true),
+        ]);
+
+        AuditLog::log('UPDATE_HOLIDAY', 'SchoolHoliday', $schoolHoliday->id, null, $validated);
+
+        return back()->with('success', "Data Hari Libur '{$schoolHoliday->name}' berhasil diperbarui.");
+    }
+
+    /**
+     * Hapus Hari Libur
+     */
+    public function destroyHoliday(SchoolHoliday $schoolHoliday): RedirectResponse
+    {
+        $name = $schoolHoliday->name;
+        $schoolHoliday->delete();
+
+        AuditLog::log('DELETE_HOLIDAY', 'SchoolHoliday', $schoolHoliday->id);
+
+        return back()->with('success', "Hari Libur '{$name}' berhasil dihapus.");
+    }
+
+    /**
+     * Muat Otomatis Libur Nasional Standar & Kalender Pendidikan
+     */
+    public function generateCommonHolidays(Request $request): RedirectResponse
+    {
+        $year = (int) $request->input('year', date('Y'));
+
+        $standardHolidays = [
+            ['name' => 'Tahun Baru Masehi', 'start_date' => "{$year}-01-01", 'end_date' => "{$year}-01-01", 'type' => 'nasional', 'description' => 'Libur Nasional Tahun Baru Masehi'],
+            ['name' => "Isra Mi'raj Nabi Muhammad SAW", 'start_date' => "{$year}-01-17", 'end_date' => "{$year}-01-17", 'type' => 'nasional', 'description' => "Peringatan Isra Mi'raj 1447 H"],
+            ['name' => 'Tahun Baru Imlek', 'start_date' => "{$year}-02-17", 'end_date' => "{$year}-02-17", 'type' => 'nasional', 'description' => 'Tahun Baru Imlek 2577 Kongzili'],
+            ['name' => 'Hari Suci Nyepi (Tahun Baru Saka)', 'start_date' => "{$year}-03-19", 'end_date' => "{$year}-03-19", 'type' => 'nasional', 'description' => 'Hari Suci Nyepi Tahun Baru Saka 1948'],
+            ['name' => 'Hari Raya Idul Fitri 1447 H', 'start_date' => "{$year}-03-20", 'end_date' => "{$year}-03-24", 'type' => 'nasional', 'description' => 'Hari Raya Idul Fitri 1447 Hijriah & Cuti Bersama'],
+            ['name' => 'Wafat Isa Al Masih', 'start_date' => "{$year}-04-03", 'end_date' => "{$year}-04-03", 'type' => 'nasional', 'description' => 'Hari Peringatan Wafat Yesus Kristus'],
+            ['name' => 'Hari Buruh Internasional', 'start_date' => "{$year}-05-01", 'end_date' => "{$year}-05-01", 'type' => 'nasional', 'description' => 'Hari Buruh Internasional (May Day)'],
+            ['name' => 'Kenaikan Isa Al Masih', 'start_date' => "{$year}-05-14", 'end_date' => "{$year}-05-14", 'type' => 'nasional', 'description' => 'Hari Peringatan Kenaikan Yesus Kristus'],
+            ['name' => 'Hari Raya Idul Adha 1447 H', 'start_date' => "{$year}-05-27", 'end_date' => "{$year}-05-28", 'type' => 'nasional', 'description' => 'Hari Raya Idul Adha & Cuti Bersama'],
+            ['name' => 'Hari Raya Waisak 2570 BE', 'start_date' => "{$year}-05-31", 'end_date' => "{$year}-05-31", 'type' => 'nasional', 'description' => 'Hari Raya Tri Suci Waisak'],
+            ['name' => 'Hari Lahir Pancasila', 'start_date' => "{$year}-06-01", 'end_date' => "{$year}-06-01", 'type' => 'nasional', 'description' => 'Peringatan Hari Lahir Pancasila'],
+            ['name' => 'Tahun Baru Islam 1448 H', 'start_date' => "{$year}-06-16", 'end_date' => "{$year}-06-16", 'type' => 'nasional', 'description' => 'Tahun Baru Hijriah 1 Muharram 1448 H'],
+            ['name' => 'Libur Akhir Tahun Pelajaran / Semester Genap', 'start_date' => "{$year}-06-22", 'end_date' => "{$year}-07-11", 'type' => 'sekolah', 'description' => 'Libur Akhir Semester & Kenaikan Kelas Kalender Pendidikan'],
+            ['name' => 'Hari Kemerdekaan Republik Indonesia', 'start_date' => "{$year}-08-17", 'end_date' => "{$year}-08-17", 'type' => 'nasional', 'description' => 'HUT Kemerdekaan RI'],
+            ['name' => 'Maulid Nabi Muhammad SAW', 'start_date' => "{$year}-08-25", 'end_date' => "{$year}-08-25", 'type' => 'nasional', 'description' => 'Peringatan Maulid Nabi Muhammad SAW 1448 H'],
+            ['name' => 'Hari Raya Natal', 'start_date' => "{$year}-12-25", 'end_date' => "{$year}-12-26", 'type' => 'nasional', 'description' => 'Hari Raya Natal & Cuti Bersama'],
+            ['name' => 'Libur Semester Ganjil', 'start_date' => "{$year}-12-21", 'end_date' => "{$year}-12-31", 'type' => 'sekolah', 'description' => 'Libur Semester Ganjil Kalender Pendidikan'],
+        ];
+
+        $inserted = 0;
+        foreach ($standardHolidays as $item) {
+            SchoolHoliday::updateOrCreate(
+                [
+                    'name' => $item['name'],
+                    'start_date' => $item['start_date'],
+                ],
+                [
+                    'end_date' => $item['end_date'],
+                    'type' => $item['type'],
+                    'description' => $item['description'],
+                    'is_active' => true,
+                ]
+            );
+            $inserted++;
+        }
+
+        AuditLog::log('GENERATE_COMMON_HOLIDAYS', 'SchoolHoliday', null, null, ['year' => $year, 'count' => $inserted]);
+
+        return back()->with('success', "Berhasil memuat {$inserted} daftar Hari Libur Nasional & Kalender Pendidikan untuk tahun {$year}.");
+    }
+
+    /**
+     * Download Template CSV Hari Libur
+     */
+    public function holidaysTemplate(): StreamedResponse
+    {
+        return $this->csvImportService->downloadTemplate(
+            'template_hari_libur_tanggal_merah_sman1lengkong.csv',
+            ['nama_hari_libur', 'tanggal_mulai', 'tanggal_selesai', 'jenis', 'keterangan'],
+            [
+                ['Tahun Baru Masehi', '2026-01-01', '2026-01-01', 'nasional', 'Libur Nasional'],
+                ['Hari Raya Idul Fitri 1447 H', '2026-03-20', '2026-03-24', 'nasional', 'Hari Raya & Cuti Bersama'],
+                ['Libur Semester Genap', '2026-06-22', '2026-07-11', 'sekolah', 'Libur Kenaikan Kelas'],
+            ]
+        );
+    }
+
+    /**
+     * Import Data Hari Libur dari CSV
+     */
+    public function importHolidays(Request $request): RedirectResponse
+    {
+        $request->validate(['file' => ['required', 'file', 'mimes:csv,txt']]);
+        $rows = $this->csvImportService->parseCsv($request->file('file'));
+
+        if (empty($rows)) {
+            return back()->with('error', 'File CSV kosong atau format baris tidak dapat dibaca.');
+        }
+
+        $result = $this->csvImportService->importHolidays($rows);
+
+        return back()->with('success', "Impor Hari Libur Berhasil: {$result['imported']} data baru ditambahkan, {$result['updated']} diperbarui, {$result['skipped']} dilewati.");
     }
 }

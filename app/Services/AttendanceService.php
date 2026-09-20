@@ -8,6 +8,7 @@ use App\Models\AttendanceSelfie;
 use App\Models\AttendanceSession;
 use App\Models\AuditLog;
 use App\Models\Notification;
+use App\Models\SchoolHoliday;
 use App\Models\SchoolSetting;
 use App\Models\Student;
 use App\Models\User;
@@ -54,6 +55,11 @@ class AttendanceService
         ];
         $dayKey = $dayMap[$date->dayOfWeek] ?? 'senin';
 
+        // Check if date is a registered holiday
+        $holiday = SchoolHoliday::getHoliday($date);
+        $isHoliday = $holiday !== null;
+        $holidayName = $holiday ? $holiday->name : null;
+
         // Legacy global fallbacks
         $legacyStart = SchoolSetting::get('attendance_start_time', '06:00');
         $legacyCheckin = SchoolSetting::get('attendance_checkin_time', '07:00');
@@ -66,13 +72,17 @@ class AttendanceService
             default => '15:00',
         };
 
-        $isActive = $dayKey === 'minggu'
+        $isActive = ($dayKey === 'minggu' || $isHoliday)
             ? false
             : SchoolSetting::get("attendance_{$dayKey}_is_active", '1') === '1';
 
         return [
             'day' => $dayKey,
             'is_active' => $isActive,
+            'is_holiday' => $isHoliday,
+            'holiday' => $holiday,
+            'holiday_name' => $holidayName,
+            'holiday_type' => $holiday ? $holiday->type : null,
             'in_start' => SchoolSetting::get("attendance_{$dayKey}_in_start", $legacyStart),
             'in_on_time' => SchoolSetting::get("attendance_{$dayKey}_in_on_time", $legacyCheckin),
             'in_late_cutoff' => SchoolSetting::get("attendance_{$dayKey}_in_late_cutoff", $legacyLate),
@@ -102,12 +112,16 @@ class AttendanceService
             ];
         }
 
-        // Validasi Hari Aktif Sekolah
+        // Validasi Hari Aktif Sekolah & Tanggal Merah
         if (! $schedule['is_active']) {
+            $msg = ! empty($schedule['is_holiday'])
+                ? "Hari ini sekolah libur ({$schedule['holiday_name']}). Presensi otomatis tidak berlaku."
+                : "Hari ini ({$schedule['day']}) sekolah dinyatakan libur atau bukan merupakan hari aktif presensi.";
+
             return [
                 'success' => false,
-                'message' => "Hari ini ({$schedule['day']}) sekolah dinyatakan libur atau bukan merupakan hari aktif presensi.",
-                'error_code' => 'DAY_OFF',
+                'message' => $msg,
+                'error_code' => ! empty($schedule['is_holiday']) ? 'HOLIDAY_OFF' : 'DAY_OFF',
             ];
         }
 
@@ -357,6 +371,19 @@ class AttendanceService
             ];
         }
 
+        $schedule = self::getScheduleForDay($now);
+        if (! $schedule['is_active']) {
+            $msg = ! empty($schedule['is_holiday'])
+                ? "Hari ini sekolah libur ({$schedule['holiday_name']}). Presensi otomatis tidak berlaku."
+                : "Hari ini ({$schedule['day']}) bukan merupakan hari aktif presensi sekolah.";
+
+            return [
+                'success' => false,
+                'message' => $msg,
+                'error_code' => ! empty($schedule['is_holiday']) ? 'HOLIDAY_OFF' : 'DAY_OFF',
+            ];
+        }
+
         $session = AttendanceSession::where('qr_code_token', $qrToken)->first();
 
         if (! $session) {
@@ -395,15 +422,6 @@ class AttendanceService
                 'message' => 'Anda telah menyelesaikan presensi masuk dan pulang untuk hari ini.',
                 'error_code' => 'ALREADY_COMPLETED',
                 'attendance' => $existingAttendance,
-            ];
-        }
-
-        $schedule = self::getScheduleForDay($now);
-        if (! $schedule['is_active']) {
-            return [
-                'success' => false,
-                'message' => "Hari ini ({$schedule['day']}) bukan merupakan hari aktif presensi sekolah.",
-                'error_code' => 'DAY_OFF',
             ];
         }
 
@@ -523,6 +541,19 @@ class AttendanceService
             ];
         }
 
+        $schedule = self::getScheduleForDay($now);
+        if (! $schedule['is_active']) {
+            $msg = ! empty($schedule['is_holiday'])
+                ? "Hari ini sekolah libur ({$schedule['holiday_name']}). Presensi otomatis tidak berlaku."
+                : "Hari ini ({$schedule['day']}) bukan merupakan hari aktif presensi sekolah.";
+
+            return [
+                'success' => false,
+                'message' => $msg,
+                'error_code' => ! empty($schedule['is_holiday']) ? 'HOLIDAY_OFF' : 'DAY_OFF',
+            ];
+        }
+
         $student = Student::where('rfid_uid', $rfidUid)->first();
         if (! $student) {
             AuditLog::log('RFID_UNKNOWN_UID', null, null, null, ['rfid_uid' => $rfidUid]);
@@ -544,15 +575,6 @@ class AttendanceService
                 'message' => "Siswa {$student->name} telah menyelesaikan presensi masuk dan pulang hari ini.",
                 'error_code' => 'ALREADY_COMPLETED',
                 'attendance' => $existingAttendance,
-            ];
-        }
-
-        $schedule = self::getScheduleForDay($now);
-        if (! $schedule['is_active']) {
-            return [
-                'success' => false,
-                'message' => "Hari ini ({$schedule['day']}) bukan merupakan hari aktif presensi sekolah.",
-                'error_code' => 'DAY_OFF',
             ];
         }
 
@@ -664,9 +686,56 @@ class AttendanceService
     {
         $today = Carbon::today();
         $currentTime = Carbon::now()->format('H:i:s');
-        $status = strtoupper($data['status'] ?? 'IZIN');
+        $status = strtoupper($data['status'] ?? $data['type'] ?? 'IZIN');
         if (! in_array($status, ['IZIN', 'SAKIT', 'PULANG_CEPAT'])) {
             $status = 'IZIN';
+        }
+
+        // 0. Validasi Tanggal dan Batas Waktu Pengajuan Izin/Sakit/Pulang Cepat Lebih Awal
+        $rawDate = $data['date'] ?? $data['target_date'] ?? null;
+        $targetDate = ! empty($rawDate) ? Carbon::parse($rawDate)->toDateString() : $today->toDateString();
+
+        if ($status !== 'PULANG_CEPAT') {
+            // A. Dilarang mengajukan izin/sakit untuk tanggal yang sudah lewat
+            if ($targetDate < $today->toDateString()) {
+                return [
+                    'success' => false,
+                    'message' => 'Pengajuan izin atau sakit tidak dapat dilakukan untuk tanggal yang telah lewat.',
+                    'error_code' => 'DATE_PAST',
+                ];
+            }
+
+            // B. Periksa apakah tanggal tujuan adalah hari libur terdaftar
+            $holiday = SchoolHoliday::getHoliday($targetDate);
+            if ($holiday) {
+                return [
+                    'success' => false,
+                    'message' => 'Tanggal '.Carbon::parse($targetDate)->translatedFormat('d F Y')." adalah hari libur ({$holiday->name}). Anda tidak perlu mengajukan izin/sakit.",
+                    'error_code' => 'TARGET_DATE_IS_HOLIDAY',
+                ];
+            }
+
+            // C. Pengajuan untuk Hari H (Hari Ini): Wajib diajukan sebelum pukul 06:30 WIB
+            $cutoffTime = SchoolSetting::get('leave_request_cutoff_time', '06:30');
+            if ($targetDate === $today->toDateString() && $currentTime > $cutoffTime.':00') {
+                return [
+                    'success' => false,
+                    'message' => "Pengajuan izin atau sakit untuk hari ini maksimal diajukan sebelum pukul {$cutoffTime} WIB. Untuk keperluan mendesak saat kegiatan belajar mengajar berlangsung, silakan ajukan Izin Pulang Cepat atau hubungi pihak sekolah.",
+                    'error_code' => 'LEAVE_CUTOFF_EXCEEDED',
+                ];
+            }
+
+            // D. Pengajuan Jauh Hari / Malam Harinya ($targetDate > $today->toDateString()):
+            // Bebas diajukan kapan saja tanpa batasan jam (Advance submission allowed).
+        } else {
+            // Khusus PULANG_CEPAT: Wajib diajukan untuk hari ini saat KBM berlangsung
+            if ($targetDate !== $today->toDateString()) {
+                return [
+                    'success' => false,
+                    'message' => 'Pengajuan izin pulang cepat hanya dapat diajukan untuk hari ini saat kegiatan belajar mengajar berlangsung.',
+                    'error_code' => 'EARLY_LEAVE_TODAY_ONLY',
+                ];
+            }
         }
 
         // 1. Strict Live Selfie Camera Validation (Anti-Upload Rule)
@@ -701,42 +770,6 @@ class AttendanceService
         $distance = 0;
         if ($location) {
             $distance = $this->calculateDistance($location->latitude, $location->longitude, $userLat, $userLng);
-        }
-
-        // 3. Validasi Tanggal dan Batas Waktu Pengajuan Izin/Sakit/Pulang Cepat
-        $targetDate = ! empty($data['date']) ? Carbon::parse($data['date'])->toDateString() : $today->toDateString();
-
-        if ($status !== 'PULANG_CEPAT') {
-            // A. Dilarang mengajukan izin/sakit untuk tanggal yang sudah lewat
-            if ($targetDate < $today->toDateString()) {
-                return [
-                    'success' => false,
-                    'message' => 'Pengajuan izin atau sakit tidak dapat dilakukan untuk tanggal yang telah lewat.',
-                    'error_code' => 'DATE_PAST',
-                ];
-            }
-
-            // B. Pengajuan untuk Hari H (Hari Ini): Wajib diajukan sebelum pukul 06:30 WIB
-            $cutoffTime = SchoolSetting::get('leave_request_cutoff_time', '06:30');
-            if ($targetDate === $today->toDateString() && $currentTime > $cutoffTime.':00') {
-                return [
-                    'success' => false,
-                    'message' => "Pengajuan izin atau sakit untuk hari ini maksimal diajukan sebelum pukul {$cutoffTime} WIB. Untuk keperluan mendesak saat kegiatan belajar mengajar berlangsung, silakan ajukan Izin Pulang Cepat atau hubungi pihak sekolah.",
-                    'error_code' => 'LEAVE_CUTOFF_EXCEEDED',
-                ];
-            }
-
-            // C. Pengajuan Jauh Hari / Malam Harinya ($targetDate > $today->toDateString()):
-            // Bebas diajukan kapan saja tanpa batasan jam (Advance submission allowed).
-        } else {
-            // Khusus PULANG_CEPAT: Wajib diajukan untuk hari ini saat KBM berlangsung
-            if ($targetDate !== $today->toDateString()) {
-                return [
-                    'success' => false,
-                    'message' => 'Pengajuan izin pulang cepat hanya dapat diajukan untuk hari ini saat kegiatan belajar mengajar berlangsung.',
-                    'error_code' => 'EARLY_LEAVE_TODAY_ONLY',
-                ];
-            }
         }
 
         // 4. Save Selfie Image to storage

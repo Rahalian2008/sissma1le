@@ -8,6 +8,7 @@ use App\Models\AttendanceLocation;
 use App\Models\AttendanceSession;
 use App\Models\AuditLog;
 use App\Models\SchoolClass;
+use App\Models\SchoolHoliday;
 use App\Models\SchoolSetting;
 use App\Models\Student;
 use App\Services\AttendanceService;
@@ -49,6 +50,9 @@ class AttendanceController extends Controller
             'end_time' => $schedule['out_end'],
             'is_enabled' => SchoolSetting::get('enable_attendance_selfie', '1') === '1',
             'is_active_day' => $schedule['is_active'],
+            'is_holiday' => $schedule['is_holiday'] ?? false,
+            'holiday_name' => $schedule['holiday_name'] ?? null,
+            'holiday_type' => $schedule['holiday_type'] ?? null,
             'day_name' => ucfirst($schedule['day']),
         ];
 
@@ -396,6 +400,9 @@ class AttendanceController extends Controller
             $defaultType = 'IZIN';
         }
 
+        $todayHoliday = SchoolHoliday::getHoliday($today);
+        $activeHolidays = SchoolHoliday::active()->where('end_date', '>=', $today)->orderBy('start_date')->take(10)->get();
+
         $historyLeaves = Attendance::where('student_id', $student?->id)
             ->where(function ($q) {
                 $q->where('method', 'IZIN_SAKIT')
@@ -406,7 +413,7 @@ class AttendanceController extends Controller
             ->take(10)
             ->get();
 
-        return view('attendance.leave', compact('student', 'settings', 'existingAttendance', 'historyLeaves', 'defaultType'));
+        return view('attendance.leave', compact('student', 'settings', 'existingAttendance', 'historyLeaves', 'defaultType', 'todayHoliday', 'activeHolidays'));
     }
 
     /**

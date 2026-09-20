@@ -56,7 +56,22 @@
             </div>
         @endif
 
-        @if(isset($settings['is_active_day']) && !$settings['is_active_day'])
+        @if(!empty($settings['is_holiday']))
+            <div class="mb-6 p-4 rounded-2xl bg-gradient-to-r from-rose-500/10 via-red-500/10 to-rose-500/10 border border-rose-300 text-rose-900 text-xs flex items-center gap-3.5 shadow-xs">
+                <div class="w-9 h-9 rounded-xl bg-rose-600 text-white flex items-center justify-center shrink-0 shadow-md">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="font-extrabold text-sm text-rose-700">🔴 Hari Libur: {{ $settings['holiday_name'] }}</span>
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-200 text-rose-800 uppercase">{{ $settings['holiday_type'] ?? 'Libur' }}</span>
+                    </div>
+                    <p class="text-[11.5px] text-rose-800 mt-0.5">Hari ini adalah tanggal merah / hari libur sekolah resmi. Seluruh sesi presensi masuk dan pulang dinonaktifkan otomatis.</p>
+                </div>
+            </div>
+        @elseif(isset($settings['is_active_day']) && !$settings['is_active_day'])
             <div class="mb-6 p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-3">
                 <svg class="w-5 h-5 text-rose-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -179,7 +194,18 @@
 
         <!-- Action Button: AMBIL SELFIE -->
         <div class="mt-6 text-center">
-            @if($isComplete)
+            @if(!$settings['is_active_day'])
+                <button type="button" disabled
+                    class="w-full sm:w-auto px-10 py-4 bg-slate-100 dark:bg-slate-800 text-slate-400 font-bold rounded-2xl cursor-not-allowed text-sm tracking-wide inline-flex items-center justify-center gap-2">
+                    <svg class="w-5 h-5 text-rose-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    PRESENSI TUTUP ({{ !empty($settings['is_holiday']) ? 'HARI LIBUR' : 'NON-AKTIF' }})
+                </button>
+                <p class="text-xs text-rose-600 dark:text-rose-400 mt-2 font-medium">
+                    {{ !empty($settings['is_holiday']) ? 'Hari ini adalah hari libur resmi: ' . $settings['holiday_name'] : 'Hari ini bukan merupakan hari aktif presensi sekolah.' }}
+                </p>
+            @elseif($isComplete)
                 <button type="button" disabled
                     class="w-full sm:w-auto px-10 py-4 bg-slate-100 text-slate-400 font-black rounded-2xl cursor-not-allowed text-base tracking-wide inline-flex items-center justify-center gap-2">
                     <svg class="w-5 h-5 text-emerald-500" fill="currentColor" viewBox="0 0 20 20">

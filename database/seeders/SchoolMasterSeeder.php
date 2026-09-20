@@ -17,6 +17,7 @@ use App\Models\HabitSummary;
 use App\Models\Notification;
 use App\Models\ParentGuardian;
 use App\Models\SchoolClass;
+use App\Models\SchoolHoliday;
 use App\Models\SchoolSetting;
 use App\Models\Student;
 use App\Models\Teacher;
@@ -937,5 +938,38 @@ class SchoolMasterSeeder extends Seeder
                 'status' => 'ACTIVE',
             ]
         );
+
+        // 15. Hari Libur Nasional & Kalender Pendidikan 2026
+        $holidays = [
+            ['name' => 'Tahun Baru Masehi 2026', 'start_date' => '2026-01-01', 'end_date' => '2026-01-01', 'type' => 'nasional', 'description' => 'Libur Nasional Tahun Baru Masehi'],
+            ['name' => "Isra Mi'raj Nabi Muhammad SAW", 'start_date' => '2026-01-17', 'end_date' => '2026-01-17', 'type' => 'nasional', 'description' => "Peringatan Isra Mi'raj 1447 H"],
+            ['name' => 'Tahun Baru Imlek 2577', 'start_date' => '2026-02-17', 'end_date' => '2026-02-17', 'type' => 'nasional', 'description' => 'Tahun Baru Imlek 2577 Kongzili'],
+            ['name' => 'Hari Suci Nyepi', 'start_date' => '2026-03-19', 'end_date' => '2026-03-19', 'type' => 'nasional', 'description' => 'Hari Suci Nyepi Tahun Baru Saka 1948'],
+            ['name' => 'Hari Raya Idul Fitri 1447 H', 'start_date' => '2026-03-20', 'end_date' => '2026-03-24', 'type' => 'nasional', 'description' => 'Hari Raya Idul Fitri & Cuti Bersama'],
+            ['name' => 'Wafat Yesus Kristus', 'start_date' => '2026-04-03', 'end_date' => '2026-04-03', 'type' => 'nasional', 'description' => 'Wafat Isa Al Masih'],
+            ['name' => 'Hari Buruh Internasional', 'start_date' => '2026-05-01', 'end_date' => '2026-05-01', 'type' => 'nasional', 'description' => 'Hari Buruh Internasional'],
+            ['name' => 'Kenaikan Yesus Kristus', 'start_date' => '2026-05-14', 'end_date' => '2026-05-14', 'type' => 'nasional', 'description' => 'Kenaikan Isa Al Masih'],
+            ['name' => 'Hari Raya Idul Adha 1447 H', 'start_date' => '2026-05-27', 'end_date' => '2026-05-28', 'type' => 'nasional', 'description' => 'Hari Raya Idul Adha & Cuti Bersama'],
+            ['name' => 'Hari Raya Waisak 2570 BE', 'start_date' => '2026-05-31', 'end_date' => '2026-05-31', 'type' => 'nasional', 'description' => 'Hari Raya Waisak'],
+            ['name' => 'Hari Lahir Pancasila', 'start_date' => '2026-06-01', 'end_date' => '2026-06-01', 'type' => 'nasional', 'description' => 'Hari Lahir Pancasila'],
+            ['name' => 'Tahun Baru Islam 1448 H', 'start_date' => '2026-06-16', 'end_date' => '2026-06-16', 'type' => 'nasional', 'description' => 'Tahun Baru Hijriah 1 Muharram 1448 H'],
+            ['name' => 'Libur Kenaikan Kelas / Akhir Semester Genap', 'start_date' => '2026-06-22', 'end_date' => '2026-07-11', 'type' => 'sekolah', 'description' => 'Libur Kalender Pendidikan Semester 2'],
+            ['name' => 'Hari Kemerdekaan RI Ke-81', 'start_date' => '2026-08-17', 'end_date' => '2026-08-17', 'type' => 'nasional', 'description' => 'HUT Proklamasi Kemerdekaan RI'],
+            ['name' => 'Maulid Nabi Muhammad SAW', 'start_date' => '2026-08-25', 'end_date' => '2026-08-25', 'type' => 'nasional', 'description' => 'Peringatan Maulid Nabi Muhammad SAW'],
+            ['name' => 'Hari Raya Natal', 'start_date' => '2026-12-25', 'end_date' => '2026-12-26', 'type' => 'nasional', 'description' => 'Hari Raya Natal & Cuti Bersama'],
+            ['name' => 'Libur Semester Ganjil', 'start_date' => '2026-12-21', 'end_date' => '2026-12-31', 'type' => 'sekolah', 'description' => 'Libur Semester 1 Kalender Pendidikan'],
+        ];
+
+        foreach ($holidays as $h) {
+            SchoolHoliday::updateOrCreate(
+                ['name' => $h['name'], 'start_date' => $h['start_date']],
+                [
+                    'end_date' => $h['end_date'],
+                    'type' => $h['type'],
+                    'description' => $h['description'],
+                    'is_active' => true,
+                ]
+            );
+        }
     }
 }

@@ -50,7 +50,20 @@
                 </p>
             </div>
         </div>
+    @if(!empty($todayHoliday))
+    <div class="mb-6 p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-900 flex items-center gap-3.5 shadow-xs">
+        <div class="w-9 h-9 rounded-xl bg-rose-600 text-white flex items-center justify-center font-bold text-sm shrink-0">
+            📅
+        </div>
+        <div>
+            <div class="flex items-center gap-2">
+                <span class="font-extrabold text-sm text-rose-700">Hari Libur Resmi: {{ $todayHoliday->name }}</span>
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-200 text-rose-800 uppercase">{{ $todayHoliday->type }}</span>
+            </div>
+            <p class="text-xs text-rose-800 mt-0.5">Hari ini sekolah diliburkan. Siswa tidak perlu mengajukan izin atau sakit untuk hari libur resmi.</p>
+        </div>
     </div>
+    @endif
 
     <!-- Main Leave Form Card -->
     <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 sm:p-8">

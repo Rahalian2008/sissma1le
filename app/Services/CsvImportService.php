@@ -9,6 +9,7 @@ use App\Models\AchievementItem;
 use App\Models\AuditLog;
 use App\Models\GuidanceRecord;
 use App\Models\SchoolClass;
+use App\Models\SchoolHoliday;
 use App\Models\Student;
 use App\Models\Teacher;
 use App\Models\User;
@@ -787,6 +788,77 @@ class CsvImportService
 
         AuditLog::log('IMPORT_GUIDANCE', 'GuidanceRecord', null, null, [
             'imported' => $imported,
+            'skipped' => $skipped,
+        ]);
+
+        return compact('imported', 'updated', 'skipped', 'errors');
+    }
+
+    /**
+     * Import Data Hari Libur / Tanggal Merah
+     *
+     * @param  array<int, array<string, string>>  $rows
+     * @return array{imported: int, updated: int, skipped: int, errors: array<string>}
+     */
+    public function importHolidays(array $rows): array
+    {
+        $imported = 0;
+        $updated = 0;
+        $skipped = 0;
+        $errors = [];
+
+        foreach ($rows as $index => $row) {
+            $rowNum = $index + 2;
+            $name = trim($row['nama_hari_libur'] ?? ($row['name'] ?? ($row['nama'] ?? '')));
+            $startDate = trim($row['tanggal_mulai'] ?? ($row['start_date'] ?? ($row['tanggal'] ?? '')));
+            $endDate = trim($row['tanggal_selesai'] ?? ($row['end_date'] ?? ''));
+            $type = strtolower(trim($row['jenis'] ?? ($row['type'] ?? 'nasional')));
+            $description = trim($row['keterangan'] ?? ($row['description'] ?? ''));
+
+            if (empty($name) || empty($startDate)) {
+                $skipped++;
+                $errors[] = "Baris #{$rowNum}: Nama libur dan tanggal mulai wajib diisi.";
+
+                continue;
+            }
+
+            try {
+                $start = Carbon::parse($startDate)->toDateString();
+                $end = ! empty($endDate) ? Carbon::parse($endDate)->toDateString() : $start;
+            } catch (\Exception $e) {
+                $skipped++;
+                $errors[] = "Baris #{$rowNum}: Format tanggal tidak valid ({$startDate}).";
+
+                continue;
+            }
+
+            if (! in_array($type, ['nasional', 'khusus', 'sekolah'])) {
+                $type = 'nasional';
+            }
+
+            $holiday = SchoolHoliday::updateOrCreate(
+                [
+                    'name' => $name,
+                    'start_date' => $start,
+                ],
+                [
+                    'end_date' => $end,
+                    'type' => $type,
+                    'description' => ! empty($description) ? $description : null,
+                    'is_active' => true,
+                ]
+            );
+
+            if ($holiday->wasRecentlyCreated) {
+                $imported++;
+            } else {
+                $updated++;
+            }
+        }
+
+        AuditLog::log('IMPORT_HOLIDAYS', 'SchoolHoliday', null, null, [
+            'imported' => $imported,
+            'updated' => $updated,
             'skipped' => $skipped,
         ]);
 

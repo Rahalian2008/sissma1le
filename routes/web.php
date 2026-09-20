@@ -171,6 +171,15 @@ Route::middleware('auth')->group(function () {
         Route::post('/academic-years/{academicYear}/set-active', [MasterDataController::class, 'setActiveAcademicYear'])->name('academic_years.set_active');
         Route::delete('/academic-years/{academicYear}', [MasterDataController::class, 'destroyAcademicYear'])->name('academic_years.destroy');
 
+        // Hari Libur & Tanggal Merah
+        Route::get('/holidays/template', [MasterDataController::class, 'holidaysTemplate'])->name('holidays.template');
+        Route::post('/holidays/import', [MasterDataController::class, 'importHolidays'])->name('holidays.import');
+        Route::post('/holidays/generate-common', [MasterDataController::class, 'generateCommonHolidays'])->name('holidays.generate_common');
+        Route::get('/holidays', [MasterDataController::class, 'holidays'])->name('holidays');
+        Route::post('/holidays', [MasterDataController::class, 'storeHoliday'])->name('holidays.store');
+        Route::put('/holidays/{schoolHoliday}', [MasterDataController::class, 'updateHoliday'])->name('holidays.update');
+        Route::delete('/holidays/{schoolHoliday}', [MasterDataController::class, 'destroyHoliday'])->name('holidays.destroy');
+
         // Pengaturan Sistem & Geofence (Termasuk Toggle Pilihan Absen)
         Route::get('/settings', [MasterDataController::class, 'settings'])->name('settings');
         Route::post('/settings', [MasterDataController::class, 'updateSettings'])->name('settings.update');
