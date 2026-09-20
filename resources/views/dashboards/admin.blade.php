@@ -4,27 +4,27 @@
 
 @section('content')
 <div class="space-y-6 w-full">
-    <!-- Header Admin -->
-    <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-3xl p-5 sm:p-8 text-white shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <!-- Header Admin (Compact & Elegant) -->
+    <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-2xl p-4 sm:p-6 text-white shadow-lg flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
             <div class="flex items-center gap-2">
-                <span class="px-3 py-1 bg-white/10 rounded-full text-xs font-semibold text-emerald-300 border border-white/10">
+                <span class="px-2.5 py-0.5 bg-white/10 rounded-full text-[11px] font-semibold text-emerald-300 border border-white/10">
                     Pusat Kendali Sistem Realtime
                 </span>
-                <span class="px-2.5 py-0.5 bg-emerald-500/20 text-emerald-300 rounded-full text-[11px] font-mono flex items-center gap-1.5">
-                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span class="px-2 py-0.5 bg-emerald-500/20 text-emerald-300 rounded-full text-[10px] font-mono flex items-center gap-1.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
                     LIVE MONITOR
                 </span>
             </div>
-            <h2 class="text-xl sm:text-3xl font-black text-white mt-2">Administrator SMAN 1 Lengkong</h2>
-            <p class="text-xs text-slate-300 mt-1">Pantauan presensi terpadu, papan peringkat prestasi, kedisiplinan tata tertib, dan kendali master data.</p>
+            <h2 class="text-base sm:text-xl font-extrabold text-white mt-1.5 tracking-tight">Administrator SMAN 1 Lengkong</h2>
+            <p class="text-xs text-slate-300 mt-0.5">Pantauan presensi terpadu, papan peringkat prestasi, kedisiplinan tata tertib, dan kendali master data.</p>
         </div>
         <div class="flex flex-wrap items-center gap-2">
-            <a href="{{ route('attendance.report') }}" class="w-full sm:w-auto justify-center px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs flex items-center gap-2 shadow-xs transition">
+            <a href="{{ route('attendance.report') }}" class="w-full sm:w-auto justify-center px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs flex items-center gap-1.5 shadow-xs transition">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                 Laporan Presensi
             </a>
-            <a href="{{ route('master.settings') }}" class="w-full sm:w-auto justify-center px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl text-xs flex items-center gap-2 shadow-xs transition">
+            <a href="{{ route('master.settings') }}" class="w-full sm:w-auto justify-center px-3.5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl text-xs flex items-center gap-1.5 shadow-xs transition">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                 Pengaturan Sistem
             </a>
@@ -33,25 +33,25 @@
 
     @if(Auth::user()->role === 'super_admin')
         <!-- Pusat Kendali Peralihan Peran (Khusus Akun Super Admin) -->
-        <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-3xl p-5 sm:p-6 text-white border border-indigo-500/30 shadow-xl">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-2xl bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 flex items-center justify-center font-black text-lg">
+        <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-2xl p-4 sm:p-5 text-white border border-indigo-500/30 shadow-lg">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-xl bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 flex items-center justify-center font-black text-sm">
                         ⚡
                     </div>
                     <div>
                         <div class="flex items-center gap-2">
-                            <h3 class="font-extrabold text-sm sm:text-base text-white tracking-tight">Peralihan Peran Pengguna (Khusus Super Admin)</h3>
-                            <span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-mono text-[10px] font-bold border border-emerald-500/30">
+                            <h3 class="font-bold text-xs sm:text-sm text-white tracking-tight">Peralihan Peran Pengguna (Khusus Super Admin)</h3>
+                            <span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-mono text-[9px] font-bold border border-emerald-500/30">
                                 AKTIF
                             </span>
                         </div>
-                        <p class="text-xs text-slate-300 mt-0.5">Beralih langsung ke akun peran lain untuk mengecek antarmuka, hak akses, dan alur kerja masing-masing pengguna secara realtime.</p>
+                        <p class="text-[11px] text-slate-300 mt-0.5">Beralih langsung ke akun peran lain untuk mengecek antarmuka, hak akses, dan alur kerja masing-masing pengguna secara realtime.</p>
                     </div>
                 </div>
             </div>
 
-            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-2.5 text-xs">
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-2 text-xs">
                 @php
                     $roleList = [
                         ['key' => 'super_admin', 'name' => 'Super Admin', 'desc' => 'Rh Aseng (SENKS)'],
@@ -69,14 +69,14 @@
                         @csrf
                         <input type="hidden" name="role" value="{{ $r['key'] }}">
                         <button type="submit"
-                            class="w-full h-full p-3 rounded-2xl text-left transition transform active:scale-95 cursor-pointer border {{ Auth::user()->role === $r['key'] ? 'bg-indigo-600 border-indigo-400 text-white shadow-lg shadow-indigo-600/30 ring-2 ring-indigo-400/40' : 'bg-slate-900/90 hover:bg-slate-800 border-slate-800 hover:border-indigo-500/50 text-slate-200' }}">
-                            <div class="flex items-center justify-between mb-1">
-                                <span class="font-black text-[11px] truncate">{{ $r['name'] }}</span>
+                            class="w-full h-full p-2.5 rounded-xl text-left transition transform active:scale-95 cursor-pointer border {{ Auth::user()->role === $r['key'] ? 'bg-indigo-600 border-indigo-400 text-white shadow-md shadow-indigo-600/30 ring-2 ring-indigo-400/40' : 'bg-slate-900/90 hover:bg-slate-800 border-slate-800 hover:border-indigo-500/50 text-slate-200' }}">
+                            <div class="flex items-center justify-between mb-0.5">
+                                <span class="font-bold text-[11px] truncate">{{ $r['name'] }}</span>
                                 @if(Auth::user()->role === $r['key'])
-                                    <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
                                 @endif
                             </div>
-                            <div class="text-[10px] text-slate-400 truncate">{{ $r['desc'] }}</div>
+                            <div class="text-[9px] text-slate-400 truncate">{{ $r['desc'] }}</div>
                         </button>
                     </form>
                 @endforeach
@@ -84,47 +84,47 @@
         </div>
     @endif
 
-    <!-- Master Stats Overview -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 3xl:grid-cols-4 gap-3 sm:gap-4">
-        <div class="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs hover-lift transition">
-            <span class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Siswa Terdaftar</span>
-            <div class="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white mt-1">{{ $stats['total_students'] }}</div>
+    <!-- Master Stats Overview (Refined & Compact) -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 3xl:grid-cols-4 gap-3">
+        <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xs hover-lift transition">
+            <span class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Siswa Terdaftar</span>
+            <div class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white mt-1">{{ $stats['total_students'] }}</div>
             <a href="{{ route('master.students') }}" class="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline mt-1 block">Kelola Data Siswa →</a>
         </div>
-        <div class="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs hover-lift transition">
-            <span class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Pendidik & Role</span>
-            <div class="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white mt-1">{{ $stats['total_teachers'] }}</div>
+        <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xs hover-lift transition">
+            <span class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Pendidik & Role</span>
+            <div class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white mt-1">{{ $stats['total_teachers'] }}</div>
             <a href="{{ route('master.teachers') }}" class="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline mt-1 block">Kelola Guru & Akun →</a>
         </div>
-        <div class="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs hover-lift transition">
-            <span class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Rombongan Belajar</span>
-            <div class="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white mt-1">{{ $stats['total_classes'] }} Kelas</div>
+        <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xs hover-lift transition">
+            <span class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Rombongan Belajar</span>
+            <div class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white mt-1">{{ $stats['total_classes'] }} Kelas</div>
             <a href="{{ route('master.classes') }}" class="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline mt-1 block">Kelola Rombel →</a>
         </div>
-        <div class="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs hover-lift transition">
-            <span class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Menunggu Verifikasi</span>
-            <div class="text-2xl sm:text-3xl font-black {{ $stats['pending_verifications'] > 0 ? 'text-amber-500' : 'text-slate-900 dark:text-white' }} mt-1">
+        <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xs hover-lift transition">
+            <span class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Menunggu Verifikasi</span>
+            <div class="text-xl sm:text-2xl font-black {{ $stats['pending_verifications'] > 0 ? 'text-amber-500' : 'text-slate-900 dark:text-white' }} mt-1">
                 {{ $stats['pending_verifications'] }} Berkas
             </div>
             <span class="text-[11px] text-slate-400 mt-1 block">Presensi & Tata Tertib</span>
         </div>
     </div>
 
-    <!-- 1. REALTIME PRESENSI & DIAGRAM REKAPITULASI (Permintaan User #5) -->
-    <div class="bg-white rounded-3xl border border-slate-200 shadow-xs p-6 sm:p-8">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-4 mb-6 gap-2">
+    <!-- 1. REALTIME PRESENSI & DIAGRAM REKAPITULASI -->
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-xs p-4 sm:p-5">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-3 mb-4 gap-2">
             <div>
                 <div class="flex items-center gap-2">
-                    <span class="w-3 h-3 rounded-full bg-emerald-500 animate-ping"></span>
-                    <h3 class="text-lg font-black text-slate-800">Realtime Presensi Siswa Hari Ini</h3>
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></span>
+                    <h3 class="text-base font-bold text-slate-800">Realtime Presensi Siswa Hari Ini</h3>
                 </div>
                 <p class="text-xs text-slate-500 mt-0.5">Rekapitulasi lengkap kehadiran siswa SMA Negeri 1 Lengkong per tanggal {{ \Carbon\Carbon::today()->isoFormat('dddd, D MMMM Y') }}.</p>
             </div>
             <div class="flex items-center gap-2">
-                <a href="{{ route('attendance.history') }}" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition">
+                <a href="{{ route('attendance.history') }}" class="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition">
                     Riwayat
                 </a>
-                <a href="{{ route('attendance.report') }}" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs transition shadow-xs">
+                <a href="{{ route('attendance.report') }}" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs transition shadow-xs">
                     Laporan Real-Time →
                 </a>
             </div>
@@ -132,7 +132,7 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-center">
             <!-- Diagram Donut Visual Lingkaran Persentase -->
-            <div class="flex flex-col items-center justify-center p-6 bg-slate-50 rounded-3xl border border-slate-100 text-center">
+            <div class="flex flex-col items-center justify-center p-5 bg-slate-50 rounded-2xl border border-slate-100 text-center">
                 <div class="relative w-40 h-40 flex items-center justify-center">
                     <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
                         <!-- Background Circle -->

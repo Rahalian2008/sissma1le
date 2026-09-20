@@ -483,10 +483,10 @@
             </div>
         </aside>
 
-        <!-- Content Area -->
+        <!-- Content Area (Refined, Smooth & Atmospheric) -->
         <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
-            <!-- Topbar (Mobile, Tablet, Desktop, Ultra-Wide) -->
-            <header class="h-16 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-3 sm:px-6 shrink-0 shadow-xs z-30 transition-colors">
+            <!-- Topbar (Sleek Glassmorphism & Compact Height) -->
+            <header class="h-14 sm:h-15 bg-white/85 dark:bg-slate-900/85 backdrop-blur-xl border-b border-slate-200/70 dark:border-slate-800/70 flex items-center justify-between px-3 sm:px-6 shrink-0 shadow-xs z-30 transition-colors">
                 <!-- Left: Mobile Trigger & Brand / Desktop Breadcrumbs -->
                 <div class="flex items-center gap-2 sm:gap-3 min-w-0">
                     <!-- Hamburger button for mobile/tablet -->
@@ -497,53 +497,58 @@
                     </button>
 
                     <!-- Desktop Sidebar Toggle Icon Button -->
-                    <button onclick="toggleDesktopSidebar()" type="button" aria-label="Toggle Sidebar" title="Ciutkan / Buka Menu (Ctrl+B)" class="hidden lg:flex items-center justify-center w-9 h-9 text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition cursor-pointer">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <button onclick="toggleDesktopSidebar()" type="button" aria-label="Toggle Sidebar" title="Ciutkan / Buka Menu (Ctrl+B)" class="hidden lg:flex items-center justify-center w-8 h-8 text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition cursor-pointer">
+                        <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/>
                         </svg>
                     </button>
 
                     <!-- Mobile Brand Logo -->
                     <div class="flex items-center gap-2 lg:hidden min-w-0">
-                        <div class="w-8 h-8 rounded-xl bg-indigo-600 flex items-center justify-center font-bold text-white text-xs shrink-0 overflow-hidden shadow-sm">
+                        <div class="w-7 h-7 rounded-lg bg-indigo-600 flex items-center justify-center font-bold text-white text-[11px] shrink-0 overflow-hidden shadow-xs">
                             @if(!empty($appLogoUrl))
                                 <img src="{{ $appLogoUrl }}" alt="Logo" class="w-full h-full object-contain p-0.5">
                             @else
                                 1LE
                             @endif
                         </div>
-                        <span class="font-extrabold text-slate-900 dark:text-white tracking-tight text-xs sm:text-sm truncate max-w-[120px] xs:max-w-[180px] sm:max-w-none">
+                        <span class="font-bold text-slate-900 dark:text-white tracking-tight text-xs truncate max-w-[120px] xs:max-w-[180px] sm:max-w-none">
                             {{ $appName }}
                         </span>
                     </div>
 
-                    <!-- Desktop Breadcrumb -->
-                    <div class="hidden lg:flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
-                        <span class="font-semibold text-slate-400 dark:text-slate-500">SMAN 1 Lengkong</span>
-                        <span>/</span>
-                        <span class="font-bold text-slate-800 dark:text-slate-100 truncate max-w-md">@yield('title', 'Sistem Informasi Perkembangan Siswa')</span>
-                    </div>
+                    <!-- Desktop Breadcrumb (Refined & Elegant) -->
+                    <nav aria-label="Breadcrumb" class="hidden lg:flex items-center gap-1.5 text-xs">
+                        <span class="font-semibold text-slate-400 dark:text-slate-500 flex items-center gap-1">
+                            <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                            SMAN 1 Lengkong
+                        </span>
+                        <svg class="w-3 h-3 text-slate-300 dark:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                        <span class="px-2.5 py-0.5 rounded-full font-bold text-slate-800 dark:text-slate-100 bg-slate-100 dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700/80 truncate max-w-sm shadow-2xs">
+                            @yield('title', 'Sistem Informasi Siswa')
+                        </span>
+                    </nav>
                 </div>
 
                 <!-- Right Actions: Theme Toggle, Quick Role, Notifications, Profile -->
-                <div class="flex items-center gap-1 sm:gap-2.5 shrink-0">
+                <div class="flex items-center gap-1 sm:gap-2 shrink-0">
                     <!-- Dark Mode Toggle Button -->
                     <button onclick="toggleTheme()" type="button" aria-label="Ganti Tema Gelap / Terang" title="Ganti Tema (Dark / Light)"
                         class="touch-target text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition cursor-pointer">
                         <!-- Sun Icon (shown in dark mode) -->
-                        <svg id="theme-icon-sun" class="w-5 h-5 hidden text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg id="theme-icon-sun" class="w-4.5 h-4.5 hidden text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
                         </svg>
                         <!-- Moon Icon (shown in light mode) -->
-                        <svg id="theme-icon-moon" class="w-5 h-5 text-slate-600 dark:text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg id="theme-icon-moon" class="w-4.5 h-4.5 text-slate-600 dark:text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
                         </svg>
                     </button>
 
                     <!-- Quick Switcher Compact (Khusus Super Admin) -->
                     @if(Auth::user()->role === 'super_admin' || session('switched_from_super_admin'))
-                        <div class="hidden sm:flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-xl border border-slate-200 dark:border-slate-700 text-xs">
-                            <span class="text-slate-500 dark:text-slate-400 font-medium text-[11px]">Role:</span>
+                        <div class="hidden sm:flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-lg border border-slate-200 dark:border-slate-700 text-xs">
+                            <span class="text-slate-500 dark:text-slate-400 font-medium text-[10px]">Role:</span>
                             <form action="{{ route('quick.switch') }}" method="POST" class="inline">
                                 @csrf
                                 <select name="role" onchange="this.form.submit()" title="Ganti Role (Khusus Super Admin)" class="bg-transparent font-bold text-indigo-600 dark:text-indigo-400 outline-none cursor-pointer text-xs">
@@ -561,12 +566,12 @@
 
                     <!-- Notification Bell -->
                     <a href="{{ route('notifications.index') }}" aria-label="Notifikasi" class="touch-target relative text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
                         </svg>
                         @php $unreadCount = Auth::user()->unreadNotificationsCount(); @endphp
                         @if($unreadCount > 0)
-                            <span class="absolute top-2 right-2 w-4 h-4 bg-rose-500 text-white rounded-full text-[10px] font-extrabold flex items-center justify-center shadow-xs">
+                            <span class="absolute top-2 right-2 w-3.5 h-3.5 bg-rose-500 text-white rounded-full text-[9px] font-extrabold flex items-center justify-center shadow-xs">
                                 {{ $unreadCount > 9 ? '9+' : $unreadCount }}
                             </span>
                         @endif
@@ -574,21 +579,24 @@
 
                     <!-- Profile Pill Mini -->
                     <a href="{{ route('profile') }}" class="flex items-center gap-2 pl-1 sm:pl-2 border-l border-slate-200 dark:border-slate-800">
-                        <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-600 to-indigo-800 text-white font-bold text-xs flex items-center justify-center shadow-xs">
+                        <div class="w-7 h-7 rounded-full bg-gradient-to-tr from-indigo-600 to-indigo-800 text-white font-bold text-[11px] flex items-center justify-center shadow-xs">
                             {{ strtoupper(substr(Auth::user()->name ?? 'U', 0, 1)) }}
                         </div>
-                        <span class="hidden md:inline text-xs font-semibold text-slate-700 dark:text-slate-300 truncate max-w-[110px] lg:max-w-[140px]">{{ Auth::user()->name }}</span>
+                        <span class="hidden md:inline text-xs font-semibold text-slate-700 dark:text-slate-300 truncate max-w-[110px] lg:max-w-[130px]">{{ Auth::user()->name }}</span>
                     </a>
                 </div>
             </header>
 
+            <!-- Sleek Top Micro Progress Bar for Page Transitions -->
+            <div id="page-progress-bar" class="h-0.5 bg-gradient-to-r from-indigo-500 via-teal-400 to-emerald-500 w-0 opacity-0 transition-all duration-300 pointer-events-none z-40"></div>
+
             <!-- Main Page Scrollable Content (Responsive padding & safe margin) -->
-            <main id="main-scroll-area" class="flex-1 overflow-y-auto pb-24 lg:pb-12 p-3.5 sm:p-5 md:p-6 lg:p-8 3xl:p-10 transition-colors relative">
-                <div class="max-w-7xl 2xl:max-w-[1600px] 3xl:max-w-[1880px] mx-auto w-full">
+            <main id="main-scroll-area" class="flex-1 overflow-y-auto pb-24 lg:pb-12 p-3 sm:p-4 md:p-5 lg:p-6 3xl:p-8 transition-colors relative">
+                <div class="max-w-7xl 2xl:max-w-[1600px] 3xl:max-w-[1880px] mx-auto w-full page-enter-smooth content-area">
                     @if(session('switched_from_super_admin'))
-                        <div class="mb-5 p-3 sm:p-4 rounded-2xl bg-amber-500/15 border border-amber-500/40 text-amber-900 dark:text-amber-200 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-md">
+                        <div class="mb-4 p-3 rounded-xl bg-amber-500/15 border border-amber-500/40 text-amber-900 dark:text-amber-200 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 shadow-sm">
                             <div class="flex items-center gap-2.5">
-                                <span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-ping shrink-0"></span>
+                                <span class="w-2 h-2 rounded-full bg-amber-500 animate-ping shrink-0"></span>
                                 <div>
                                     <span class="font-extrabold uppercase tracking-wide">Mode Simulasi Peran (Super Admin):</span>
                                     <span> Saat ini Anda sedang meninjau sistem sebagai <strong>{{ Auth::user()->name }}</strong> (Role: <span class="uppercase font-bold text-amber-600 dark:text-amber-300">{{ str_replace('_', ' ', Auth::user()->role) }}</span>).</span>
@@ -597,8 +605,8 @@
                             <form action="{{ route('quick.switch') }}" method="POST" class="shrink-0">
                                 @csrf
                                 <input type="hidden" name="role" value="super_admin">
-                                <button type="submit" class="w-full sm:w-auto px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black rounded-xl text-xs transition flex items-center justify-center gap-1.5 shadow-sm cursor-pointer">
-                                    <svg class="w-4 h-4 text-slate-950" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M11 17l-5-5m0 0l5-5m-5 5h12"/></svg>
+                                <button type="submit" class="w-full sm:w-auto px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-lg text-xs transition flex items-center justify-center gap-1.5 shadow-xs cursor-pointer">
+                                    <svg class="w-3.5 h-3.5 text-slate-950" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M11 17l-5-5m0 0l5-5m-5 5h12"/></svg>
                                     Kembali ke Super Admin
                                 </button>
                             </form>
@@ -1266,6 +1274,32 @@
             }
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
+
+        // Smooth Page Navigation Transition Handler
+        document.addEventListener('click', function (e) {
+            const link = e.target.closest('a[href]');
+            if (!link) return;
+            const href = link.getAttribute('href');
+            if (!href || href.startsWith('#') || href.startsWith('javascript:') || link.target === '_blank' || link.hasAttribute('download')) {
+                return;
+            }
+            if (link.origin === window.location.origin && href !== window.location.href) {
+                const progressBar = document.getElementById('page-progress-bar');
+                if (progressBar) {
+                    progressBar.style.width = '35%';
+                    progressBar.classList.remove('opacity-0');
+                    setTimeout(function () {
+                        progressBar.style.width = '80%';
+                    }, 120);
+                }
+                const contentArea = document.querySelector('.content-area');
+                if (contentArea) {
+                    contentArea.style.transition = 'opacity 0.16s ease-out, transform 0.16s ease-out';
+                    contentArea.style.opacity = '0.75';
+                    contentArea.style.transform = 'translateY(2px)';
+                }
+            }
+        });
     </script>
 
     @stack('scripts')
