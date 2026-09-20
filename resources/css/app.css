@@ -1,0 +1,368 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+    --font-sans: 'Plus Jakarta Sans', 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
+    --breakpoint-3xl: 120rem; /* 1920px (Full HD+ & 2K) */
+    --breakpoint-4xl: 160rem; /* 2560px (2K QHD & 4K UHD) */
+}
+
+/* ==========================================================
+   1. Base & Typography (Responsive Fluid System)
+   ========================================================== */
+html {
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+    font-size: 16px;
+}
+
+@media (max-width: 360px) {
+    html {
+        font-size: 14px;
+    }
+}
+
+body {
+    font-family: var(--font-sans);
+    overflow-x: hidden;
+    min-width: 320px;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Fluid Typography Utilities */
+.fluid-hero {
+    font-size: clamp(1.375rem, 3vw + 0.5rem, 2.75rem);
+    line-height: 1.15;
+    letter-spacing: -0.025em;
+}
+
+.fluid-title {
+    font-size: clamp(1.125rem, 2vw + 0.375rem, 1.875rem);
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+}
+
+.fluid-stat {
+    font-size: clamp(1.5rem, 2.5vw + 0.5rem, 2.5rem);
+    line-height: 1.1;
+    font-weight: 900;
+}
+
+/* ==========================================================
+   2. Modern Glassmorphism & Elevation System
+   ========================================================== */
+.glass-card {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(226, 232, 240, 0.85);
+}
+
+.dark .glass-card {
+    background: rgba(15, 23, 42, 0.85);
+    border: 1px solid rgba(30, 41, 59, 0.8);
+}
+
+.glass-nav {
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(226, 232, 240, 0.85);
+}
+
+.dark .glass-nav {
+    background: rgba(15, 23, 42, 0.92);
+    border-top: 1px solid rgba(30, 41, 59, 0.85);
+}
+
+/* Micro-interaction & Hover Lift */
+.hover-lift {
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+}
+
+.dark .hover-lift:hover {
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+}
+
+/* ==========================================================
+   3. Smooth Custom Scrollbars
+   ========================================================== */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 9999px;
+}
+.dark ::-webkit-scrollbar-thumb {
+    background: #334155;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+    background: #475569;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* ==========================================================
+   4. Responsive Table Container & Mobile Swipe Cues
+   ========================================================== */
+.responsive-table-container {
+    position: relative;
+    width: 100%;
+}
+
+.responsive-table-wrapper,
+.overflow-x-auto {
+    position: relative;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.responsive-table-wrapper::-webkit-scrollbar,
+.overflow-x-auto::-webkit-scrollbar {
+    height: 5px;
+}
+
+/* Mobile Table Swipe Cue Badge */
+.table-swipe-cue {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .table-swipe-cue {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.375rem;
+        font-size: 0.6875rem;
+        font-weight: 700;
+        color: #475569;
+        background-color: #f1f5f9;
+        padding: 0.25rem 0.625rem;
+        border-radius: 9999px;
+        border: 1px solid #e2e8f0;
+        margin-bottom: 0.5rem;
+        user-select: none;
+    }
+    .dark .table-swipe-cue {
+        color: #94a3b8;
+        background-color: #1e293b;
+        border-color: #334155;
+    }
+
+    .responsive-table-wrapper > table,
+    .overflow-x-auto > table {
+        min-width: 680px;
+    }
+}
+
+@media (max-width: 480px) {
+    .responsive-table-wrapper > table,
+    .overflow-x-auto > table {
+        min-width: 720px;
+    }
+}
+
+/* Fluid Media Elements */
+img, video, canvas {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Touch targets: at least 44px for accessibility & mobile ergonomics */
+.touch-target {
+    min-height: 44px;
+    min-width: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    touch-action: manipulation;
+}
+
+/* Prevent auto-zoom on mobile inputs */
+@media (max-width: 768px) {
+    input[type="text"],
+    input[type="password"],
+    input[type="email"],
+    input[type="number"],
+    input[type="date"],
+    input[type="time"],
+    select,
+    textarea {
+        font-size: 16px !important;
+    }
+}
+
+/* Safe Area Inset Utility for Modern Phones with Notches / Home Bar */
+.safe-pb {
+    padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px));
+}
+
+.safe-pt {
+    padding-top: calc(0.5rem + env(safe-area-inset-top, 0px));
+}
+
+/* ==========================================================
+   5. Collapsible Desktop Sidebar Styles
+   ========================================================== */
+#desktop-sidebar {
+    transition: width 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+#desktop-sidebar.is-compact {
+    width: 5rem; /* 80px */
+}
+
+#desktop-sidebar.is-compact .sidebar-brand-text,
+#desktop-sidebar.is-compact .sidebar-role-panel,
+#desktop-sidebar.is-compact .sidebar-heading,
+#desktop-sidebar.is-compact .sidebar-label {
+    display: none !important;
+}
+
+#desktop-sidebar.is-compact nav a {
+    justify-content: center;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    position: relative;
+}
+
+#desktop-sidebar.is-compact .brand-container {
+    justify-content: center;
+}
+
+#desktop-sidebar.is-compact nav a:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    left: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    margin-left: 0.75rem;
+    background-color: #0f172a;
+    color: #f8fafc;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.35rem 0.65rem;
+    border-radius: 0.5rem;
+    white-space: nowrap;
+    z-index: 60;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+    border: 1px solid #334155;
+    pointer-events: none;
+}
+
+/* ==========================================================
+   6. Universal Dark Mode System Overrides
+   ========================================================== */
+.dark body {
+    background-color: #020617; /* slate-950 */
+    color: #f8fafc; /* slate-50 */
+}
+
+.dark .bg-white {
+    background-color: #0f172a !important; /* slate-900 */
+    color: #f1f5f9;
+}
+
+.dark .bg-slate-50 {
+    background-color: #020617 !important; /* slate-950 */
+}
+
+.dark .bg-slate-100 {
+    background-color: #1e293b !important; /* slate-800 */
+}
+
+.dark .border-slate-100,
+.dark .border-slate-200 {
+    border-color: #1e293b !important; /* slate-800 */
+}
+
+.dark .border-slate-300 {
+    border-color: #334155 !important; /* slate-700 */
+}
+
+.dark .text-slate-900,
+.dark .text-slate-800 {
+    color: #f8fafc !important;
+}
+
+.dark .text-slate-700,
+.dark .text-slate-600 {
+    color: #cbd5e1 !important; /* slate-300 */
+}
+
+.dark .text-slate-500 {
+    color: #94a3b8 !important; /* slate-400 */
+}
+
+.dark .shadow-xs,
+.dark .shadow-sm,
+.dark .shadow-md,
+.dark .shadow-lg {
+    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Inputs & Form Controls in Dark Mode */
+.dark input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]),
+.dark select,
+.dark textarea {
+    background-color: #0b1329 !important;
+    border-color: #334155 !important;
+    color: #f8fafc !important;
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+    color: #64748b !important;
+}
+
+/* Tables in Dark Mode */
+.dark table thead,
+.dark table thead th {
+    background-color: #1e293b !important;
+    color: #cbd5e1 !important;
+    border-color: #334155 !important;
+}
+
+.dark table tbody tr {
+    border-color: #1e293b !important;
+}
+
+.dark table tbody tr:hover {
+    background-color: rgba(30, 41, 59, 0.6) !important;
+}
+
+.dark table tbody td {
+    color: #e2e8f0;
+}
+
+/* Modals & Dialogs in Dark Mode */
+.dark .modal-content,
+.dark [role="dialog"] {
+    background-color: #0f172a !important;
+    border-color: #1e293b !important;
+    color: #f8fafc !important;
+}
