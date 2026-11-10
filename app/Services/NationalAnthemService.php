@@ -35,7 +35,7 @@ class NationalAnthemService
                 'tempo' => 'Maestoso (104 BPM)',
                 'category' => 'Lagu Kebangsaan',
                 'usage' => 'Upacara Bendera Senin & Lagu Wajib Pukul 10.00 WIB',
-                'audio_url' => '/audio/lagu_nasional/indonesia_raya.mp3',
+                'audio_url' => '/audio/lagu_nasional/indonesia_raya.mp3?v=20261111',
                 'audio_fallback' => 'https://upload.wikimedia.org/wikipedia/commons/transcoded/6/6f/Indonesia_Raya_Simfoni_dan_Vokal_1_Bait.ogg/Indonesia_Raya_Simfoni_dan_Vokal_1_Bait.ogg.mp3',
                 'lyrics' => "Indonesia tanah airku, tanah tumpah darahku\nDi sanalah aku berdiri, jadi pandu ibuku\nIndonesia kebangsaanku, bangsa dan tanah airku\nMarilah kita berseru: Indonesia bersatu!\nHiduplah tanahku, hiduplah negeriku\nBangsaku, rakyatku, semuanya\nBangunlah jiwanya, bangunlah badannya\nUntuk Indonesia Raya!\n\nIndonesia Raya, merdeka! Merdeka!\nTanahku, negeriku yang kucinta\nIndonesia Raya, merdeka! Merdeka!\nHiduplah Indonesia Raya!",
                 'melody_notes' => [
