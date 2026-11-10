@@ -268,11 +268,18 @@ Database yang telah diimpor telah dilengkapi dengan akun-akun pengujian resmi:
 - **Penyebab**: Informasi `DB_HOST`, `DB_DATABASE`, `DB_USERNAME`, atau `DB_PASSWORD` di file `.env` tidak sesuai dengan yang terdaftar di hPanel.
 - **Solusi**: Hostinger umumnya menggunakan `DB_HOST=127.0.0.1` atau `DB_HOST=localhost`. Pastikan nama database dan username menyertakan prefix (misal `u123456789_`).
 
-### 3. Tampilan Halaman Rusak / CSS & JS Tidak Muncul
+### 3. Eror "ViteManifestNotFoundException / Vite manifest not found at: .../public/build/manifest.json"
+- **Penyebab**: Folder `public/build/` belum ditarik dari GitHub ke server Hostinger, sehingga file `manifest.json` tidak ditemukan saat Laravel memuat stylesheet dan script frontend.
+- **Solusi**: 
+  1. Masuk ke **hPanel Hostinger** -> **Git**.
+  2. Klik tombol **Deploy** atau **Pull** pada repositori `main`. Folder `public/build/` (beserta `manifest.json`, `app.css`, `app.js`) kini sudah tersimpan langsung di repositori GitHub sehingga akan langsung otomatis terunduh ke server Hostinger.
+  3. Setelah Deploy selesai, refresh halaman website Anda (`Ctrl + F5`), website akan langsung aktif normal seketika!
+
+### 4. Tampilan Halaman Rusak / CSS & JS Tidak Muncul
 - **Penyebab**: File aset belum ter-build atau `APP_URL` di file `.env` salah.
 - **Solusi**: Pastikan `APP_URL=https://domainanda.com` sama persis dengan alamat domain aktif di browser. Pastikan folder `public/build/` ada dan file `public/hot` sudah dihapus.
 
-### 4. Mengoptimalkan Kecepatan di Server Hostinger
+### 5. Mengoptimalkan Kecepatan di Server Hostinger
 Jalankan perintah optimasi cache Laravel (dapat dilakukan melalui SSH Terminal hPanel atau cron job satu kali):
 ```bash
 php artisan config:cache
