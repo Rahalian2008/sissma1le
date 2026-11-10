@@ -199,7 +199,7 @@ test('requirement 7: siswa and orang tua do not see class selector dropdowns any
     $ortuVio->assertDontSee('name="class_id"', false);
 });
 
-test('requirement 7: wali kelas cannot store achievements or violations for other classes', function () {
+test('requirement 7: wali kelas can store achievements or violations for any student with pending status requiring admin approval', function () {
     $homeroomClass = $this->waliKelasUser->teacher?->homeroomClass;
     $otherClass = SchoolClass::where('id', '!=', $homeroomClass?->id)->first() ?? SchoolClass::create(['name' => 'XII-IPA-9', 'grade_level' => 12]);
     $otherStudent = Student::where('class_id', $otherClass->id)->first();
@@ -215,24 +215,61 @@ test('requirement 7: wali kelas cannot store achievements or violations for othe
     }
     expect($otherStudent)->not->toBeNull();
 
-    // Attempt to store achievement for other class student
+    $initialViolPoints = $otherStudent->totalViolationPoints();
+    $initialAchPoints = $otherStudent->totalAchievementPoints();
+
+    // 1. Wali kelas records achievement for other class student -> should succeed with status MENUNGGU_VERIFIKASI
     $achResponse = $this->actingAs($this->waliKelasUser)->post(route('achievements.store'), [
         'student_id' => $otherStudent->id,
         'category_id' => 1,
-        'title' => 'Prestasi Ilegal Lintas Kelas',
+        'title' => 'Prestasi Lintas Kelas Oleh Wali Kelas',
         'level' => 'SEKOLAH',
         'points' => 25,
         'date' => now()->toDateString(),
     ]);
-    $achResponse->assertForbidden();
+    $achResponse->assertRedirect(route('achievements.index'));
 
-    // Attempt to store violation for other class student
+    $createdAchievement = Achievement::where('title', 'Prestasi Lintas Kelas Oleh Wali Kelas')->first();
+    expect($createdAchievement)->not->toBeNull();
+    expect($createdAchievement->status)->toBe('MENUNGGU_VERIFIKASI');
+    // Points must NOT be added to student yet
+    expect($otherStudent->fresh()->totalAchievementPoints())->toBe($initialAchPoints);
+
+    // 2. Wali kelas records violation for other class student -> should succeed with status MENUNGGU_VERIFIKASI
     $vioResponse = $this->actingAs($this->waliKelasUser)->post(route('violations.store'), [
         'student_id' => $otherStudent->id,
         'category_id' => 1,
-        'title' => 'Pelanggaran Ilegal Lintas Kelas',
+        'title' => 'Pelanggaran Lintas Kelas Oleh Wali Kelas',
         'points' => 10,
         'date' => now()->toDateString(),
     ]);
-    $vioResponse->assertForbidden();
+    $vioResponse->assertRedirect(route('violations.index'));
+
+    $createdViolation = Violation::where('title', 'Pelanggaran Lintas Kelas Oleh Wali Kelas')->first();
+    expect($createdViolation)->not->toBeNull();
+    expect($createdViolation->status)->toBe('MENUNGGU_VERIFIKASI');
+    // Points must NOT be added to student yet
+    expect($otherStudent->fresh()->totalViolationPoints())->toBe($initialViolPoints);
+
+    // 3. Wali kelas attempts to approve -> forbidden
+    $this->actingAs($this->waliKelasUser)
+        ->post(route('violations.verify', $createdViolation->id), ['status' => 'DIVERIFIKASI'])
+        ->assertForbidden();
+
+    $this->actingAs($this->waliKelasUser)
+        ->post(route('achievements.verify', $createdAchievement->id), ['status' => 'DIVERIFIKASI'])
+        ->assertForbidden();
+
+    // 4. Admin approves violation & achievement -> succeeds and points are officially recorded
+    $adminVioResponse = $this->actingAs($this->admin)
+        ->post(route('violations.verify', $createdViolation->id), ['status' => 'DIVERIFIKASI']);
+    $adminVioResponse->assertSessionHas('success');
+    expect($createdViolation->fresh()->status)->toBe('DIVERIFIKASI');
+    expect($otherStudent->fresh()->totalViolationPoints())->toBe($initialViolPoints + 10);
+
+    $adminAchResponse = $this->actingAs($this->admin)
+        ->post(route('achievements.verify', $createdAchievement->id), ['status' => 'DIVERIFIKASI']);
+    $adminAchResponse->assertSessionHas('success');
+    expect($createdAchievement->fresh()->status)->toBe('DIVERIFIKASI');
+    expect($otherStudent->fresh()->totalAchievementPoints())->toBe($initialAchPoints + 25);
 });

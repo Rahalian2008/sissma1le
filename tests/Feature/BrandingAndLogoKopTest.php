@@ -318,4 +318,90 @@ class BrandingAndLogoKopTest extends TestCase
         $resMonthly->assertOk();
         $resMonthly->assertSee('Laporan Bulanan');
     }
+
+    /**
+     * Menu Display Kios disembunyikan untuk siswa, wali kelas, dan koordinator keagamaan.
+     */
+    public function test_kiosk_display_menu_is_hidden_for_siswa_wali_kelas_koordinator_keagamaan(): void
+    {
+        $waliKelas = User::factory()->create(['role' => 'wali_kelas']);
+        $koordinator = User::factory()->create(['role' => 'koordinator_keagamaan']);
+
+        $resSiswa = $this->actingAs($this->studentUser)->get(route('dashboard'));
+        $resSiswa->assertOk();
+        $resSiswa->assertDontSee(route('kiosk.index'));
+        $resSiswa->assertDontSee('Display Kios TV');
+
+        // Wali Kelas tidak boleh melihat menu Kios
+        $resWali = $this->actingAs($waliKelas)->get(route('dashboard'));
+        $resWali->assertOk();
+        $resWali->assertDontSee(route('kiosk.index'));
+        $resWali->assertDontSee('Display Kios TV');
+
+        // Koordinator Keagamaan tidak boleh melihat menu Kios
+        $resKoor = $this->actingAs($koordinator)->get(route('dashboard'));
+        $resKoor->assertOk();
+        $resKoor->assertDontSee(route('kiosk.index'));
+        $resKoor->assertDontSee('Display Kios TV');
+
+        // Admin dan Guru tetap dapat melihat menu Kios
+        $resAdmin = $this->actingAs($this->adminUser)->get(route('dashboard'));
+        $resAdmin->assertOk();
+        $resAdmin->assertSee(route('kiosk.index'));
+        $resAdmin->assertSee('Display Kios TV');
+
+        $resGuru = $this->actingAs($this->teacherUser)->get(route('dashboard'));
+        $resGuru->assertOk();
+        $resGuru->assertSee(route('kiosk.index'));
+        $resGuru->assertSee('Display Kios TV');
+    }
+
+    /**
+     * Dokumen cetak mendukung KOP resmi dan opsi kertas A4 serta F4.
+     */
+    public function test_print_reports_support_a4_and_f4_paper_sizes_and_custom_kop_image(): void
+    {
+        Storage::fake('public');
+
+        $pngContent = base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==');
+        $kopFile = UploadedFile::fake()->createWithContent('kop_resmi_sma1le.png', $pngContent);
+
+        $this->actingAs($this->adminUser)->post(route('master.branding.kop.update'), [
+            'kop' => $kopFile,
+        ])->assertRedirect();
+
+        $savedKopPath = SchoolSetting::get('school_kop');
+        $this->assertNotNull($savedKopPath);
+        $kopUrl = Storage::disk('public')->url($savedKopPath);
+
+        // Cetak Disiplin - Mode A4 dan F4
+        $resA4 = $this->actingAs($this->adminUser)->get(route('reports.print.discipline', ['paper' => 'a4']));
+        $resA4->assertOk();
+        $resA4->assertSee($kopUrl);
+        $resA4->assertSee('A4 portrait');
+        $resA4->assertSee('A4 (210×297mm)');
+        $resA4->assertSee('F4 / Folio (215×330mm)');
+
+        $resF4 = $this->actingAs($this->adminUser)->get(route('reports.print.discipline', ['paper' => 'f4']));
+        $resF4->assertOk();
+        $resF4->assertSee($kopUrl);
+        $resF4->assertSee('215mm 330mm');
+
+        // Cetak Rekap Kelas (Landscape) - Mode A4 dan F4
+        $resClassA4 = $this->actingAs($this->adminUser)->get(route('reports.print.class_recap', ['paper' => 'a4']));
+        $resClassA4->assertOk();
+        $resClassA4->assertSee($kopUrl);
+        $resClassA4->assertSee('A4 landscape');
+
+        $resClassF4 = $this->actingAs($this->adminUser)->get(route('reports.print.class_recap', ['paper' => 'f4']));
+        $resClassF4->assertOk();
+        $resClassF4->assertSee($kopUrl);
+        $resClassF4->assertSee('330mm 215mm');
+
+        // Cetak Raport Digital Siswa - Mode F4
+        $resRaport = $this->actingAs($this->adminUser)->get(route('raport.print', [$this->student, 'paper' => 'f4']));
+        $resRaport->assertOk();
+        $resRaport->assertSee($kopUrl);
+        $resRaport->assertSee('215mm 330mm');
+    }
 }

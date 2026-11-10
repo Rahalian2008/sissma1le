@@ -37,7 +37,7 @@ class SchoolMasterSeeder extends Seeder
         // 1. School Settings
         $settings = [
             ['key' => 'school_name', 'value' => 'SMA Negeri 1 Lengkong', 'group' => 'general', 'description' => 'Nama Resmi Sekolah'],
-            ['key' => 'school_npsn', 'value' => '20539123', 'group' => 'general', 'description' => 'Nomor Pokok Sekolah Nasional (NPSN)'],
+            ['key' => 'school_npsn', 'value' => '20202265', 'group' => 'general', 'description' => 'Nomor Pokok Sekolah Nasional (NPSN)'],
             ['key' => 'school_nss', 'value' => '301051408001', 'group' => 'general', 'description' => 'Nomor Statistik Sekolah (NSS)'],
             ['key' => 'school_accreditation', 'value' => 'A (Unggul)', 'group' => 'general', 'description' => 'Akreditasi Sekolah'],
             ['key' => 'headmaster_name', 'value' => 'Drs. H. Ahmad Sudrajat, M.Pd.', 'group' => 'general', 'description' => 'Nama Kepala Sekolah'],
@@ -52,13 +52,15 @@ class SchoolMasterSeeder extends Seeder
             ['key' => 'enable_attendance_selfie', 'value' => '1', 'group' => 'attendance_methods', 'description' => 'Aktifkan Presensi Selfie Realtime + GPS Geofence'],
             ['key' => 'enable_attendance_qr', 'value' => '1', 'group' => 'attendance_methods', 'description' => 'Aktifkan Presensi QR Code Dinamis'],
             ['key' => 'enable_attendance_rfid', 'value' => '1', 'group' => 'attendance_methods', 'description' => 'Aktifkan Presensi Kartu RFID / Kiosk'],
+            ['key' => 'enable_attendance_manual', 'value' => '1', 'group' => 'attendance_methods', 'description' => 'Aktifkan Presensi Manual oleh Guru/Wali/Sekretaris Kelas'],
             // Parameter Waktu & Geofencing
+            ['key' => 'enable_geofence_radius', 'value' => '1', 'group' => 'attendance', 'description' => 'Status Aktif Validasi Radius GPS Presensi Selfie'],
             ['key' => 'school_lat', 'value' => '-7.56845000', 'group' => 'attendance', 'description' => 'Garis Lintang Sekolah (Latitude)'],
             ['key' => 'school_lng', 'value' => '112.04612000', 'group' => 'attendance', 'description' => 'Garis Bujur Sekolah (Longitude)'],
             ['key' => 'geofence_radius_meters', 'value' => '100', 'group' => 'attendance', 'description' => 'Radius Maksimal Presensi Selfie (Meter)'],
             ['key' => 'attendance_start_time', 'value' => '06:00', 'group' => 'attendance', 'description' => 'Jam Mulai Buka Presensi'],
             ['key' => 'attendance_checkin_time', 'value' => '07:00', 'group' => 'attendance', 'description' => 'Batas Jam Masuk (Tepat Waktu)'],
-            ['key' => 'attendance_late_cutoff_time', 'value' => '07:30', 'group' => 'attendance', 'description' => 'Batas Akhir Toleransi Terlambat'],
+            ['key' => 'attendance_late_cutoff_time', 'value' => '11:00', 'group' => 'attendance', 'description' => 'Batas Akhir Toleransi Terlambat'],
             ['key' => 'attendance_end_time', 'value' => '16:00', 'group' => 'attendance', 'description' => 'Jam Tutup Presensi'],
             ['key' => 'leave_request_cutoff_time', 'value' => '06:30', 'group' => 'attendance', 'description' => 'Batas Jam Pengajuan Izin/Sakit Hari H'],
             // Reward thresholds
@@ -255,14 +257,15 @@ class SchoolMasterSeeder extends Seeder
             ]
         );
 
-        // Guru BK (Role disederhanakan ke Guru)
+        // Guru BK (Bimbingan Konseling)
         $nipBk = '197503102002122002';
         $userBk = User::updateOrCreate(
             ['email' => 'bk@sma1le.sch.id'],
             [
                 'name' => 'Dra. Nur Indah Pratiwi',
                 'username' => $nipBk,
-                'role' => 'guru',
+                'role' => 'bk',
+                'roles' => ['bk', 'guru'],
                 'phone' => '081234567894',
                 'password' => Hash::make($nipBk),
                 'is_active' => true,
@@ -280,14 +283,15 @@ class SchoolMasterSeeder extends Seeder
             ]
         );
 
-        // Kesiswaan (Role disederhanakan ke Guru)
-        $nipKesiswaan = '197208181998021001';
+        // Wakasek Bid. Kesiswaan
+        $nipKesiswaan = '197911162008012007';
         $userKesiswaan = User::updateOrCreate(
             ['email' => 'kesiswaan@sma1le.sch.id'],
             [
-                'name' => 'Drs. Agus Hariyanto, M.M.',
+                'name' => 'Winda Dwi Atyani, S.Pd., M.Pd.',
                 'username' => $nipKesiswaan,
-                'role' => 'guru',
+                'role' => 'wakasek_kesiswaan',
+                'roles' => ['wakasek_kesiswaan', 'guru'],
                 'phone' => '081234567895',
                 'password' => Hash::make($nipKesiswaan),
                 'is_active' => true,
@@ -297,10 +301,88 @@ class SchoolMasterSeeder extends Seeder
             ['nip' => $nipKesiswaan],
             [
                 'user_id' => $userKesiswaan->id,
-                'name' => 'Drs. Agus Hariyanto, M.M.',
-                'gender' => 'L',
+                'name' => 'Winda Dwi Atyani, S.Pd., M.Pd.',
+                'gender' => 'P',
                 'phone' => '081234567895',
-                'title' => 'Guru / Pembina Kesiswaan',
+                'title' => 'Wakasek Bid. Kesiswaan',
+                'is_active' => true,
+            ]
+        );
+
+        // Wakasek Bid. Kurikulum
+        $nipKurikulum = '198009132008011005';
+        $userKurikulum = User::updateOrCreate(
+            ['email' => 'kurikulum@sma1le.sch.id'],
+            [
+                'name' => 'Pian Sopian, S.Pd., MM.Pd.',
+                'username' => $nipKurikulum,
+                'role' => 'wakasek_kurikulum',
+                'roles' => ['wakasek_kurikulum', 'guru'],
+                'phone' => '081234567822',
+                'password' => Hash::make($nipKurikulum),
+                'is_active' => true,
+            ]
+        );
+        $teacherKurikulum = Teacher::updateOrCreate(
+            ['nip' => $nipKurikulum],
+            [
+                'user_id' => $userKurikulum->id,
+                'name' => 'Pian Sopian, S.Pd., MM.Pd.',
+                'gender' => 'L',
+                'phone' => '081234567822',
+                'title' => 'Wakasek Bid. Kurikulum',
+                'is_active' => true,
+            ]
+        );
+
+        // Wakasek Bid. Humas
+        $nipHumas = '197006121991032004';
+        $userHumas = User::updateOrCreate(
+            ['email' => 'humas@sma1le.sch.id'],
+            [
+                'name' => 'Eti Nurhayati, M.Pd.',
+                'username' => $nipHumas,
+                'role' => 'wakasek_humas',
+                'roles' => ['wakasek_humas', 'guru'],
+                'phone' => '081234567823',
+                'password' => Hash::make($nipHumas),
+                'is_active' => true,
+            ]
+        );
+        $teacherHumas = Teacher::updateOrCreate(
+            ['nip' => $nipHumas],
+            [
+                'user_id' => $userHumas->id,
+                'name' => 'Eti Nurhayati, M.Pd.',
+                'gender' => 'P',
+                'phone' => '081234567823',
+                'title' => 'Wakasek Bid. Humas',
+                'is_active' => true,
+            ]
+        );
+
+        // Wakasek Bid. Sarpras
+        $nipSarpras = '197405212014101002';
+        $userSarpras = User::updateOrCreate(
+            ['email' => 'sarpras@sma1le.sch.id'],
+            [
+                'name' => 'Duduh Aliansah, ST., S.Pd.',
+                'username' => $nipSarpras,
+                'role' => 'wakasek_sarpras',
+                'roles' => ['wakasek_sarpras', 'guru'],
+                'phone' => '081234567824',
+                'password' => Hash::make($nipSarpras),
+                'is_active' => true,
+            ]
+        );
+        $teacherSarpras = Teacher::updateOrCreate(
+            ['nip' => $nipSarpras],
+            [
+                'user_id' => $userSarpras->id,
+                'name' => 'Duduh Aliansah, ST., S.Pd.',
+                'gender' => 'L',
+                'phone' => '081234567824',
+                'title' => 'Wakasek Bid. Sarpras',
                 'is_active' => true,
             ]
         );
@@ -437,9 +519,10 @@ class SchoolMasterSeeder extends Seeder
 
         $itemsSeed = [
             'R1' => [
-                ['code' => 'R1.1', 'name' => 'Hafal Al-Quran minimal 1 Juz / Kitab Suci', 'points' => 30, 'level' => 'SEKOLAH'],
-                ['code' => 'R1.2', 'name' => 'Juara I/II/III MTQ / Lomba Keagamaan Kabupaten', 'points' => 50, 'level' => 'KABUPATEN'],
-                ['code' => 'R1.3', 'name' => 'Petugas Ibadah Rutin / Muadzin / Rohis Aktif', 'points' => 15, 'level' => 'SEKOLAH'],
+                ['code' => 'R1.1', 'name' => 'Melaksanakan shalat dzuhur berjamaah', 'points' => 5, 'level' => 'SEKOLAH'],
+                ['code' => 'R1.2', 'name' => 'Melaksanakan shalat dhuha bersama', 'points' => 5, 'level' => 'SEKOLAH'],
+                ['code' => 'R1.3', 'name' => "Melaksanakan hafalan Al-qur'an sebanyak 20 ayat sekali duduk", 'points' => 10, 'level' => 'SEKOLAH'],
+                ['code' => 'R1.6', 'name' => 'Melaksanakan kegiatan keputrian', 'points' => 5, 'level' => 'SEKOLAH'],
             ],
             'R2' => [
                 ['code' => 'R2.1', 'name' => 'Menemukan dan mengembalikan barang berharga / uang', 'points' => 25, 'level' => 'SEKOLAH'],
@@ -514,8 +597,9 @@ class SchoolMasterSeeder extends Seeder
             'P1' => [
                 ['code' => 'P1.1', 'name' => 'Terlambat hadir ke sekolah 1 s/d 15 menit', 'points' => 5, 'rec' => 'Peringatan lisan dan pembiasaan disiplin pagi.'],
                 ['code' => 'P1.2', 'name' => 'Terlambat hadir ke sekolah lebih dari 15 menit', 'points' => 10, 'rec' => 'Pembinaan piket dan penugasan edukatif literasi.'],
-                ['code' => 'P1.3', 'name' => 'Meninggalkan kelas/sekolah tanpa izin (Membolos)', 'points' => 20, 'rec' => 'Pemanggilan oleh Wali Kelas dan pemberitahuan orang tua.'],
-                ['code' => 'P1.4', 'name' => 'Tidak masuk sekolah tanpa keterangan sah (Alpa)', 'points' => 15, 'rec' => 'Konfirmasi orang tua dan peringatan wali kelas.'],
+                ['code' => 'P1.3', 'name' => 'Terlambat/Alpa, tanpa ada keterangan apapun', 'points' => 5, 'rec' => 'Konfirmasi orang tua dan pembinaan disiplin.'],
+                ['code' => 'P1.4', 'name' => 'Meninggalkan kelas/sekolah tanpa izin (Membolos)', 'points' => 20, 'rec' => 'Pemanggilan oleh Wali Kelas dan pemberitahuan orang tua.'],
+                ['code' => 'P1.7', 'name' => 'Tidak masuk selama 3 (tiga hari) berturut turut tanpa ada keterangan', 'points' => 10, 'rec' => 'Pemanggilan orang tua dan bimbingan konseling.'],
             ],
             'P2' => [
                 ['code' => 'P2.1', 'name' => 'Bersikap tidak sopan / membangkang arahan guru/karyawan', 'points' => 25, 'rec' => 'Bimbingan konseling dan surat pernyataan santun.'],

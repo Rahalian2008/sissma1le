@@ -37,6 +37,16 @@ return [
 
     'gemini' => [
         'api_key' => env('GEMINI_API_KEY'),
-        'model' => env('GEMINI_MODEL', 'gemini-2.5-flash'),
+        'model' => env('GEMINI_MODEL', 'gemini-3.5-flash-lite'),
+    ],
+
+    'ai' => [
+        'provider' => env('AI_PROVIDER', 'gemini'),
+        'timeout' => (int) env('AI_TIMEOUT_SECONDS', 25),
+        'plan_approval_required' => (bool) env('LMS_PLAN_APPROVAL_REQUIRED', false),
+    ],
+
+    'sikatas' => [
+        'url' => env('SIKATAS_URL', 'http://sassma1le.test:8080'),
     ],
 ];

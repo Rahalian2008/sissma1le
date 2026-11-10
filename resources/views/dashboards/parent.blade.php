@@ -7,34 +7,60 @@
     <!-- Header Orang Tua & Identitas Anak -->
     <div class="bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 min-w-0">
-            <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-tr from-blue-500 to-indigo-500 p-1 shrink-0">
-                <div class="w-full h-full bg-slate-900 rounded-[12px] flex items-center justify-center font-bold text-lg sm:text-xl text-white">
-                    {{ strtoupper(substr($student->name, 0, 2)) }}
-                </div>
+            <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-tr from-blue-500 to-indigo-500 p-1 shrink-0 shadow-md overflow-hidden">
+                @php
+                    $photoSrc = $student?->photo_path ?? $student?->photo ?? null;
+                @endphp
+                @if(!empty($photoSrc))
+                    <img src="{{ asset('storage/' . $photoSrc) }}" alt="{{ $student->name }}"
+                        onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'64\' height=\'64\' viewBox=\'0 0 64 64\'><rect width=\'64\' height=\'64\' fill=\'%231e293b\'/><text x=\'50%25\' y=\'55%25\' font-size=\'20\' font-weight=\'bold\' fill=\'%23ffffff\' dominant-baseline=\'middle\' text-anchor=\'middle\'>{{ strtoupper(substr($student->name ?? 'ST', 0, 2)) }}</text></svg>';"
+                        class="w-full h-full object-cover rounded-[12px]">
+                @else
+                    <div class="w-full h-full bg-slate-900 rounded-[12px] flex items-center justify-center font-bold text-lg sm:text-xl text-white">
+                        {{ strtoupper(substr($student->name ?? 'ST', 0, 2)) }}
+                    </div>
+                @endif
             </div>
             <div class="min-w-0">
                 <span class="px-2.5 py-0.5 rounded-full bg-blue-500/20 text-blue-300 text-[11px] sm:text-xs font-semibold border border-blue-500/30">
                     Pemantauan Perkembangan Anak
                 </span>
-                <h2 class="text-xl sm:text-2xl font-extrabold text-white mt-1 truncate">{{ $student->name }}</h2>
-                <p class="text-xs text-slate-300 truncate">Kelas {{ $student->schoolClass?->name ?? '-' }} • NIS: {{ $student->nis }} • Wali: {{ $parentProfile->name ?? Auth::user()->name }}</p>
+                <h2 class="text-xl sm:text-2xl font-extrabold text-white mt-1 truncate">{{ $student->name ?? 'Data Siswa Belum Tertaut' }}</h2>
+                <p class="text-xs text-slate-300 truncate">
+                    Kelas {{ $student?->schoolClass?->name ?? '-' }} • NIS: {{ $student?->nis ?? '-' }} • NISN: {{ $student?->nisn ?? '-' }} • Wali: {{ $parentProfile->name ?? Auth::user()->name }}
+                </p>
             </div>
         </div>
 
         <!-- Real-time Presence Status Badge for Parent -->
-        <div class="px-5 py-3 rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 text-center md:text-right">
+        <div class="px-5 py-3 rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 text-center md:text-right min-w-[220px]">
             <div class="text-[11px] font-semibold text-slate-300 uppercase tracking-wider">Status Kehadiran Hari Ini</div>
-            @if($todayAttendance)
-                <div class="text-sm font-bold text-emerald-300 mt-0.5 flex items-center justify-center md:justify-end gap-1.5">
-                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
-                    {{ $todayAttendance->status }} ({{ substr($todayAttendance->time, 0, 5) }} WIB)
+            @if($todayAttendance && $todayAttendance->status !== 'ALPA')
+                @php
+                    $isLate = $todayAttendance->status === 'TERLAMBAT';
+                    $isLeave = in_array($todayAttendance->status, ['IZIN', 'SAKIT', 'PULANG_CEPAT']);
+                    $statusColor = $isLate ? 'text-amber-300' : ($isLeave ? 'text-sky-300' : 'text-emerald-300');
+                    $dotColor = $isLate ? 'bg-amber-400' : ($isLeave ? 'bg-sky-400' : 'bg-emerald-400');
+                @endphp
+                <div class="text-sm font-bold {{ $statusColor }} mt-0.5 flex items-center justify-center md:justify-end gap-1.5">
+                    <span class="w-2.5 h-2.5 rounded-full {{ $dotColor }}"></span>
+                    {{ $todayAttendance->status }}
+                    @if($todayAttendance->time)
+                        ({{ substr($todayAttendance->time, 0, 5) }} WIB)
+                    @endif
                 </div>
-                <div class="text-[10px] text-slate-400 mt-0.5">Metode: {{ $todayAttendance->method }}</div>
+                <div class="text-[10px] text-slate-400 mt-0.5">
+                    Metode: {{ $todayAttendance->method }}
+                    @if($todayAttendance->time_out)
+                        • Pulang: {{ substr($todayAttendance->time_out, 0, 5) }} WIB
+                    @endif
+                </div>
             @else
-                <div class="text-sm font-bold text-amber-400 mt-0.5 flex items-center justify-center md:justify-end gap-1.5">
-                    <span class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse"></span>
-                    Belum Melakukan Presensi
+                <div class="text-sm font-bold text-rose-400 mt-0.5 flex items-center justify-center md:justify-end gap-1.5">
+                    <span class="w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse"></span>
+                    ALPA (Belum Presensi)
                 </div>
+                <div class="text-[10px] text-slate-400 mt-0.5">Siswa belum tercatat hadir di sekolah hari ini</div>
             @endif
         </div>
     </div>
@@ -42,72 +68,168 @@
     <!-- Poin Summary Cards (Separated strictly!) -->
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
         <!-- 1. Prestasi Anak -->
-        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs">
+        <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs">
             <div class="flex items-center justify-between">
-                <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Prestasi Terverifikasi</span>
-                <span class="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-sm font-bold">★</span>
+                <span class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Prestasi Terverifikasi</span>
+                <span class="w-8 h-8 rounded-xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center text-sm font-bold">★</span>
             </div>
-            <div class="text-3xl font-black text-amber-600 mt-3">{{ $student->totalAchievementPoints() }} Poin</div>
-            <p class="text-xs text-slate-500 mt-1 font-medium">{{ $student->reward_status['level'] }}</p>
+            <div class="text-3xl font-black text-amber-600 dark:text-amber-400 mt-3">{{ $student->totalAchievementPoints() }} Poin</div>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium">{{ $student->reward_status['level'] }}</p>
         </div>
 
         <!-- 2. Pelanggaran Anak -->
-        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs">
+        <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs">
             <div class="flex items-center justify-between">
-                <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Catatan Pelanggaran</span>
-                <span class="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center text-sm font-bold">!</span>
+                <span class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Catatan Pelanggaran</span>
+                <span class="w-8 h-8 rounded-xl bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 flex items-center justify-center text-sm font-bold">!</span>
             </div>
-            <div class="text-3xl font-black text-rose-600 mt-3">{{ $student->totalViolationPoints() }} Poin</div>
-            <p class="text-xs text-slate-500 mt-1 font-medium">{{ $student->guidance_status['level'] }}</p>
+            <div class="text-3xl font-black text-rose-600 dark:text-rose-400 mt-3">{{ $student->totalViolationPoints() }} Poin</div>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium">{{ $student->guidance_status['level'] }}</p>
         </div>
 
         <!-- 3. 7 Kebiasaan Anak -->
-        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs">
+        <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs">
             <div class="flex items-center justify-between">
-                <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">7 Kebiasaan Hari Ini</span>
-                <span class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-sm font-bold">✓</span>
+                <span class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">7 Kebiasaan Hari Ini</span>
+                <span class="w-8 h-8 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-sm font-bold">✓</span>
             </div>
-            <div class="text-3xl font-black text-emerald-600 mt-3">{{ $todayHabitLogs->where('is_completed', true)->count() }}/7</div>
-            <p class="text-xs text-slate-500 mt-1">Kebiasaan positif terlaksana hari ini</p>
+            <div class="text-3xl font-black text-emerald-600 dark:text-emerald-400 mt-3">{{ $todayHabitLogs->where('is_completed', true)->count() }}/7</div>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Kebiasaan positif terlaksana hari ini</p>
         </div>
     </div>
+
+    <!-- Pusat Layanan & Navigasi Pantauan Orang Tua -->
+    <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-5 sm:p-6 shadow-xs">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3.5 mb-4 border-b border-slate-100 dark:border-slate-800 gap-2">
+            <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center font-black text-sm">
+                    🧭
+                </div>
+                <div>
+                    <h3 class="font-extrabold text-sm sm:text-base text-slate-900 dark:text-white tracking-tight">
+                        Layanan & Pantauan Terpadu Orang Tua
+                    </h3>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400">
+                        Akses modul sekolah secara menyeluruh: Rapor Kurnas, Raport Digital, LMS Pembelajaran, dan Ketatausahaan.
+                    </p>
+                </div>
+            </div>
+            <span class="px-2.5 py-1 rounded-full bg-blue-50 dark:bg-blue-950/60 text-[10px] font-bold text-blue-700 dark:text-blue-300 border border-blue-200/80 dark:border-blue-800/60 self-start sm:self-center">
+                Portal Wali Murid
+            </span>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+            <!-- 1. Rapor Kurnas -->
+            <a href="{{ route('rapor_kurnas.my_report') }}" class="group p-3.5 rounded-2xl bg-emerald-50/40 dark:bg-emerald-950/20 border border-emerald-200/80 dark:border-emerald-900/60 hover:border-emerald-400 hover:shadow-md transition duration-200 flex flex-col justify-between overflow-hidden">
+                <div class="w-9 h-9 rounded-xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-base mb-2 group-hover:scale-110 transition">
+                    📊
+                </div>
+                <div>
+                    <div class="font-extrabold text-xs text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition truncate">Rapor Kurnas</div>
+                    <div class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 truncate">Nilai & e-Rapor 2025</div>
+                </div>
+            </a>
+
+            <!-- 2. Raport Digital -->
+            <a href="{{ route('raport.index') }}" class="group p-3.5 rounded-2xl bg-indigo-50/40 dark:bg-indigo-950/20 border border-indigo-200/80 dark:border-indigo-900/60 hover:border-indigo-400 hover:shadow-md transition duration-200 flex flex-col justify-between overflow-hidden">
+                <div class="w-9 h-9 rounded-xl bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-base mb-2 group-hover:scale-110 transition">
+                    📑
+                </div>
+                <div>
+                    <div class="font-extrabold text-xs text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition truncate">Raport Digital</div>
+                    <div class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 truncate">Capaian 8 pilar AI</div>
+                </div>
+            </a>
+
+            <!-- 3. LMS Pembelajaran -->
+            <a href="{{ route('lms.index') }}" class="group p-3.5 rounded-2xl bg-cyan-50/40 dark:bg-cyan-950/20 border border-cyan-200/80 dark:border-cyan-900/60 hover:border-cyan-400 hover:shadow-md transition duration-200 flex flex-col justify-between overflow-hidden">
+                <div class="w-9 h-9 rounded-xl bg-cyan-500/15 text-cyan-600 dark:text-cyan-400 flex items-center justify-center font-bold text-base mb-2 group-hover:scale-110 transition">
+                    💻
+                </div>
+                <div>
+                    <div class="font-extrabold text-xs text-slate-900 dark:text-white group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition truncate">LMS Pembelajaran</div>
+                    <div class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 truncate">Materi & tugas daring</div>
+                </div>
+            </a>
+
+            <!-- 4. Tata Tertib Siswa -->
+            <a href="{{ route('violations.index') }}" class="group p-3.5 rounded-2xl bg-amber-50/40 dark:bg-amber-950/20 border border-amber-200/80 dark:border-amber-900/60 hover:border-amber-400 hover:shadow-md transition duration-200 flex flex-col justify-between overflow-hidden">
+                <div class="w-9 h-9 rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold text-base mb-2 group-hover:scale-110 transition">
+                    ⚖️
+                </div>
+                <div>
+                    <div class="font-extrabold text-xs text-slate-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-400 transition truncate">Tata Tertib Siswa</div>
+                    <div class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 truncate">Poin disiplin & prestasi</div>
+                </div>
+            </a>
+
+            <!-- 5. Perpustakaan -->
+            <a href="{{ route('library.index') }}" class="group p-3.5 rounded-2xl bg-amber-50/40 dark:bg-amber-950/20 border border-amber-200/80 dark:border-amber-900/60 hover:border-amber-400 hover:shadow-md transition duration-200 flex flex-col justify-between overflow-hidden">
+                <div class="w-9 h-9 rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold text-base mb-2 group-hover:scale-110 transition">
+                    📚
+                </div>
+                <div>
+                    <div class="font-extrabold text-xs text-slate-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-400 transition truncate">Perpustakaan</div>
+                    <div class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 truncate">Katalog & buku digital</div>
+                </div>
+            </a>
+
+            <!-- 6. Adm. Ketatausahaan -->
+            <a href="{{ route('reports.index') }}" class="group p-3.5 rounded-2xl bg-purple-50/40 dark:bg-purple-950/20 border border-purple-200/80 dark:border-purple-900/60 hover:border-purple-400 hover:shadow-md transition duration-200 flex flex-col justify-between overflow-hidden">
+                <div class="w-9 h-9 rounded-xl bg-purple-500/15 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold text-base mb-2 group-hover:scale-110 transition">
+                    🗂️
+                </div>
+                <div>
+                    <div class="font-extrabold text-xs text-slate-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition truncate">Adm. Ketatausahaan</div>
+                    <div class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 truncate">Rekap & berkas anak</div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Rekapitulasi Presensi Kehadiran Anak (Harian, Mingguan, Bulanan, Custom) -->
+    @include('dashboards.partials.parent_attendance_recap')
+
+    <!-- Ringkasan Ibadah Bersama & Tahfidz Al-Qur'an Anak -->
+    @include('dashboards.partials.worship_tahfidz_summary')
 
     <!-- 2-Columns: History Achievements & Violations -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Capaian Prestasi Anak -->
-        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs">
-            <h3 class="text-base font-bold text-slate-900 mb-3">Daftar Prestasi & Penghargaan Anak</h3>
+        <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs">
+            <h3 class="text-base font-bold text-slate-900 dark:text-white mb-3">Daftar Prestasi & Penghargaan Anak</h3>
             <div class="space-y-3">
                 @forelse($achievements as $ach)
-                    <div class="p-3.5 rounded-2xl bg-amber-50/50 border border-amber-200/60 text-xs">
+                    <div class="p-3.5 rounded-2xl bg-amber-50/50 dark:bg-amber-950/30 border border-amber-200/60 dark:border-amber-800/60 text-xs">
                         <div class="flex items-center justify-between mb-1">
-                            <span class="font-bold text-slate-900">{{ $ach->title }}</span>
-                            <span class="font-black text-amber-600 text-sm">+{{ $ach->points }} Poin</span>
+                            <span class="font-bold text-slate-900 dark:text-white">{{ $ach->title }}</span>
+                            <span class="font-black text-amber-600 dark:text-amber-400 text-sm">+{{ $ach->points }} Poin</span>
                         </div>
-                        <p class="text-slate-600 leading-relaxed">{{ $ach->description }}</p>
-                        <div class="text-[10px] text-slate-400 mt-1">Tanggal: {{ $ach->date->format('d M Y') }} • Tingkat: {{ $ach->level }}</div>
+                        <p class="text-slate-600 dark:text-slate-300 leading-relaxed">{{ $ach->description }}</p>
+                        <div class="text-[10px] text-slate-400 dark:text-slate-500 mt-1">Tanggal: {{ $ach->date->format('d M Y') }} • Tingkat: {{ $ach->level }}</div>
                     </div>
                 @empty
-                    <div class="text-center py-6 text-slate-400 text-xs">Belum ada catatan prestasi terverifikasi.</div>
+                    <div class="text-center py-6 text-slate-400 dark:text-slate-500 text-xs">Belum ada catatan prestasi terverifikasi.</div>
                 @endforelse
             </div>
         </div>
 
         <!-- Catatan Tata Tertib / Pelanggaran Anak -->
-        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs">
-            <h3 class="text-base font-bold text-slate-900 mb-3">Riwayat Pelanggaran & Pembinaan Tata Tertib</h3>
+        <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs">
+            <h3 class="text-base font-bold text-slate-900 dark:text-white mb-3">Riwayat Pelanggaran & Pembinaan Tata Tertib</h3>
             <div class="space-y-3">
                 @forelse($violations as $viol)
-                    <div class="p-3.5 rounded-2xl bg-rose-50/50 border border-rose-200/60 text-xs">
+                    <div class="p-3.5 rounded-2xl bg-rose-50/50 dark:bg-rose-950/30 border border-rose-200/60 dark:border-rose-800/60 text-xs">
                         <div class="flex items-center justify-between mb-1">
-                            <span class="font-bold text-slate-900">{{ $viol->title }}</span>
-                            <span class="font-black text-rose-600 text-sm">{{ $viol->points }} Poin</span>
+                            <span class="font-bold text-slate-900 dark:text-white">{{ $viol->title }}</span>
+                            <span class="font-black text-rose-600 dark:text-rose-400 text-sm">{{ $viol->points }} Poin</span>
                         </div>
-                        <p class="text-slate-600 leading-relaxed">{{ $viol->chronology ?? $viol->guidance_notes }}</p>
-                        <div class="text-[10px] text-slate-400 mt-1">Tanggal: {{ $viol->date->format('d M Y') }} • Lokasi: {{ $viol->location ?? '-' }}</div>
+                        <p class="text-slate-600 dark:text-slate-300 leading-relaxed">{{ $viol->chronology ?? $viol->guidance_notes }}</p>
+                        <div class="text-[10px] text-slate-400 dark:text-slate-500 mt-1">Tanggal: {{ $viol->date->format('d M Y') }} • Lokasi: {{ $viol->location ?? '-' }}</div>
                     </div>
                 @empty
-                    <div class="text-center py-6 text-slate-400 text-xs">Alhamdulillah! Tidak ada catatan pelanggaran tata tertib.</div>
+                    <div class="text-center py-6 text-slate-400 dark:text-slate-500 text-xs">Alhamdulillah! Tidak ada catatan pelanggaran tata tertib.</div>
                 @endforelse
             </div>
         </div>

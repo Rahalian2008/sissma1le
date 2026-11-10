@@ -4,6 +4,7 @@
 
 @section('content')
 <div class="space-y-6 max-w-6xl mx-auto">
+    @include('master.partials.nav')
     <!-- Header -->
     <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>

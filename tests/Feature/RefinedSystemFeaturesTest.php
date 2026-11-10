@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\AcademicYear;
 use App\Models\AchievementCategory;
 use App\Models\AchievementItem;
+use App\Models\Attendance;
 use App\Models\AttendanceLocation;
 use App\Models\SchoolClass;
 use App\Models\SchoolSetting;
@@ -352,7 +353,7 @@ class RefinedSystemFeaturesTest extends TestCase
             'phone' => '081234567890',
         ]);
         $postResponse->assertRedirect();
-        $postResponse->assertSessionHas('success', 'Profil Anda berhasil diperbarui.');
+        $postResponse->assertSessionHas('success', 'Profil dan foto Anda berhasil diperbarui.');
         $this->assertEquals('Administrator Baru SMAN 1', $this->adminUser->fresh()->name);
         $this->assertEquals('081234567890', $this->adminUser->fresh()->phone);
 
@@ -362,7 +363,7 @@ class RefinedSystemFeaturesTest extends TestCase
             'phone' => '089876543210',
         ]);
         $putResponse->assertRedirect();
-        $putResponse->assertSessionHas('success', 'Profil Anda berhasil diperbarui.');
+        $putResponse->assertSessionHas('success', 'Profil dan foto Anda berhasil diperbarui.');
         $this->assertEquals('Administrator Lengkong Updated', $this->adminUser->fresh()->name);
         $this->assertEquals('089876543210', $this->adminUser->fresh()->phone);
     }
@@ -408,7 +409,8 @@ class RefinedSystemFeaturesTest extends TestCase
         $location = AttendanceLocation::primary();
         $service = app(AttendanceService::class);
 
-        // 1. Sesi Masuk (Senin Pagi)
+        // 1. Sesi Masuk (Senin Pagi) - pastikan belum ada data presensi pada hari tersebut
+        Attendance::where('student_id', $this->student->id)->whereDate('date', '2026-09-21')->delete();
         Carbon::setTestNow(Carbon::parse('2026-09-21 06:45:00'));
         $checkinResult = $service->processSelfieAttendance($this->student, [
             'latitude' => $location->latitude,

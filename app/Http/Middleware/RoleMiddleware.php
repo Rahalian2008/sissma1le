@@ -22,11 +22,11 @@ class RoleMiddleware
         }
 
         // Super Admin always has full access
-        if ($user->role === 'super_admin') {
+        if ($user->hasRole('super_admin') || $user->role === 'super_admin') {
             return $next($request);
         }
 
-        if (! in_array($user->role, $roles, true)) {
+        if (! $user->hasAnyRole($roles) && ! in_array($user->role, $roles, true)) {
             abort(403, 'Akses Ditolak: Anda tidak memiliki kewenangan untuk mengakses halaman ini.');
         }
 

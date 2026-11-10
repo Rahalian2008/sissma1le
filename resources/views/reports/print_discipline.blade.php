@@ -3,20 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cetak Laporan Tata Tertib - {{ $selectedClass?->name ?? 'Semua Kelas' }} ({{ $startDate }} s.d. {{ $endDate }})</title>
+    <title>Cetak Laporan Tata Tertib - {{ $selectedClass?->name ?? 'Semua Kelas' }} ({{ $startDate }} s.d. {{ $endDate }}) [{{ strtoupper(request('paper', 'a4')) }}]</title>
+    @php
+        $isF4 = strtolower(request('paper', 'a4')) === 'f4';
+        $actualKopPath = $kopImageUrl ?? (!empty($school['kop_image']) ? $school['kop_image'] : (!empty($school['school_kop']) ? $school['school_kop'] : (!empty($school['kop_surat_image']) ? $school['kop_surat_image'] : \App\Models\SchoolSetting::get('school_kop', \App\Models\SchoolSetting::get('kop_surat_image', \App\Models\SchoolSetting::get('kop_image'))))));
+        $actualKopUrl = $actualKopPath ? (str_starts_with($actualKopPath, 'http') ? $actualKopPath : asset('storage/'.$actualKopPath)) : null;
+    @endphp
     <style>
         @page {
-            size: A4 portrait;
-            margin: 1.2cm 1.5cm;
+            size: {{ $isF4 ? '215mm 330mm' : 'A4' }} portrait;
+            margin: {{ $isF4 ? '1.0cm 1.4cm' : '1.2cm 1.5cm' }};
         }
         body {
             font-family: 'Times New Roman', Times, serif;
             color: #111;
-            font-size: 10pt;
+            font-size: {{ $isF4 ? '10.5pt' : '10pt' }};
             line-height: 1.3;
             background: #fff;
             margin: 0;
             padding: 0;
+        }
+        .paper-toggle-group {
+            display: inline-flex;
+            align-items: center;
+            background: #0f172a;
+            border-radius: 6px;
+            padding: 2px;
+            border: 1px solid #334155;
+        }
+        .paper-toggle-btn {
+            padding: 5px 12px;
+            font-size: 11px;
+            font-weight: bold;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        .paper-toggle-btn.active {
+            background: #6366f1;
+            color: #ffffff;
+        }
+        .paper-toggle-btn.inactive {
+            color: #94a3b8;
+        }
+        .paper-toggle-btn.inactive:hover {
+            color: #f8fafc;
+            background: #1e293b;
         }
         .no-print-bar {
             background: #1e293b;
@@ -62,7 +94,7 @@
         .btn-filter { background: #6366f1; color: #fff; }
 
         .doc-container {
-            max-width: 210mm;
+            max-width: {{ $isF4 ? '215mm' : '210mm' }};
             margin: 0 auto;
             padding: 15px 25px;
         }
@@ -147,41 +179,53 @@
             <span style="font-weight: bold; font-size: 14px;">CETAK LAPORAN TATA TERTIB (PRESTASI & PELANGGARAN)</span>
         </div>
 
-        <form action="{{ route('reports.print.discipline') }}" method="GET">
-            <label>Mulai:</label>
-            <input type="date" name="start_date" value="{{ $startDate }}">
-            
-            <label>Selesai:</label>
-            <input type="date" name="end_date" value="{{ $endDate }}">
+        <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+            <div class="paper-toggle-group">
+                <a href="{{ request()->fullUrlWithQuery(['paper' => 'a4']) }}" class="paper-toggle-btn {{ !$isF4 ? 'active' : 'inactive' }}">
+                    📄 A4 (210×297mm)
+                </a>
+                <a href="{{ request()->fullUrlWithQuery(['paper' => 'f4']) }}" class="paper-toggle-btn {{ $isF4 ? 'active' : 'inactive' }}">
+                    📜 F4 / Folio (215×330mm)
+                </a>
+            </div>
 
-            @if(!in_array(Auth::user()->role, ['siswa', 'orang_tua']))
-                <label>Kelas:</label>
-                @if(Auth::user()->role === 'wali_kelas')
-                    <input type="text" value="{{ $selectedClass?->name ?? 'Kelas Binaan' }}" readonly style="background: #334155; color: #fff; border: 1px solid #475569; padding: 5px 10px; border-radius: 6px; cursor: not-allowed; font-weight: bold; width: 120px;">
-                    <input type="hidden" name="class_id" value="{{ $classId }}">
-                @else
-                    <select name="class_id">
-                        <option value="">Semua Kelas</option>
-                        @foreach($classes as $c)
-                            <option value="{{ $c->id }}" {{ (string)$classId === (string)$c->id ? 'selected' : '' }}>
-                                {{ $c->name }}
-                            </option>
-                        @endforeach
-                    </select>
+            <form action="{{ route('reports.print.discipline') }}" method="GET">
+                <input type="hidden" name="paper" value="{{ request('paper', 'a4') }}">
+                <label>Mulai:</label>
+                <input type="date" name="start_date" value="{{ $startDate }}">
+                
+                <label>Selesai:</label>
+                <input type="date" name="end_date" value="{{ $endDate }}">
+
+                @if(!in_array(Auth::user()->role, ['siswa', 'orang_tua']))
+                    <label>Kelas:</label>
+                    @if(Auth::user()->role === 'wali_kelas')
+                        <input type="text" value="{{ $selectedClass?->name ?? 'Kelas Binaan' }}" readonly style="background: #334155; color: #fff; border: 1px solid #475569; padding: 5px 10px; border-radius: 6px; cursor: not-allowed; font-weight: bold; width: 120px;">
+                        <input type="hidden" name="class_id" value="{{ $classId }}">
+                    @else
+                        <select name="class_id">
+                            <option value="">Semua Kelas</option>
+                            @foreach($classes as $c)
+                                <option value="{{ $c->id }}" {{ (string)$classId === (string)$c->id ? 'selected' : '' }}>
+                                    {{ $c->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    @endif
                 @endif
-            @endif
 
-            <button type="submit" class="btn-filter">Terapkan Filter</button>
-            <button type="button" onclick="window.print()" class="btn-print">🖨️ Cetak Dokumen</button>
-        </form>
+                <button type="submit" class="btn-filter">Terapkan Filter</button>
+                <button type="button" onclick="window.print()" class="btn-print">🖨️ Cetak ({{ $isF4 ? 'F4 / Folio' : 'A4' }})</button>
+            </form>
+        </div>
     </div>
 
     <!-- Printable Paper Area -->
     <div class="doc-container">
         <!-- KOP Surat Resmi -->
-        @if(!empty($kopImageUrl))
+        @if(!empty($actualKopUrl))
             <div class="kop-image-wrapper">
-                <img src="{{ $kopImageUrl }}" alt="KOP Surat Resmi {{ $schoolName }}">
+                <img src="{{ $actualKopUrl }}" alt="KOP Surat Resmi {{ $schoolName }}">
             </div>
         @else
             <div class="kop-header">
@@ -323,23 +367,22 @@
             </table>
         @endif
 
-        <!-- Tanda Tangan Pengesahan -->
+        <!-- Tanda Tangan Pengesahan (Kepala Sekolah & Wakasek Bid. Kesiswaan) -->
         <table class="signatures">
             <tr>
-                <td style="width: 50%;">
-                    <br>
+                <td style="width: 50%; text-align: left; padding-left: 20px;">
                     Mengetahui,<br>
-                    <strong>Kepala {{ $schoolName }}</strong>
+                    <strong>Kepala Sekolah</strong>
                     <br><br><br><br>
-                    <span style="font-weight: bold; text-decoration: underline;">{{ $headmasterName }}</span><br>
-                    NIP. {{ $headmasterNip }}
+                    <span style="font-weight: bold; text-decoration: underline;">{{ $headmasterName ?? \App\Models\Teacher::getHeadmaster()['name'] }}</span><br>
+                    NIP. {{ $headmasterNip ?? \App\Models\Teacher::getHeadmaster()['nip'] }}
                 </td>
-                <td style="width: 50%; text-align: right;">
+                <td style="width: 50%; text-align: right; padding-right: 20px;">
                     {{ $schoolCity ?? 'Sukabumi' }}, {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}<br>
-                    Koordinator Bimbingan Konseling (BK) / Kesiswaan
+                    <strong>Wakasek Bid. Kesiswaan</strong>
                     <br><br><br><br>
-                    <span style="font-weight: bold; text-decoration: underline;">{{ Auth::user()->name }}</span><br>
-                    NIP/ID. {{ Auth::user()->username }}
+                    <span style="font-weight: bold; text-decoration: underline;">{{ $kesiswaanName ?? \App\Models\Teacher::getWakasekKesiswaan()['name'] }}</span><br>
+                    NIP. {{ $kesiswaanNip ?? \App\Models\Teacher::getWakasekKesiswaan()['nip'] }}
                 </td>
             </tr>
         </table>

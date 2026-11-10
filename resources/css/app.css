@@ -1,28 +1,72 @@
 @import 'tailwindcss';
 
+@source '../views';
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-    --font-sans: 'Plus Jakarta Sans', 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
+    --font-sans: 'Outfit', 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
     --breakpoint-3xl: 120rem; /* 1920px (Full HD+ & 2K) */
     --breakpoint-4xl: 160rem; /* 2560px (2K QHD & 4K UHD) */
 }
 
 /* ==========================================================
-   1. Base & Typography (Refined, Elegant & Compact Scale)
+   1. Multi-Tier Adaptive Device Typography Scaling
    ========================================================== */
 html {
     scroll-behavior: smooth;
     -webkit-tap-highlight-color: transparent;
-    font-size: 15px; /* Compact scale: refined, neat, not oversized */
+    font-size: 16px; /* Base desktop standard */
 }
 
-@media (max-width: 640px) {
+/* Small mobile devices (iPhone SE, compact Android <380px) */
+@media (max-width: 380px) {
     html {
         font-size: 14px;
+    }
+}
+
+/* Standard smartphones (381px - 640px) */
+@media (min-width: 381px) and (max-width: 640px) {
+    html {
+        font-size: 15px;
+    }
+}
+
+/* Tablets, iPad, foldable devices (641px - 1024px) */
+@media (min-width: 641px) and (max-width: 1024px) {
+    html {
+        font-size: 15.5px;
+    }
+}
+
+/* Laptops & Standard Monitors (1025px - 1440px) */
+@media (min-width: 1025px) and (max-width: 1440px) {
+    html {
+        font-size: 15.5px;
+    }
+}
+
+/* Widescreen Laptops & Standard Full HD (1441px - 1740px) */
+@media (min-width: 1441px) and (max-width: 1740px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+/* Full HD+ & 2K QHD Widescreen Monitors (1741px - 2200px) */
+@media (min-width: 1741px) and (max-width: 2200px) {
+    html {
+        font-size: 16.25px;
+    }
+}
+
+/* 4K UHD & Large Display TV Kiosks (>2200px) */
+@media (min-width: 2201px) {
+    html {
+        font-size: 17.5px;
     }
 }
 
@@ -32,145 +76,211 @@ body {
     min-width: 320px;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
+    letter-spacing: -0.012em;
 }
 
-/* Refined Fluid Typography Utilities (Scaled Down & Elegant) */
+/* Proportionate Fluid Typography Utilities */
 .fluid-hero {
-    font-size: clamp(1.15rem, 1.8vw + 0.35rem, 1.65rem);
-    line-height: 1.2;
-    letter-spacing: -0.02em;
-}
-
-.fluid-title {
-    font-size: clamp(0.95rem, 1.2vw + 0.25rem, 1.25rem);
+    font-size: clamp(1.25rem, 2.2vw + 0.5rem, 2.25rem);
     line-height: 1.25;
-    letter-spacing: -0.015em;
-}
-
-.fluid-stat {
-    font-size: clamp(1.2rem, 1.6vw + 0.35rem, 1.75rem);
-    line-height: 1.15;
+    letter-spacing: -0.025em;
     font-weight: 800;
 }
 
+.fluid-title {
+    font-size: clamp(1.05rem, 1.4vw + 0.4rem, 1.65rem);
+    line-height: 1.3;
+    letter-spacing: -0.02em;
+    font-weight: 750;
+}
+
+.fluid-stat {
+    font-size: clamp(1.4rem, 2.2vw + 0.5rem, 2.5rem);
+    line-height: 1.15;
+    font-weight: 850;
+}
+
+.fluid-sub {
+    font-size: clamp(0.72rem, 0.4vw + 0.5rem, 0.875rem);
+    line-height: 1.4;
+}
+
 /* ==========================================================
-   2. Smooth Page Transitions & Modern Micro-Animations
+   2. Smooth Page Transitions & Micro-Animations
    ========================================================== */
-@view-transition {
-    navigation: auto;
-}
-
-::view-transition-old(root) {
-    animation: 100ms cubic-bezier(0.4, 0, 1, 1) both fade-out;
-}
-
-::view-transition-new(root) {
-    animation: 220ms cubic-bezier(0, 0, 0.2, 1) 50ms both fade-in;
-}
+/* NOTE: @view-transition { navigation: auto; } dinonaktifkan untuk multi-page navigation
+   karena memicu GPU texture memory crash (blank putih / freeze) pada Google Chrome Android (Chromium V8)
+   saat merender halaman ber-DOM besar seperti LMS Pembelajaran. */
 
 @keyframes pageEnterSmooth {
     0% {
         opacity: 0;
-        transform: translateY(7px) scale(0.998);
     }
     100% {
         opacity: 1;
-        transform: translateY(0) scale(1);
     }
 }
 
 .page-enter-smooth {
-    animation: pageEnterSmooth 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
-    will-change: transform, opacity;
+    animation: pageEnterSmooth 0.22s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-/* Atmospheric Ambient Background for Right-Side Content Area */
+/* Atmospheric Ambient Background: Modern Ultra-Clean Indigo & Emerald */
 #main-scroll-area {
     scroll-behavior: smooth;
+    background-color: #f8fafc;
     background-image: 
-        radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.04) 0px, transparent 55%),
-        radial-gradient(at 100% 0%, rgba(16, 185, 129, 0.03) 0px, transparent 55%),
-        radial-gradient(at 50% 100%, rgba(139, 92, 246, 0.02) 0px, transparent 60%);
+        radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.07) 0px, transparent 48%),
+        radial-gradient(at 100% 0%, rgba(16, 185, 129, 0.06) 0px, transparent 48%),
+        radial-gradient(at 50% 100%, rgba(139, 92, 246, 0.05) 0px, transparent 55%);
     background-attachment: local;
 }
 
 .dark #main-scroll-area {
+    background-color: #070b14;
     background-image: 
-        radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.08) 0px, transparent 55%),
-        radial-gradient(at 100% 0%, rgba(16, 185, 129, 0.04) 0px, transparent 55%),
-        radial-gradient(at 50% 100%, rgba(139, 92, 246, 0.04) 0px, transparent 60%);
+        radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.14) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(16, 185, 129, 0.10) 0px, transparent 50%),
+        radial-gradient(at 50% 100%, rgba(139, 92, 246, 0.09) 0px, transparent 55%);
     background-attachment: local;
 }
 
-/* Content Area Compact Typography & Clean Hierarchy */
+/* Content Area Proportionate Hierarchy: Clear, Friendly & Legible */
 .content-area h1 {
-    font-size: 1.25rem !important;
-    line-height: 1.65rem !important;
+    font-size: clamp(1.35rem, 1.8vw + 0.4rem, 1.875rem) !important;
+    line-height: 1.3 !important;
     font-weight: 800 !important;
-    letter-spacing: -0.02em !important;
+    letter-spacing: -0.025em !important;
 }
 
 .content-area h2 {
-    font-size: 1.075rem !important;
-    line-height: 1.45rem !important;
-    font-weight: 700 !important;
-    letter-spacing: -0.015em !important;
+    font-size: clamp(1.15rem, 1.3vw + 0.35rem, 1.5rem) !important;
+    line-height: 1.35 !important;
+    font-weight: 750 !important;
+    letter-spacing: -0.02em !important;
 }
 
 .content-area h3 {
-    font-size: 0.925rem !important;
-    line-height: 1.35rem !important;
+    font-size: clamp(1rem, 0.9vw + 0.35rem, 1.25rem) !important;
+    line-height: 1.4 !important;
     font-weight: 700 !important;
 }
 
 .content-area table thead th {
-    font-size: 0.6875rem !important; /* ~11px */
-    letter-spacing: 0.05em !important;
-    font-weight: 700 !important;
+    font-size: 0.72rem !important; /* ~11px crisp */
+    letter-spacing: 0.035em !important;
+    font-weight: 750 !important;
     text-transform: uppercase !important;
-    padding-top: 0.625rem !important;
-    padding-bottom: 0.625rem !important;
+    padding: 0.55rem 0.65rem !important;
+    white-space: nowrap;
 }
 
 .content-area table tbody td {
-    font-size: 0.775rem !important; /* ~12.4px */
-    line-height: 1.25rem !important;
-    padding-top: 0.625rem !important;
-    padding-bottom: 0.625rem !important;
+    font-size: 0.8rem !important; /* ~12.5px crisp & readable */
+    line-height: 1.35rem !important;
+    padding: 0.5rem 0.65rem !important;
 }
 
-/* Card Elevation & Refinement */
-.content-area [class*="rounded-3xl"] {
-    border-radius: 1rem !important; /* 16px */
+@media (min-width: 1600px) {
+    .content-area table thead th {
+        padding: 0.65rem 0.85rem !important;
+    }
+    .content-area table tbody td {
+        font-size: 0.825rem !important;
+        padding: 0.55rem 0.85rem !important;
+    }
+}
+
+@media (max-width: 640px) {
+    .content-area table thead th {
+        font-size: 0.68rem !important;
+        padding: 0.45rem 0.5rem !important;
+    }
+    .content-area table tbody td {
+        font-size: 0.75rem !important;
+        line-height: 1.25rem !important;
+        padding: 0.45rem 0.5rem !important;
+    }
 }
 
 /* ==========================================================
-   3. Modern Glassmorphism & Elevation System
+   3. Modern Ultra-Clean Glassmorphism System
    ========================================================== */
 .glass-card {
-    background: rgba(255, 255, 255, 0.88);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(226, 232, 240, 0.8);
-    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.03);
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(226, 232, 240, 0.85);
+    box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.04), 0 4px 12px -2px rgba(0, 0, 0, 0.02);
+    border-radius: 1.25rem;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .dark .glass-card {
-    background: rgba(15, 23, 42, 0.85);
-    border: 1px solid rgba(30, 41, 59, 0.75);
-    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.3);
+    background: rgba(15, 23, 42, 0.82);
+    border: 1px solid rgba(30, 41, 59, 0.85);
+    box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.45), 0 4px 12px -2px rgba(0, 0, 0, 0.25);
 }
 
 .glass-nav {
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.88);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border-top: 1px solid rgba(226, 232, 240, 0.8);
+    border-top: 1px solid rgba(226, 232, 240, 0.85);
 }
 
 .dark .glass-nav {
-    background: rgba(15, 23, 42, 0.9);
-    border-top: 1px solid rgba(30, 41, 59, 0.8);
+    background: rgba(11, 19, 36, 0.88);
+    border-top: 1px solid rgba(30, 41, 59, 0.85);
+}
+
+/* ==========================================================
+   Mobile Chrome & Low-Spec Android Performance & Stability Guard
+   (Prevents GPU compositor OOM crash, Aw Snap, and blank white tiles in Chromium V8)
+   ========================================================== */
+@media (max-width: 1024px) {
+    /* 1. Eliminate full-page transform promotion crash in Chromium V8 */
+    .page-enter-smooth {
+        animation: none !important;
+        transform: none !important;
+    }
+
+    /* 2. Remove heavy multi-radial background repaints during scroll on mobile */
+    #main-scroll-area {
+        background-image: none !important;
+    }
+    .dark #main-scroll-area {
+        background-image: none !important;
+    }
+
+    /* 3. Disable expensive GPU backdrop-filters on mobile to eliminate texture crashes */
+    .glass-card,
+    .glass-nav,
+    .floating-island-nav,
+    header,
+    #mobile-drawer-backdrop {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+    }
+
+    /* 4. Disable heavy Gaussian blur orbs that crash low-end Mali/Adreno GPUs */
+    .blur-3xl, .blur-2xl, .blur-xl {
+        filter: none !important;
+        opacity: 0.15 !important;
+    }
+}
+
+/* Explicit fallback for mobile drawer transitions across all Chromium / WebView versions */
+#mobile-drawer {
+    transform: translateX(-100%);
+    -webkit-transform: translateX(-100%);
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), -webkit-transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: transform;
+    touch-action: pan-y;
+}
+#mobile-drawer.is-open {
+    transform: translateX(0) !important;
+    -webkit-transform: translateX(0) !important;
 }
 
 /* Micro-interaction & Hover Lift */
@@ -179,20 +289,20 @@ body {
 }
 
 .hover-lift:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px -4px rgba(0, 0, 0, 0.06), 0 4px 8px -4px rgba(0, 0, 0, 0.04);
+    transform: translateY(-2.5px);
+    box-shadow: 0 14px 28px -6px rgba(99, 102, 241, 0.12), 0 4px 10px -2px rgba(0, 0, 0, 0.04);
 }
 
 .dark .hover-lift:hover {
-    box-shadow: 0 8px 20px -4px rgba(0, 0, 0, 0.35);
+    box-shadow: 0 14px 28px -6px rgba(0, 0, 0, 0.5);
 }
 
 /* ==========================================================
    4. Smooth Custom Scrollbars
    ========================================================== */
 ::-webkit-scrollbar {
-    width: 5px;
-    height: 5px;
+    width: 6px;
+    height: 6px;
 }
 ::-webkit-scrollbar-track {
     background: transparent;
@@ -220,24 +330,33 @@ body {
 }
 
 /* ==========================================================
-   4. Responsive Table Container & Mobile Swipe Cues
+   5. Responsive Tables & Mobile Ergonomics
    ========================================================== */
-.responsive-table-container {
-    position: relative;
-    width: 100%;
-}
-
+.responsive-table-container,
 .responsive-table-wrapper,
 .overflow-x-auto {
     position: relative;
     width: 100%;
+    max-width: 100%;
+    min-width: 0;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
 }
 
 .responsive-table-wrapper::-webkit-scrollbar,
 .overflow-x-auto::-webkit-scrollbar {
-    height: 5px;
+    height: 6px;
+}
+
+.responsive-table-wrapper::-webkit-scrollbar-thumb,
+.overflow-x-auto::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 9999px;
+}
+
+.dark .responsive-table-wrapper::-webkit-scrollbar-thumb,
+.dark .overflow-x-auto::-webkit-scrollbar-thumb {
+    background: #334155;
 }
 
 /* Mobile Table Swipe Cue Badge */
@@ -250,14 +369,14 @@ body {
         display: inline-flex;
         align-items: center;
         gap: 0.375rem;
-        font-size: 0.6875rem;
+        font-size: 0.725rem;
         font-weight: 700;
         color: #475569;
         background-color: #f1f5f9;
-        padding: 0.25rem 0.625rem;
+        padding: 0.3rem 0.75rem;
         border-radius: 9999px;
         border: 1px solid #e2e8f0;
-        margin-bottom: 0.5rem;
+        margin-bottom: 0.625rem;
         user-select: none;
     }
     .dark .table-swipe-cue {
@@ -289,13 +408,16 @@ img, video, canvas {
 .touch-target {
     min-height: 44px;
     min-width: 44px;
-    display: inline-flex;
     align-items: center;
     justify-content: center;
     touch-action: manipulation;
 }
 
-/* Prevent auto-zoom on mobile inputs */
+.touch-target:not([class*="hidden"]):not(.hidden) {
+    display: inline-flex;
+}
+
+/* Prevent iOS auto-zoom on mobile inputs */
 @media (max-width: 768px) {
     input[type="text"],
     input[type="password"],
@@ -309,7 +431,7 @@ img, video, canvas {
     }
 }
 
-/* Safe Area Inset Utility for Modern Phones with Notches / Home Bar */
+/* Safe Area Insets for Modern Phones with Notches / Home Bar */
 .safe-pb {
     padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px));
 }
@@ -319,7 +441,7 @@ img, video, canvas {
 }
 
 /* ==========================================================
-   5. Collapsible Desktop Sidebar Styles
+   6. Collapsible Desktop Sidebar Styles
    ========================================================== */
 #desktop-sidebar {
     transition: width 0.28s cubic-bezier(0.16, 1, 0.3, 1);
@@ -405,33 +527,33 @@ img, video, canvas {
 }
 
 /* ==========================================================
-   6. Universal Dark Mode System Overrides
+   7. Universal Dark Mode & Modern Color Overrides
    ========================================================== */
 .dark body {
-    background-color: #020617; /* slate-950 */
-    color: #f8fafc; /* slate-50 */
+    background-color: #070b14;
+    color: #f8fafc;
 }
 
 .dark .bg-white {
-    background-color: #0f172a !important; /* slate-900 */
+    background-color: #0f172a !important;
     color: #f1f5f9;
 }
 
 .dark .bg-slate-50 {
-    background-color: #020617 !important; /* slate-950 */
+    background-color: #070b14 !important;
 }
 
 .dark .bg-slate-100 {
-    background-color: #1e293b !important; /* slate-800 */
+    background-color: #1a2234 !important;
 }
 
 .dark .border-slate-100,
 .dark .border-slate-200 {
-    border-color: #1e293b !important; /* slate-800 */
+    border-color: #1e293b !important;
 }
 
 .dark .border-slate-300 {
-    border-color: #334155 !important; /* slate-700 */
+    border-color: #334155 !important;
 }
 
 .dark .text-slate-900,
@@ -441,11 +563,11 @@ img, video, canvas {
 
 .dark .text-slate-700,
 .dark .text-slate-600 {
-    color: #cbd5e1 !important; /* slate-300 */
+    color: #cbd5e1 !important;
 }
 
 .dark .text-slate-500 {
-    color: #94a3b8 !important; /* slate-400 */
+    color: #94a3b8 !important;
 }
 
 .dark .shadow-xs,
@@ -460,7 +582,7 @@ img, video, canvas {
 .dark select,
 .dark textarea {
     background-color: #0b1329 !important;
-    border-color: #334155 !important;
+    border-color: #2e3c54 !important;
     color: #f8fafc !important;
 }
 
@@ -469,20 +591,20 @@ img, video, canvas {
     color: #64748b !important;
 }
 
-/* Tables in Dark Mode */
+/* Tables in Modern Dark Mode */
 .dark table thead,
 .dark table thead th {
-    background-color: #1e293b !important;
+    background-color: #141d2f !important;
     color: #cbd5e1 !important;
-    border-color: #334155 !important;
+    border-color: #243048 !important;
 }
 
 .dark table tbody tr {
-    border-color: #1e293b !important;
+    border-color: #1a2438 !important;
 }
 
 .dark table tbody tr:hover {
-    background-color: rgba(30, 41, 59, 0.6) !important;
+    background-color: rgba(30, 45, 71, 0.5) !important;
 }
 
 .dark table tbody td {
@@ -495,4 +617,365 @@ img, video, canvas {
     background-color: #0f172a !important;
     border-color: #1e293b !important;
     color: #f8fafc !important;
+}
+
+/* ==========================================================
+   8. Modern Dashboard Components (Indigo-Violet & Emerald)
+   ========================================================== */
+.tabular-num {
+    font-variant-numeric: tabular-nums;
+}
+
+/* Floating Glass Island Bottom Navigation */
+.floating-island-nav {
+    background: rgba(255, 255, 255, 0.90);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.12), 0 4px 12px -2px rgba(0, 0, 0, 0.05);
+}
+
+.dark .floating-island-nav {
+    background: rgba(11, 19, 36, 0.90);
+    border: 1px solid rgba(30, 45, 71, 0.9);
+    box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.65), 0 4px 12px -2px rgba(0, 0, 0, 0.4);
+}
+
+/* Floating Action Center Button (FAB) */
+.nav-fab-btn {
+    transform: translateY(-8px);
+    box-shadow: 0 10px 25px -4px rgba(16, 185, 129, 0.45);
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease;
+}
+
+.nav-fab-btn:active {
+    transform: translateY(-5px) scale(0.94);
+}
+
+/* Pressable Touch & Click Feedback */
+.pressable {
+    transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.15s ease;
+}
+
+.pressable:active {
+    transform: scale(0.97);
+}
+
+/* Modern Dashboard Stat Card */
+.stat-card {
+    position: relative;
+    overflow: hidden;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 1.25rem;
+    transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.24s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.24s ease;
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #6366f1, #8b5cf6, #10b981);
+    opacity: 0;
+    transition: opacity 0.25s ease;
+}
+
+.stat-card:hover::before {
+    opacity: 1;
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 30px -6px rgba(99, 102, 241, 0.12), 0 4px 10px -2px rgba(0, 0, 0, 0.04);
+    border-color: #cbd5e1;
+}
+
+.dark .stat-card {
+    background: #0f172a;
+    border-color: #1e293b;
+}
+
+.dark .stat-card:hover {
+    border-color: #38bdf8;
+    box-shadow: 0 14px 30px -6px rgba(0, 0, 0, 0.55);
+}
+
+/* Glass Pill Badge */
+.glass-pill {
+    background: rgba(255, 255, 255, 0.16);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+/* High-Tech Pulse Dots */
+.pulse-emerald {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+    animation: pulseRing 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulseRing {
+    0% {
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 7px rgba(16, 185, 129, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+    }
+}
+
+/* ==========================================================
+   9. Mobile Navigation Ergonomics & Accessibility Utilities
+   ========================================================== */
+/* Bottom padding for content so floating island navigation doesn't block actions */
+@media (max-width: 1023px) {
+    .safe-pb-nav {
+        padding-bottom: calc(5.75rem + env(safe-area-inset-bottom, 0px)) !important;
+    }
+}
+
+/* Accessible Skip Link for Keyboard & Screen Reader Users */
+.skip-link {
+    position: absolute;
+    top: -9999px;
+    left: 1rem;
+    z-index: 100;
+    padding: 0.65rem 1.25rem;
+    background: #4f46e5;
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 0.875rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.4);
+    text-decoration: none;
+    transition: top 0.15s ease;
+}
+
+.skip-link:focus {
+    top: 1rem;
+}
+
+/* Standardized Responsive Form Grid */
+.responsive-form-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+
+@media (min-width: 640px) {
+    .responsive-form-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1.25rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .responsive-form-grid-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+/* Semantic Badges */
+.badge-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.25rem 0.65rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+}
+
+.badge-success {
+    background-color: #ecfdf5;
+    color: #047857;
+    border: 1px solid #a7f3d0;
+}
+.dark .badge-success {
+    background-color: rgba(6, 78, 59, 0.4);
+    color: #6ee7b7;
+    border-color: rgba(5, 150, 105, 0.4);
+}
+
+.badge-warning {
+    background-color: #fffbeb;
+    color: #b45309;
+    border: 1px solid #fde68a;
+}
+.dark .badge-warning {
+    background-color: rgba(120, 53, 15, 0.4);
+    color: #fcd34d;
+    border-color: rgba(217, 119, 6, 0.4);
+}
+
+.badge-danger {
+    background-color: #fff1f2;
+    color: #be123c;
+    border: 1px solid #fecdd3;
+}
+.dark .badge-danger {
+    background-color: rgba(136, 19, 55, 0.4);
+    color: #fda4af;
+    border-color: rgba(225, 29, 72, 0.4);
+}
+
+.badge-info {
+    background-color: #eff6ff;
+    color: #1d4ed8;
+    border: 1px solid #bfdbfe;
+}
+.dark .badge-info {
+    background-color: rgba(30, 58, 138, 0.4);
+    color: #93c5fd;
+    border-color: rgba(37, 99, 235, 0.4);
+}
+
+.badge-neutral {
+    background-color: #f1f5f9;
+    color: #475569;
+    border: 1px solid #e2e8f0;
+}
+.dark .badge-neutral {
+    background-color: rgba(30, 41, 59, 0.6);
+    color: #94a3b8;
+    border-color: rgba(51, 65, 85, 0.6);
+}
+
+/* Focus styles for accessible keyboard navigation */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: 2px solid #6366f1 !important;
+    outline-offset: 2px !important;
+}
+
+/* ==========================================================
+   10. Universal Clean Print Engine (@media print)
+   ========================================================== */
+.print-only {
+    display: none !important;
+}
+
+@media print {
+    @page {
+        size: auto;
+        margin: 12mm 10mm 15mm 10mm;
+    }
+
+    html, body {
+        background: #ffffff !important;
+        color: #000000 !important;
+        font-size: 11pt !important;
+        line-height: 1.35 !important;
+        overflow: visible !important;
+        height: auto !important;
+        width: 100% !important;
+    }
+
+    /* Hide non-printable navigation, drawers, sidebars, alerts and toolbars */
+    #desktop-sidebar,
+    #mobile-drawer,
+    #mobile-drawer-backdrop,
+    header,
+    .floating-island-nav,
+    #toast-container,
+    #back-to-top,
+    .no-print,
+    .table-swipe-cue,
+    .sidebar-toggle-btn,
+    nav,
+    aside,
+    button:not(.allow-print),
+    input[type="submit"]:not(.allow-print),
+    .modal,
+    [role="dialog"] {
+        display: none !important;
+        visibility: hidden !important;
+    }
+
+    .print-only {
+        display: block !important;
+        visibility: visible !important;
+    }
+
+    #main-scroll-area,
+    .content-area,
+    main {
+        overflow: visible !important;
+        height: auto !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+    }
+
+    /* Print typography and table borders */
+    table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+        page-break-inside: auto;
+    }
+
+    tr {
+        page-break-inside: avoid;
+        break-inside: avoid;
+    }
+
+    th, td {
+        border: 1px solid #333333 !important;
+        color: #000000 !important;
+        background: transparent !important;
+        padding: 4px 6px !important;
+        font-size: 9.5pt !important;
+    }
+
+    th {
+        background-color: #f1f5f9 !important;
+        font-weight: 700 !important;
+    }
+
+    /* Page break controls */
+    .page-break-before {
+        page-break-before: always !important;
+        break-before: page !important;
+    }
+
+    .page-break-after {
+        page-break-after: always !important;
+        break-after: page !important;
+    }
+
+    .page-break-inside-avoid,
+    .avoid-break {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+    }
+
+    /* Remove shadows, blurs, and glassmorphism in print */
+    * {
+        box-shadow: none !important;
+        text-shadow: none !important;
+        filter: none !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+    }
+
+    /* Preserve colors and logos in official print */
+    body {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
 }

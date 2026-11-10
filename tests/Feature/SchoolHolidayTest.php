@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\SchoolClass;
 use App\Models\SchoolHoliday;
 use App\Models\Student;
 use App\Models\User;
@@ -186,6 +187,31 @@ test('AttendanceService rejects leave submission on official holidays', function
     expect($result['success'])->toBeFalse();
     expect($result['error_code'])->toBe('TARGET_DATE_IS_HOLIDAY');
     expect($result['message'])->toContain('hari libur');
+
+    $holiday->delete();
+});
+
+test('admin can view master holidays page with specific class targets without error', function () {
+    $admin = User::where('role', 'admin')->first() ?? User::factory()->create(['role' => 'admin']);
+    $schoolClass = SchoolClass::firstOrCreate(['name' => 'XII-MIPA-1'], ['grade' => 'XII']);
+
+    $holiday = SchoolHoliday::create([
+        'name' => 'TEST_Libur Khusus Kelas XII',
+        'start_date' => date('Y-m-d'),
+        'end_date' => date('Y-m-d'),
+        'type' => 'khusus',
+        'description' => 'Libur khusus persiapan ujian',
+        'target_classes' => [$schoolClass->id],
+        'is_active' => true,
+    ]);
+
+    expect($holiday->target_class_names)->toContain('XII-MIPA-1');
+    expect($holiday->target_summary)->toContain('XII-MIPA-1');
+
+    $response = $this->actingAs($admin)->get('/master/holidays');
+    $response->assertStatus(200);
+    $response->assertSee('TEST_Libur Khusus Kelas XII');
+    $response->assertSee('XII-MIPA-1');
 
     $holiday->delete();
 });

@@ -4,6 +4,7 @@
 
 @section('content')
 <div class="space-y-6 max-w-5xl mx-auto">
+    @include('master.partials.nav')
     <!-- Header -->
     <div class="bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
@@ -31,44 +32,44 @@
     </div>
 
     <!-- Main Identity Card & Form -->
-    <div class="bg-white rounded-3xl border border-slate-200 shadow-xs overflow-hidden">
+    <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden">
         <form action="{{ route('master.school_profile.update') }}" method="POST" class="p-6 sm:p-8 space-y-6 text-xs">
             @csrf
 
             <!-- Section 1: Data Pokok Sekolah -->
             <div>
-                <div class="flex items-center gap-2 border-b border-slate-100 pb-3 mb-4">
-                    <span class="w-7 h-7 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-xs">1</span>
-                    <h3 class="text-sm font-bold text-slate-800">Legalitas & Data Pokok Sekolah</h3>
+                <div class="flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3 mb-4">
+                    <span class="w-7 h-7 rounded-lg bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 flex items-center justify-center font-bold text-xs">1</span>
+                    <h3 class="text-sm font-bold text-slate-800 dark:text-slate-100">Legalitas & Data Pokok Sekolah</h3>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                     <div class="sm:col-span-2">
-                        <label class="block font-bold text-slate-700 mb-1">Nama Resmi Sekolah <span class="text-rose-500">*</span></label>
+                        <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Nama Resmi Sekolah <span class="text-rose-500">*</span></label>
                         <input type="text" name="school_name" value="{{ old('school_name', $profile['school_name']) }}" required
-                            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-blue-500 font-bold text-sm">
+                            class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-xl outline-none focus:border-blue-500 font-bold text-sm">
                     </div>
                     <div>
-                        <label class="block font-bold text-slate-700 mb-1">Status Akreditasi <span class="text-rose-500">*</span></label>
+                        <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Status Akreditasi <span class="text-rose-500">*</span></label>
                         <input type="text" name="school_accreditation" value="{{ old('school_accreditation', $profile['school_accreditation']) }}" required
                             placeholder="Contoh: A (Unggul)"
-                            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-blue-500 font-bold text-emerald-700">
+                            class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:border-blue-500 font-bold text-emerald-700 dark:text-emerald-400">
                     </div>
                     <div>
-                        <label class="block font-bold text-slate-700 mb-1">NPSN (Nomor Pokok Sekolah Nasional) <span class="text-rose-500">*</span></label>
+                        <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">NPSN (Nomor Pokok Sekolah Nasional) <span class="text-rose-500">*</span></label>
                         <input type="text" name="school_npsn" value="{{ old('school_npsn', $profile['school_npsn']) }}" required
-                            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-blue-500 font-mono">
+                            class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-xl outline-none focus:border-blue-500 font-mono">
                     </div>
                     <div>
-                        <label class="block font-bold text-slate-700 mb-1">NSS (Nomor Statistik Sekolah)</label>
+                        <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">NSS (Nomor Statistik Sekolah)</label>
                         <input type="text" name="school_nss" value="{{ old('school_nss', $profile['school_nss']) }}"
-                            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-blue-500 font-mono">
+                            class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-xl outline-none focus:border-blue-500 font-mono">
                     </div>
                     <div>
-                        <label class="block font-bold text-slate-700 mb-1">Bentuk Pendidikan <span class="text-rose-500">*</span></label>
+                        <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Bentuk Pendidikan <span class="text-rose-500">*</span></label>
                         <input type="text" name="school_education_form" id="school_education_form" list="edu_form_list"
                             value="{{ old('school_education_form', $profile['school_education_form'] ?? 'Sekolah Menengah Atas (SMA)') }}" required
                             placeholder="Pilih atau ketik jenjang pendidikan..."
-                            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-blue-500 font-medium text-slate-800">
+                            class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-xl outline-none focus:border-blue-500 font-medium">
                         <datalist id="edu_form_list">
                             <option value="Sekolah Menengah Atas (SMA)">
                             <option value="Sekolah Menengah Kejuruan (SMK)">
@@ -78,67 +79,67 @@
                             <option value="Madrasah Tsanawiyah (MTs)">
                             <option value="Madrasah Ibtidaiyah (MI)">
                         </datalist>
-                        <p class="text-[11px] text-slate-400 mt-1">Pilih jenjang (SMA, SMK, SMP, SD) dari daftar atau ketik bentuk pendidikan secara bebas.</p>
+                        <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-1">Pilih jenjang (SMA, SMK, SMP, SD) dari daftar atau ketik bentuk pendidikan secara bebas.</p>
                     </div>
                 </div>
             </div>
 
             <!-- Section 2: Pimpinan Satuan Pendidikan -->
             <div>
-                <div class="flex items-center gap-2 border-b border-slate-100 pb-3 mb-4">
-                    <span class="w-7 h-7 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-xs">2</span>
-                    <h3 class="text-sm font-bold text-slate-800">Kepala Sekolah & Penanggung Jawab</h3>
+                <div class="flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3 mb-4">
+                    <span class="w-7 h-7 rounded-lg bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 flex items-center justify-center font-bold text-xs">2</span>
+                    <h3 class="text-sm font-bold text-slate-800 dark:text-slate-100">Kepala Sekolah & Penanggung Jawab</h3>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                        <label class="block font-bold text-slate-700 mb-1">Nama Lengkap Kepala Sekolah (beserta Gelar) <span class="text-rose-500">*</span></label>
+                        <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Nama Lengkap Kepala Sekolah (beserta Gelar) <span class="text-rose-500">*</span></label>
                         <input type="text" name="headmaster_name" value="{{ old('headmaster_name', $profile['headmaster_name']) }}" required
-                            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-blue-500 font-bold">
+                            class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-xl outline-none focus:border-blue-500 font-bold">
                     </div>
                     <div>
-                        <label class="block font-bold text-slate-700 mb-1">NIP Kepala Sekolah <span class="text-rose-500">*</span></label>
+                        <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">NIP Kepala Sekolah <span class="text-rose-500">*</span></label>
                         <input type="text" name="headmaster_nip" value="{{ old('headmaster_nip', $profile['headmaster_nip']) }}" required
-                            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-blue-500 font-mono">
+                            class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-xl outline-none focus:border-blue-500 font-mono">
                     </div>
                 </div>
             </div>
 
             <!-- Section 3: Alamat & Kontak Resmi -->
             <div>
-                <div class="flex items-center gap-2 border-b border-slate-100 pb-3 mb-4">
-                    <span class="w-7 h-7 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-xs">3</span>
-                    <h3 class="text-sm font-bold text-slate-800">Alamat & Kontak Resmi Lembaga</h3>
+                <div class="flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3 mb-4">
+                    <span class="w-7 h-7 rounded-lg bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 flex items-center justify-center font-bold text-xs">3</span>
+                    <h3 class="text-sm font-bold text-slate-800 dark:text-slate-100">Alamat & Kontak Resmi Lembaga</h3>
                 </div>
                 <div class="space-y-4">
                     <div>
-                        <label class="block font-bold text-slate-700 mb-1">Alamat Lengkap <span class="text-rose-500">*</span></label>
+                        <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Alamat Lengkap <span class="text-rose-500">*</span></label>
                         <textarea name="school_address" rows="2" required
-                            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-blue-500">{{ old('school_address', $profile['school_address']) }}</textarea>
+                            class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-xl outline-none focus:border-blue-500">{{ old('school_address', $profile['school_address']) }}</textarea>
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <div>
-                            <label class="block font-bold text-slate-700 mb-1">Nomor Telepon / Fax</label>
+                            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Nomor Telepon / Fax</label>
                             <input type="text" name="school_phone" value="{{ old('school_phone', $profile['school_phone']) }}"
-                                class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-blue-500">
+                                class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-xl outline-none focus:border-blue-500">
                         </div>
                         <div>
-                            <label class="block font-bold text-slate-700 mb-1">Email Resmi Sekolah <span class="text-rose-500">*</span></label>
+                            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Email Resmi Sekolah <span class="text-rose-500">*</span></label>
                             <input type="email" name="school_email" value="{{ old('school_email', $profile['school_email']) }}" required
-                                class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-blue-500">
+                                class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-xl outline-none focus:border-blue-500">
                         </div>
                         <div>
-                            <label class="block font-bold text-slate-700 mb-1">Situs Web Resmi</label>
+                            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Situs Web Resmi</label>
                             <input type="url" name="school_website" value="{{ old('school_website', $profile['school_website']) }}"
-                                class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-blue-500">
+                                class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-xl outline-none focus:border-blue-500">
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Save Action Button -->
-            <div class="pt-4 border-t border-slate-100 flex items-center justify-between">
-                <span class="text-slate-400 text-xs">Identitas ini dicetak pada berkas Dossier Siswa & Laporan Presensi resmi.</span>
-                <button type="submit" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl shadow-md transition">
+            <div class="pt-4 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <span class="text-slate-400 dark:text-slate-500 text-xs">Identitas ini dicetak pada berkas Dossier Siswa & Laporan Presensi resmi.</span>
+                <button type="submit" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl shadow-md transition cursor-pointer">
                     Simpan Perubahan Identitas Sekolah
                 </button>
             </div>

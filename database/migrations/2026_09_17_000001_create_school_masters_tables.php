@@ -11,15 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('academic_years', function (Blueprint $table) {
-            $table->id();
-            $table->string('name'); // e.g. 2026/2027
-            $table->enum('semester', ['Ganjil', 'Genap'])->default('Ganjil');
-            $table->boolean('is_active')->default(false);
-            $table->date('start_date')->nullable();
-            $table->date('end_date')->nullable();
-            $table->timestamps();
-        });
+        if (! Schema::hasTable('academic_years')) {
+            Schema::create('academic_years', function (Blueprint $table) {
+                $table->id();
+                $table->string('name'); // e.g. 2026/2027
+                $table->enum('semester', ['Ganjil', 'Genap'])->default('Ganjil');
+                $table->boolean('is_active')->default(false);
+                $table->date('start_date')->nullable();
+                $table->date('end_date')->nullable();
+                $table->timestamps();
+            });
+        }
 
         Schema::create('teachers', function (Blueprint $table) {
             $table->id();

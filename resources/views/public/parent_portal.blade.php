@@ -11,6 +11,8 @@
         <link rel="icon" type="image/png" href="{{ asset('storage/' . $schoolSetting->logo_path) }}">
     @endif
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <!-- Alpine.js (Local & Offline Capable with CDN Fallback) -->
+    <script defer src="{{ asset('js/alpine.min.js') }}"></script>
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
         [x-cloak] { display: none !important; }
@@ -318,39 +320,117 @@
 
             <!-- Tabbed Detail Container (Presensi, 7 Kebiasaan, Prestasi, Pelanggaran) -->
             <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-5 sm:p-7 shadow-xl" x-data="{ tab: 'attendance' }">
-                <!-- Tab Headers -->
-                <div class="flex items-center gap-2 border-b border-slate-800 pb-4 overflow-x-auto">
-                    <button type="button" @click="tab = 'attendance'"
-                        :class="tab === 'attendance' ? 'bg-indigo-600 text-white font-extrabold shadow-md shadow-indigo-600/30' : 'bg-slate-800/80 text-slate-400 hover:text-white font-semibold'"
-                        class="px-4 py-2.5 rounded-2xl text-xs sm:text-sm whitespace-nowrap transition flex items-center gap-2">
-                        <span>📅 Riwayat Presensi (30 Hari)</span>
-                        <span class="px-2 py-0.5 rounded-full text-[10px] bg-white/20 text-white font-bold">{{ $recentAttendances->count() }}</span>
-                    </button>
+                <!-- Tab Headers (Toolbar Terstruktur & Rapi: Fitur Utama + Layanan Terpadu) -->
+                <div class="border-b border-slate-800 pb-5 space-y-3.5">
+                    <!-- Kelompok 1: Fitur Utama (Presensi, 7 Kebiasaan, Prestasi & Tata Tertib) -->
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-[11px] font-extrabold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                                <span class="w-2 h-2 rounded-full bg-indigo-400"></span>
+                                Menu Utama Siswa
+                            </span>
+                            <span class="text-[10px] text-slate-500 font-medium hidden sm:inline">Presensi, Karakter, Prestasi & Kedisiplinan</span>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <!-- Tab 1: Presensi (Fitur Awal) -->
+                            <button type="button" @click="tab = 'attendance'" onclick="switchPortalTab('attendance')" data-portal-tab-btn="attendance"
+                                :class="tab === 'attendance' ? 'bg-indigo-600 text-white font-extrabold shadow-md shadow-indigo-600/30 border-transparent' : 'bg-slate-800/80 text-slate-300 hover:text-white font-medium border-slate-700/60 hover:bg-slate-800'"
+                                class="px-3.5 py-2 rounded-xl text-xs sm:text-sm whitespace-nowrap transition flex items-center gap-2 border cursor-pointer">
+                                <span>📅 Riwayat Presensi</span>
+                                <span class="px-2 py-0.5 rounded-full text-[10px] bg-white/20 text-white font-bold">{{ $recentAttendances->count() }}</span>
+                            </button>
 
-                    <button type="button" @click="tab = 'habits'"
-                        :class="tab === 'habits' ? 'bg-emerald-600 text-white font-extrabold shadow-md shadow-emerald-600/30' : 'bg-slate-800/80 text-slate-400 hover:text-white font-semibold'"
-                        class="px-4 py-2.5 rounded-2xl text-xs sm:text-sm whitespace-nowrap transition flex items-center gap-2">
-                        <span>🌱 7 Kebiasaan Anak Hebat</span>
-                        <span class="px-2 py-0.5 rounded-full text-[10px] bg-white/20 text-white font-bold">{{ $completedHabitsCount }}/{{ count($habits) }}</span>
-                    </button>
+                            <!-- Tab 2: 7 Kebiasaan (Fitur Awal) -->
+                            <button type="button" @click="tab = 'habits'" onclick="switchPortalTab('habits')" data-portal-tab-btn="habits"
+                                :class="tab === 'habits' ? 'bg-emerald-600 text-white font-extrabold shadow-md shadow-emerald-600/30 border-transparent' : 'bg-slate-800/80 text-slate-300 hover:text-white font-medium border-slate-700/60 hover:bg-slate-800'"
+                                class="px-3.5 py-2 rounded-xl text-xs sm:text-sm whitespace-nowrap transition flex items-center gap-2 border cursor-pointer">
+                                <span>🌱 7 Kebiasaan Anak Hebat</span>
+                                <span class="px-2 py-0.5 rounded-full text-[10px] bg-white/20 text-white font-bold">{{ $completedHabitsCount }}/{{ count($habits) }}</span>
+                            </button>
 
-                    <button type="button" @click="tab = 'achievements'"
-                        :class="tab === 'achievements' ? 'bg-amber-600 text-white font-extrabold shadow-md shadow-amber-600/30' : 'bg-slate-800/80 text-slate-400 hover:text-white font-semibold'"
-                        class="px-4 py-2.5 rounded-2xl text-xs sm:text-sm whitespace-nowrap transition flex items-center gap-2">
-                        <span>🏆 Prestasi & Penghargaan</span>
-                        <span class="px-2 py-0.5 rounded-full text-[10px] bg-white/20 text-white font-bold">{{ $achievements->count() }}</span>
-                    </button>
+                            <!-- Tab 3: Prestasi (Fitur Awal) -->
+                            <button type="button" @click="tab = 'achievements'" onclick="switchPortalTab('achievements')" data-portal-tab-btn="achievements"
+                                :class="tab === 'achievements' ? 'bg-amber-600 text-white font-extrabold shadow-md shadow-amber-600/30 border-transparent' : 'bg-slate-800/80 text-slate-300 hover:text-white font-medium border-slate-700/60 hover:bg-slate-800'"
+                                class="px-3.5 py-2 rounded-xl text-xs sm:text-sm whitespace-nowrap transition flex items-center gap-2 border cursor-pointer">
+                                <span>🏆 Prestasi & Penghargaan</span>
+                                <span class="px-2 py-0.5 rounded-full text-[10px] bg-white/20 text-white font-bold">{{ $achievements->count() }}</span>
+                            </button>
 
-                    <button type="button" @click="tab = 'violations'"
-                        :class="tab === 'violations' ? 'bg-rose-600 text-white font-extrabold shadow-md shadow-rose-600/30' : 'bg-slate-800/80 text-slate-400 hover:text-white font-semibold'"
-                        class="px-4 py-2.5 rounded-2xl text-xs sm:text-sm whitespace-nowrap transition flex items-center gap-2">
-                        <span>📋 Tata Tertib & Pembinaan</span>
-                        <span class="px-2 py-0.5 rounded-full text-[10px] bg-white/20 text-white font-bold">{{ $violations->count() }}</span>
-                    </button>
+                            <!-- Tab 4: Tata Tertib (Fitur Awal) -->
+                            <button type="button" @click="tab = 'violations'" onclick="switchPortalTab('violations')" data-portal-tab-btn="violations"
+                                :class="tab === 'violations' ? 'bg-rose-600 text-white font-extrabold shadow-md shadow-rose-600/30 border-transparent' : 'bg-slate-800/80 text-slate-300 hover:text-white font-medium border-slate-700/60 hover:bg-slate-800'"
+                                class="px-3.5 py-2 rounded-xl text-xs sm:text-sm whitespace-nowrap transition flex items-center gap-2 border cursor-pointer">
+                                <span>📋 Tata Tertib & Pembinaan</span>
+                                <span class="px-2 py-0.5 rounded-full text-[10px] bg-white/20 text-white font-bold">{{ $violations->count() }}</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Kelompok 2: Layanan Akademik & Pengembangan Diri -->
+                    <div class="pt-2.5 border-t border-slate-800/80">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-[11px] font-extrabold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                                <span class="w-2 h-2 rounded-full bg-teal-400"></span>
+                                Layanan Akademik & Pengembangan Diri
+                            </span>
+                            <span class="text-[10px] text-slate-500 font-medium hidden sm:inline">Tahfidz, Rapor Kurnas, Psikotes, Pustaka & KBM</span>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <!-- Tab 5: Ibadah & Tahfidz (Fitur Tambahan Baru) -->
+                            <button type="button" @click="tab = 'worship'" onclick="switchPortalTab('worship')" data-portal-tab-btn="worship"
+                                :class="tab === 'worship' ? 'bg-teal-600 text-white font-extrabold shadow-md shadow-teal-600/30 border-transparent' : 'bg-slate-800/80 text-slate-300 hover:text-white font-medium border-slate-700/60 hover:bg-slate-800'"
+                                class="px-3.5 py-2 rounded-xl text-xs sm:text-sm whitespace-nowrap transition flex items-center gap-2 border cursor-pointer">
+                                <span>🕌 Ibadah & Tahfidz</span>
+                                <span class="px-2 py-0.5 rounded-full text-[10px] bg-white/20 text-white font-bold">{{ $completedSurahsCount ?? 0 }}/{{ $targetSurahsCount ?? 37 }}</span>
+                            </button>
+
+                            <!-- Tab 6: Rapor Kurnas (Fitur Tambahan Baru) -->
+                            <button type="button" @click="tab = 'kurnas'" onclick="switchPortalTab('kurnas')" data-portal-tab-btn="kurnas"
+                                :class="tab === 'kurnas' ? 'bg-violet-600 text-white font-extrabold shadow-md shadow-violet-600/30 border-transparent' : 'bg-slate-800/80 text-slate-300 hover:text-white font-medium border-slate-700/60 hover:bg-slate-800'"
+                                class="px-3.5 py-2 rounded-xl text-xs sm:text-sm whitespace-nowrap transition flex items-center gap-2 border cursor-pointer">
+                                <span>📝 Rapor Kurnas</span>
+                                <span class="px-2 py-0.5 rounded-full text-[10px] bg-white/20 text-white font-bold">{{ $kurnasScores->count() }} Mapel</span>
+                            </button>
+
+                            <!-- Tab 7: Bimbingan & Psikotes (Fitur Tambahan Baru) -->
+                            <button type="button" @click="tab = 'counseling'" onclick="switchPortalTab('counseling')" data-portal-tab-btn="counseling"
+                                :class="tab === 'counseling' ? 'bg-fuchsia-600 text-white font-extrabold shadow-md shadow-fuchsia-600/30 border-transparent' : 'bg-slate-800/80 text-slate-300 hover:text-white font-medium border-slate-700/60 hover:bg-slate-800'"
+                                class="px-3.5 py-2 rounded-xl text-xs sm:text-sm whitespace-nowrap transition flex items-center gap-2 border cursor-pointer">
+                                <span>🧠 Bimbingan & Psikotes</span>
+                                <span class="px-2 py-0.5 rounded-full text-[10px] bg-white/20 text-white font-bold">{{ $bkPsychologicalResults->isNotEmpty() ? 'Hasil Ada' : 'Layanan BK' }}</span>
+                            </button>
+
+                            <!-- Tab 8: Perpustakaan (Fitur Tambahan Baru) -->
+                            <button type="button" @click="tab = 'library'" onclick="switchPortalTab('library')" data-portal-tab-btn="library"
+                                :class="tab === 'library' ? 'bg-yellow-600 text-white font-extrabold shadow-md shadow-yellow-600/30 border-transparent' : 'bg-slate-800/80 text-slate-300 hover:text-white font-medium border-slate-700/60 hover:bg-slate-800'"
+                                class="px-3.5 py-2 rounded-xl text-xs sm:text-sm whitespace-nowrap transition flex items-center gap-2 border cursor-pointer">
+                                <span>📚 Pustaka & Literasi</span>
+                                <span class="px-2 py-0.5 rounded-full text-[10px] bg-white/20 text-white font-bold">{{ $libraryLoans->count() }}</span>
+                            </button>
+
+                            <!-- Tab 9: Jadwal & KBM (Fitur Tambahan Baru) -->
+                            <button type="button" @click="tab = 'schedule'" onclick="switchPortalTab('schedule')" data-portal-tab-btn="schedule"
+                                :class="tab === 'schedule' ? 'bg-cyan-600 text-white font-extrabold shadow-md shadow-cyan-600/30 border-transparent' : 'bg-slate-800/80 text-slate-300 hover:text-white font-medium border-slate-700/60 hover:bg-slate-800'"
+                                class="px-3.5 py-2 rounded-xl text-xs sm:text-sm whitespace-nowrap transition flex items-center gap-2 border cursor-pointer">
+                                <span>⏰ Jadwal & Agenda KBM</span>
+                                <span class="px-2 py-0.5 rounded-full text-[10px] bg-white/20 text-white font-bold">{{ $classSchedules->count() }}</span>
+                            </button>
+
+                            @if(!empty($hasExtracurriculars) && $hasExtracurriculars)
+                            <!-- Tab 10: Ekstrakurikuler (Fitur Tambahan Baru) -->
+                            <button type="button" @click="tab = 'extracurricular'" onclick="switchPortalTab('extracurricular')" data-portal-tab-btn="extracurricular"
+                                :class="tab === 'extracurricular' ? 'bg-sky-600 text-white font-extrabold shadow-md shadow-sky-600/30 border-transparent' : 'bg-slate-800/80 text-slate-300 hover:text-white font-medium border-slate-700/60 hover:bg-slate-800'"
+                                class="px-3.5 py-2 rounded-xl text-xs sm:text-sm whitespace-nowrap transition flex items-center gap-2 border cursor-pointer">
+                                <span>⚽ Ekstrakurikuler</span>
+                                <span class="px-2 py-0.5 rounded-full text-[10px] bg-white/20 text-white font-bold">{{ $student->extracurriculars->count() }}</span>
+                            </button>
+                            @endif
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Tab 1: Attendance History -->
-                <div x-show="tab === 'attendance'" class="mt-5 space-y-4">
+                <div x-show="tab === 'attendance'" data-portal-tab-content="attendance" class="mt-5 space-y-4">
                     <!-- Attendance Stats Pills -->
                     <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
                         <div class="p-3 bg-slate-950/60 border border-slate-800 rounded-2xl text-center">
@@ -371,7 +451,7 @@
                         </div>
                         <div class="p-3 bg-slate-950/60 border border-slate-800 rounded-2xl text-center">
                             <div class="text-[10px] text-slate-400 uppercase font-bold">Tanpa Keterangan</div>
-                            <div class="text-xl font-black text-rose-400 mt-0.5">{{ $attendanceStats['alfa'] }}</div>
+                            <div class="text-xl font-black text-rose-400 mt-0.5">{{ $attendanceStats['alpa'] ?? ($attendanceStats['alfa'] ?? 0) }}</div>
                         </div>
                     </div>
 
@@ -425,7 +505,7 @@
                 </div>
 
                 <!-- Tab 2: 7 Habits Checklist -->
-                <div x-show="tab === 'habits'" x-cloak class="mt-5 space-y-3">
+                <div x-show="tab === 'habits'" data-portal-tab-content="habits" x-cloak class="mt-5 space-y-3">
                     <p class="text-xs text-slate-400">
                         Program pembiasaan karakter positif anak hebat setiap hari:
                     </p>
@@ -470,7 +550,7 @@
                 </div>
 
                 <!-- Tab 3: Achievements -->
-                <div x-show="tab === 'achievements'" x-cloak class="mt-5 space-y-3">
+                <div x-show="tab === 'achievements'" data-portal-tab-content="achievements" x-cloak class="mt-5 space-y-3">
                     <div class="space-y-3">
                         @forelse($achievements as $ach)
                             <div class="p-4 rounded-2xl bg-amber-950/20 border border-amber-900/50 text-xs">
@@ -498,7 +578,7 @@
                 </div>
 
                 <!-- Tab 4: Violations & Guidance -->
-                <div x-show="tab === 'violations'" x-cloak class="mt-5 space-y-4">
+                <div x-show="tab === 'violations'" data-portal-tab-content="violations" x-cloak class="mt-5 space-y-4">
                     <!-- Violations List -->
                     <div>
                         <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Catatan Pelanggaran Tata Tertib</h4>
@@ -547,6 +627,390 @@
                         </div>
                     @endif
                 </div>
+
+                <!-- Tab 5: Ibadah & Tahfidz Quran -->
+                <div x-show="tab === 'worship'" data-portal-tab-content="worship" x-cloak class="mt-5 space-y-4">
+                    <div class="p-4 rounded-2xl bg-teal-950/20 border border-teal-900/50 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div>
+                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-teal-500/20 text-teal-300 border border-teal-500/30 uppercase tracking-wider">
+                                Pembiasaan Keagamaan
+                            </span>
+                            <h4 class="text-sm font-extrabold text-white mt-1">Presensi Ibadah Berjamaah & Tahfidz Al-Qur'an</h4>
+                            <p class="text-xs text-slate-400">Pemantauan shalat dhuha, shalat dzuhur berjamaah, dan capaian hafalan Juz 30.</p>
+                        </div>
+                        <div class="text-right shrink-0">
+                            <span class="text-xs text-slate-400 block">Progres Hafalan Kelas {{ $targetGrade ?? 'X' }}</span>
+                            <span class="text-xl font-black text-teal-400">{{ $completedSurahsCount ?? 0 }}/{{ $targetSurahsCount ?? 37 }} Surat Tuntas</span>
+                        </div>
+                    </div>
+
+                    <!-- Ringkasan Ibadah -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div class="p-3.5 bg-slate-950/60 border border-slate-800 rounded-2xl">
+                            <div class="text-[11px] font-bold text-teal-400 flex items-center justify-between">
+                                <span>🌅 Shalat Dhuha</span>
+                                <span>{{ $worshipStats['dhuha']['rate'] ?? 0 }}%</span>
+                            </div>
+                            <div class="text-lg font-black text-white mt-1">{{ $worshipStats['dhuha']['hadir'] ?? 0 }} Sesi Hadir</div>
+                            <div class="text-[10px] text-slate-400 mt-0.5">Dari total {{ $worshipStats['dhuha']['total'] ?? 0 }} jadwal</div>
+                        </div>
+
+                        <div class="p-3.5 bg-slate-950/60 border border-slate-800 rounded-2xl">
+                            <div class="text-[11px] font-bold text-emerald-400 flex items-center justify-between">
+                                <span>🕌 Shalat Dzuhur / Jumat</span>
+                                <span>{{ $worshipStats['dzuhur']['rate'] ?? 0 }}%</span>
+                            </div>
+                            <div class="text-lg font-black text-white mt-1">{{ $worshipStats['dzuhur']['hadir'] ?? 0 }} Sesi Hadir</div>
+                            <div class="text-[10px] text-slate-400 mt-0.5">Berjamaah di Masjid Sekolah</div>
+                        </div>
+
+                        <div class="p-3.5 bg-slate-950/60 border border-slate-800 rounded-2xl">
+                            <div class="text-[11px] font-bold text-cyan-400 flex items-center justify-between">
+                                <span>📖 Tahfidz Juz 30</span>
+                                <span>{{ $tahfidzProgressPct ?? 0 }}%</span>
+                            </div>
+                            <div class="text-lg font-black text-white mt-1">{{ $completedSurahsCount ?? 0 }} Surat Lulus</div>
+                            <div class="text-[10px] text-slate-400 mt-0.5">Target {{ $targetSurahsCount ?? 37 }} Surat</div>
+                        </div>
+                    </div>
+
+                    <!-- Riwayat Setoran Tahfidz -->
+                    <div>
+                        <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Riwayat Setoran Hafalan Qur'an Terbaru</h4>
+                        @if(!empty($allStudentTahfidzRecords) && $allStudentTahfidzRecords->isNotEmpty())
+                            <div class="space-y-2 max-h-60 overflow-y-auto pr-1">
+                                @foreach($allStudentTahfidzRecords->take(10) as $tahfidz)
+                                    <div class="p-3 rounded-2xl bg-slate-950/60 border border-slate-800 flex items-center justify-between text-xs">
+                                        <div>
+                                            <div class="font-bold text-white">{{ $tahfidz->surah_name }} (Surat ke-{{ $tahfidz->surah_number }})</div>
+                                            <div class="text-[11px] text-slate-400">Ayat {{ $tahfidz->start_ayah }} - {{ $tahfidz->end_ayah }} • Penguji: {{ $tahfidz->examiner?->name ?? 'Ustadz/Guru PAI' }}</div>
+                                        </div>
+                                        <div class="text-right">
+                                            <span class="px-2 py-0.5 rounded-md text-[10px] font-bold {{ $tahfidz->overall_grade === 'Lulus' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-amber-500/20 text-amber-300 border border-amber-500/30' }}">
+                                                {{ $tahfidz->overall_grade }}
+                                            </span>
+                                            <div class="text-[10px] text-slate-400 mt-0.5">{{ $tahfidz->deposit_date ? \Carbon\Carbon::parse($tahfidz->deposit_date)->format('d M Y') : '-' }}</div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @else
+                            <div class="p-6 text-center text-slate-400 text-xs bg-slate-950/40 rounded-2xl border border-slate-800">
+                                Belum ada catatan setoran tahfidz hafalan Al-Qur'an ananda.
+                            </div>
+                        @endif
+                    </div>
+                </div>
+
+                <!-- Tab 6: Rapor Kurnas & Akademik -->
+                <div x-show="tab === 'kurnas'" data-portal-tab-content="kurnas" x-cloak class="mt-5 space-y-4">
+                    <div class="p-4 rounded-2xl bg-violet-950/20 border border-violet-900/50 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div>
+                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-violet-500/20 text-violet-300 border border-violet-500/30 uppercase tracking-wider">
+                                Kurikulum Nasional
+                            </span>
+                            <h4 class="text-sm font-extrabold text-white mt-1">Capaian Hasil Belajar & Rapor Akademik</h4>
+                            <p class="text-xs text-slate-400">Nilai sumatif akhir mata pelajaran, capaian TP optimal, dan projek P5.</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            @if($kurnasAverage)
+                                <div class="px-3.5 py-1.5 rounded-xl bg-violet-600/30 border border-violet-500/40 text-center">
+                                    <span class="text-[10px] text-violet-300 block uppercase font-bold">Rata-Rata</span>
+                                    <span class="text-lg font-black text-white">{{ $kurnasAverage }}</span>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+
+                    <!-- Tabel Nilai Mapel -->
+                    @if($kurnasScores->isNotEmpty())
+                        <div class="overflow-x-auto rounded-2xl border border-slate-800">
+                            <table class="w-full text-left text-xs text-slate-300">
+                                <thead class="bg-slate-950/80 text-slate-400 font-bold uppercase text-[10px] tracking-wider border-b border-slate-800">
+                                    <tr>
+                                        <th class="p-3">No</th>
+                                        <th class="p-3">Mata Pelajaran & Guru</th>
+                                        <th class="p-3 text-center">Nilai</th>
+                                        <th class="p-3">Capaian Kompetensi Optimal</th>
+                                        <th class="p-3">Perlu Peningkatan</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-800/80 bg-slate-900/50">
+                                    @foreach($kurnasScores as $idx => $sc)
+                                        <tr class="hover:bg-slate-800/40 transition">
+                                            <td class="p-3 text-slate-400 font-bold">{{ $idx + 1 }}</td>
+                                            <td class="p-3">
+                                                <div class="font-bold text-white">{{ $sc->courseClass?->subject?->name ?? 'Mata Pelajaran' }}</div>
+                                                <div class="text-[10px] text-slate-400">{{ $sc->courseClass?->teacher?->name ?? 'Guru Pengampu' }}</div>
+                                            </td>
+                                            <td class="p-3 text-center">
+                                                <span class="px-2.5 py-1 rounded-lg text-xs font-black {{ (float)$sc->score >= 75 ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-amber-500/20 text-amber-300 border border-amber-500/30' }}">
+                                                    {{ number_format((float)$sc->score, 1) }}
+                                                </span>
+                                            </td>
+                                            <td class="p-3 text-xs text-slate-200 leading-relaxed max-w-xs">
+                                                {{ $sc->optimal_description ?: 'Menunjukkan penguasaan kompetensi pembelajaran dengan baik.' }}
+                                            </td>
+                                            <td class="p-3 text-xs text-slate-400 leading-relaxed max-w-xs">
+                                                {{ $sc->improvement_description ?: 'Perlu pendampingan untuk penguatan materi berkelanjutan.' }}
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @else
+                        <div class="p-6 text-center text-slate-400 text-xs bg-slate-950/40 rounded-2xl border border-slate-800">
+                            Data nilai rapor kurnas sedang diproses oleh dewan guru untuk periode semester ini.
+                        </div>
+                    @endif
+
+                    <!-- Catatan Wali Kelas & Projek P5 -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                        <div class="p-4 rounded-2xl bg-slate-950/60 border border-slate-800 space-y-2">
+                            <span class="text-xs font-bold text-white flex items-center gap-1.5">
+                                <span>✍️</span> Catatan Wali Kelas:
+                            </span>
+                            <p class="text-xs text-slate-300 leading-relaxed">
+                                {{ $kurnasHomeroom?->note ?? 'Ananda menunjukkan keaktifan dan semangat belajar yang sangat baik. Tingkatkan terus prestasi dan pertahankan budi pekerti luhur.' }}
+                            </p>
+                            <div class="pt-2 border-t border-slate-800/80 text-[11px] text-slate-400 flex items-center justify-between">
+                                <span>Status: <strong class="text-emerald-400">{{ $kurnasHomeroom?->status_promotion ?? 'Aktif KBM' }}</strong></span>
+                                <span>Wali Kelas: <strong class="text-white">{{ $homeroomTeacher?->name ?? '-' }}</strong></span>
+                            </div>
+                        </div>
+
+                        <div class="p-4 rounded-2xl bg-slate-950/60 border border-slate-800 space-y-2">
+                            <span class="text-xs font-bold text-white flex items-center gap-1.5">
+                                <span>🎨</span> Projek Penguatan Profil Pelajar Pancasila (P5)
+                            </span>
+                            @if($kurnasP5Projects->isNotEmpty())
+                                @foreach($kurnasP5Projects->take(2) as $p5)
+                                    <div class="text-xs">
+                                        <span class="font-bold text-indigo-300">{{ $p5->project?->title ?? 'Projek P5' }}</span>
+                                        <p class="text-[11px] text-slate-400 mt-0.5">{{ $p5->process_notes ?: 'Aktif berpartisipasi dalam perencanaan dan pembuatan karya kelompok secara mandiri dan gotong royong.' }}</p>
+                                    </div>
+                                @endforeach
+                            @else
+                                <p class="text-xs text-slate-400">Ananda aktif mengikuti seluruh rangkaian projek profil pelajar Pancasila di sekolah.</p>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab 7: Bimbingan & Psikotes -->
+                <div x-show="tab === 'counseling'" data-portal-tab-content="counseling" x-cloak class="mt-5 space-y-4">
+                    <div class="p-4 rounded-2xl bg-fuchsia-950/20 border border-fuchsia-900/50 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div>
+                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-fuchsia-500/20 text-fuchsia-300 border border-fuchsia-500/30 uppercase tracking-wider">
+                                Bimbingan Konseling & Karir
+                            </span>
+                            <h4 class="text-sm font-extrabold text-white mt-1">Pemetaan Potensi Diri & Hasil Tes Psikotes</h4>
+                            <p class="text-xs text-slate-400">Membantu orang tua memahami kecenderungan bakat, minat karir, dan arahan studi ananda.</p>
+                        </div>
+                        @if($bkCounselor && $bkCounselor->phone)
+                            <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $bkCounselor->phone) }}" target="_blank" class="px-3.5 py-2 rounded-xl bg-fuchsia-600 hover:bg-fuchsia-500 text-white text-xs font-bold flex items-center gap-1.5 shrink-0 transition">
+                                <span>💬 Konsultasi Guru BK</span>
+                            </a>
+                        @endif
+                    </div>
+
+                    @if($bkPsychologicalResults->isNotEmpty())
+                        @php $psi = $bkPsychologicalResults->first(); @endphp
+                        <div class="p-4 rounded-2xl bg-slate-950/70 border border-slate-800 space-y-3">
+                            <div class="flex items-center justify-between pb-2 border-b border-slate-800">
+                                <div>
+                                    <span class="text-[10px] uppercase font-bold text-fuchsia-400">Hasil Asesmen Minat Bakat (Holland RIASEC)</span>
+                                    <h4 class="text-sm font-black text-white">{{ $psi->profile_label ?? 'Profil Kepribadian Siswa' }}</h4>
+                                </div>
+                                <span class="px-3 py-1 rounded-xl text-xs font-black bg-fuchsia-500/20 text-fuchsia-300 border border-fuchsia-500/30">
+                                    {{ $psi->holland_code ?? ($psi->dominant_dimension ?? 'RIASEC') }}
+                                </span>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                                <div class="space-y-1">
+                                    <span class="font-bold text-slate-400">Ringkasan Analisis Karakter:</span>
+                                    <p class="text-slate-200 leading-relaxed font-medium">
+                                        {{ $psi->analysis_summary ?: 'Ananda memiliki daya nalar logis yang baik dan potensi eksplorasi kreatif dalam bidang terapan.' }}
+                                    </p>
+                                </div>
+                                <div class="space-y-1">
+                                    <span class="font-bold text-slate-400">Rekomendasi Jurusan Kuliah / Studi Lanjut:</span>
+                                    <p class="text-slate-200 leading-relaxed font-medium">
+                                        {{ $psi->study_recommendations ?: 'Sains Terapan, Teknik Informatika, Komunikasi Bisnis, atau Kependidikan.' }}
+                                    </p>
+                                </div>
+                            </div>
+
+                            @if(!empty($psi->career_recommendations) && is_array($psi->career_recommendations))
+                                <div class="pt-2 border-t border-slate-800">
+                                    <span class="text-[11px] font-bold text-fuchsia-300 block mb-1.5">Pilihan Karir & Profesi Masa Depan:</span>
+                                    <div class="flex flex-wrap gap-1.5">
+                                        @foreach($psi->career_recommendations as $cr)
+                                            <span class="px-2.5 py-0.5 rounded-lg bg-slate-900 text-fuchsia-200 border border-fuchsia-800/40 text-[11px] font-bold">
+                                                ✓ {{ $cr }}
+                                            </span>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @endif
+                        </div>
+                    @else
+                        <div class="p-6 text-center text-slate-400 text-xs bg-slate-950/40 rounded-2xl border border-slate-800">
+                            Asesmen psikotes dan minat bakat ananda sedang diagendakan oleh guru BK sekolah.
+                        </div>
+                    @endif
+                </div>
+
+                <!-- Tab 8: Literasi & Pustaka -->
+                <div x-show="tab === 'library'" data-portal-tab-content="library" x-cloak class="mt-5 space-y-4">
+                    <div class="p-4 rounded-2xl bg-yellow-950/20 border border-yellow-900/50 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div>
+                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-yellow-500/20 text-yellow-300 border border-yellow-500/30 uppercase tracking-wider">
+                                Perpustakaan Sekolah
+                            </span>
+                            <h4 class="text-sm font-extrabold text-white mt-1">Aktivitas Peminjaman Buku & Gerakan Literasi</h4>
+                            <p class="text-xs text-slate-400">Pantau buku bacaan yang sedang dipinjam dan riwayat literasi ananda.</p>
+                        </div>
+                        <div class="text-right shrink-0">
+                            <span class="text-xs text-slate-400 block">Total Peminjaman</span>
+                            <span class="text-xl font-black text-yellow-400">{{ $libraryLoans->count() }} Buku</span>
+                        </div>
+                    </div>
+
+                    @if($libraryLoans->isNotEmpty())
+                        <div class="overflow-x-auto rounded-2xl border border-slate-800">
+                            <table class="w-full text-left text-xs text-slate-300">
+                                <thead class="bg-slate-950/80 text-slate-400 font-bold uppercase text-[10px] tracking-wider border-b border-slate-800">
+                                    <tr>
+                                        <th class="p-3">Judul Buku & Penulis</th>
+                                        <th class="p-3">Tgl Pinjam</th>
+                                        <th class="p-3">Jatuh Tempo</th>
+                                        <th class="p-3 text-center">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-800/80 bg-slate-900/50">
+                                    @foreach($libraryLoans as $loan)
+                                        <tr class="hover:bg-slate-800/40 transition">
+                                            <td class="p-3">
+                                                <div class="font-bold text-white">{{ $loan->book?->title ?? 'Buku Perpustakaan' }}</div>
+                                                <div class="text-[10px] text-slate-400">{{ $loan->book?->author ?? '-' }}</div>
+                                            </td>
+                                            <td class="p-3 whitespace-nowrap">{{ $loan->loan_date ? $loan->loan_date->format('d M Y') : '-' }}</td>
+                                            <td class="p-3 whitespace-nowrap">{{ $loan->due_date ? $loan->due_date->format('d M Y') : '-' }}</td>
+                                            <td class="p-3 text-center whitespace-nowrap">
+                                                @if(in_array(strtoupper($loan->status), ['RETURNED', 'DIKEMBALIKAN']))
+                                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                                                        ✓ Dikembalikan
+                                                    </span>
+                                                @else
+                                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                                                        Sedang Dipinjam
+                                                    </span>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @else
+                        <div class="p-6 text-center text-slate-400 text-xs bg-slate-950/40 rounded-2xl border border-slate-800">
+                            Belum ada riwayat peminjaman buku perpustakaan yang tercatat.
+                        </div>
+                    @endif
+                </div>
+
+                <!-- Tab 9: Jadwal & Agenda KBM -->
+                <div x-show="tab === 'schedule'" data-portal-tab-content="schedule" x-cloak class="mt-5 space-y-4">
+                    <div class="p-4 rounded-2xl bg-cyan-950/20 border border-cyan-900/50 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div>
+                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 uppercase tracking-wider">
+                                Pembelajaran Kelas {{ $student->schoolClass?->name ?? '' }}
+                            </span>
+                            <h4 class="text-sm font-extrabold text-white mt-1">Jadwal Pelajaran & Agenda Belajar Harian</h4>
+                            <p class="text-xs text-slate-400">Informasi mata pelajaran dan topik KBM yang diajarkan bapak/ibu guru di kelas.</p>
+                        </div>
+                        @if($homeroomTeacher && $homeroomTeacher->phone)
+                            <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $homeroomTeacher->phone) }}" target="_blank" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-1.5 shrink-0 transition">
+                                <span>💬 WA Wali Kelas</span>
+                            </a>
+                        @endif
+                    </div>
+
+                    <!-- Jadwal Pelajaran Mingguan -->
+                    @if($classSchedules->isNotEmpty())
+                        <div>
+                            <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Jadwal Pelajaran Rombel</h4>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
+                                @foreach($classSchedules as $cs)
+                                    <div class="p-3 rounded-2xl bg-slate-950/60 border border-slate-800 space-y-1">
+                                        <div class="flex items-center justify-between">
+                                            <span class="px-2 py-0.5 rounded text-[10px] font-black uppercase bg-indigo-500/20 text-indigo-300">
+                                                {{ $cs->day_of_week }}
+                                            </span>
+                                            <span class="text-[10px] font-mono text-slate-400">{{ substr($cs->start_time, 0, 5) }} - {{ substr($cs->end_time, 0, 5) }}</span>
+                                        </div>
+                                        <div class="font-bold text-xs text-white">{{ $cs->subject?->name ?? 'Mapel' }}</div>
+                                        <div class="text-[11px] text-slate-400">{{ $cs->teacher?->name ?? 'Guru Pengampu' }}</div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+
+                    <!-- Agenda Pembelajaran Terkini -->
+                    @if($classAgendas->isNotEmpty())
+                        <div>
+                            <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Agenda KBM Kelas Terkini</h4>
+                            <div class="space-y-2">
+                                @foreach($classAgendas->take(5) as $agenda)
+                                    <div class="p-3.5 rounded-2xl bg-slate-950/60 border border-slate-800 space-y-1 text-xs">
+                                        <div class="flex items-center justify-between">
+                                            <span class="font-bold text-white">{{ $agenda->subject }}: {{ $agenda->learning_topic }}</span>
+                                            <span class="text-[10px] text-slate-400">{{ $agenda->date ? $agenda->date->format('d M Y') : '-' }}</span>
+                                        </div>
+                                        <p class="text-slate-300 leading-snug">{{ $agenda->activities_summary }}</p>
+                                        <div class="text-[10px] text-slate-400">Guru: {{ $agenda->teacher_name }}</div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+                </div>
+
+                <!-- Tab 10: Ekstrakurikuler -->
+                @if(!empty($hasExtracurriculars) && $hasExtracurriculars)
+                <div x-show="tab === 'extracurricular'" data-portal-tab-content="extracurricular" x-cloak class="mt-5 space-y-4">
+                    <div class="p-4 rounded-2xl bg-sky-950/20 border border-sky-900/50 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div>
+                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-sky-500/20 text-sky-300 border border-sky-500/30 uppercase tracking-wider">
+                                Pengembangan Minat & Bakat
+                            </span>
+                            <h4 class="text-sm font-extrabold text-white mt-1">Kegiatan Ekstrakurikuler Ananda</h4>
+                            <p class="text-xs text-slate-400">Daftar keanggotaan dan presensi latihan kegiatan ekstrakurikuler sekolah.</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        @foreach($student->extracurriculars as $ex)
+                            <div class="p-4 rounded-2xl bg-slate-950/60 border border-slate-800 space-y-1 text-xs">
+                                <div class="flex items-center justify-between">
+                                    <span class="font-extrabold text-white text-sm">{{ $ex->name }}</span>
+                                    <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-sky-500/20 text-sky-300 border border-sky-500/30">
+                                        {{ $ex->pivot->role ?? 'Anggota' }}
+                                    </span>
+                                </div>
+                                <div class="text-slate-400">Kategori: {{ $ex->category ?? 'Ekstrakurikuler' }}</div>
+                                <div class="text-[11px] text-slate-400 pt-1 border-t border-slate-800/80">
+                                    Pembina: <strong class="text-slate-200">{{ $ex->teacher?->name ?? 'Pembina Ekskul' }}</strong>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+                @endif
             </div>
         @endif
 
@@ -560,5 +1024,70 @@
         </div>
     </footer>
 
+    <!-- Script Pengendali Tab Responsif & Bulletproof (Vanilla JS + Alpine Fallback) -->
+    <script>
+        window.switchPortalTab = function(targetTab) {
+            window.activePortalTab = targetTab;
+
+            // 1. Sync with Alpine if available
+            try {
+                const rootEl = document.querySelector('[x-data]');
+                if (rootEl && window.Alpine) {
+                    const data = Alpine.$data(rootEl);
+                    if (data) {
+                        data.tab = targetTab;
+                    }
+                }
+            } catch (e) {}
+
+            // 2. Direct DOM show/hide for 100% guarantee in all browsers
+            const panels = document.querySelectorAll('[data-portal-tab-content]');
+            panels.forEach(function(panel) {
+                const pTab = panel.getAttribute('data-portal-tab-content');
+                if (pTab === targetTab) {
+                    panel.classList.remove('hidden');
+                    panel.style.display = 'block';
+                    panel.removeAttribute('x-cloak');
+                } else {
+                    panel.classList.add('hidden');
+                    panel.style.display = 'none';
+                }
+            });
+
+            // 3. Tab buttons style update
+            const tabThemeColors = {
+                'attendance': 'bg-indigo-600',
+                'habits': 'bg-emerald-600',
+                'achievements': 'bg-amber-600',
+                'violations': 'bg-rose-600',
+                'worship': 'bg-teal-600',
+                'kurnas': 'bg-violet-600',
+                'counseling': 'bg-fuchsia-600',
+                'library': 'bg-yellow-600',
+                'schedule': 'bg-cyan-600',
+                'extracurricular': 'bg-sky-600'
+            };
+
+            const allColorClasses = ['bg-indigo-600', 'bg-emerald-600', 'bg-amber-600', 'bg-rose-600', 'bg-teal-600', 'bg-violet-600', 'bg-fuchsia-600', 'bg-yellow-600', 'bg-cyan-600', 'bg-sky-600'];
+
+            const btns = document.querySelectorAll('[data-portal-tab-btn]');
+            btns.forEach(function(btn) {
+                const bTab = btn.getAttribute('data-portal-tab-btn');
+                allColorClasses.forEach(function(cls) { btn.classList.remove(cls); });
+                if (bTab === targetTab) {
+                    btn.classList.remove('bg-slate-800/80', 'text-slate-300', 'text-slate-400', 'border-slate-700/60');
+                    const activeColor = tabThemeColors[targetTab] || 'bg-indigo-600';
+                    btn.classList.add(activeColor, 'text-white', 'font-extrabold', 'shadow-md', 'border-transparent');
+                } else {
+                    btn.classList.remove('text-white', 'font-extrabold', 'shadow-md', 'border-transparent');
+                    btn.classList.add('bg-slate-800/80', 'text-slate-300', 'font-medium', 'border-slate-700/60');
+                }
+            });
+        };
+
+        document.addEventListener('DOMContentLoaded', function() {
+            window.switchPortalTab('attendance');
+        });
+    </script>
 </body>
 </html>

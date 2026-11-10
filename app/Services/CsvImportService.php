@@ -274,8 +274,14 @@ class CsvImportService
             $email = $row['email'] ?? ($nip.'@sman1lengkong.sch.id');
             $username = ! empty($row['username']) ? $row['username'] : $nip;
             $role = strtolower($row['peran'] ?? ($row['role'] ?? 'guru'));
-            $validRoles = ['guru', 'wali_kelas', 'admin', 'kepala_sekolah'];
-            if (! in_array($role, $validRoles)) {
+            $validRoles = [
+                'guru', 'wali_kelas', 'admin', 'super_admin', 'kepala_sekolah',
+                'tenaga_administrasi', 'kepala_administrasi', 'kepala_perpustakaan', 'pengelola_perpustakaan', 'pustakawan',
+                'ta_kesiswaan', 'ta_kepegawaian', 'ta_persuratan', 'bendahara', 'ta_sarpras', 'operator',
+                'wakasek_kesiswaan', 'wakasek_kurikulum', 'wakasek_humas', 'wakasek_sarpras',
+                'bk', 'koordinator_keagamaan', 'pembina_ekstra',
+            ];
+            if (! in_array($role, $validRoles, true)) {
                 $role = 'guru';
             }
             $password = ! empty($row['password']) ? $row['password'] : $nip;
@@ -634,6 +640,31 @@ class CsvImportService
             $date = ! empty($row['tanggal']) ? Carbon::parse($row['tanggal'])->toDateString() : now()->toDateString();
             $desc = $row['keterangan'] ?? ($row['deskripsi'] ?? 'Impor massal prestasi siswa.');
 
+            // Cek duplikasi di hari yang sama dengan jenis prestasi yang sama
+            $isDuplicate = Achievement::where('student_id', $student->id)
+                ->whereDate('date', $date)
+                ->where('status', '!=', 'DITOLAK')
+                ->where(function ($q) use ($item, $title, $firstCategory) {
+                    if ($item) {
+                        $q->where('item_id', $item->id)
+                            ->orWhere(function ($sub) use ($item, $title) {
+                                $sub->where('category_id', $item->category_id)
+                                    ->whereRaw('LOWER(TRIM(title)) = ?', [strtolower(trim($title))]);
+                            });
+                    } else {
+                        $q->where('category_id', $firstCategory?->id ?? 1)
+                            ->whereRaw('LOWER(TRIM(title)) = ?', [strtolower(trim($title))]);
+                    }
+                })
+                ->exists();
+
+            if ($isDuplicate) {
+                $skipped++;
+                $errors[] = "Baris {$lineNum}: Prestasi jenis '{$title}' untuk siswa {$student->name} sudah pernah tercatat pada tanggal {$date} (Duplikat dilewati).";
+
+                continue;
+            }
+
             Achievement::create([
                 'student_id' => $student->id,
                 'class_id' => $student->class_id,
@@ -696,6 +727,31 @@ class CsvImportService
             $level = strtoupper(trim($row['tingkat'] ?? ($item?->level ?? 'RINGAN')));
             $date = ! empty($row['tanggal']) ? Carbon::parse($row['tanggal'])->toDateString() : now()->toDateString();
             $desc = $row['keterangan'] ?? ($row['deskripsi'] ?? 'Impor massal pelanggaran siswa.');
+
+            // Cek duplikasi di hari yang sama dengan jenis pelanggaran yang sama
+            $isDuplicate = Violation::where('student_id', $student->id)
+                ->whereDate('date', $date)
+                ->where('status', '!=', 'DITOLAK')
+                ->where(function ($q) use ($item, $title, $firstCategory) {
+                    if ($item) {
+                        $q->where('item_id', $item->id)
+                            ->orWhere(function ($sub) use ($item, $title) {
+                                $sub->where('category_id', $item->category_id)
+                                    ->whereRaw('LOWER(TRIM(title)) = ?', [strtolower(trim($title))]);
+                            });
+                    } else {
+                        $q->where('category_id', $firstCategory?->id ?? 1)
+                            ->whereRaw('LOWER(TRIM(title)) = ?', [strtolower(trim($title))]);
+                    }
+                })
+                ->exists();
+
+            if ($isDuplicate) {
+                $skipped++;
+                $errors[] = "Baris {$lineNum}: Pelanggaran jenis '{$title}' untuk siswa {$student->name} sudah pernah tercatat pada tanggal {$date} (Duplikat dilewati).";
+
+                continue;
+            }
 
             Violation::create([
                 'student_id' => $student->id,

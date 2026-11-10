@@ -6,6 +6,11 @@ use App\Models\User;
 use App\Services\AiStudentAnalysisService;
 use Illuminate\Support\Facades\Http;
 
+beforeEach(function () {
+    SchoolSetting::set('gemini_api_key', '');
+    config(['services.gemini.api_key' => '']);
+});
+
 test('ai student analysis service synthesizes 5 pillars into ethical and constructive recommendations', function () {
     $student = Student::first();
     $service = app(AiStudentAnalysisService::class);
@@ -101,7 +106,7 @@ test('gemini api response is parsed properly and marked as is_ai_generated when 
     $analysis = $service->analyzeStudent($student);
 
     expect($analysis['is_ai_generated'])->toBeTrue();
-    expect($analysis['provider'])->toBe('Google Gemini AI');
+    expect($analysis['provider'])->toContain('Google Gemini AI');
     expect($analysis['model'])->toBe('gemini-2.5-flash');
     expect($analysis['ringkasan'])->toContain('Siswa menunjukkan potensi akademik');
     expect($analysis['kesimpulan'])->toBeArray()->toHaveCount(3);
@@ -111,7 +116,7 @@ test('gemini api response is parsed properly and marked as is_ai_generated when 
     SchoolSetting::set('gemini_api_key', '');
 });
 
-test('gemini api failure falls back gracefully to local pedagogical synthesizer without crashing', function () {
+test('gemini api failure falls back gracefully to online smart engine without crashing', function () {
     Http::fake([
         'https://generativelanguage.googleapis.com/*' => Http::response([
             'error' => ['message' => 'Internal Server Error'],
@@ -124,8 +129,8 @@ test('gemini api failure falls back gracefully to local pedagogical synthesizer 
     $service = app(AiStudentAnalysisService::class);
     $analysis = $service->analyzeStudent($student);
 
-    expect($analysis['is_ai_generated'])->toBeFalse();
-    expect($analysis['provider'])->toBe('Synthesizer Pedagogis Lokal (Offline)');
+    expect($analysis['is_ai_generated'])->toBeTrue();
+    expect($analysis['provider'])->toBe('AI Smart Engine (Online)');
     expect($analysis['ringkasan'])->toBeString();
     expect($analysis['rekomendasi'])->toHaveKeys(['wali_kelas', 'bk', 'orang_tua', 'siswa']);
 

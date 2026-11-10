@@ -86,7 +86,18 @@ class HabitController extends Controller
         ]);
 
         $user = Auth::user();
-        $student = $user->student ?? Student::first();
+        $student = null;
+        if ($user->role === 'siswa') {
+            $student = $user->student;
+        } else {
+            $studentId = $request->input('student_id');
+            $student = $studentId ? Student::find($studentId) : null;
+        }
+
+        if (! $student) {
+            $student = Student::first();
+        }
+
         $habit = Habit::findOrFail($validated['habit_id']);
         $targetDate = Carbon::parse($validated['date'])->toDateString();
         $todayDate = Carbon::today('Asia/Jakarta')->toDateString();
@@ -336,7 +347,9 @@ class HabitController extends Controller
         if ($search) {
             $studentsQuery->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('nis', 'like', "%{$search}%");
+                    ->orWhere('initials', 'like', "%{$search}%")
+                    ->orWhere('nis', 'like', "%{$search}%")
+                    ->orWhere('nisn', 'like', "%{$search}%");
             });
         }
         $students = $studentsQuery->get();
@@ -519,8 +532,8 @@ class HabitController extends Controller
     public function updateTargetTimes(Request $request): RedirectResponse
     {
         $user = Auth::user();
-        if ($user->role !== 'super_admin') {
-            abort(403, 'Hanya Super Admin yang memiliki hak akses mengatur konfigurasi 7 Kebiasaan.');
+        if (! $user->hasAnyRole(['admin', 'super_admin'])) {
+            abort(403, 'Hanya Admin atau Super Admin yang memiliki hak akses mengatur konfigurasi 7 Kebiasaan.');
         }
 
         $validated = $request->validate([

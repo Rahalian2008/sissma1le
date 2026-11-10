@@ -5,7 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
 
 class Student extends Model
 {
@@ -23,16 +27,58 @@ class Student extends Model
         'photo',
         'birth_place',
         'birth_date',
+        'religion',
+        'nik',
         'address',
+        'father_name',
+        'mother_name',
+        'previous_school',
         'phone',
         'is_active',
+        'current_class_level',
+        'current_rombel',
+        'status',
+        'entry_path',
+        'school_origin',
+        'admission_date',
+        'admission_class',
+        'junior_diploma_number',
+        'junior_exam_number',
+        'diploma_number',
+        'graduation_year',
+        'qr_code_token',
+        'notes',
+        'residence_district',
+        'transportation',
+        'distance_to_school',
+        'special_needs',
+        'living_with',
+        'child_order',
+        'siblings_count',
+        'blood_type',
+        'height',
+        'weight',
+        'rt_rw',
+        'postal_code',
+        'family_card_number',
+        'is_pip',
+        'pip_number',
+        'face_photo_path',
+        'face_descriptor',
+        'face_registered_at',
+        'is_tu_registered',
+        'tu_registered_at',
     ];
 
     protected function casts(): array
     {
         return [
             'birth_date' => 'date',
+            'admission_date' => 'date',
             'is_active' => 'boolean',
+            'is_tu_registered' => 'boolean',
+            'face_registered_at' => 'datetime',
+            'tu_registered_at' => 'datetime',
         ];
     }
 
@@ -54,6 +100,26 @@ class Student extends Model
     public function parents(): HasMany
     {
         return $this->hasMany(ParentGuardian::class, 'student_id');
+    }
+
+    public function family(): HasOne
+    {
+        return $this->hasOne(StudentFamily::class, 'student_id');
+    }
+
+    public function mutations(): HasMany
+    {
+        return $this->hasMany(StudentMutation::class, 'student_id');
+    }
+
+    public function scholarships(): HasMany
+    {
+        return $this->hasMany(StudentScholarship::class, 'student_id');
+    }
+
+    public function alumnus(): HasOne
+    {
+        return $this->hasOne(StudentAlumnus::class, 'student_id');
     }
 
     public function attendances(): HasMany
@@ -84,6 +150,96 @@ class Student extends Model
     public function habitSummaries(): HasMany
     {
         return $this->hasMany(HabitSummary::class);
+    }
+
+    public function worshipAttendances(): HasMany
+    {
+        return $this->hasMany(WorshipAttendance::class, 'student_id');
+    }
+
+    public function tahfidzRecords(): HasMany
+    {
+        return $this->hasMany(QuranTahfidzRecord::class, 'student_id');
+    }
+
+    public function extracurriculars(): BelongsToMany
+    {
+        return $this->belongsToMany(Extracurricular::class, 'extracurricular_student')
+            ->withPivot('role', 'joined_at');
+    }
+
+    public function extracurricularAttendances(): HasMany
+    {
+        return $this->hasMany(ExtracurricularAttendance::class, 'student_id');
+    }
+
+    public function aiRaport(): HasOne
+    {
+        return $this->hasOne(StudentAiRaport::class, 'student_id')->latestOfMany();
+    }
+
+    public function aiRaports(): HasMany
+    {
+        return $this->hasMany(StudentAiRaport::class, 'student_id');
+    }
+
+    public function counselingSessions(): HasMany
+    {
+        return $this->hasMany(BkCounselingSession::class, 'student_id');
+    }
+
+    public function homeVisits(): HasMany
+    {
+        return $this->hasMany(BkHomeVisit::class, 'student_id');
+    }
+
+    public function parentCalls(): HasMany
+    {
+        return $this->hasMany(BkParentCall::class, 'student_id');
+    }
+
+    public function psychologicalResults(): HasMany
+    {
+        return $this->hasMany(BkPsychologicalTestResult::class, 'student_id');
+    }
+
+    public function latestVakResult(): HasOne
+    {
+        return $this->hasOne(BkPsychologicalTestResult::class, 'student_id')
+            ->whereHas('test', fn ($q) => $q->where('slug', 'vak'))
+            ->latestOfMany();
+    }
+
+    public function latestRiasecResult(): HasOne
+    {
+        return $this->hasOne(BkPsychologicalTestResult::class, 'student_id')
+            ->whereHas('test', fn ($q) => $q->where('slug', 'riasec'))
+            ->latestOfMany();
+    }
+
+    public function getNormalizedGrade(): ?string
+    {
+        $grade = $this->schoolClass?->grade ?? null;
+        if (! $grade && $this->class_id) {
+            $schoolClass = SchoolClass::find($this->class_id);
+            $grade = $schoolClass?->grade;
+        }
+
+        return QuranTahfidzRecord::normalizeGrade($grade) ?: 'X';
+    }
+
+    public function hasFaceRegistered(): bool
+    {
+        return ! empty($this->face_descriptor) || ! empty($this->face_photo_path);
+    }
+
+    public function getFacePhotoUrlAttribute(): ?string
+    {
+        if (! $this->face_photo_path) {
+            return null;
+        }
+
+        return Storage::url($this->face_photo_path);
     }
 
     // Points calculation - strictly kept separate!
@@ -225,5 +381,19 @@ class Student extends Model
         $present = $this->attendances()->whereIn('status', ['HADIR', 'TERLAMBAT'])->count();
 
         return round(($present / $total) * 100, 1);
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
+
+    public function scopeTuRegistered($query)
+    {
+        if (Schema::hasColumn('students', 'is_tu_registered')) {
+            return $query->where('is_tu_registered', true);
+        }
+
+        return $query;
     }
 }

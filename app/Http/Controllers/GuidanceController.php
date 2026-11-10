@@ -53,7 +53,9 @@ class GuidanceController extends Controller
                     ->orWhere('notes', 'like', "%{$search}%")
                     ->orWhereHas('student', function ($sq) use ($search) {
                         $sq->where('name', 'like', "%{$search}%")
-                            ->orWhere('nis', 'like', "%{$search}%");
+                            ->orWhere('initials', 'like', "%{$search}%")
+                            ->orWhere('nis', 'like', "%{$search}%")
+                            ->orWhere('nisn', 'like', "%{$search}%");
                     });
             });
         }

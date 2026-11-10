@@ -86,8 +86,9 @@
                              data-nis="{{ $s->nis }}"
                              data-class="{{ $s->schoolClass?->name ?? 'Umum' }}"
                              data-initials="{{ strtolower($initials) }}"
+                             data-avatar="{{ strtoupper(substr($initials, 0, 2)) }}"
                              data-firstletter="{{ $firstChar }}"
-                             onclick="selectViolStudent('{{ $s->id }}', '{{ addslashes($s->name) }}', 'Kelas {{ $s->schoolClass?->name ?? 'Umum' }} • NIS: {{ $s->nis }}', '{{ strtoupper(substr($initials, 0, 2)) }}')">
+                             onclick="selectViolStudent(this)">
                             <div class="flex items-center gap-2.5 truncate mr-2">
                                 <span class="w-7 h-7 rounded-lg bg-rose-100 dark:bg-rose-950/70 text-rose-700 dark:text-rose-300 font-bold text-xs flex items-center justify-center shrink-0">
                                     {{ strtoupper(substr($initials, 0, 2)) }}
@@ -155,7 +156,7 @@
                              data-code="{{ $cat->code }}"
                              data-name="{{ $cat->name }}"
                              data-initials="{{ strtolower($catInitials) }}"
-                             onclick="selectViolCategory('{{ $cat->id }}', '{{ $cat->code }}', '{{ addslashes($cat->name) }}')">
+                             onclick="selectViolCategory(this)">
                             <div class="flex items-center gap-2.5 truncate mr-2">
                                 <span class="px-2 py-0.5 rounded-md bg-rose-100 dark:bg-rose-950 text-rose-800 dark:text-rose-300 font-extrabold text-xs shrink-0">
                                     {{ $cat->code }}
@@ -231,7 +232,7 @@
                                  data-points="{{ $item->default_points }}"
                                  data-rec="{{ $item->guidance_recommendation ?? '' }}"
                                  data-initials="{{ strtolower($itemInitials) }}"
-                                 onclick="selectViolMasterItem('{{ $item->id }}', '{{ $item->code }}', '{{ addslashes($item->name) }}', '{{ $item->default_points }}', '{{ addslashes($item->guidance_recommendation ?? '') }}', '{{ $cat->id }}', '{{ $cat->code }}', '{{ addslashes($cat->name) }}')">
+                                 onclick="selectViolMasterItem(this)">
                                 <div class="flex items-center gap-2.5 truncate mr-2">
                                     <span class="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-mono text-[10px] font-bold shrink-0">
                                         [{{ $item->code }}]
@@ -385,11 +386,23 @@
         }
     }
 
-    function selectViolStudent(id, name, meta, initials) {
+    function selectViolStudent(elOrId, name, meta, initials) {
+        let id, sName, sMeta, sInitials;
+        if (elOrId instanceof HTMLElement) {
+            id = elOrId.dataset.id;
+            sName = elOrId.dataset.name;
+            sMeta = 'Kelas ' + (elOrId.dataset.class || 'Umum') + ' • NIS: ' + elOrId.dataset.nis;
+            sInitials = elOrId.dataset.avatar || '--';
+        } else {
+            id = elOrId;
+            sName = name;
+            sMeta = meta;
+            sInitials = initials;
+        }
         document.getElementById('student_id').value = id;
-        document.getElementById('viol-student-preview-name').textContent = name;
-        document.getElementById('viol-student-preview-meta').textContent = meta;
-        document.getElementById('viol-student-preview-avatar').textContent = initials;
+        document.getElementById('viol-student-preview-name').textContent = sName;
+        document.getElementById('viol-student-preview-meta').textContent = sMeta;
+        document.getElementById('viol-student-preview-avatar').textContent = sInitials;
 
         document.getElementById('viol-student-selected-preview').classList.remove('hidden');
         document.getElementById('viol-student-search-wrapper').classList.add('hidden');
@@ -440,11 +453,21 @@
         document.getElementById('viol-category-empty').classList.toggle('hidden', visibleCount > 0);
     }
 
-    function selectViolCategory(id, code, name) {
+    function selectViolCategory(elOrId, code, name) {
+        let id, cCode, cName;
+        if (elOrId instanceof HTMLElement) {
+            id = elOrId.dataset.id;
+            cCode = elOrId.dataset.code;
+            cName = elOrId.dataset.name;
+        } else {
+            id = elOrId;
+            cCode = code;
+            cName = name;
+        }
         currentSelectedViolCategory = id;
         document.getElementById('viol-category-id-hidden').value = id;
-        document.getElementById('viol-category-preview-code').textContent = code;
-        document.getElementById('viol-category-preview-name').textContent = name;
+        document.getElementById('viol-category-preview-code').textContent = cCode;
+        document.getElementById('viol-category-preview-name').textContent = cName;
 
         document.getElementById('viol-category-selected-preview').classList.remove('hidden');
         document.getElementById('viol-category-search-wrapper').classList.add('hidden');
@@ -502,24 +525,45 @@
         document.getElementById('viol-item-empty').classList.toggle('hidden', visibleCount > 0);
     }
 
-    function selectViolMasterItem(id, code, name, points, rec, catId, catCode, catName) {
+    function selectViolMasterItem(elOrId, code, name, points, rec, catId, catCode, catName) {
+        let id, iCode, iName, iPoints, iRec, iCatId, iCatCode, iCatName;
+        if (elOrId instanceof HTMLElement) {
+            id = elOrId.dataset.id;
+            iCode = elOrId.dataset.code;
+            iName = elOrId.dataset.name;
+            iPoints = elOrId.dataset.points;
+            iRec = elOrId.dataset.rec;
+            iCatId = elOrId.dataset.category;
+            iCatCode = elOrId.dataset.catCode;
+            iCatName = elOrId.dataset.catName;
+        } else {
+            id = elOrId;
+            iCode = code;
+            iName = name;
+            iPoints = points;
+            iRec = rec;
+            iCatId = catId;
+            iCatCode = catCode;
+            iCatName = catName;
+        }
+
         document.getElementById('viol-item-id-hidden').value = id;
-        document.getElementById('viol-item-preview-code').textContent = code;
-        document.getElementById('viol-item-preview-name').textContent = name;
-        document.getElementById('viol-item-preview-meta').textContent = catCode + ' - ' + catName + ' (' + points + ' Poin)';
+        document.getElementById('viol-item-preview-code').textContent = iCode;
+        document.getElementById('viol-item-preview-name').textContent = iName;
+        document.getElementById('viol-item-preview-meta').textContent = (iCatCode ? iCatCode + ' - ' + iCatName : '') + (iPoints ? ' (' + iPoints + ' Poin)' : '');
 
         document.getElementById('viol-item-selected-preview').classList.remove('hidden');
         document.getElementById('viol-item-search-wrapper').classList.add('hidden');
         closeViolItemDropdown();
 
         // Auto-fill form values
-        if (points) document.getElementById('viol-points-input').value = points;
-        if (name && !document.getElementById('viol-title-input').value) document.getElementById('viol-title-input').value = name;
-        if (rec) document.getElementById('viol-rec-input').value = rec;
+        if (iPoints) document.getElementById('viol-points-input').value = iPoints;
+        if (iName && !document.getElementById('viol-title-input').value) document.getElementById('viol-title-input').value = iName;
+        if (iRec) document.getElementById('viol-rec-input').value = iRec;
 
         // Auto-select category if not selected yet
-        if (!currentSelectedViolCategory && catId) {
-            selectViolCategory(catId, catCode, catName);
+        if (!currentSelectedViolCategory && iCatId) {
+            selectViolCategory(iCatId, iCatCode, iCatName);
         }
     }
 

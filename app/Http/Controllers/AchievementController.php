@@ -8,7 +8,9 @@ use App\Models\AuditLog;
 use App\Models\Notification;
 use App\Models\SchoolClass;
 use App\Models\Student;
+use App\Models\User;
 use App\Services\CsvImportService;
+use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -29,20 +31,23 @@ class AchievementController extends Controller
             ->orderByDesc('date');
 
         $classId = null;
-        if ($user->role === 'siswa') {
+        if ($user->isStudent()) {
             $student = $user->student ?? Student::first();
             $query->where('student_id', $student->id);
             $classes = collect();
-        } elseif ($user->role === 'orang_tua') {
+        } elseif ($user->isParent()) {
             $student = $user->parentProfile?->student ?? Student::first();
             $query->where('student_id', $student->id);
             $classes = collect();
-        } elseif ($user->role === 'wali_kelas') {
+        } elseif ($user->hasRole('wali_kelas') && ! $user->hasAnyRole(['admin', 'super_admin', 'kesiswaan', 'wakasek_kesiswaan', 'kepala_sekolah'])) {
             $class = $user->teacher?->homeroomClass;
             $classId = $class?->id;
             $classes = $class ? collect([$class]) : collect();
             if ($class) {
-                $query->where('class_id', $class->id);
+                $query->where(function ($q) use ($class, $user) {
+                    $q->where('class_id', $class->id)
+                        ->orWhere('reporter_id', $user->id);
+                });
             }
         } else {
             $classes = SchoolClass::all();
@@ -66,7 +71,9 @@ class AchievementController extends Controller
                 $q->where('title', 'like', "%{$search}%")
                     ->orWhereHas('student', function ($sq) use ($search) {
                         $sq->where('name', 'like', "%{$search}%")
-                            ->orWhere('nis', 'like', "%{$search}%");
+                            ->orWhere('initials', 'like', "%{$search}%")
+                            ->orWhere('nis', 'like', "%{$search}%")
+                            ->orWhere('nisn', 'like', "%{$search}%");
                     });
             });
         }
@@ -76,8 +83,8 @@ class AchievementController extends Controller
 
         // Student's total points and reward status if student/parent
         $studentContext = null;
-        if (in_array($user->role, ['siswa', 'orang_tua'])) {
-            $studentContext = $user->role === 'siswa' ? ($user->student ?? Student::first()) : ($user->parentProfile?->student ?? Student::first());
+        if ($user->isStudent() || $user->isParent()) {
+            $studentContext = $user->isStudent() ? ($user->student ?? Student::first()) : ($user->parentProfile?->student ?? Student::first());
         }
 
         return view('achievements.index', compact('achievements', 'categories', 'classes', 'classId', 'studentContext'));
@@ -86,20 +93,14 @@ class AchievementController extends Controller
     public function create(): View
     {
         $user = Auth::user();
-        if (in_array($user->role, ['siswa', 'orang_tua', 'kepala_sekolah'])) {
+        if (! $user->hasAnyRole(['admin', 'super_admin', 'guru', 'wali_kelas', 'kesiswaan', 'wakasek_kesiswaan', 'bk', 'pembina_ekstra', 'koordinator_keagamaan'])) {
             abort(403, 'Akun ini tidak memiliki kewenangan untuk mencatat data prestasi (Read-Only).');
         }
 
         $categories = AchievementCategory::with('items')->get();
 
-        if ($user->role === 'wali_kelas') {
-            $class = $user->teacher?->homeroomClass;
-            $classes = $class ? collect([$class]) : collect();
-            $students = $class ? $class->students()->with('schoolClass')->where('is_active', true)->get() : collect();
-        } else {
-            $classes = SchoolClass::all();
-            $students = Student::with('schoolClass')->where('is_active', true)->get();
-        }
+        $classes = SchoolClass::all();
+        $students = Student::with('schoolClass')->where('is_active', true)->get();
 
         return view('achievements.create', compact('categories', 'students', 'classes'));
     }
@@ -107,7 +108,7 @@ class AchievementController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $user = Auth::user();
-        if (in_array($user->role, ['siswa', 'orang_tua', 'kepala_sekolah'])) {
+        if (! $user->hasAnyRole(['admin', 'super_admin', 'guru', 'wali_kelas', 'kesiswaan', 'wakasek_kesiswaan', 'bk', 'pembina_ekstra', 'koordinator_keagamaan'])) {
             abort(403, 'Akun ini tidak memiliki hak akses untuk menginput data prestasi.');
         }
 
@@ -125,8 +126,31 @@ class AchievementController extends Controller
 
         $student = Student::findOrFail($validated['student_id']);
 
-        if ($user->role === 'wali_kelas' && $user->teacher?->homeroomClass && $student->class_id !== $user->teacher->homeroomClass->id) {
-            abort(403, 'Wali kelas hanya dapat menginput data untuk kelas binaannya.');
+        // Validasi duplikasi: Siswa tidak dapat menerima poin prestasi ganda di hari yang sama dengan jenis prestasi yang sama
+        $duplicateQuery = Achievement::where('student_id', $student->id)
+            ->whereDate('date', $validated['date'])
+            ->where('status', '!=', 'DITOLAK');
+
+        if (! empty($validated['item_id'])) {
+            $duplicateQuery->where(function ($q) use ($validated) {
+                $q->where('item_id', $validated['item_id'])
+                    ->orWhere(function ($sub) use ($validated) {
+                        $sub->where('category_id', $validated['category_id'])
+                            ->whereRaw('LOWER(TRIM(title)) = ?', [strtolower(trim($validated['title']))]);
+                    });
+            });
+        } else {
+            $duplicateQuery->where('category_id', $validated['category_id'])
+                ->whereRaw('LOWER(TRIM(title)) = ?', [strtolower(trim($validated['title']))]);
+        }
+
+        $existingAchievement = $duplicateQuery->first();
+
+        if ($existingAchievement) {
+            $formattedDate = Carbon::parse($validated['date'])->translatedFormat('d F Y');
+            $errMessage = "Prestasi jenis '{$existingAchievement->title}' sudah pernah dicatat untuk siswa {$student->name} pada tanggal {$formattedDate}. Poin prestasi sejenis tidak dapat diinput ganda di hari yang sama.";
+
+            return back()->withInput()->with('error', $errMessage)->withErrors(['title' => $errMessage]);
         }
 
         $certificatePath = null;
@@ -135,7 +159,7 @@ class AchievementController extends Controller
             $certificatePath = $request->file('certificate_file')->store('achievements', 'public');
         }
 
-        $initialStatus = in_array($user->role, ['admin', 'super_admin', 'kesiswaan', 'wali_kelas']) ? 'DIVERIFIKASI' : 'MENUNGGU_VERIFIKASI';
+        $initialStatus = $user->isKesiswaanAdmin() ? 'DIVERIFIKASI' : 'MENUNGGU_VERIFIKASI';
 
         $achievement = Achievement::create([
             'student_id' => $student->id,
@@ -172,9 +196,24 @@ class AchievementController extends Controller
                     'link_url' => '/achievements',
                 ]);
             }
+        } else {
+            $adminUsers = User::whereIn('role', ['admin', 'super_admin'])->get();
+            foreach ($adminUsers as $admin) {
+                Notification::create([
+                    'user_id' => $admin->id,
+                    'title' => 'Pencatatan Prestasi Menunggu Persetujuan',
+                    'message' => "{$user->name} mencatat prestasi '{$achievement->title}' untuk siswa {$student->name}. Menunggu persetujuan admin.",
+                    'type' => 'ACHIEVEMENT',
+                    'link_url' => '/achievements/'.$achievement->id,
+                ]);
+            }
         }
 
-        return redirect()->route('achievements.index')->with('success', 'Data prestasi siswa berhasil disimpan.');
+        $flashMessage = ($initialStatus === 'DIVERIFIKASI')
+            ? 'Data prestasi siswa berhasil disimpan dan diverifikasi.'
+            : 'Data prestasi siswa berhasil dicatat dan berstatus pending (menunggu verifikasi/approve Admin).';
+
+        return redirect()->route('achievements.index')->with('success', $flashMessage);
     }
 
     public function show(Achievement $achievement): View
@@ -187,8 +226,8 @@ class AchievementController extends Controller
     public function verify(Request $request, Achievement $achievement): RedirectResponse
     {
         $user = Auth::user();
-        if ($user->role === 'kepala_sekolah') {
-            abort(403, 'Akun Kepala Sekolah bersifat monitoring dan tidak melakukan verifikasi.');
+        if (! $user->isKesiswaanAdmin()) {
+            abort(403, 'Hanya Admin, Super Admin, atau Wakasek Kesiswaan yang berwenang untuk menyetujui (approve) atau menolak laporan prestasi.');
         }
 
         $validated = $request->validate([
@@ -221,14 +260,83 @@ class AchievementController extends Controller
             ]);
         }
 
+        // Notifikasi ke pelapor (guru/wali kelas) jika bukan admin sendiri
+        if ($achievement->reporter_id && $achievement->reporter_id !== $user->id) {
+            Notification::create([
+                'user_id' => $achievement->reporter_id,
+                'title' => ($validated['status'] === 'DIVERIFIKASI') ? 'Laporan Prestasi Disetujui' : 'Laporan Prestasi Ditolak',
+                'message' => ($validated['status'] === 'DIVERIFIKASI')
+                    ? "Pencatatan prestasi siswa {$achievement->student?->name} ({$achievement->title}) telah disetujui (approve) oleh Admin."
+                    : "Pencatatan prestasi siswa {$achievement->student?->name} ({$achievement->title}) ditolak: ".($validated['rejection_reason'] ?? '-'),
+                'type' => 'ACHIEVEMENT',
+                'link_url' => '/achievements/'.$achievement->id,
+            ]);
+        }
+
         return back()->with('success', 'Verifikasi prestasi berhasil diperbarui.');
+    }
+
+    public function edit(Achievement $achievement): View
+    {
+        $user = Auth::user();
+        if (! $user->isKesiswaanAdmin()) {
+            abort(403, 'Akses Ditolak: Hanya Admin, Super Admin, atau Wakasek Kesiswaan yang dapat mengubah data prestasi.');
+        }
+
+        $categories = AchievementCategory::with('items')->get();
+        $classes = SchoolClass::all();
+        $students = Student::with('schoolClass')->where('is_active', true)->get();
+
+        return view('achievements.edit', compact('achievement', 'categories', 'students', 'classes'));
+    }
+
+    public function update(Request $request, Achievement $achievement): RedirectResponse
+    {
+        $user = Auth::user();
+        if (! $user->isKesiswaanAdmin()) {
+            abort(403, 'Akses Ditolak: Hanya Admin, Super Admin, atau Wakasek Kesiswaan yang dapat mengubah data prestasi.');
+        }
+
+        $validated = $request->validate([
+            'student_id' => ['required', 'exists:students,id'],
+            'category_id' => ['required', 'exists:achievement_categories,id'],
+            'item_id' => ['nullable', 'exists:achievement_items,id'],
+            'title' => ['required', 'string', 'max:255'],
+            'points' => ['required', 'integer', 'min:1', 'max:500'],
+            'date' => ['required', 'date'],
+            'time' => ['nullable', 'date_format:H:i'],
+            'level' => ['required', 'string', 'in:SEKOLAH,KABUPATEN,PROVINSI,NASIONAL,INTERNASIONAL'],
+            'description' => ['nullable', 'string'],
+            'status' => ['required', 'in:MENUNGGU_VERIFIKASI,DIVERIFIKASI,DITOLAK'],
+        ]);
+
+        $achievement->update([
+            'student_id' => $validated['student_id'],
+            'category_id' => $validated['category_id'],
+            'item_id' => $validated['item_id'] ?? null,
+            'title' => $validated['title'],
+            'points' => $validated['points'],
+            'date' => $validated['date'],
+            'time' => $validated['time'] ? $validated['time'].':00' : $achievement->time,
+            'level' => $validated['level'],
+            'description' => $validated['description'] ?? null,
+            'status' => $validated['status'],
+        ]);
+
+        AuditLog::log('UPDATE_PRESTASI', 'Achievement', $achievement->id, null, [
+            'title' => $achievement->title,
+            'points' => $achievement->points,
+            'status' => $achievement->status,
+        ]);
+
+        return redirect()->route('achievements.index')->with('success', 'Data prestasi berhasil diperbarui.');
     }
 
     public function destroy(Achievement $achievement): RedirectResponse
     {
         $user = Auth::user();
-        if ($user->role === 'kepala_sekolah') {
-            abort(403, 'Akun Kepala Sekolah bersifat monitoring.');
+        if (! $user->isKesiswaanAdmin()) {
+            abort(403, 'Akses Ditolak: Hanya Admin, Super Admin, atau Wakasek Kesiswaan yang dapat menghapus data prestasi.');
         }
 
         $title = $achievement->title;
@@ -253,7 +361,7 @@ class AchievementController extends Controller
     public function import(Request $request): RedirectResponse
     {
         $user = Auth::user();
-        if ($user->role === 'kepala_sekolah') {
+        if ($user->isKepalaSekolah() && ! $user->hasAnyRole(['admin', 'super_admin'])) {
             abort(403, 'Akun Kepala Sekolah bersifat monitoring.');
         }
 

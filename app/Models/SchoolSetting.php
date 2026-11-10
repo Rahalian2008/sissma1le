@@ -31,6 +31,11 @@ class SchoolSetting extends Model
         return $setting ? $setting->value : $default;
     }
 
+    public static function allAsAssoc(): array
+    {
+        return static::pluck('value', 'key')->toArray();
+    }
+
     public static function set(string $key, mixed $value, string $group = 'general', ?string $description = null): self
     {
         return static::updateOrCreate(

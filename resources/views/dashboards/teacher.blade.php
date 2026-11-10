@@ -23,67 +23,76 @@
         </div>
     </div>
 
-    <!-- Stats -->
+    <!-- Menu Cepat Guru & Pembina -->
+    @include('dashboards.partials.staff_quick_actions')
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
-        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs">
-            <div class="text-xs font-bold text-slate-500 uppercase">Siswa Hadir Hari Ini</div>
-            <div class="text-3xl font-black text-slate-900 mt-2">{{ $todayPresentCount }}</div>
-            <p class="text-xs text-slate-400 mt-1">Presensi di seluruh sistem SMAN 1 Lengkong</p>
+        <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs">
+            <div class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Siswa Hadir Hari Ini</div>
+            <div class="text-3xl font-black text-slate-900 dark:text-white mt-2">{{ $todayPresentCount }}</div>
+            <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">Presensi di seluruh sistem SMAN 1 Lengkong</p>
         </div>
-        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs">
-            <div class="text-xs font-bold text-slate-500 uppercase">Prestasi Menunggu Verifikasi</div>
-            <div class="text-3xl font-black text-amber-600 mt-2">{{ $pendingAchievements }}</div>
-            <a href="{{ route('achievements.index', ['status' => 'MENUNGGU_VERIFIKASI']) }}" class="text-xs font-bold text-indigo-600 mt-1 inline-block">Buka Antrean Verifikasi →</a>
+        <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs">
+            <div class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Prestasi Menunggu Verifikasi</div>
+            <div class="text-3xl font-black text-amber-600 dark:text-amber-400 mt-2">{{ $pendingAchievements }}</div>
+            <a href="{{ route('achievements.index', ['status' => 'MENUNGGU_VERIFIKASI']) }}" class="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline mt-1 inline-block">Buka Antrean Verifikasi →</a>
         </div>
-        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs">
-            <div class="text-xs font-bold text-slate-500 uppercase">Pelanggaran Menunggu Verifikasi</div>
-            <div class="text-3xl font-black text-rose-600 mt-2">{{ $pendingViolations }}</div>
-            <a href="{{ route('violations.index', ['status' => 'MENUNGGU_VERIFIKASI']) }}" class="text-xs font-bold text-indigo-600 mt-1 inline-block">Buka Antrean Verifikasi →</a>
+        <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs">
+            <div class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Pelanggaran Menunggu Verifikasi</div>
+            <div class="text-3xl font-black text-rose-600 dark:text-rose-400 mt-2">{{ $pendingViolations }}</div>
+            <a href="{{ route('violations.index', ['status' => 'MENUNGGU_VERIFIKASI']) }}" class="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline mt-1 inline-block">Buka Antrean Verifikasi →</a>
         </div>
     </div>
 
     <!-- Sesi Presensi QR Hari Ini & Shortcut Form -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div class="lg:col-span-2 bg-white p-6 rounded-3xl border border-slate-200 shadow-xs">
+        <div class="lg:col-span-2 bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs">
             <div class="flex items-center justify-between mb-4">
-                <h3 class="text-base font-bold text-slate-900">Sesi Presensi QR Aktif Hari Ini</h3>
-                <a href="{{ route('attendance.qr.session') }}" class="text-xs font-bold text-indigo-600">+ Buat Sesi Baru</a>
+                <h3 class="text-base font-bold text-slate-900 dark:text-white">Sesi Presensi QR Aktif Hari Ini</h3>
+                <a href="{{ route('attendance.qr.session') }}" class="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline">+ Buat Sesi Baru</a>
             </div>
 
             <div class="space-y-3">
                 @forelse($activeSessions as $session)
-                    <div class="flex items-center justify-between p-4 rounded-2xl bg-slate-50 border border-slate-200">
+                    <div class="flex items-center justify-between p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
                         <div>
-                            <span class="px-2 py-0.5 rounded-md bg-indigo-100 text-indigo-700 text-xs font-bold">
+                            <span class="px-2 py-0.5 rounded-md bg-indigo-100 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 text-xs font-bold">
                                 Kelas {{ $session->schoolClass?->name ?? 'Semua' }}
                             </span>
-                            <h4 class="text-sm font-bold text-slate-800 mt-1">{{ $session->subject_or_activity }}</h4>
-                            <p class="text-xs text-slate-400 mt-0.5">Waktu: {{ substr($session->start_time, 0, 5) }} - {{ substr($session->end_time, 0, 5) }} WIB</p>
+                            <h4 class="text-sm font-bold text-slate-800 dark:text-white mt-1">{{ $session->subject_or_activity }}</h4>
+                            <p class="text-xs text-slate-400 dark:text-slate-500 mt-0.5">Waktu: {{ substr($session->start_time, 0, 5) }} - {{ substr($session->end_time, 0, 5) }} WIB</p>
                         </div>
-                        <a href="{{ route('attendance.qr.session', ['session_id' => $session->id]) }}" class="px-4 py-2 bg-slate-900 text-white rounded-xl text-xs font-bold hover:bg-indigo-600 transition">
+                        <a href="{{ route('attendance.qr.session', ['session_id' => $session->id]) }}" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 dark:bg-indigo-600 dark:hover:bg-indigo-500 text-white rounded-xl text-xs font-bold transition">
                             Tampilkan Proyektor QR
                         </a>
                     </div>
                 @empty
-                    <div class="text-center py-8 text-slate-400 text-xs">
+                    <div class="text-center py-8 text-slate-400 dark:text-slate-500 text-xs">
                         Belum ada sesi presensi QR untuk hari ini.
                     </div>
                 @endforelse
             </div>
         </div>
 
-        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs space-y-4">
-            <h3 class="text-base font-bold text-slate-900">Aksi Cepat Pendidik</h3>
+        <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-4">
+            <h3 class="text-base font-bold text-slate-900 dark:text-white">Aksi Cepat Pendidik</h3>
             <a href="{{ route('achievements.create') }}" class="w-full py-3 px-4 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-2xl text-xs flex items-center justify-center gap-2 shadow-xs transition">
                 <span>+</span> Input Capaian Prestasi Siswa
             </a>
             <a href="{{ route('violations.create') }}" class="w-full py-3 px-4 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-2xl text-xs flex items-center justify-center gap-2 shadow-xs transition">
                 <span>+</span> Catat Pelanggaran Tata Tertib
             </a>
-            <a href="{{ route('attendance.history') }}" class="w-full py-3 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-2xl text-xs flex items-center justify-center gap-2 transition">
+            <a href="{{ route('attendance.history') }}" class="w-full py-3 px-4 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold rounded-2xl text-xs flex items-center justify-center gap-2 transition">
                 Lihat Rekapitulasi Presensi
             </a>
         </div>
     </div>
+
+    <!-- Ringkasan LMS Pembelajaran & Perpustakaan Digital Guru -->
+    @include('dashboards.partials.lms_library_summary')
+
+    <!-- Ringkasan Ibadah Bersama & Tahfidz Al-Qur'an (Khusus Koordinator Keagamaan) -->
+    @if(Auth::user()->hasRole('koordinator_keagamaan'))
+        @include('dashboards.partials.worship_tahfidz_summary')
+    @endif
 </div>
 @endsection

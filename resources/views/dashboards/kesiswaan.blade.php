@@ -20,6 +20,9 @@
         </div>
     </div>
 
+    <!-- Menu Cepat Staf Kesiswaan -->
+    @include('dashboards.partials.staff_quick_actions')
+
     <!-- School Stats Overview -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         <div class="bg-white p-5 rounded-3xl border border-slate-200 shadow-xs">
@@ -90,8 +93,8 @@
                                 </span>
                             </td>
                             <td class="py-3.5 px-4 text-center">
-                                <a href="{{ route('reports.student.dossier', $student->id) }}" class="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs">
-                                    Buka Dossier Siswa
+                                <a href="{{ route('reports.student.dossier', $student->id) }}" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl text-xs transition">
+                                    Raport AI & Dossier
                                 </a>
                             </td>
                         </tr>
@@ -115,5 +118,8 @@
 
     <!-- Capaian 7 Kebiasaan Anak Indonesia Hebat -->
     @include('dashboards.partials.habits_analytics')
+
+    <!-- Ringkasan LMS Pembelajaran & Perpustakaan Digital Kesiswaan -->
+    @include('dashboards.partials.lms_library_summary')
 </div>
 @endsection

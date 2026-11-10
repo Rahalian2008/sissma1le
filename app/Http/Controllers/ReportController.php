@@ -4,11 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Achievement;
 use App\Models\Attendance;
+use App\Models\AuditLog;
 use App\Models\Habit;
 use App\Models\HabitDailyLog;
 use App\Models\SchoolClass;
 use App\Models\SchoolSetting;
 use App\Models\Student;
+use App\Models\Teacher;
+use App\Models\User;
 use App\Models\Violation;
 use App\Services\ReportService;
 use Carbon\Carbon;
@@ -22,6 +25,13 @@ class ReportController extends Controller
     public function __construct(
         protected ReportService $reportService
     ) {}
+
+    protected function checkStudentAccess(): void
+    {
+        if (Auth::user() && Auth::user()->isStudent()) {
+            abort(403, 'Akses Ditolak: Anda tidak memiliki izin untuk mencetak dokumen laporan.');
+        }
+    }
 
     /**
      * Helper to resolve class scoping by user role:
@@ -287,6 +297,14 @@ class ReportController extends Controller
             'headmasterName',
             'headmasterNip'
         ));
+    }
+
+    /**
+     * Cetak Rekapitulasi Kehadiran Kelas (A4 Print-Ready)
+     */
+    public function printClassRecap(Request $request): View
+    {
+        return $this->printAttendance($request);
     }
 
     /**
@@ -632,6 +650,260 @@ class ReportController extends Controller
             'schoolWebsite',
             'headmasterName',
             'headmasterNip'
+        ));
+    }
+
+    /**
+     * Laporan Audit Log Aktivitas Pengguna (Guru, Tenaga Administrasi & Siswa)
+     * Mengetahui frekuensi masuk (login) dan intensitas penggunaan aplikasi sistem.
+     */
+    public function userActivityReport(Request $request): View
+    {
+        $this->checkStudentAccess();
+
+        $roleCategory = $request->input('role', 'all');
+        $search = trim((string) $request->input('search', ''));
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+        $sort = $request->input('sort', 'login_desc');
+
+        $userQuery = User::query();
+
+        if ($roleCategory === 'guru') {
+            $userQuery->where(function ($q) {
+                $q->whereIn('role', ['guru', 'wali_kelas', 'pembina_ekstra', 'koordinator_keagamaan', 'bk'])
+                    ->orWhereHas('teacher');
+            });
+        } elseif ($roleCategory === 'administrasi' || $roleCategory === 'staff') {
+            $userQuery->where(function ($q) {
+                $q->whereIn('role', [
+                    'admin', 'super_admin', 'kepala_sekolah', 'wakasek_kurikulum',
+                    'wakasek_kesiswaan', 'wakasek_humas', 'wakasek_sarpras', 'kesiswaan',
+                    'tenaga_administrasi', 'kepala_administrasi', 'ta_kesiswaan', 'ta_kepegawaian', 'ta_persuratan',
+                    'bendahara', 'ta_sarpras', 'operator', 'kepala_perpustakaan', 'pengelola_perpustakaan', 'pustakawan',
+                ]);
+            });
+        } elseif ($roleCategory === 'siswa') {
+            $userQuery->where(function ($q) {
+                $q->whereIn('role', ['siswa', 'sekretaris_kelas', 'sekretaris_ekstra'])
+                    ->orWhereHas('student');
+            });
+        }
+
+        if (! empty($search)) {
+            $userQuery->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('username', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%");
+            });
+        }
+
+        $userQuery->withCount([
+            'auditLogs as total_activities_count' => function ($q) use ($startDate, $endDate) {
+                if ($startDate) {
+                    $q->whereDate('created_at', '>=', $startDate);
+                }
+                if ($endDate) {
+                    $q->whereDate('created_at', '<=', $endDate);
+                }
+            },
+            'auditLogs as login_count' => function ($q) use ($startDate, $endDate) {
+                $q->where('action', 'LOGIN');
+                if ($startDate) {
+                    $q->whereDate('created_at', '>=', $startDate);
+                }
+                if ($endDate) {
+                    $q->whereDate('created_at', '<=', $endDate);
+                }
+            },
+        ]);
+
+        if ($sort === 'login_desc') {
+            $userQuery->orderByDesc('login_count')->orderByDesc('total_activities_count');
+        } elseif ($sort === 'activity_desc') {
+            $userQuery->orderByDesc('total_activities_count')->orderByDesc('login_count');
+        } elseif ($sort === 'name_asc') {
+            $userQuery->orderBy('name');
+        } else {
+            $userQuery->orderByDesc('login_count');
+        }
+
+        $users = $userQuery->with(['lastLoginAudit', 'lastActivityAudit'])->paginate(20)->withQueryString();
+
+        // Statistik Total
+        $totalLogins = AuditLog::where('action', 'LOGIN')->count();
+        $totalActivities = AuditLog::count();
+        $totalUsersWithLogin = AuditLog::where('action', 'LOGIN')->distinct('user_id')->count('user_id');
+
+        $guruCount = User::where(function ($q) {
+            $q->whereIn('role', ['guru', 'wali_kelas', 'pembina_ekstra', 'koordinator_keagamaan', 'bk'])
+                ->orWhereHas('teacher');
+        })->count();
+
+        $staffCount = User::whereIn('role', [
+            'admin', 'super_admin', 'kepala_sekolah', 'wakasek_kurikulum',
+            'wakasek_kesiswaan', 'wakasek_humas', 'wakasek_sarpras', 'kesiswaan',
+            'tenaga_administrasi', 'kepala_administrasi', 'ta_kesiswaan', 'ta_kepegawaian', 'ta_persuratan',
+            'bendahara', 'ta_sarpras', 'operator', 'kepala_perpustakaan', 'pengelola_perpustakaan', 'pustakawan',
+        ])->count();
+
+        $siswaCount = User::where(function ($q) {
+            $q->whereIn('role', ['siswa', 'sekretaris_kelas', 'sekretaris_ekstra'])
+                ->orWhereHas('student');
+        })->count();
+
+        $stats = [
+            'total_logins' => $totalLogins,
+            'total_activities' => $totalActivities,
+            'total_users_logged_in' => $totalUsersWithLogin,
+            'guru_count' => $guruCount,
+            'staff_count' => $staffCount,
+            'siswa_count' => $siswaCount,
+        ];
+
+        return view('reports.user_activity', compact(
+            'users',
+            'roleCategory',
+            'search',
+            'startDate',
+            'endDate',
+            'sort',
+            'stats'
+        ));
+    }
+
+    /**
+     * Cetak Resmi Dokumen Rekapitulasi Frekuensi Akses & Aktivitas Pengguna (A4 / F4)
+     * Kepala Sekolah Wajib Berada di Sebelah Kiri
+     */
+    public function printUserActivityReport(Request $request): View
+    {
+        $this->checkStudentAccess();
+
+        $roleCategory = $request->input('role', 'all');
+        $search = trim((string) $request->input('search', ''));
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+        $sort = $request->input('sort', 'login_desc');
+
+        $userQuery = User::query();
+
+        if ($roleCategory === 'guru') {
+            $userQuery->where(function ($q) {
+                $q->whereIn('role', ['guru', 'wali_kelas', 'pembina_ekstra', 'koordinator_keagamaan', 'bk'])
+                    ->orWhereHas('teacher');
+            });
+        } elseif ($roleCategory === 'administrasi' || $roleCategory === 'staff') {
+            $userQuery->where(function ($q) {
+                $q->whereIn('role', [
+                    'admin', 'super_admin', 'kepala_sekolah', 'wakasek_kurikulum',
+                    'wakasek_kesiswaan', 'wakasek_humas', 'wakasek_sarpras', 'kesiswaan',
+                    'tenaga_administrasi', 'kepala_administrasi', 'ta_kesiswaan', 'ta_kepegawaian', 'ta_persuratan',
+                    'bendahara', 'ta_sarpras', 'operator', 'kepala_perpustakaan', 'pengelola_perpustakaan', 'pustakawan',
+                ]);
+            });
+        } elseif ($roleCategory === 'siswa') {
+            $userQuery->where(function ($q) {
+                $q->whereIn('role', ['siswa', 'sekretaris_kelas', 'sekretaris_ekstra'])
+                    ->orWhereHas('student');
+            });
+        }
+
+        if (! empty($search)) {
+            $userQuery->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('username', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%");
+            });
+        }
+
+        $userQuery->withCount([
+            'auditLogs as total_activities_count' => function ($q) use ($startDate, $endDate) {
+                if ($startDate) {
+                    $q->whereDate('created_at', '>=', $startDate);
+                }
+                if ($endDate) {
+                    $q->whereDate('created_at', '<=', $endDate);
+                }
+            },
+            'auditLogs as login_count' => function ($q) use ($startDate, $endDate) {
+                $q->where('action', 'LOGIN');
+                if ($startDate) {
+                    $q->whereDate('created_at', '>=', $startDate);
+                }
+                if ($endDate) {
+                    $q->whereDate('created_at', '<=', $endDate);
+                }
+            },
+        ]);
+
+        if ($sort === 'login_desc') {
+            $userQuery->orderByDesc('login_count')->orderByDesc('total_activities_count');
+        } elseif ($sort === 'activity_desc') {
+            $userQuery->orderByDesc('total_activities_count')->orderByDesc('login_count');
+        } elseif ($sort === 'name_asc') {
+            $userQuery->orderBy('name');
+        } else {
+            $userQuery->orderByDesc('login_count');
+        }
+
+        $users = $userQuery->with(['lastLoginAudit'])->limit(200)->get();
+
+        $schoolName = SchoolSetting::get('school_name', 'SMA Negeri 1 Lengkong');
+        $schoolAddress = SchoolSetting::get('school_address', 'Jalan Raya Tegalega, Kecamatan Lengkong, Kabupaten Sukabumi, Provinsi Jawa Barat');
+        $schoolCity = SchoolSetting::get('school_city', 'Sukabumi');
+        $schoolBranch = SchoolSetting::get('school_branch', 'CABANG DINAS PENDIDIKAN WILAYAH V');
+        $schoolEmail = SchoolSetting::get('school_email', 'sman1lengkong@gmail.com');
+        $schoolWebsite = SchoolSetting::get('school_website', 'https://sman1lengkong.sch.id');
+        $headmaster = Teacher::getHeadmaster();
+        $headmasterName = $headmaster['name'];
+        $headmasterNip = $headmaster['nip'];
+
+        $summary = [
+            'total_users' => $users->count(),
+            'total_logins' => $users->sum('login_count'),
+            'total_activities' => $users->sum('total_activities_count'),
+            'active_users_count' => $users->where('login_count', '>', 0)->count(),
+        ];
+
+        return view('reports.print_user_activity', compact(
+            'users',
+            'roleCategory',
+            'startDate',
+            'endDate',
+            'summary',
+            'schoolName',
+            'schoolAddress',
+            'schoolCity',
+            'schoolBranch',
+            'schoolEmail',
+            'schoolWebsite',
+            'headmasterName',
+            'headmasterNip'
+        ));
+    }
+
+    /**
+     * Detail Linimasa Log Aktivitas Seorang Pengguna
+     */
+    public function userDetailActivity(User $user): View
+    {
+        $this->checkStudentAccess();
+
+        $logs = AuditLog::where('user_id', $user->id)
+            ->latest()
+            ->paginate(30);
+
+        $loginCount = AuditLog::where('user_id', $user->id)->where('action', 'LOGIN')->count();
+        $totalActivities = AuditLog::where('user_id', $user->id)->count();
+        $lastLogin = AuditLog::where('user_id', $user->id)->where('action', 'LOGIN')->latest()->first();
+
+        return view('reports.user_activity_detail', compact(
+            'user',
+            'logs',
+            'loginCount',
+            'totalActivities',
+            'lastLogin'
         ));
     }
 }

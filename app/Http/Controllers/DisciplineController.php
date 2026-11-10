@@ -8,6 +8,9 @@ use App\Models\SchoolClass;
 use App\Models\Student;
 use App\Models\Violation;
 use App\Models\ViolationCategory;
+use App\Services\DisciplineAutomationService;
+use Carbon\Carbon;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
@@ -52,14 +55,16 @@ class DisciplineController extends Controller
         if ($search) {
             $studentsQuery->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('nis', 'like', "%{$search}%");
+                    ->orWhere('initials', 'like', "%{$search}%")
+                    ->orWhere('nis', 'like', "%{$search}%")
+                    ->orWhere('nisn', 'like', "%{$search}%");
             });
         }
 
         $allStudents = $studentsQuery->get();
 
-        // Calculate achievement leaderboard
-        $achievers = $allStudents->map(function ($student) {
+        // 1. Calculate achievement leaderboard (Ordered by total verified achievement points desc)
+        $allAchievers = $allStudents->map(function ($student) {
             $pts = $student->totalAchievementPoints();
 
             return [
@@ -70,7 +75,23 @@ class DisciplineController extends Controller
             ];
         })->sortByDesc('points')->values();
 
-        // Calculate violation & guidance watchlist (STRICTLY SEPARATED)
+        // Identify child position if user is student or parent
+        $myChildRank = null;
+        $myChildData = null;
+        if ($myChildStudentId) {
+            foreach ($allAchievers as $index => $item) {
+                if ($item['student']->id === $myChildStudentId) {
+                    $myChildRank = $index + 1;
+                    $myChildData = $item;
+                    break;
+                }
+            }
+        }
+
+        // Limit to Top 10 as requested
+        $achievers = $allAchievers->take(10);
+
+        // 2. Calculate violation & guidance watchlist (STRICTLY SEPARATED, Top 10 only)
         $guidanceWatchlist = $allStudents->map(function ($student) {
             $pts = $student->totalViolationPoints();
 
@@ -81,9 +102,10 @@ class DisciplineController extends Controller
                 'count' => $student->violations->where('status', 'DIVERIFIKASI')->count(),
             ];
         })->filter(fn ($item) => $item['points'] >= 75 || $item['count'] > 0)
-            ->sortByDesc('points')->values();
+            ->sortByDesc('points')->values()
+            ->take(10);
 
-        return view('discipline.ranking', compact('classes', 'achievers', 'guidanceWatchlist', 'classId', 'search', 'myChildStudentId'));
+        return view('discipline.ranking', compact('classes', 'achievers', 'guidanceWatchlist', 'classId', 'search', 'myChildStudentId', 'myChildRank', 'myChildData'));
     }
 
     /**
@@ -126,7 +148,7 @@ class DisciplineController extends Controller
         if ($search) {
             $achievementsQuery->where(function ($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
-                    ->orWhereHas('student', fn ($sq) => $sq->where('name', 'like', "%{$search}%")->orWhere('nis', 'like', "%{$search}%"));
+                    ->orWhereHas('student', fn ($sq) => $sq->where('name', 'like', "%{$search}%")->orWhere('initials', 'like', "%{$search}%")->orWhere('nis', 'like', "%{$search}%")->orWhere('nisn', 'like', "%{$search}%"));
             });
         }
 
@@ -144,7 +166,7 @@ class DisciplineController extends Controller
         if ($search) {
             $violationsQuery->where(function ($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
-                    ->orWhereHas('student', fn ($sq) => $sq->where('name', 'like', "%{$search}%")->orWhere('nis', 'like', "%{$search}%"));
+                    ->orWhereHas('student', fn ($sq) => $sq->where('name', 'like', "%{$search}%")->orWhere('initials', 'like', "%{$search}%")->orWhere('nis', 'like', "%{$search}%")->orWhere('nisn', 'like', "%{$search}%"));
             });
         }
 
@@ -172,5 +194,59 @@ class DisciplineController extends Controller
             'endDate',
             'search'
         ));
+    }
+
+    /**
+     * Sinkronisasi Otomatisasi Tata Tertib & Prestasi Secara Instan (On-Demand)
+     * Hanya dapat diakses oleh akun admin dan wali kelas.
+     * Jika wali kelas yang mengeksekusi, hanya nama siswa kelas binaannya saja yang dieksekusi.
+     */
+    public function syncAutomations(Request $request): RedirectResponse
+    {
+        $user = Auth::user();
+        if (! $user) {
+            abort(401);
+        }
+
+        $isAdmin = $user->isAdmin()
+            || $user->hasAnyRole(['super_admin', 'admin'])
+            || in_array($user->role, ['super_admin', 'admin'], true);
+
+        $isHomeroom = $user->isHomeroom()
+            || $user->hasRole('wali_kelas')
+            || $user->role === 'wali_kelas';
+
+        if (! $isAdmin && ! $isHomeroom) {
+            abort(403, 'Akses ditolak. Fitur sinkronisasi otomasi hanya dapat diakses oleh akun admin dan wali kelas.');
+        }
+
+        $targetClassId = null;
+        $classNotice = '';
+
+        if (! $isAdmin && $isHomeroom) {
+            $homeroomClasses = $user->getHomeroomClasses();
+            if ($homeroomClasses->isEmpty() && $user->teacher?->homeroomClass) {
+                $homeroomClasses = collect([$user->teacher->homeroomClass]);
+            }
+
+            if ($homeroomClasses->isEmpty()) {
+                return back()->with('error', 'Gagal menyinkronkan otomasi: Anda belum terdaftar sebagai wali kelas pada kelas binaan manapun.');
+            }
+
+            $targetClassId = $homeroomClasses->pluck('id')->toArray();
+            $classNames = $homeroomClasses->pluck('name')->implode(', ');
+            $classNotice = " (Kelas {$classNames})";
+        } elseif ($isAdmin && $request->filled('class_id')) {
+            $targetClassId = (int) $request->input('class_id');
+            $schoolClass = SchoolClass::find($targetClassId);
+            if ($schoolClass) {
+                $classNotice = " (Kelas {$schoolClass->name})";
+            }
+        }
+
+        $targetDate = $request->input('date') ?: Carbon::today('Asia/Jakarta')->toDateString();
+        $result = app(DisciplineAutomationService::class)->syncDailyAutomations($targetDate, $targetClassId, $user->id);
+
+        return back()->with('success', 'Sinkronisasi Otomasi Tata Tertib & Prestasi'.$classNotice.' berhasil dijalankan! '.$result['summary']);
     }
 }

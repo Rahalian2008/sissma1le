@@ -174,41 +174,45 @@
     </div>
 
     @if($analysis)
-    <!-- Status Engine AI (Google Gemini / Offline Heuristic) -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl {{ $analysis['is_ai_generated'] ? 'bg-gradient-to-r from-indigo-950 via-slate-900 to-purple-950 text-white border border-indigo-500/40 shadow-md' : 'bg-amber-50 text-amber-900 border border-amber-200' }}">
+    <!-- Status Engine AI (Google Gemini / Online AI Engine) -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl bg-gradient-to-r from-indigo-950 via-slate-900 to-purple-950 text-white border border-indigo-500/40 shadow-md">
         <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl flex items-center justify-center text-xl shrink-0 {{ $analysis['is_ai_generated'] ? 'bg-indigo-500/30 border border-indigo-400/40 text-indigo-300' : 'bg-amber-100 text-amber-700' }}">
-                {{ $analysis['is_ai_generated'] ? '✨' : '⚙️' }}
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center text-xl shrink-0 bg-indigo-500/30 border border-indigo-400/40 text-indigo-300">
+                ✨
             </div>
             <div>
                 <div class="flex flex-wrap items-center gap-2">
                     <span class="font-extrabold text-xs sm:text-sm">
                         {{ $analysis['provider'] }}
                     </span>
-                    @if($analysis['is_ai_generated'])
-                        <span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-bold border border-emerald-400/30">
-                            ● Live & Terhubung
-                        </span>
-                        <span class="px-2 py-0.5 rounded-full bg-indigo-500/30 text-indigo-200 text-[10px] font-mono">
-                            {{ $analysis['model'] }}
-                        </span>
-                    @else
-                        <span class="px-2 py-0.5 rounded-full bg-amber-200 text-amber-800 text-[10px] font-bold">
-                            Aturan Pedagogis Bawaan
-                        </span>
-                    @endif
+                    <span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-bold border border-emerald-400/30 flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                        Live Online
+                    </span>
+                    <span class="px-2 py-0.5 rounded-full bg-indigo-500/30 text-indigo-200 text-[10px] font-mono">
+                        {{ $analysis['model'] }}
+                    </span>
                 </div>
-                <p class="text-[11px] {{ $analysis['is_ai_generated'] ? 'text-indigo-200' : 'text-amber-700' }} mt-0.5">
+                <p class="text-[11px] text-indigo-200 mt-0.5">
                     Waktu Analisis: {{ $analysis['analyzed_at'] }} • Subjek: <span class="font-bold">{{ $analysis['student']['name'] }}</span> ({{ $analysis['student']['class'] }})
                 </p>
             </div>
         </div>
-        @if(!$analysis['is_ai_generated'] && in_array(Auth::user()->role, ['admin', 'super_admin']))
-            <a href="{{ route('master.settings') }}" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shadow-xs transition shrink-0 self-start sm:self-auto">
-                <span>🔑 Aktifkan Google Gemini API</span>
-                <span>→</span>
-            </a>
-        @endif
+        <div class="flex items-center gap-2 self-start sm:self-auto flex-wrap">
+            @if(isset($student) && $student)
+                <a href="{{ route('raport.show', $student->id) }}" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs shadow-xs transition shrink-0 border border-emerald-400/30">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    <span>Buka Raport Digital Terpadu</span>
+                    <span>→</span>
+                </a>
+            @endif
+            @if(in_array(Auth::user()->role, ['admin', 'super_admin']))
+                <a href="{{ route('master.settings') }}" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-indigo-600/80 hover:bg-indigo-600 text-white font-bold text-xs shadow-xs transition shrink-0 border border-indigo-400/30">
+                    <span>⚙️ Pengaturan API Gemini</span>
+                    <span>→</span>
+                </a>
+            @endif
+        </div>
     </div>
 
     <!-- Key Analytical Metrics Cards -->
@@ -245,7 +249,7 @@
             <h3 class="text-base font-extrabold text-slate-900">Ringkasan Perkembangan Siswa</h3>
         </div>
         <div class="p-5 rounded-2xl bg-indigo-50/50 border border-indigo-100 text-xs sm:text-sm text-slate-700 leading-relaxed font-normal">
-            {{ $analysis['ringkasan'] }}
+            {{ $analysis['ringkasan_komprehensif'] }}
         </div>
     </div>
 

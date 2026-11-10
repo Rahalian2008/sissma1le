@@ -82,20 +82,22 @@ return new class extends Migration
         });
 
         // Audit Trail Aktivitas Penting
-        Schema::create('audit_logs', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
-            $table->string('action'); // LOGIN, LOGOUT, ATTENDANCE_SELFIE, INPUT_PRESTASI, VERIFIKASI_PELANGGARAN, etc.
-            $table->string('auditable_type')->nullable();
-            $table->unsignedBigInteger('auditable_id')->nullable();
-            $table->json('old_values')->nullable();
-            $table->json('new_values')->nullable();
-            $table->string('ip_address', 45)->nullable();
-            $table->text('user_agent')->nullable();
-            $table->timestamps();
+        if (! Schema::hasTable('audit_logs')) {
+            Schema::create('audit_logs', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
+                $table->string('action'); // LOGIN, LOGOUT, ATTENDANCE_SELFIE, INPUT_PRESTASI, VERIFIKASI_PELANGGARAN, etc.
+                $table->string('auditable_type')->nullable();
+                $table->unsignedBigInteger('auditable_id')->nullable();
+                $table->json('old_values')->nullable();
+                $table->json('new_values')->nullable();
+                $table->string('ip_address', 45)->nullable();
+                $table->text('user_agent')->nullable();
+                $table->timestamps();
 
-            $table->index(['action', 'created_at']);
-        });
+                $table->index(['action', 'created_at']);
+            });
+        }
     }
 
     /**

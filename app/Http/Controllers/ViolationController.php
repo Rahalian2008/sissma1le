@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Models\Violation;
 use App\Models\ViolationCategory;
 use App\Services\CsvImportService;
+use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -30,20 +31,23 @@ class ViolationController extends Controller
             ->orderByDesc('date');
 
         $classId = null;
-        if ($user->role === 'siswa') {
+        if ($user->isStudent()) {
             $student = $user->student ?? Student::first();
             $query->where('student_id', $student->id);
             $classes = collect();
-        } elseif ($user->role === 'orang_tua') {
+        } elseif ($user->isParent()) {
             $student = $user->parentProfile?->student ?? Student::first();
             $query->where('student_id', $student->id);
             $classes = collect();
-        } elseif ($user->role === 'wali_kelas') {
+        } elseif ($user->hasRole('wali_kelas') && ! $user->hasAnyRole(['admin', 'super_admin', 'kesiswaan', 'wakasek_kesiswaan', 'kepala_sekolah'])) {
             $class = $user->teacher?->homeroomClass;
             $classId = $class?->id;
             $classes = $class ? collect([$class]) : collect();
             if ($class) {
-                $query->where('class_id', $class->id);
+                $query->where(function ($q) use ($class, $user) {
+                    $q->where('class_id', $class->id)
+                        ->orWhere('reporter_id', $user->id);
+                });
             }
         } else {
             $classes = SchoolClass::all();
@@ -67,7 +71,9 @@ class ViolationController extends Controller
                 $q->where('title', 'like', "%{$search}%")
                     ->orWhereHas('student', function ($sq) use ($search) {
                         $sq->where('name', 'like', "%{$search}%")
-                            ->orWhere('nis', 'like', "%{$search}%");
+                            ->orWhere('initials', 'like', "%{$search}%")
+                            ->orWhere('nis', 'like', "%{$search}%")
+                            ->orWhere('nisn', 'like', "%{$search}%");
                     });
             });
         }
@@ -76,8 +82,8 @@ class ViolationController extends Controller
         $categories = ViolationCategory::all();
 
         $studentContext = null;
-        if (in_array($user->role, ['siswa', 'orang_tua'])) {
-            $studentContext = $user->role === 'siswa' ? ($user->student ?? Student::first()) : ($user->parentProfile?->student ?? Student::first());
+        if ($user->isStudent() || $user->isParent()) {
+            $studentContext = $user->isStudent() ? ($user->student ?? Student::first()) : ($user->parentProfile?->student ?? Student::first());
         }
 
         return view('violations.index', compact('violations', 'categories', 'classes', 'classId', 'studentContext'));
@@ -86,20 +92,14 @@ class ViolationController extends Controller
     public function create(): View
     {
         $user = Auth::user();
-        if (in_array($user->role, ['siswa', 'orang_tua', 'kepala_sekolah'])) {
+        if (! $user->hasAnyRole(['admin', 'super_admin', 'guru', 'wali_kelas', 'kesiswaan', 'wakasek_kesiswaan', 'bk', 'pembina_ekstra', 'koordinator_keagamaan'])) {
             abort(403, 'Akun ini tidak memiliki hak akses untuk mencatat pelanggaran (Read-Only).');
         }
 
         $categories = ViolationCategory::with('items')->get();
 
-        if ($user->role === 'wali_kelas') {
-            $class = $user->teacher?->homeroomClass;
-            $classes = $class ? collect([$class]) : collect();
-            $students = $class ? $class->students()->with('schoolClass')->where('is_active', true)->get() : collect();
-        } else {
-            $classes = SchoolClass::all();
-            $students = Student::with('schoolClass')->where('is_active', true)->get();
-        }
+        $classes = SchoolClass::all();
+        $students = Student::with('schoolClass')->where('is_active', true)->get();
 
         return view('violations.create', compact('categories', 'students', 'classes'));
     }
@@ -107,7 +107,7 @@ class ViolationController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $user = Auth::user();
-        if (in_array($user->role, ['siswa', 'orang_tua', 'kepala_sekolah'])) {
+        if (! $user->hasAnyRole(['admin', 'super_admin', 'guru', 'wali_kelas', 'kesiswaan', 'wakasek_kesiswaan', 'bk', 'pembina_ekstra', 'koordinator_keagamaan'])) {
             abort(403, 'Akun ini tidak memiliki hak akses untuk mencatat pelanggaran.');
         }
 
@@ -127,8 +127,31 @@ class ViolationController extends Controller
 
         $student = Student::findOrFail($validated['student_id']);
 
-        if ($user->role === 'wali_kelas' && $user->teacher?->homeroomClass && $student->class_id !== $user->teacher->homeroomClass->id) {
-            abort(403, 'Wali kelas hanya dapat menginput data untuk kelas binaannya.');
+        // Validasi duplikasi: Siswa tidak dapat menerima poin pelanggaran ganda di hari yang sama dengan jenis pelanggaran yang sama
+        $duplicateQuery = Violation::where('student_id', $student->id)
+            ->whereDate('date', $validated['date'])
+            ->where('status', '!=', 'DITOLAK');
+
+        if (! empty($validated['item_id'])) {
+            $duplicateQuery->where(function ($q) use ($validated) {
+                $q->where('item_id', $validated['item_id'])
+                    ->orWhere(function ($sub) use ($validated) {
+                        $sub->where('category_id', $validated['category_id'])
+                            ->whereRaw('LOWER(TRIM(title)) = ?', [strtolower(trim($validated['title']))]);
+                    });
+            });
+        } else {
+            $duplicateQuery->where('category_id', $validated['category_id'])
+                ->whereRaw('LOWER(TRIM(title)) = ?', [strtolower(trim($validated['title']))]);
+        }
+
+        $existingViolation = $duplicateQuery->first();
+
+        if ($existingViolation) {
+            $formattedDate = Carbon::parse($validated['date'])->translatedFormat('d F Y');
+            $errMessage = "Pelanggaran jenis '{$existingViolation->title}' sudah pernah dicatat untuk siswa {$student->name} pada tanggal {$formattedDate}. Poin pelanggaran sejenis tidak dapat diinput ganda di hari yang sama.";
+
+            return back()->withInput()->with('error', $errMessage)->withErrors(['title' => $errMessage]);
         }
 
         $evidencePath = null;
@@ -137,7 +160,7 @@ class ViolationController extends Controller
             $evidencePath = $request->file('evidence_file')->store('violations', 'public');
         }
 
-        $initialStatus = in_array($user->role, ['admin', 'super_admin', 'wali_kelas']) ? 'DIVERIFIKASI' : 'MENUNGGU_VERIFIKASI';
+        $initialStatus = $user->isKesiswaanAdmin() ? 'DIVERIFIKASI' : 'MENUNGGU_VERIFIKASI';
 
         $violation = Violation::create([
             'student_id' => $student->id,
@@ -167,9 +190,28 @@ class ViolationController extends Controller
 
         if ($initialStatus === 'DIVERIFIKASI') {
             $this->checkGuidanceThresholds($student, $violation);
+        } else {
+            $adminUsers = User::where(function ($q) {
+                $q->whereIn('role', ['admin', 'super_admin'])
+                    ->orWhereJsonContains('roles', 'admin')
+                    ->orWhereJsonContains('roles', 'super_admin');
+            })->get();
+            foreach ($adminUsers as $admin) {
+                Notification::create([
+                    'user_id' => $admin->id,
+                    'title' => 'Laporan Pelanggaran Menunggu Persetujuan',
+                    'message' => "{$user->name} mencatat pelanggaran '{$violation->title}' untuk siswa {$student->name}. Menunggu persetujuan admin.",
+                    'type' => 'VIOLATION',
+                    'link_url' => '/violations/'.$violation->id,
+                ]);
+            }
         }
 
-        return redirect()->route('violations.index')->with('success', 'Data pelanggaran siswa berhasil dicatat.');
+        $flashMessage = ($initialStatus === 'DIVERIFIKASI')
+            ? 'Data pelanggaran siswa berhasil dicatat dan diverifikasi.'
+            : 'Data pelanggaran siswa berhasil dicatat dan berstatus pending (menunggu verifikasi/approve Admin).';
+
+        return redirect()->route('violations.index')->with('success', $flashMessage);
     }
 
     public function show(Violation $violation): View
@@ -182,8 +224,8 @@ class ViolationController extends Controller
     public function verify(Request $request, Violation $violation): RedirectResponse
     {
         $user = Auth::user();
-        if ($user->role === 'kepala_sekolah') {
-            abort(403, 'Akun Kepala Sekolah bersifat monitoring dan tidak melakukan verifikasi.');
+        if (! $user->isKesiswaanAdmin()) {
+            abort(403, 'Hanya Admin, Super Admin, atau Wakasek Kesiswaan yang berwenang untuk menyetujui (approve) atau menolak laporan pelanggaran.');
         }
 
         $validated = $request->validate([
@@ -206,14 +248,84 @@ class ViolationController extends Controller
             $this->checkGuidanceThresholds($violation->student, $violation);
         }
 
+        if ($violation->reporter_id && $violation->reporter_id !== $user->id) {
+            Notification::create([
+                'user_id' => $violation->reporter_id,
+                'title' => ($validated['status'] === 'DIVERIFIKASI') ? 'Laporan Pelanggaran Disetujui' : 'Laporan Pelanggaran Ditolak',
+                'message' => ($validated['status'] === 'DIVERIFIKASI')
+                    ? "Laporan pelanggaran siswa {$violation->student?->name} ({$violation->title}) telah disetujui (approve) oleh Admin."
+                    : "Laporan pelanggaran siswa {$violation->student?->name} ({$violation->title}) ditolak: ".($validated['rejection_reason'] ?? '-'),
+                'type' => 'VIOLATION',
+                'link_url' => '/violations/'.$violation->id,
+            ]);
+        }
+
         return back()->with('success', 'Verifikasi pelanggaran berhasil diperbarui.');
+    }
+
+    public function edit(Violation $violation): View
+    {
+        $user = Auth::user();
+        if (! $user->isKesiswaanAdmin()) {
+            abort(403, 'Akses Ditolak: Hanya Admin, Super Admin, atau Wakasek Kesiswaan yang dapat mengubah data pelanggaran.');
+        }
+
+        $categories = ViolationCategory::with('items')->get();
+        $classes = SchoolClass::all();
+        $students = Student::with('schoolClass')->where('is_active', true)->get();
+
+        return view('violations.edit', compact('violation', 'categories', 'students', 'classes'));
+    }
+
+    public function update(Request $request, Violation $violation): RedirectResponse
+    {
+        $user = Auth::user();
+        if (! $user->isKesiswaanAdmin()) {
+            abort(403, 'Akses Ditolak: Hanya Admin, Super Admin, atau Wakasek Kesiswaan yang dapat mengubah data pelanggaran.');
+        }
+
+        $validated = $request->validate([
+            'student_id' => ['required', 'exists:students,id'],
+            'category_id' => ['required', 'exists:violation_categories,id'],
+            'item_id' => ['nullable', 'exists:violation_items,id'],
+            'title' => ['required', 'string', 'max:255'],
+            'points' => ['required', 'integer', 'min:1', 'max:200'],
+            'date' => ['required', 'date'],
+            'time' => ['nullable', 'date_format:H:i'],
+            'location' => ['nullable', 'string', 'max:255'],
+            'chronology' => ['nullable', 'string'],
+            'guidance_notes' => ['nullable', 'string'],
+            'status' => ['required', 'in:MENUNGGU_VERIFIKASI,DIVERIFIKASI,DITOLAK'],
+        ]);
+
+        $violation->update([
+            'student_id' => $validated['student_id'],
+            'category_id' => $validated['category_id'],
+            'item_id' => $validated['item_id'] ?? null,
+            'title' => $validated['title'],
+            'points' => $validated['points'],
+            'date' => $validated['date'],
+            'time' => $validated['time'] ? $validated['time'].':00' : $violation->time,
+            'location' => $validated['location'] ?? null,
+            'chronology' => $validated['chronology'] ?? null,
+            'guidance_notes' => $validated['guidance_notes'] ?? null,
+            'status' => $validated['status'],
+        ]);
+
+        AuditLog::log('UPDATE_PELANGGARAN', 'Violation', $violation->id, null, [
+            'title' => $violation->title,
+            'points' => $violation->points,
+            'status' => $violation->status,
+        ]);
+
+        return redirect()->route('violations.index')->with('success', 'Data pelanggaran berhasil diperbarui.');
     }
 
     public function destroy(Violation $violation): RedirectResponse
     {
         $user = Auth::user();
-        if ($user->role === 'kepala_sekolah') {
-            abort(403, 'Akun Kepala Sekolah bersifat monitoring.');
+        if (! $user->isKesiswaanAdmin()) {
+            abort(403, 'Akses Ditolak: Hanya Admin, Super Admin, atau Wakasek Kesiswaan yang dapat menghapus data pelanggaran.');
         }
 
         $title = $violation->title;
@@ -236,7 +348,9 @@ class ViolationController extends Controller
             $message = "Siswa {$student->name} ({$student->schoolClass?->name}) telah mencapai akumulasi {$totalPoints} poin pelanggaran. Diperlukan tindakan: {$guidance['badge']}.";
 
             // Kirim notifikasi ke BK
-            $bkUsers = User::where('role', 'bk')->get();
+            $bkUsers = User::where(function ($q) {
+                $q->where('role', 'bk')->orWhereJsonContains('roles', 'bk');
+            })->get();
             foreach ($bkUsers as $bk) {
                 Notification::create([
                     'user_id' => $bk->id,
@@ -248,7 +362,11 @@ class ViolationController extends Controller
             }
 
             // Kirim notifikasi ke Kesiswaan
-            $kesiswaanUsers = User::where('role', 'kesiswaan')->get();
+            $kesiswaanUsers = User::where(function ($q) {
+                $q->whereIn('role', ['kesiswaan', 'wakasek_kesiswaan'])
+                    ->orWhereJsonContains('roles', 'kesiswaan')
+                    ->orWhereJsonContains('roles', 'wakasek_kesiswaan');
+            })->get();
             foreach ($kesiswaanUsers as $ks) {
                 Notification::create([
                     'user_id' => $ks->id,
@@ -288,7 +406,7 @@ class ViolationController extends Controller
     public function import(Request $request): RedirectResponse
     {
         $user = Auth::user();
-        if ($user->role === 'kepala_sekolah') {
+        if ($user->isKepalaSekolah() && ! $user->hasAnyRole(['admin', 'super_admin'])) {
             abort(403, 'Akun Kepala Sekolah bersifat monitoring.');
         }
 

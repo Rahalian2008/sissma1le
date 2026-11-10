@@ -59,15 +59,21 @@
             </div>
         @endif
 
-        @if(in_array(Auth::user()->role, ['wali_kelas', 'kesiswaan', 'admin', 'super_admin']) && $achievement->status === 'MENUNGGU_VERIFIKASI')
-            <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
-                <h4 class="font-bold text-xs text-slate-800 uppercase tracking-wider">Aksi Verifikasi Pendidik</h4>
-                <div class="flex items-center gap-3">
+        @if(Auth::user()->isKesiswaanAdmin() && $achievement->status === 'MENUNGGU_VERIFIKASI')
+            <div class="p-5 rounded-2xl bg-amber-50/70 border border-amber-200 space-y-3">
+                <div class="flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
+                    <h4 class="font-bold text-xs text-amber-900 uppercase tracking-wider">Aksi Keputusan Verifikasi (Admin / Wakasek Kesiswaan)</h4>
+                </div>
+                <p class="text-xs text-amber-800">
+                    Pencatatan prestasi ini berstatus <strong>Pending</strong>. Poin prestasi baru akan resmi masuk ke catatan final siswa setelah Anda menyetujui (Approve) laporan ini.
+                </p>
+                <div class="flex items-center gap-3 pt-1">
                     <form action="{{ route('achievements.verify', $achievement->id) }}" method="POST">
                         @csrf
                         <input type="hidden" name="status" value="DIVERIFIKASI">
                         <button type="submit" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs shadow-md transition">
-                            ✓ Setujui & Masukkan Poin
+                            ✓ Setujui (Approve) & Masukkan ke Catatan Final
                         </button>
                     </form>
 
@@ -76,7 +82,7 @@
                     </button>
                 </div>
 
-                <div id="reject-box" class="hidden pt-3 border-t border-slate-200">
+                <div id="reject-box" class="hidden pt-3 border-t border-amber-200">
                     <form action="{{ route('achievements.verify', $achievement->id) }}" method="POST" class="space-y-2">
                         @csrf
                         <input type="hidden" name="status" value="DITOLAK">
@@ -84,6 +90,16 @@
                         <textarea name="rejection_reason" required rows="2" placeholder="Tuliskan alasan penolakan..." class="w-full p-2 bg-white border border-slate-200 rounded-xl text-xs"></textarea>
                         <button type="submit" class="px-4 py-2 bg-rose-600 text-white font-bold rounded-xl text-xs">Kirim Penolakan</button>
                     </form>
+                </div>
+            </div>
+        @elseif($achievement->status === 'MENUNGGU_VERIFIKASI')
+            <div class="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs flex items-start gap-3">
+                <span class="text-base mt-0.5">⏳</span>
+                <div>
+                    <h5 class="font-bold">Menunggu Persetujuan Admin / Wakasek Kesiswaan</h5>
+                    <p class="text-amber-800 mt-0.5">
+                        Pencatatan prestasi ini berstatus <strong>Pending</strong> dan sedang menunggu keputusan verifikasi/approve dari Admin atau Wakasek Kesiswaan sebelum resmi masuk ke catatan final siswa.
+                    </p>
                 </div>
             </div>
         @endif

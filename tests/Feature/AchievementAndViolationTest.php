@@ -243,3 +243,98 @@ test('siswa and orang tua are forbidden from creating achievements or violations
     $this->actingAs($orangTuaUser)->get('/violations/create')->assertForbidden();
     $this->actingAs($orangTuaUser)->post('/violations', [])->assertForbidden();
 });
+
+test('cannot input duplicate violation for the same student on the same date with the same violation type', function () {
+    $admin = User::where('role', 'admin')->first();
+    $student = Student::first();
+    $item = ViolationItem::first();
+
+    $today = today()->toDateString();
+
+    // First violation entry
+    $response1 = $this->actingAs($admin)->post('/violations', [
+        'student_id' => $student->id,
+        'category_id' => $item->category_id,
+        'item_id' => $item->id,
+        'title' => $item->description ?? 'Terlambat Masuk Sekolah',
+        'points' => 10,
+        'date' => $today,
+    ]);
+    $response1->assertRedirect();
+    $response1->assertSessionHas('success');
+
+    // Attempt duplicate entry on same day with same violation item
+    $response2 = $this->actingAs($admin)->post('/violations', [
+        'student_id' => $student->id,
+        'category_id' => $item->category_id,
+        'item_id' => $item->id,
+        'title' => $item->description ?? 'Terlambat Masuk Sekolah',
+        'points' => 10,
+        'date' => $today,
+    ]);
+    $response2->assertRedirect();
+    $response2->assertSessionHas('error');
+    $response2->assertSessionHasErrors(['title']);
+
+    // Attempt same item on a DIFFERENT date should succeed
+    $tomorrow = today()->addDay()->toDateString();
+    $response3 = $this->actingAs($admin)->post('/violations', [
+        'student_id' => $student->id,
+        'category_id' => $item->category_id,
+        'item_id' => $item->id,
+        'title' => $item->description ?? 'Terlambat Masuk Sekolah',
+        'points' => 10,
+        'date' => $tomorrow,
+    ]);
+    $response3->assertRedirect();
+    $response3->assertSessionHas('success');
+});
+
+test('cannot input duplicate achievement for the same student on the same date with the same achievement type', function () {
+    $admin = User::where('role', 'admin')->first();
+    $student = Student::first();
+    $item = AchievementItem::first();
+
+    $today = today()->toDateString();
+
+    // First achievement entry
+    $response1 = $this->actingAs($admin)->post('/achievements', [
+        'student_id' => $student->id,
+        'category_id' => $item->category_id,
+        'item_id' => $item->id,
+        'title' => $item->name ?? 'Juara Lomba Matematika',
+        'level' => 'KABUPATEN',
+        'points' => 25,
+        'date' => $today,
+    ]);
+    $response1->assertRedirect();
+    $response1->assertSessionHas('success');
+
+    // Attempt duplicate entry on same day with same achievement item
+    $response2 = $this->actingAs($admin)->post('/achievements', [
+        'student_id' => $student->id,
+        'category_id' => $item->category_id,
+        'item_id' => $item->id,
+        'title' => $item->name ?? 'Juara Lomba Matematika',
+        'level' => 'KABUPATEN',
+        'points' => 25,
+        'date' => $today,
+    ]);
+    $response2->assertRedirect();
+    $response2->assertSessionHas('error');
+    $response2->assertSessionHasErrors(['title']);
+
+    // Attempt same item on a DIFFERENT date should succeed
+    $tomorrow = today()->addDay()->toDateString();
+    $response3 = $this->actingAs($admin)->post('/achievements', [
+        'student_id' => $student->id,
+        'category_id' => $item->category_id,
+        'item_id' => $item->id,
+        'title' => $item->name ?? 'Juara Lomba Matematika',
+        'level' => 'KABUPATEN',
+        'points' => 25,
+        'date' => $tomorrow,
+    ]);
+    $response3->assertRedirect();
+    $response3->assertSessionHas('success');
+});

@@ -3,7 +3,8 @@
 @section('title', 'Catatan Pembinaan Siswa (BK & Wali Kelas)')
 
 @section('content')
-<div class="space-y-6 max-w-7xl mx-auto">
+<div class="space-y-5 w-full max-w-full">
+    @include('discipline.partials.nav')
     <!-- Header -->
     <div class="bg-gradient-to-r from-purple-900 via-indigo-950 to-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
@@ -32,21 +33,21 @@
     </div>
 
     <!-- Filter Card -->
-    <div class="bg-white p-5 rounded-3xl border border-slate-200 shadow-xs">
+    <div class="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs">
         <form method="GET" action="{{ route('guidance.index') }}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
             <div>
-                <label class="block text-slate-500 font-semibold mb-1">Cari Pembinaan (Nama / Rekomendasi)</label>
+                <label class="block text-slate-500 dark:text-slate-400 font-semibold mb-1">Cari Pembinaan (Nama / Rekomendasi)</label>
                 <div class="relative">
                     <input type="text" name="search" value="{{ request('search') }}" placeholder="Ketik nama siswa atau catatan..."
-                        class="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-purple-500 text-xs">
-                    <svg class="w-4 h-4 text-slate-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        class="w-full pl-9 pr-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-xl outline-none focus:border-purple-500 text-xs">
+                    <svg class="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                     </svg>
                 </div>
             </div>
             <div>
-                <label class="block text-slate-500 font-semibold mb-1">Status Penanganan</label>
-                <select name="status" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl outline-none">
+                <label class="block text-slate-500 dark:text-slate-400 font-semibold mb-1">Status Penanganan</label>
+                <select name="status" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-xl outline-none">
                     <option value="">-- Semua Status --</option>
                     <option value="DALAM_PROSES" {{ request('status') === 'DALAM_PROSES' ? 'selected' : '' }}>Dalam Proses</option>
                     <option value="SELESAI" {{ request('status') === 'SELESAI' ? 'selected' : '' }}>Selesai</option>
@@ -54,8 +55,8 @@
                 </select>
             </div>
             <div>
-                <label class="block text-slate-500 font-semibold mb-1">Tingkat Tindak Lanjut</label>
-                <select name="follow_up_type" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl outline-none">
+                <label class="block text-slate-500 dark:text-slate-400 font-semibold mb-1">Tingkat Tindak Lanjut</label>
+                <select name="follow_up_type" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-xl outline-none">
                     <option value="">-- Semua Jenis Tindakan --</option>
                     <option value="BIMBINGAN_WALI_KELAS">Bimbingan Wali Kelas</option>
                     <option value="SP1_BK">SP 1 - BK</option>
@@ -67,16 +68,16 @@
             </div>
             <div class="flex items-end gap-2">
                 <button type="submit" class="flex-1 py-2 px-4 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl transition">Filter</button>
-                <a href="{{ route('guidance.index') }}" class="py-2 px-3 bg-slate-100 text-slate-600 rounded-xl text-center">Reset</a>
+                <a href="{{ route('guidance.index') }}" class="py-2 px-3 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-xl text-center">Reset</a>
             </div>
         </form>
     </div>
 
     <!-- Guidance Table -->
-    <div class="bg-white rounded-3xl border border-slate-200 shadow-xs overflow-hidden">
+    <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full text-left text-xs">
-                <thead class="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold uppercase tracking-wider">
+                <thead class="bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 font-bold uppercase tracking-wider">
                     <tr>
                         <th class="py-3.5 px-4">Tanggal</th>
                         <th class="py-3.5 px-4">Nama Siswa / Kelas</th>
@@ -87,39 +88,39 @@
                         <th class="py-3.5 px-4 text-center">Aksi</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-100">
+                <tbody class="divide-y divide-slate-100 dark:divide-slate-800/60">
                     @forelse($records as $rec)
-                        <tr class="hover:bg-slate-50/80 transition">
-                            <td class="py-3.5 px-4 text-slate-500 font-medium whitespace-nowrap">{{ $rec->date->format('d/m/Y') }}</td>
+                        <tr class="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition">
+                            <td class="py-3.5 px-4 text-slate-500 dark:text-slate-400 font-medium whitespace-nowrap">{{ $rec->date->format('d/m/Y') }}</td>
                             <td class="py-3.5 px-4">
-                                <div class="font-bold text-slate-900">{{ $rec->student->name }}</div>
-                                <div class="text-[11px] text-slate-400">Kelas {{ $rec->student->schoolClass?->name ?? '-' }} • NIS: {{ $rec->student->nis }}</div>
+                                <div class="font-bold text-slate-900 dark:text-white">{{ $rec->student->name }}</div>
+                                <div class="text-[11px] text-slate-400 dark:text-slate-500">Kelas {{ $rec->student->schoolClass?->name ?? '-' }} • NIS: {{ $rec->student->nis }}</div>
                             </td>
                             <td class="py-3.5 px-4">
-                                <span class="px-2 py-0.5 rounded bg-purple-100 text-purple-800 font-bold text-[10px]">
+                                <span class="px-2 py-0.5 rounded bg-purple-100 dark:bg-purple-950/60 text-purple-800 dark:text-purple-300 font-bold text-[10px]">
                                     {{ $rec->followUpLabel() }}
                                 </span>
                             </td>
-                            <td class="py-3.5 px-4 text-slate-700 font-medium">
+                            <td class="py-3.5 px-4 text-slate-700 dark:text-slate-300 font-medium">
                                 {{ $rec->counselor->name ?? 'Konselor' }}
                             </td>
-                            <td class="py-3.5 px-4 max-w-xs truncate text-slate-600">
+                            <td class="py-3.5 px-4 max-w-xs truncate text-slate-600 dark:text-slate-300">
                                 {{ $rec->recommendation }}
                             </td>
                             <td class="py-3.5 px-4">
-                                <span class="px-2.5 py-1 rounded-full text-[10px] font-bold {{ $rec->status === 'SELESAI' ? 'bg-emerald-100 text-emerald-800' : ($rec->status === 'DALAM_PROSES' ? 'bg-amber-100 text-amber-800' : 'bg-blue-100 text-blue-800') }}">
+                                <span class="px-2.5 py-1 rounded-full text-[10px] font-bold {{ $rec->status === 'SELESAI' ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300' : ($rec->status === 'DALAM_PROSES' ? 'bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300' : 'bg-blue-100 dark:bg-blue-950/60 text-blue-800 dark:text-blue-300') }}">
                                     {{ str_replace('_', ' ', $rec->status) }}
                                 </span>
                             </td>
                             <td class="py-3.5 px-4 text-center">
-                                <a href="{{ route('guidance.show', $rec->id) }}" class="px-3 py-1.5 bg-slate-900 hover:bg-purple-600 text-white font-bold rounded-xl text-[11px] transition">
+                                <a href="{{ route('guidance.show', $rec->id) }}" class="px-3 py-1.5 bg-slate-900 dark:bg-slate-800 hover:bg-purple-600 dark:hover:bg-purple-600 text-white font-bold rounded-xl text-[11px] transition">
                                     Detail
                                 </a>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="text-center py-8 text-slate-400">Belum ada catatan pembinaan siswa yang tersimpan.</td>
+                            <td colspan="7" class="text-center py-8 text-slate-400 dark:text-slate-500">Belum ada catatan pembinaan siswa yang tersimpan.</td>
                         </tr>
                     @endforelse
                 </tbody>
@@ -127,7 +128,7 @@
         </div>
 
         @if($records->hasPages())
-            <div class="p-4 border-t border-slate-100">
+            <div class="p-4 border-t border-slate-100 dark:border-slate-800">
                 {{ $records->links() }}
             </div>
         @endif
@@ -135,42 +136,42 @@
 </div>
 <!-- Modal Impor Catatan Pembinaan -->
 <div id="importGuidanceModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center hidden p-4">
-    <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl border border-slate-100 space-y-4 max-h-[90vh] overflow-y-auto">
-        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+    <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl border border-slate-100 dark:border-slate-800 space-y-4 max-h-[90vh] overflow-y-auto">
+        <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
             <div class="flex items-center gap-2">
-                <span class="w-8 h-8 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center font-bold">
+                <span class="w-8 h-8 rounded-xl bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 flex items-center justify-center font-bold">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
                 </span>
                 <div>
-                    <h3 class="font-black text-slate-800 text-sm">Impor Catatan Pembinaan Siswa</h3>
-                    <p class="text-[11px] text-slate-400">Unggah file CSV catatan bimbingan konseling siswa</p>
+                    <h3 class="font-black text-slate-800 dark:text-white text-sm">Impor Catatan Pembinaan Siswa</h3>
+                    <p class="text-[11px] text-slate-400 dark:text-slate-400">Unggah file CSV catatan bimbingan konseling siswa</p>
                 </div>
             </div>
-            <button onclick="document.getElementById('importGuidanceModal').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 font-bold">✕</button>
+            <button onclick="document.getElementById('importGuidanceModal').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 font-bold">✕</button>
         </div>
 
-        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs space-y-2">
-            <div class="flex items-center justify-between font-bold text-slate-700">
+        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-xs space-y-2">
+            <div class="flex items-center justify-between font-bold text-slate-700 dark:text-slate-200">
                 <span>Format File & Panduan:</span>
                 <a href="{{ route('guidance.template') }}" class="inline-flex items-center gap-1.5 px-3 py-1 bg-purple-600 hover:bg-purple-500 text-white rounded-lg text-[11px] font-bold shadow-xs transition">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
                     Unduh Template CSV
                 </a>
             </div>
-            <p class="text-[11px] text-slate-500 leading-relaxed">
-                Kolom: <code class="bg-white px-1.5 py-0.5 rounded text-purple-700 font-mono">nis_siswa</code> (NIS terdaftar), <code class="bg-white px-1.5 py-0.5 rounded text-purple-700 font-mono">tanggal</code> (YYYY-MM-DD), <code class="bg-white px-1.5 py-0.5 rounded text-purple-700 font-mono">tindakan_penanganan</code>, <code class="bg-white px-1.5 py-0.5 rounded text-purple-700 font-mono">kasus_masalah</code>, <code class="bg-white px-1.5 py-0.5 rounded text-slate-600 font-mono">catatan</code>, <code class="bg-white px-1.5 py-0.5 rounded text-slate-600 font-mono">status</code> (DALAM_PROSES/SELESAI/PEMANTAUAN_LANJUTAN).
+            <p class="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+                Kolom: <code class="bg-white dark:bg-slate-900 px-1.5 py-0.5 rounded text-purple-700 dark:text-purple-400 font-mono">nis_siswa</code> (NIS terdaftar), <code class="bg-white dark:bg-slate-900 px-1.5 py-0.5 rounded text-purple-700 dark:text-purple-400 font-mono">tanggal</code> (YYYY-MM-DD), <code class="bg-white dark:bg-slate-900 px-1.5 py-0.5 rounded text-purple-700 dark:text-purple-400 font-mono">tindakan_penanganan</code>, <code class="bg-white dark:bg-slate-900 px-1.5 py-0.5 rounded text-purple-700 dark:text-purple-400 font-mono">kasus_masalah</code>, <code class="bg-white dark:bg-slate-900 px-1.5 py-0.5 rounded text-slate-600 dark:text-slate-300 font-mono">catatan</code>, <code class="bg-white dark:bg-slate-900 px-1.5 py-0.5 rounded text-slate-600 dark:text-slate-300 font-mono">status</code> (DALAM_PROSES/SELESAI/PEMANTAUAN_LANJUTAN).
             </p>
         </div>
 
         <form action="{{ route('guidance.import') }}" method="POST" enctype="multipart/form-data" class="space-y-4 text-xs">
             @csrf
             <div>
-                <label class="block font-bold text-slate-700 mb-1">Pilih File Spreadsheet (CSV) <span class="text-rose-500">*</span></label>
-                <input type="file" name="file" accept=".csv,.txt" required class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-purple-600 file:text-white hover:file:bg-purple-700 cursor-pointer">
+                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Pilih File Spreadsheet (CSV) <span class="text-rose-500">*</span></label>
+                <input type="file" name="file" accept=".csv,.txt" required class="w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-xl outline-none file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-purple-600 file:text-white hover:file:bg-purple-700 cursor-pointer">
             </div>
 
-            <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
-                <button type="button" onclick="document.getElementById('importGuidanceModal').classList.add('hidden')" class="px-4 py-2 text-slate-500 hover:text-slate-700 font-bold">Batal</button>
+            <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+                <button type="button" onclick="document.getElementById('importGuidanceModal').classList.add('hidden')" class="px-4 py-2 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 font-bold">Batal</button>
                 <button type="submit" class="px-5 py-2.5 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl shadow-xs transition flex items-center gap-1.5">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
                     Mulai Impor Pembinaan

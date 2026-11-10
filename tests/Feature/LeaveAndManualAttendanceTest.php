@@ -40,7 +40,8 @@ test('siswa can submit leave request before 06:30 with live camera selfie and re
 
     $this->assertDatabaseHas('attendances', [
         'student_id' => $student->id,
-        'status' => 'SAKIT',
+        'status' => 'ALPA',
+        'requested_status' => 'SAKIT',
         'method' => 'IZIN_SAKIT',
         'verification_status' => 'PERLU_VERIFIKASI',
         'latitude' => -7.62000,
@@ -94,7 +95,8 @@ test('siswa can submit leave or sick request in advance for future dates at any 
 
     $attendance = Attendance::where('student_id', $student->id)
         ->whereDate('date', $tomorrow)
-        ->where('status', 'IZIN')
+        ->where('status', 'ALPA')
+        ->where('requested_status', 'IZIN')
         ->first();
 
     expect($attendance)->not->toBeNull()
@@ -175,7 +177,8 @@ test('wali kelas can view and approve leave request for student in their homeroo
         'date' => Carbon::today()->toDateString(),
         'time' => '07:15:00',
         'method' => 'IZIN_SAKIT',
-        'status' => 'IZIN',
+        'status' => 'ALPA',
+        'requested_status' => 'IZIN',
         'verification_status' => 'PERLU_VERIFIKASI',
         'notes' => 'Acara keluarga mendesak',
     ]);
@@ -187,6 +190,7 @@ test('wali kelas can view and approve leave request for student in their homeroo
     $response->assertSessionHas('success');
 
     $attendance->refresh();
+    expect($attendance->status)->toBe('IZIN');
     expect($attendance->verification_status)->toBe('DIVERIFIKASI');
     expect($attendance->approved_by)->toBe($waliUser->id);
     expect($attendance->approved_at)->not->toBeNull();
@@ -221,7 +225,8 @@ test('wali kelas cannot approve leave request for student in another class', fun
         'date' => Carbon::today()->toDateString(),
         'time' => '07:20:00',
         'method' => 'IZIN_SAKIT',
-        'status' => 'IZIN',
+        'status' => 'ALPA',
+        'requested_status' => 'IZIN',
         'verification_status' => 'PERLU_VERIFIKASI',
         'notes' => 'Izin kegiatan luar',
     ]);
@@ -258,7 +263,8 @@ test('admin can reject leave request with mandatory reason', function () {
         'date' => Carbon::today()->toDateString(),
         'time' => '07:30:00',
         'method' => 'IZIN_SAKIT',
-        'status' => 'SAKIT',
+        'status' => 'ALPA',
+        'requested_status' => 'SAKIT',
         'verification_status' => 'PERLU_VERIFIKASI',
     ]);
 
@@ -271,6 +277,7 @@ test('admin can reject leave request with mandatory reason', function () {
     $response->assertSessionHas('success');
 
     $attendance->refresh();
+    expect($attendance->status)->toBe('ALPA');
     expect($attendance->verification_status)->toBe('DITOLAK');
     expect($attendance->rejection_reason)->toBe('Foto selfie tidak jelas dan tidak menyertakan surat dokter.');
     expect($attendance->approved_by)->toBe($admin->id);
@@ -381,4 +388,65 @@ test('printable reports for attendance, discipline, and habits return status 200
     $responseHabits->assertStatus(200);
     $responseHabits->assertSee('7 KEBIASAAN ANAK INDONESIA HEBAT');
     $responseHabits->assertSee('PEMERINTAH PROVINSI JAWA BARAT');
+});
+
+test('wali kelas and admin can perform bulk manual attendance per class', function () {
+    $admin = User::where('role', 'super_admin')->first() ?? User::factory()->create(['role' => 'super_admin']);
+    $class = SchoolClass::first() ?? SchoolClass::create(['name' => 'XI-IPA-1', 'level' => '11']);
+
+    $studentA = Student::where('class_id', $class->id)->first() ?? Student::create([
+        'name' => 'Budi Santoso',
+        'gender' => 'L',
+        'nisn' => '9988112233',
+        'nis' => '2001',
+        'class_id' => $class->id,
+        'is_active' => true,
+    ]);
+
+    $studentB = Student::where('class_id', $class->id)->where('id', '!=', $studentA->id)->first() ?? Student::create([
+        'name' => 'Dewi Lestari',
+        'gender' => 'P',
+        'nisn' => '9988112234',
+        'nis' => '2002',
+        'class_id' => $class->id,
+        'is_active' => true,
+    ]);
+
+    $date = Carbon::today()->toDateString();
+
+    $response = $this->actingAs($admin)->post(route('attendance.manual.bulk'), [
+        'class_id' => $class->id,
+        'date' => $date,
+        'time' => '07:05',
+        'statuses' => [
+            $studentA->id => 'HADIR',
+            $studentB->id => 'SAKIT',
+        ],
+        'notes' => [
+            $studentA->id => 'Hadir tepat waktu di kelas.',
+            $studentB->id => 'Surat dokter sakit demam.',
+        ],
+    ]);
+
+    $response->assertRedirect(route('attendance.manual', [
+        'class_id' => $class->id,
+        'date' => $date,
+    ]));
+
+    $this->assertDatabaseHas('attendances', [
+        'student_id' => $studentA->id,
+        'status' => 'HADIR',
+        'method' => 'MANUAL',
+        'verification_status' => 'DIVERIFIKASI',
+    ]);
+
+    $this->assertDatabaseHas('attendances', [
+        'student_id' => $studentB->id,
+        'status' => 'SAKIT',
+        'method' => 'MANUAL',
+        'verification_status' => 'DIVERIFIKASI',
+    ]);
+
+    expect(Attendance::where('student_id', $studentA->id)->whereDate('date', $date)->value('status'))->toBe('HADIR')
+        ->and(Attendance::where('student_id', $studentB->id)->whereDate('date', $date)->value('status'))->toBe('SAKIT');
 });

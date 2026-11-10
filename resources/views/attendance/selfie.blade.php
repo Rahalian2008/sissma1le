@@ -4,6 +4,7 @@
 
 @section('content')
 <div class="max-w-3xl mx-auto space-y-6">
+    @include('attendance.partials.nav')
     <!-- Header Notice: Strict Business Rule -->
     <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-3xl p-6 text-white shadow-xl border border-slate-800">
         <div class="flex flex-wrap items-center justify-between gap-3 mb-2">
@@ -27,37 +28,43 @@
             <div class="p-2.5 rounded-2xl bg-slate-900/60 border border-slate-800 flex items-center justify-between">
                 <div class="flex items-center gap-2">
                     <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-                    <span class="text-slate-300 font-semibold">Sesi Masuk:</span>
+                    <div>
+                        <span class="text-slate-300 font-semibold block">Sesi Masuk:</span>
+                        <span class="text-[10px] text-slate-400">Tepat Waktu s.d. {{ $settings['checkin_time'] }} WIB</span>
+                    </div>
                 </div>
-                <span class="font-bold text-emerald-300">{{ $settings['start_time'] }} - {{ $settings['checkin_time'] }} WIB</span>
+                <span class="font-bold text-emerald-300">{{ $settings['start_time'] }} - {{ $settings['late_cutoff_time'] }} WIB</span>
             </div>
             <div class="p-2.5 rounded-2xl bg-slate-900/60 border border-slate-800 flex items-center justify-between">
                 <div class="flex items-center gap-2">
                     <span class="w-2 h-2 rounded-full bg-sky-400"></span>
-                    <span class="text-slate-300 font-semibold">Sesi Pulang:</span>
+                    <div>
+                        <span class="text-slate-300 font-semibold block">Sesi Pulang:</span>
+                        <span class="text-[10px] text-slate-400">Buka Pulang: {{ $settings['out_start'] }} WIB</span>
+                    </div>
                 </div>
-                <span class="font-bold text-sky-300">Mulai {{ $settings['out_start'] }} - {{ $settings['out_end'] }} WIB</span>
+                <span class="font-bold text-sky-300">{{ $settings['out_start'] }} - {{ $settings['out_end'] }} WIB</span>
             </div>
         </div>
     </div>
 
     <!-- Attendance Card -->
-    <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 sm:p-8">
+    <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm p-6 sm:p-8">
         
         @if(!$settings['is_enabled'])
-            <div class="mb-6 p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-800 text-xs flex items-center gap-3">
-                <svg class="w-5 h-5 text-amber-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="mb-6 p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/50 text-amber-800 dark:text-amber-200 text-xs flex items-center gap-3">
+                <svg class="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
                 </svg>
                 <div>
                     <span class="font-bold">Metode Presensi Selfie Kamera Sedang Dinonaktifkan</span>
-                    <p class="text-[11px] text-amber-700 mt-0.5">Pihak sekolah saat ini menonaktifkan presensi selfie kamera. Silakan gunakan metode presensi lain (QR Code atau Kartu RFID) yang tersedia.</p>
+                    <p class="text-[11px] text-amber-700 dark:text-amber-300 mt-0.5">Pihak sekolah saat ini menonaktifkan presensi selfie kamera. Silakan gunakan metode presensi lain (QR Code atau Kartu RFID) yang tersedia.</p>
                 </div>
             </div>
         @endif
 
         @if(!empty($settings['is_holiday']))
-            <div class="mb-6 p-4 rounded-2xl bg-gradient-to-r from-rose-500/10 via-red-500/10 to-rose-500/10 border border-rose-300 text-rose-900 text-xs flex items-center gap-3.5 shadow-xs">
+            <div class="mb-6 p-4 rounded-2xl bg-gradient-to-r from-rose-500/10 via-red-500/10 to-rose-500/10 border border-rose-300 dark:border-rose-900/50 text-rose-900 dark:text-rose-200 text-xs flex items-center gap-3.5 shadow-xs">
                 <div class="w-9 h-9 rounded-xl bg-rose-600 text-white flex items-center justify-center shrink-0 shadow-md">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
@@ -65,20 +72,20 @@
                 </div>
                 <div>
                     <div class="flex items-center gap-2">
-                        <span class="font-extrabold text-sm text-rose-700">🔴 Hari Libur: {{ $settings['holiday_name'] }}</span>
-                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-200 text-rose-800 uppercase">{{ $settings['holiday_type'] ?? 'Libur' }}</span>
+                        <span class="font-extrabold text-sm text-rose-700 dark:text-rose-300">🔴 Hari Libur: {{ $settings['holiday_name'] }}</span>
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-200 dark:bg-rose-900/60 text-rose-800 dark:text-rose-200 uppercase">{{ $settings['holiday_type'] ?? 'Libur' }}</span>
                     </div>
-                    <p class="text-[11.5px] text-rose-800 mt-0.5">Hari ini adalah tanggal merah / hari libur sekolah resmi. Seluruh sesi presensi masuk dan pulang dinonaktifkan otomatis.</p>
+                    <p class="text-[11.5px] text-rose-800 dark:text-rose-300 mt-0.5">Hari ini adalah tanggal merah / hari libur sekolah resmi. Seluruh sesi presensi masuk dan pulang dinonaktifkan otomatis.</p>
                 </div>
             </div>
         @elseif(isset($settings['is_active_day']) && !$settings['is_active_day'])
-            <div class="mb-6 p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-3">
-                <svg class="w-5 h-5 text-rose-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="mb-6 p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/50 text-rose-800 dark:text-rose-200 text-xs flex items-center gap-3">
+                <svg class="w-5 h-5 text-rose-600 dark:text-rose-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
                 <div>
                     <span class="font-bold">Hari Libur / Non-Aktif</span>
-                    <p class="text-[11px] text-rose-700 mt-0.5">Hari ini sekolah dinyatakan libur atau bukan merupakan jadwal aktif presensi sekolah.</p>
+                    <p class="text-[11px] text-rose-700 dark:text-rose-300 mt-0.5">Hari ini sekolah dinyatakan libur atau bukan merupakan jadwal aktif presensi sekolah.</p>
                 </div>
             </div>
         @endif
@@ -92,14 +99,14 @@
         @endphp
 
         @if($isComplete)
-            <div class="mb-6 p-5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-950 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="mb-6 p-5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/50 text-emerald-950 dark:text-emerald-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-2xl bg-emerald-500 text-white font-black flex items-center justify-center text-lg shadow-md shadow-emerald-500/20">
                         ✓
                     </div>
                     <div>
-                        <h3 class="font-extrabold text-sm text-emerald-900">Presensi Hari Ini Telah Lengkap!</h3>
-                        <p class="text-xs text-emerald-700 mt-0.5">
+                        <h3 class="font-extrabold text-sm text-emerald-900 dark:text-emerald-100">Presensi Hari Ini Telah Lengkap!</h3>
+                        <p class="text-xs text-emerald-700 dark:text-emerald-300 mt-0.5">
                             Masuk: <strong>{{ substr($existingAttendance->time, 0, 5) }} WIB</strong> • Pulang: <strong>{{ substr($existingAttendance->time_out, 0, 5) }} WIB</strong>
                         </p>
                     </div>
@@ -109,53 +116,59 @@
                 </div>
             </div>
         @elseif($hasCheckin && !$hasCheckout)
-            <div class="mb-6 p-4 rounded-2xl bg-sky-50 border border-sky-200 text-sky-950 flex items-center justify-between gap-3">
+            <div class="mb-6 p-4 rounded-2xl bg-sky-50 dark:bg-sky-950/40 border border-sky-200 dark:border-sky-900/50 text-sky-950 dark:text-sky-200 flex items-center justify-between gap-3">
                 <div class="flex items-center gap-3">
                     <div class="w-9 h-9 rounded-xl bg-sky-500 text-white font-bold flex items-center justify-center text-sm shadow-sm">
                         2
                     </div>
                     <div>
-                        <h4 class="font-extrabold text-xs text-sky-950">SESI PRESENSI PULANG DIAKTIFKAN</h4>
-                        <p class="text-[11px] text-sky-800">
+                        <h4 class="font-extrabold text-xs text-sky-950 dark:text-sky-100">SESI PRESENSI PULANG DIAKTIFKAN</h4>
+                        <p class="text-[11px] text-sky-800 dark:text-sky-300">
                             Anda telah presensi masuk pukul <strong>{{ substr($existingAttendance->time, 0, 5) }} WIB</strong>. Silakan ambil selfie untuk merekam jam kepulangan Anda.
                         </p>
                     </div>
                 </div>
-                <span class="px-2.5 py-1 rounded-lg bg-sky-100 text-sky-800 font-extrabold text-[11px] shrink-0 border border-sky-200">
+                <span class="px-2.5 py-1 rounded-lg bg-sky-100 dark:bg-sky-950/60 text-sky-800 dark:text-sky-300 font-extrabold text-[11px] shrink-0 border border-sky-200 dark:border-sky-800">
                     Sesi Pulang
                 </span>
             </div>
         @else
-            <div class="mb-6 p-4 rounded-2xl bg-indigo-50 border border-indigo-100 text-indigo-950 flex items-center justify-between gap-3">
+            <div class="mb-6 p-4 rounded-2xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900/50 text-indigo-950 dark:text-indigo-200 flex items-center justify-between gap-3">
                 <div class="flex items-center gap-3">
                     <div class="w-9 h-9 rounded-xl bg-indigo-600 text-white font-bold flex items-center justify-center text-sm shadow-sm">
                         1
                     </div>
                     <div>
-                        <h4 class="font-extrabold text-xs text-indigo-950">SESI PRESENSI MASUK</h4>
-                        <p class="text-[11px] text-indigo-800">
+                        <h4 class="font-extrabold text-xs text-indigo-950 dark:text-indigo-100">SESI PRESENSI MASUK</h4>
+                        <p class="text-[11px] text-indigo-800 dark:text-indigo-300">
                             Posisikan wajah Anda di dalam lingkaran panduan di bawah dan pastikan GPS mendeteksi Anda di area sekolah.
                         </p>
                     </div>
                 </div>
-                <span class="px-2.5 py-1 rounded-lg bg-indigo-100 text-indigo-800 font-extrabold text-[11px] shrink-0 border border-indigo-200">
+                <span class="px-2.5 py-1 rounded-lg bg-indigo-100 dark:bg-indigo-950/60 text-indigo-800 dark:text-indigo-300 font-extrabold text-[11px] shrink-0 border border-indigo-200 dark:border-indigo-800">
                     Sesi Masuk
                 </span>
             </div>
         @endif
 
         <!-- Geofence & GPS Status Bar -->
-        <div class="mb-6 p-4 rounded-2xl bg-slate-50 border border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+        <div class="mb-6 p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
             <div class="flex items-center gap-3">
                 <div id="gps-indicator" class="w-4 h-4 rounded-full bg-amber-400 animate-pulse shrink-0"></div>
                 <div>
-                    <span class="font-bold text-slate-700" id="gps-status-text">Memindai koordinat GPS...</span>
-                    <div class="text-[11px] text-slate-400" id="gps-coords-text">Mencari sinyal lokasi perangkat</div>
+                    <span class="font-bold text-slate-700 dark:text-slate-200" id="gps-status-text">Memindai koordinat GPS...</span>
+                    <div class="text-[11px] text-slate-400 dark:text-slate-500" id="gps-coords-text">Mencari sinyal lokasi perangkat</div>
                 </div>
             </div>
-            <div id="distance-badge" class="px-3 py-1.5 rounded-xl bg-slate-200 text-slate-700 font-bold text-center">
-                Maks. Radius: {{ $settings['radius_meters'] }} meter
-            </div>
+            @if(empty($settings['is_geofence_enabled']))
+                <div id="distance-badge" class="px-3 py-1.5 rounded-xl bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 font-bold text-center border border-emerald-200 dark:border-emerald-800">
+                    ✓ Radius Bebas (Fitur Radius Nonaktif)
+                </div>
+            @else
+                <div id="distance-badge" class="px-3 py-1.5 rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-center">
+                    Maks. Radius: {{ $settings['radius_meters'] }} meter
+                </div>
+            @endif
         </div>
 
         <!-- Video Stream Container with Face Overlay Guide -->
@@ -194,7 +207,18 @@
 
         <!-- Action Button: AMBIL SELFIE -->
         <div class="mt-6 text-center">
-            @if(!$settings['is_active_day'])
+            @if(!$settings['is_enabled'])
+                <button type="button" disabled
+                    class="w-full sm:w-auto px-10 py-4 bg-slate-100 dark:bg-slate-800 text-slate-400 font-bold rounded-2xl cursor-not-allowed text-sm tracking-wide inline-flex items-center justify-center gap-2">
+                    <svg class="w-5 h-5 text-amber-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                    </svg>
+                    METODE SELFIE DINONAKTIFKAN
+                </button>
+                <p class="text-xs text-amber-700 dark:text-amber-400 mt-2 font-medium">
+                    Metode presensi selfie kamera sedang dinonaktifkan oleh administrator sekolah. Silakan gunakan metode lain.
+                </p>
+            @elseif(!$settings['is_active_day'])
                 <button type="button" disabled
                     class="w-full sm:w-auto px-10 py-4 bg-slate-100 dark:bg-slate-800 text-slate-400 font-bold rounded-2xl cursor-not-allowed text-sm tracking-wide inline-flex items-center justify-center gap-2">
                     <svg class="w-5 h-5 text-rose-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -207,7 +231,7 @@
                 </p>
             @elseif($isComplete)
                 <button type="button" disabled
-                    class="w-full sm:w-auto px-10 py-4 bg-slate-100 text-slate-400 font-black rounded-2xl cursor-not-allowed text-base tracking-wide inline-flex items-center justify-center gap-2">
+                    class="w-full sm:w-auto px-10 py-4 bg-slate-100 dark:bg-slate-800 text-slate-400 font-black rounded-2xl cursor-not-allowed text-base tracking-wide inline-flex items-center justify-center gap-2">
                     <svg class="w-5 h-5 text-emerald-500" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                     </svg>
@@ -258,6 +282,7 @@
     const schoolLat = {{ $settings['school_lat'] }};
     const schoolLng = {{ $settings['school_lng'] }};
     const allowedRadius = {{ $settings['radius_meters'] }};
+    const isGeofenceEnabled = {{ !empty($settings['is_geofence_enabled']) ? 'true' : 'false' }};
 
     const video = document.getElementById('webcam-video');
     const canvas = document.getElementById('canvas-capture');
@@ -299,7 +324,15 @@
                     gpsCoordsText.innerText = `Lat: ${currentLat.toFixed(6)}, Lng: ${currentLng.toFixed(6)} (Akurasi: ±${Math.round(currentAccuracy)}m)`;
                 }
 
-                if (distance <= allowedRadius) {
+                if (!isGeofenceEnabled) {
+                    isWithinRadius = true;
+                    if (gpsIndicator) gpsIndicator.className = "w-4 h-4 rounded-full bg-emerald-500 shrink-0";
+                    if (gpsStatusText) gpsStatusText.innerText = `Lokasi GPS Terdeteksi (Jarak: ${distance}m • Fitur Radius Nonaktif)`;
+                    if (distanceBadge) {
+                        distanceBadge.className = "px-3 py-1.5 rounded-xl bg-emerald-100 text-emerald-800 font-bold text-center";
+                        distanceBadge.innerText = `Radius Bebas (${distance}m)`;
+                    }
+                } else if (distance <= allowedRadius) {
                     isWithinRadius = true;
                     if (gpsIndicator) gpsIndicator.className = "w-4 h-4 rounded-full bg-emerald-500 shrink-0";
                     if (gpsStatusText) gpsStatusText.innerText = `Lokasi Tervalidasi: Berada di area sekolah (Jarak: ${distance}m)`;
@@ -361,7 +394,7 @@
             return;
         }
 
-        if (!currentLat || !currentLng) {
+        if (isGeofenceEnabled && (!currentLat || !currentLng)) {
             alert("Koordinat GPS belum terdeteksi. Pastikan GPS aktif dan berikan izin lokasi.");
             return;
         }
@@ -451,7 +484,9 @@
     // Auto-init on load
     window.addEventListener('DOMContentLoaded', () => {
         initGeolocation();
-        startCamera();
+        @if(!empty($settings['is_enabled']))
+            startCamera();
+        @endif
     });
 </script>
 @endpush

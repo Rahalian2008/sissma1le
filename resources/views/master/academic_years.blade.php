@@ -4,14 +4,15 @@
 
 @section('content')
 <div class="space-y-6 w-full">
+    @include('master.partials.nav')
     <!-- Header -->
     <div class="bg-gradient-to-r from-slate-900 via-amber-950 to-slate-900 rounded-3xl p-5 sm:p-8 text-white shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
             <span class="px-3 py-1 bg-amber-500/20 text-amber-300 border border-amber-500/30 rounded-full text-xs font-bold">
                 MASTER DATA SEKOLAH
             </span>
-            <h1 class="text-xl sm:text-3xl font-black text-white mt-2">Data Tahun Pelajaran & Semester</h1>
-            <p class="text-xs text-slate-300 mt-1">Kelola kalender akademik periode aktif, pergantian semester ganjil/genap, dan alokasi data tahunan.</p>
+            <h1 class="text-xl sm:text-3xl font-black text-white mt-2">Data Tahun Pelajaran</h1>
+            <p class="text-xs text-slate-300 mt-1">Kelola kalender akademik periode aktif dan alokasi data tahunan sekolah.</p>
         </div>
         <div class="flex flex-wrap items-center gap-2 sm:gap-3 w-full sm:w-auto">
             <button onclick="document.getElementById('importAcademicYearModal').classList.remove('hidden')" class="w-full sm:w-auto justify-center px-4 py-2.5 bg-orange-600 hover:bg-orange-500 text-white font-bold rounded-xl text-xs flex items-center gap-2 shadow-xs transition cursor-pointer">
@@ -45,7 +46,6 @@
                 <thead class="bg-slate-50 dark:bg-slate-800/60 text-slate-600 dark:text-slate-300 font-bold border-b border-slate-200 dark:border-slate-800">
                     <tr>
                         <th class="p-4">Tahun Pelajaran</th>
-                        <th class="p-4">Semester</th>
                         <th class="p-4">Tanggal Mulai</th>
                         <th class="p-4">Tanggal Berakhir</th>
                         <th class="p-4 text-center">Rombel Terhubung</th>
@@ -53,34 +53,29 @@
                         <th class="p-4 text-right">Aksi</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-100">
+                <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
                     @forelse($years as $y)
-                        <tr class="hover:bg-slate-50 transition">
-                            <td class="p-4 font-black text-slate-800 text-sm">
+                        <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
+                            <td class="p-4 font-black text-slate-800 dark:text-slate-100 text-sm">
                                 {{ $y->name }}
                             </td>
-                            <td class="p-4">
-                                <span class="px-2.5 py-1 rounded-lg font-bold {{ $y->semester === 'Ganjil' ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800' }}">
-                                    Semester {{ $y->semester }}
-                                </span>
-                            </td>
-                            <td class="p-4 font-medium text-slate-600">
+                            <td class="p-4 font-medium text-slate-600 dark:text-slate-300">
                                 {{ \Carbon\Carbon::parse($y->start_date)->format('d M Y') }}
                             </td>
-                            <td class="p-4 font-medium text-slate-600">
+                            <td class="p-4 font-medium text-slate-600 dark:text-slate-300">
                                 {{ \Carbon\Carbon::parse($y->end_date)->format('d M Y') }}
                             </td>
-                            <td class="p-4 text-center font-bold text-slate-700">
+                            <td class="p-4 text-center font-bold text-slate-700 dark:text-slate-300">
                                 {{ $y->classes_count }} Rombel
                             </td>
                             <td class="p-4 text-center">
                                 @if($y->is_active)
-                                    <span class="px-3 py-1 bg-emerald-100 text-emerald-800 font-black rounded-full text-xs flex items-center justify-center gap-1.5 mx-auto w-max">
+                                    <span class="px-3 py-1 bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 font-black rounded-full text-xs flex items-center justify-center gap-1.5 mx-auto w-max">
                                         <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                                         SEDANG AKTIF
                                     </span>
                                 @else
-                                    <span class="px-2.5 py-1 bg-slate-100 text-slate-500 font-medium rounded-full text-[10px]">
+                                    <span class="px-2.5 py-1 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-medium rounded-full text-[10px]">
                                         Tidak Aktif
                                     </span>
                                 @endif
@@ -95,10 +90,13 @@
                                             </button>
                                         </form>
                                     @endif
+                                    <button onclick="editAcademicYear({{ $y->id }}, '{{ $y->name }}', '{{ $y->start_date }}', '{{ $y->end_date }}', {{ $y->is_active ? 'true' : 'false' }})" class="p-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-blue-950/50 text-blue-600 dark:text-blue-400 rounded-lg transition" title="Edit Periode">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                    </button>
                                     <form action="{{ route('master.academic_years.destroy', $y->id) }}" method="POST" onsubmit="return confirm('Hapus periode tahun pelajaran {{ $y->name }}?')">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="p-1.5 bg-slate-100 hover:bg-rose-50 text-rose-600 rounded-lg transition" title="Hapus Periode">
+                                        <button type="submit" class="p-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-rose-50 dark:hover:bg-rose-950/50 text-rose-600 dark:text-rose-400 rounded-lg transition" title="Hapus Periode">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                                         </button>
                                     </form>
@@ -107,7 +105,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="p-8 text-center text-slate-400">
+                            <td colspan="6" class="p-8 text-center text-slate-400 dark:text-slate-500">
                                 Belum ada tahun pelajaran yang terdaftar.
                             </td>
                         </tr>
@@ -120,43 +118,43 @@
 
 <!-- Modal Impor Tahun Pelajaran -->
 <div id="importAcademicYearModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center hidden p-4">
-    <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl border border-slate-100 space-y-4 max-h-[90vh] overflow-y-auto">
-        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+    <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl border border-slate-100 dark:border-slate-800 space-y-4 max-h-[90vh] overflow-y-auto">
+        <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
             <div class="flex items-center gap-2">
-                <span class="w-8 h-8 rounded-xl bg-orange-100 text-orange-700 flex items-center justify-center font-bold">
+                <span class="w-8 h-8 rounded-xl bg-orange-100 dark:bg-orange-950/60 text-orange-700 dark:text-orange-300 flex items-center justify-center font-bold">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
                 </span>
                 <div>
-                    <h3 class="font-black text-slate-800 text-sm">Impor Tahun Pelajaran</h3>
-                    <p class="text-[11px] text-slate-400">Unggah file CSV kalender tahun pelajaran sekolah</p>
+                    <h3 class="font-black text-slate-800 dark:text-slate-100 text-sm">Impor Tahun Pelajaran</h3>
+                    <p class="text-[11px] text-slate-400 dark:text-slate-500">Unggah file CSV kalender tahun pelajaran sekolah</p>
                 </div>
             </div>
-            <button onclick="document.getElementById('importAcademicYearModal').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 font-bold">✕</button>
+            <button onclick="document.getElementById('importAcademicYearModal').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 font-bold">✕</button>
         </div>
 
-        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs space-y-2">
-            <div class="flex items-center justify-between font-bold text-slate-700">
+        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-xs space-y-2">
+            <div class="flex items-center justify-between font-bold text-slate-700 dark:text-slate-200">
                 <span>Format File & Panduan:</span>
                 <a href="{{ route('master.academic_years.template') }}" class="inline-flex items-center gap-1.5 px-3 py-1 bg-orange-600 hover:bg-orange-500 text-white rounded-lg text-[11px] font-bold shadow-xs transition">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
                     Unduh Template CSV
                 </a>
             </div>
-            <p class="text-[11px] text-slate-500 leading-relaxed">
-                Kolom wajib: <code class="bg-white px-1.5 py-0.5 rounded text-orange-700 font-mono">nama_tahun</code> (contoh: 2026/2027), <code class="bg-white px-1.5 py-0.5 rounded text-orange-700 font-mono">semester</code> (GANJIL/GENAP).
-                Kolom opsional: <code class="bg-white px-1.5 py-0.5 rounded text-slate-600 font-mono">tanggal_mulai</code> (YYYY-MM-DD), <code class="bg-white px-1.5 py-0.5 rounded text-slate-600 font-mono">tanggal_selesai</code> (YYYY-MM-DD), <code class="bg-white px-1.5 py-0.5 rounded text-slate-600 font-mono">is_active</code> (1/0).
+            <p class="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+                Kolom wajib: <code class="bg-white dark:bg-slate-800 px-1.5 py-0.5 rounded text-orange-700 dark:text-orange-400 font-mono">nama_tahun</code> (contoh: 2026/2027).
+                Kolom opsional: <code class="bg-white dark:bg-slate-800 px-1.5 py-0.5 rounded text-slate-600 dark:text-slate-300 font-mono">tanggal_mulai</code> (YYYY-MM-DD), <code class="bg-white dark:bg-slate-800 px-1.5 py-0.5 rounded text-slate-600 dark:text-slate-300 font-mono">tanggal_selesai</code> (YYYY-MM-DD), <code class="bg-white dark:bg-slate-800 px-1.5 py-0.5 rounded text-slate-600 dark:text-slate-300 font-mono">is_active</code> (1/0).
             </p>
         </div>
 
         <form action="{{ route('master.academic_years.import') }}" method="POST" enctype="multipart/form-data" class="space-y-4 text-xs">
             @csrf
             <div>
-                <label class="block font-bold text-slate-700 mb-1">Pilih File Spreadsheet (CSV) <span class="text-rose-500">*</span></label>
-                <input type="file" name="file" accept=".csv,.txt" required class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-orange-600 file:text-white hover:file:bg-orange-700 cursor-pointer">
+                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Pilih File Spreadsheet (CSV) <span class="text-rose-500">*</span></label>
+                <input type="file" name="file" accept=".csv,.txt" required class="w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none text-slate-800 dark:text-slate-100 file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-orange-600 file:text-white hover:file:bg-orange-700 cursor-pointer">
             </div>
 
-            <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
-                <button type="button" onclick="document.getElementById('importAcademicYearModal').classList.add('hidden')" class="px-4 py-2 text-slate-500 hover:text-slate-700 font-bold">
+            <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+                <button type="button" onclick="document.getElementById('importAcademicYearModal').classList.add('hidden')" class="px-4 py-2 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 font-bold transition">
                     Batal
                 </button>
                 <button type="submit" class="px-5 py-2.5 bg-orange-600 hover:bg-orange-500 text-white font-bold rounded-xl shadow-xs transition flex items-center gap-1.5">
@@ -170,43 +168,83 @@
 
 <!-- Modal Tambah Tahun Pelajaran -->
 <div id="addAcademicYearModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center hidden p-4">
-    <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-slate-100 space-y-4">
-        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-            <h3 class="font-black text-slate-800 text-sm">Tambah Periode Tahun Pelajaran</h3>
-            <button onclick="document.getElementById('addAcademicYearModal').classList.add('hidden')" class="text-slate-400 hover:text-slate-600">✕</button>
+    <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-slate-100 dark:border-slate-800 space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+            <h3 class="font-black text-slate-800 dark:text-slate-100 text-sm">Tambah Periode Tahun Pelajaran</h3>
+            <button onclick="document.getElementById('addAcademicYearModal').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">✕</button>
         </div>
         <form action="{{ route('master.academic_years.store') }}" method="POST" class="space-y-4 text-xs">
             @csrf
             <div>
-                <label class="block font-bold text-slate-700 mb-1">Nama Tahun Pelajaran <span class="text-rose-500">*</span></label>
-                <input type="text" name="name" required placeholder="Contoh: 2026/2027" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none font-bold">
-            </div>
-            <div>
-                <label class="block font-bold text-slate-700 mb-1">Semester <span class="text-rose-500">*</span></label>
-                <select name="semester" required class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none font-bold">
-                    <option value="Ganjil">Semester Ganjil</option>
-                    <option value="Genap">Semester Genap</option>
-                </select>
+                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Nama Tahun Pelajaran <span class="text-rose-500">*</span></label>
+                <input type="text" name="name" required placeholder="Contoh: 2026/2027" class="w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-bold text-slate-800 dark:text-slate-100">
             </div>
             <div class="grid grid-cols-2 gap-3">
                 <div>
-                    <label class="block font-bold text-slate-700 mb-1">Tanggal Mulai <span class="text-rose-500">*</span></label>
-                    <input type="date" name="start_date" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl outline-none">
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Tanggal Mulai <span class="text-rose-500">*</span></label>
+                    <input type="date" name="start_date" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none text-slate-800 dark:text-slate-100">
                 </div>
                 <div>
-                    <label class="block font-bold text-slate-700 mb-1">Tanggal Selesai <span class="text-rose-500">*</span></label>
-                    <input type="date" name="end_date" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl outline-none">
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Tanggal Selesai <span class="text-rose-500">*</span></label>
+                    <input type="date" name="end_date" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none text-slate-800 dark:text-slate-100">
                 </div>
             </div>
             <div class="flex items-center gap-2 pt-1">
                 <input type="checkbox" name="is_active" id="is_active_check" value="1" class="w-4 h-4 text-amber-600 rounded">
-                <label for="is_active_check" class="font-bold text-slate-700 cursor-pointer">Langsung jadikan Tahun Pelajaran Aktif</label>
+                <label for="is_active_check" class="font-bold text-slate-700 dark:text-slate-300 cursor-pointer">Langsung jadikan Tahun Pelajaran Aktif</label>
             </div>
-            <div class="pt-3 flex justify-end gap-2">
-                <button type="button" onclick="document.getElementById('addAcademicYearModal').classList.add('hidden')" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 rounded-xl font-bold">Batal</button>
-                <button type="submit" class="px-5 py-2 bg-amber-600 hover:bg-amber-500 text-white font-bold rounded-xl shadow-xs">Simpan Periode</button>
+            <div class="pt-3 flex justify-end gap-2 border-t border-slate-100 dark:border-slate-800">
+                <button type="button" onclick="document.getElementById('addAcademicYearModal').classList.add('hidden')" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-bold transition">Batal</button>
+                <button type="submit" class="px-5 py-2 bg-amber-600 hover:bg-amber-500 text-white font-bold rounded-xl shadow-xs transition">Simpan Periode</button>
             </div>
         </form>
     </div>
 </div>
+<!-- Modal Edit Tahun Pelajaran -->
+<div id="editAcademicYearModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center hidden p-4">
+    <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-slate-100 dark:border-slate-800 space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+            <h3 class="font-black text-slate-800 dark:text-slate-100 text-sm">Edit Periode Tahun Pelajaran</h3>
+            <button onclick="document.getElementById('editAcademicYearModal').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">✕</button>
+        </div>
+        <form id="editAcademicYearForm" method="POST" class="space-y-4 text-xs">
+            @csrf
+            @method('PUT')
+            <div>
+                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Nama Tahun Pelajaran <span class="text-rose-500">*</span></label>
+                <input type="text" name="name" id="edit_name" required placeholder="Contoh: 2026/2027" class="w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-bold text-slate-800 dark:text-slate-100">
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Tanggal Mulai <span class="text-rose-500">*</span></label>
+                    <input type="date" name="start_date" id="edit_start_date" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none text-slate-800 dark:text-slate-100">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Tanggal Selesai <span class="text-rose-500">*</span></label>
+                    <input type="date" name="end_date" id="edit_end_date" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none text-slate-800 dark:text-slate-100">
+                </div>
+            </div>
+            <div class="flex items-center gap-2 pt-1">
+                <input type="checkbox" name="is_active" id="edit_is_active_check" value="1" class="w-4 h-4 text-amber-600 rounded">
+                <label for="edit_is_active_check" class="font-bold text-slate-700 dark:text-slate-300 cursor-pointer">Jadikan Tahun Pelajaran Aktif</label>
+            </div>
+            <div class="pt-3 flex justify-end gap-2 border-t border-slate-100 dark:border-slate-800">
+                <button type="button" onclick="document.getElementById('editAcademicYearModal').classList.add('hidden')" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-bold transition">Batal</button>
+                <button type="submit" class="px-5 py-2 bg-amber-600 hover:bg-amber-500 text-white font-bold rounded-xl shadow-xs transition">Simpan Perubahan</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function editAcademicYear(id, name, startDate, endDate, isActive) {
+    document.getElementById('editAcademicYearForm').action = `/master/academic-years/${id}`;
+    document.getElementById('edit_name').value = name;
+    document.getElementById('edit_start_date').value = startDate;
+    document.getElementById('edit_end_date').value = endDate;
+    document.getElementById('edit_is_active_check').checked = isActive;
+    
+    document.getElementById('editAcademicYearModal').classList.remove('hidden');
+}
+</script>
 @endsection

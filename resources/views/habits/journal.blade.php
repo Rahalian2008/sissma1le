@@ -4,6 +4,7 @@
 
 @section('content')
 <div class="space-y-6 max-w-4xl mx-auto">
+    @include('habits.partials.nav')
     <!-- Header Banner -->
     <div class="bg-gradient-to-r from-emerald-600 via-teal-700 to-indigo-950 rounded-3xl p-6 sm:p-8 text-white shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
@@ -19,7 +20,7 @@
         </div>
 
         <div class="flex flex-wrap items-center gap-2.5">
-            @if(Auth::user()->role === 'super_admin')
+            @if(in_array(Auth::user()->role, ['admin', 'super_admin']))
                 <button type="button" onclick="document.getElementById('modal-target-times').classList.remove('hidden')" class="px-4 py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-2xl shadow-md text-xs sm:text-sm flex items-center gap-1.5 transition cursor-pointer">
                     ⚙️ Atur Waktu & Aktivitas
                 </button>
@@ -279,17 +280,20 @@
 
                     <!-- Action Button / Time Lock -->
                     <div class="sm:shrink-0 text-right">
-                        @if(Auth::user()->role === 'siswa')
+                        @if(in_array(Auth::user()->role, ['siswa', 'admin', 'super_admin']))
                             @if($isDone)
                                 <div class="flex flex-col sm:flex-row items-end sm:items-center gap-2">
                                     <button type="button" onclick="openStudentEntryModal('{{ $habit->id }}', '{{ addslashes($habit->name) }}', '{{ $habit->order_number }}', '{{ addslashes($log->activity_name ?? $habit->default_activity) }}', '{{ addslashes($log->reflection ?? '') }}', '{{ addslashes($habit->reflection_prompt ?? '') }}', '{{ $timeStatus['range'] }}')" class="px-3 py-1.5 rounded-xl text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 transition cursor-pointer">
                                         ✎ Edit Refleksi
                                     </button>
-                                    @if($canCheck)
+                                    @if($canCheck || in_array(Auth::user()->role, ['admin', 'super_admin']))
                                         <form action="{{ route('habits.log.update') }}" method="POST" class="inline">
                                             @csrf
                                             <input type="hidden" name="habit_id" value="{{ $habit->id }}">
                                             <input type="hidden" name="date" value="{{ $date }}">
+                                            @if(isset($student))
+                                            <input type="hidden" name="student_id" value="{{ $student->id }}">
+                                            @endif
                                             <input type="hidden" name="is_completed" value="0">
                                             <button type="submit" class="px-4 py-2 rounded-xl text-xs font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/50 transition cursor-pointer">
                                                 Batalkan Ceklis
@@ -298,7 +302,7 @@
                                     @endif
                                 </div>
                             @else
-                                @if($canCheck)
+                                @if($canCheck || in_array(Auth::user()->role, ['admin', 'super_admin']))
                                     <button type="button" onclick="openStudentEntryModal('{{ $habit->id }}', '{{ addslashes($habit->name) }}', '{{ $habit->order_number }}', '{{ addslashes($habit->default_activity ?? '') }}', '', '{{ addslashes($habit->reflection_prompt ?? '') }}', '{{ $timeStatus['range'] }}')" class="w-full sm:w-auto px-5 py-2.5 rounded-2xl text-xs font-bold bg-slate-900 hover:bg-indigo-600 text-white transition shadow-xs flex items-center justify-center gap-1.5 cursor-pointer">
                                         <span>✓</span> Laksanakan
                                     </button>
@@ -392,6 +396,9 @@
             @csrf
             <input type="hidden" name="habit_id" id="entry-habit-id">
             <input type="hidden" name="date" value="{{ $date }}">
+            @if(isset($student))
+            <input type="hidden" name="student_id" value="{{ $student->id }}">
+            @endif
             <input type="hidden" name="is_completed" value="1">
 
             <div class="p-3 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 rounded-2xl flex items-center justify-between">

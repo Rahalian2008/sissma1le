@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Schema;
 
 class SchoolHoliday extends Model
 {
@@ -17,6 +18,7 @@ class SchoolHoliday extends Model
         'end_date',
         'type',
         'description',
+        'target_classes',
         'is_active',
     ];
 
@@ -30,6 +32,7 @@ class SchoolHoliday extends Model
         return [
             'start_date' => 'date:Y-m-d',
             'end_date' => 'date:Y-m-d',
+            'target_classes' => 'array',
             'is_active' => 'boolean',
         ];
     }
@@ -45,22 +48,42 @@ class SchoolHoliday extends Model
     /**
      * Find if a given date falls on a registered active holiday.
      */
-    public static function getHoliday(Carbon|string $date): ?self
+    public static function getHoliday(Carbon|string $date, $classId = null): ?self
     {
         $dateStr = is_string($date) ? Carbon::parse($date)->toDateString() : $date->toDateString();
 
-        return static::active()
+        $holiday = static::active()
             ->where('start_date', '<=', $dateStr)
             ->where('end_date', '>=', $dateStr)
             ->first();
+
+        if ($holiday && $classId && ! $holiday->appliesToClass($classId)) {
+            return null;
+        }
+
+        return $holiday;
+    }
+
+    /**
+     * Check if holiday applies to a specific class.
+     */
+    public function appliesToClass($classId = null): bool
+    {
+        if (empty($classId) || ! isset($this->attributes['target_classes']) || empty($this->target_classes) || $this->target_classes === 'all') {
+            return true;
+        }
+
+        $targets = is_array($this->target_classes) ? $this->target_classes : json_decode($this->target_classes, true);
+
+        return is_array($targets) ? in_array($classId, $targets) : true;
     }
 
     /**
      * Check if a given date is a holiday.
      */
-    public static function isHoliday(Carbon|string $date): bool
+    public static function isHoliday(Carbon|string $date, $classId = null): bool
     {
-        return static::getHoliday($date) !== null;
+        return static::getHoliday($date, $classId) !== null;
     }
 
     /**
@@ -91,5 +114,49 @@ class SchoolHoliday extends Model
         $end = Carbon::parse($this->end_date)->startOfDay();
 
         return (int) $start->diffInDays($end) + 1;
+    }
+
+    /**
+     * Get names of classes targeted by this holiday.
+     *
+     * @return array<string>
+     */
+    public function getTargetClassNamesAttribute(): array
+    {
+        if (empty($this->target_classes)) {
+            return [];
+        }
+
+        $ids = is_array($this->target_classes)
+            ? $this->target_classes
+            : (json_decode((string) $this->target_classes, true) ?? []);
+
+        if (empty($ids) || ! is_array($ids)) {
+            return [];
+        }
+
+        if (! Schema::hasTable('school_classes')) {
+            return [];
+        }
+
+        return SchoolClass::whereIn('id', $ids)->orderBy('name')->pluck('name')->toArray() ?? [];
+    }
+
+    /**
+     * Get summary text of target classes.
+     */
+    public function getTargetSummaryAttribute(): string
+    {
+        $names = $this->target_class_names;
+
+        if (empty($names)) {
+            return 'Seluruh Sekolah';
+        }
+
+        if (count($names) <= 3) {
+            return 'Kelas: '.implode(', ', $names);
+        }
+
+        return count($names).' Kelas Terpilih';
     }
 }
