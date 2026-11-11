@@ -534,7 +534,7 @@
                     </button>
 
                     <!-- Mobile Brand Logo -->
-                    <div class="flex items-center gap-2 lg:hidden min-w-0">
+                    <div class="flex items-center gap-2 lg:hidden min-w-0 shrink-0">
                         <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-600 to-emerald-400 p-0.5 flex items-center justify-center shrink-0 shadow-xs">
                             <div class="w-full h-full bg-slate-900 rounded-[10px] flex items-center justify-center font-extrabold text-white text-[11px] overflow-hidden">
                                 @if(!empty($appLogoUrl))
@@ -544,7 +544,7 @@
                                 @endif
                             </div>
                         </div>
-                        <span class="font-extrabold text-slate-900 dark:text-white tracking-tight text-xs truncate max-w-[120px] xs:max-w-[180px] sm:max-w-none">
+                        <span class="font-extrabold text-slate-900 dark:text-white tracking-tight text-xs xs:text-sm whitespace-nowrap">
                             {{ $appName }}
                         </span>
                     </div>
@@ -581,15 +581,15 @@
 
                     {{-- Website Resmi Sekolah Link --}}
                     <a href="{{ route('website.home') }}" target="_blank" aria-label="Buka Website Resmi Sekolah" title="Buka Website Resmi SMAN 1 Lengkong"
-                        class="inline-flex items-center gap-1.5 px-2.5 py-1 text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700/80 transition text-xs font-bold active:scale-95 shrink-0">
+                        class="inline-flex items-center gap-1.5 px-2 sm:px-2.5 py-1 text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700/80 transition text-xs font-bold active:scale-95 shrink-0">
                         <span class="text-sm">🌐</span>
-                        <span class="hidden sm:inline">Website Sekolah</span>
+                        <span class="hidden md:inline">Website Sekolah</span>
                     </a>
 
                     @if($canSeeKiosk)
-                    {{-- Display Kios TV Quick Launch --}}
+                    {{-- Display Kios TV Quick Launch (Disembunyikan di HP kecil agar topbar lega) --}}
                     <a href="{{ route('kiosk.index') }}" target="_blank" aria-label="Buka Display Kios TV" title="Buka Display Kios TV (Layar Publik Lobby/Kelas)"
-                        class="touch-target relative text-slate-500 dark:text-slate-400 hover:text-amber-500 dark:hover:text-amber-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition cursor-pointer p-2 flex items-center justify-center active:scale-95 shrink-0">
+                        class="hidden sm:inline-flex touch-target relative text-slate-500 dark:text-slate-400 hover:text-amber-500 dark:hover:text-amber-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition cursor-pointer p-2 items-center justify-center active:scale-95 shrink-0">
                         <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                         </svg>
@@ -765,7 +765,7 @@
             <div id="page-progress-bar" class="h-0.5 bg-gradient-to-r from-indigo-500 via-teal-400 to-emerald-500 w-0 opacity-0 transition-all duration-300 pointer-events-none z-40"></div>
 
             <!-- Main Page Scrollable Content (Responsive padding & safe margin) -->
-            <main id="main-scroll-area" tabindex="-1" class="flex-1 min-w-0 w-full overflow-y-auto overflow-x-hidden safe-pb-nav pb-24 xs:pb-28 lg:pb-10 p-2 sm:p-3 md:p-3.5 lg:p-4 xl:p-5 2xl:p-6 transition-colors relative focus:outline-hidden">
+            <main id="main-scroll-area" tabindex="-1" class="flex-1 min-w-0 w-full overflow-y-auto overflow-x-hidden safe-pb-nav pb-32 xs:pb-36 sm:pb-36 lg:pb-12 p-2 sm:p-3 md:p-3.5 lg:p-4 xl:p-5 2xl:p-6 transition-colors relative focus:outline-hidden">
                 <div class="w-full max-w-full min-w-0 mx-auto content-area min-h-[calc(100vh-140px)] flex flex-col">
                     @if(session('switched_from_super_admin'))
                         <div class="mb-4 p-3 rounded-xl bg-amber-500/15 border border-amber-500/40 text-amber-900 dark:text-amber-200 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 shadow-sm">
@@ -1344,11 +1344,11 @@
             </a>
 
             <!-- Pelanggaran Tata Tertib Siswa -->
-            <a href="{{ route('violations.index') }}" class="flex-1 min-w-0 flex flex-col items-center justify-center gap-0.5 py-1 px-1 touch-target text-[11px] xs:text-[12px] font-semibold tracking-tight transition active:scale-95 {{ request()->routeIs('violations.*') ? 'text-rose-600 dark:text-rose-400 font-extrabold bg-rose-50/80 dark:bg-rose-950/60 rounded-xl' : 'text-slate-500 dark:text-slate-400 hover:text-rose-500' }}">
+            <a href="{{ route('violations.index') }}" class="flex-1 min-w-0 flex flex-col items-center justify-center gap-0.5 py-1 px-1 touch-target text-[10px] xs:text-[11px] font-semibold tracking-tight transition active:scale-95 {{ request()->routeIs('violations.*') ? 'text-rose-600 dark:text-rose-400 font-extrabold bg-rose-50/80 dark:bg-rose-950/60 rounded-xl' : 'text-slate-500 dark:text-slate-400 hover:text-rose-500' }}">
                 <svg class="w-5 h-5 text-rose-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
                 </svg>
-                <span class="truncate max-w-[56px] xs:max-w-none">Pelanggaran</span>
+                <span class="truncate max-w-[62px] xs:max-w-none font-bold">Tatib</span>
             </a>
         @elseif($bHasRole('guru') || $bCanManual)
             <!-- Guru: Scanner QR Siswa -->
@@ -1370,11 +1370,11 @@
             </a>
 
             <!-- Pelanggaran Tata Tertib -->
-            <a href="{{ route('violations.index') }}" class="flex-1 min-w-0 flex flex-col items-center justify-center gap-0.5 py-1 px-1 touch-target text-[11px] xs:text-[12px] font-semibold tracking-tight transition active:scale-95 {{ request()->routeIs('violations.*') ? 'text-rose-600 dark:text-rose-400 font-extrabold bg-rose-50/80 dark:bg-rose-950/60 rounded-xl' : 'text-slate-500 dark:text-slate-400 hover:text-rose-500' }}">
+            <a href="{{ route('violations.index') }}" class="flex-1 min-w-0 flex flex-col items-center justify-center gap-0.5 py-1 px-1 touch-target text-[10px] xs:text-[11px] font-semibold tracking-tight transition active:scale-95 {{ request()->routeIs('violations.*') ? 'text-rose-600 dark:text-rose-400 font-extrabold bg-rose-50/80 dark:bg-rose-950/60 rounded-xl' : 'text-slate-500 dark:text-slate-400 hover:text-rose-500' }}">
                 <svg class="w-5 h-5 text-rose-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
                 </svg>
-                <span class="truncate max-w-[56px] xs:max-w-none">Pelanggaran</span>
+                <span class="truncate max-w-[62px] xs:max-w-none font-bold">Tatib</span>
             </a>
         @else
             <!-- Default / Fallback Role (Orang Tua / Guest): Riwayat Presensi -->

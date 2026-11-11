@@ -6,23 +6,23 @@
 <div class="space-y-6 max-w-7xl mx-auto pb-12" x-data="schoolBellApp()">
 
     <!-- TOP HEADER HERO BANNER -->
-    <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white p-6 sm:p-8 shadow-2xl border border-indigo-500/30">
+    <div class="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white p-4 sm:p-6 lg:p-8 shadow-2xl border border-indigo-500/30">
         <!-- Background Aura Ornaments -->
         <div class="absolute -top-16 -right-16 w-64 h-64 bg-amber-500/15 rounded-full blur-3xl pointer-events-none"></div>
         <div class="absolute -bottom-16 -left-16 w-64 h-64 bg-cyan-500/15 rounded-full blur-3xl pointer-events-none"></div>
 
-        <div class="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+        <div class="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 sm:gap-6">
             <div>
-                <div class="flex items-center gap-2.5 mb-2">
-                    <span class="px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-400/30 flex items-center gap-1.5">
+                <div class="flex flex-wrap items-center gap-2 mb-2">
+                    <span class="px-2.5 sm:px-3 py-1 rounded-full text-[11px] sm:text-xs font-black uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-400/30 flex items-center gap-1.5 shrink-0">
                         <span class="w-2 h-2 rounded-full" :class="isAutoStandbyActive ? 'bg-emerald-400 animate-ping' : 'bg-slate-400'"></span>
                         <span x-text="isAutoStandbyActive ? 'Sistem Bel Otomatis: SIAGA AKTIF' : 'Sistem Bel: STANDBY NON-AKTIF'"></span>
                     </span>
-                    <span class="px-3 py-1 rounded-full text-xs font-bold bg-white/10 text-slate-200 border border-white/10">
+                    <span class="px-2.5 sm:px-3 py-1 rounded-full text-[11px] sm:text-xs font-bold bg-white/10 text-slate-200 border border-white/10 shrink-0">
                         SMAN 1 Lengkong
                     </span>
                 </div>
-                <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-white flex items-center gap-3">
+                <h1 class="text-xl sm:text-2xl lg:text-3xl font-black tracking-tight text-white flex items-center gap-2 sm:gap-3">
                     <span>🔔 Bel Sekolah</span>
                 </h1>
                 <p class="text-xs sm:text-sm text-indigo-200 max-w-2xl mt-1.5 leading-relaxed">
@@ -30,76 +30,81 @@
                 </p>
             </div>
 
-            <!-- Jam Realtime & Timer Bel Berikutnya -->
-            <div class="flex flex-col sm:flex-row items-center gap-4 bg-white/10 backdrop-blur-md p-4 sm:p-5 rounded-2xl border border-white/15">
-                <div class="text-center sm:text-right">
-                    <div class="text-[10px] font-bold uppercase tracking-widest text-amber-300">WAKTU SISTEM (WIB)</div>
-                    <div class="text-2xl sm:text-3xl font-black font-mono tracking-tight text-white mt-0.5" x-text="currentTimeDisplay">
+            <!-- Jam Realtime & Timer Bel Berikutnya (Responsif di HP, Tablet, Komputer) -->
+            <div class="w-full lg:w-auto grid grid-cols-2 sm:flex sm:flex-row items-center justify-between sm:justify-end gap-3 sm:gap-4 bg-white/10 backdrop-blur-md p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-white/15">
+                <div class="text-left sm:text-right min-w-0">
+                    <div class="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-amber-300">WAKTU SISTEM (WIB)</div>
+                    <div class="text-xl sm:text-2xl lg:text-3xl font-black font-mono tracking-tight text-white mt-0.5 truncate" x-text="currentTimeDisplay">
                         {{ $currentTime }}:00
                     </div>
-                    <div class="text-[11px] text-slate-300" x-text="currentDateDisplay">
+                    <div class="text-[10px] sm:text-[11px] text-slate-300 truncate" x-text="currentDateDisplay">
                         {{ $todayName }}, {{ date('d M Y') }}
                     </div>
                 </div>
 
                 <div class="h-10 w-px bg-white/20 hidden sm:block"></div>
 
-                <div class="text-center sm:text-left min-w-[160px]">
-                    <div class="text-[10px] font-bold uppercase tracking-widest text-cyan-300">BEL BERIKUTNYA</div>
-                    <div class="text-sm font-extrabold text-white mt-0.5 truncate max-w-[200px]" x-text="nextBellTitle || 'Selesai Hari Ini'"></div>
-                    <div class="text-xs text-amber-300 font-mono font-bold mt-0.5" x-text="nextBellCountdownText || 'Tuntas'"></div>
+                <div class="text-right sm:text-left min-w-0 sm:min-w-[150px]">
+                    <div class="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-cyan-300">BEL BERIKUTNYA</div>
+                    <div class="text-xs sm:text-sm font-extrabold text-white mt-0.5 truncate max-w-[140px] sm:max-w-[200px]" x-text="nextBellTitle || 'Selesai Hari Ini'"></div>
+                    <div class="text-[11px] sm:text-xs text-amber-300 font-mono font-bold mt-0.5 truncate" x-text="nextBellCountdownText || 'Tuntas'"></div>
                 </div>
             </div>
         </div>
 
         <!-- AUTO-STANDBY ENGAGE BAR & MASTER CONTROLS -->
-        <div class="relative z-10 mt-6 pt-5 border-t border-white/15 flex flex-wrap items-center justify-between gap-4">
+        <div class="relative z-10 mt-5 sm:mt-6 pt-4 sm:pt-5 border-t border-white/15 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             <!-- Tombol Utama Pengaktifan Mode Siaga Otomatis & Kios Bel -->
-            <div class="flex items-center gap-3 flex-wrap">
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 w-full lg:w-auto flex-wrap">
                 <!-- Tombol Buka Kios Bel Standalone Full Screen -->
-                <a href="{{ route('school_bell.kiosk') }}" target="_blank" class="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500 hover:from-amber-300 hover:to-orange-400 text-slate-950 font-black text-xs sm:text-sm shadow-xl transition flex items-center gap-2 cursor-pointer border border-amber-300/60 active:scale-95">
-                    <span class="text-base">🖥️</span>
-                    <span>BUKA KIOS BEL SEKOLAH (LAYAR PENUH)</span>
+                <a href="{{ route('school_bell.kiosk') }}" target="_blank" class="w-full sm:w-auto justify-center text-center px-4 py-2.5 sm:px-5 rounded-xl sm:rounded-2xl bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500 hover:from-amber-300 hover:to-orange-400 text-slate-950 font-black text-xs sm:text-sm shadow-xl transition flex items-center gap-2 cursor-pointer border border-amber-300/60 active:scale-95">
+                    <span class="text-base shrink-0">🖥️</span>
+                    <span class="truncate">BUKA KIOS BEL (LAYAR PENUH)</span>
                 </a>
 
                 <button type="button" 
                         @click="toggleAutoStandby()" 
                         :class="isAutoStandbyActive ? 'bg-emerald-600 hover:bg-emerald-500 ring-2 ring-emerald-400' : 'bg-slate-800 hover:bg-slate-700 text-white'"
-                        class="px-5 py-2.5 rounded-2xl font-black text-xs sm:text-sm shadow-xl transition flex items-center gap-2 cursor-pointer border border-white/10">
-                    <span x-text="isAutoStandbyActive ? '🟢 MODE SIAGA OTOMATIS AKTIF' : '▶️ AKTIFKAN MODE SIAGA TAB INI'"></span>
+                        class="w-full sm:w-auto justify-center text-center px-4 py-2.5 sm:px-5 rounded-xl sm:rounded-2xl font-black text-xs sm:text-sm shadow-xl transition flex items-center gap-2 cursor-pointer border border-white/10 active:scale-95">
+                    <span class="truncate" x-text="isAutoStandbyActive ? '🟢 SIAGA OTOMATIS AKTIF' : '▶️ AKTIFKAN MODE SIAGA'"></span>
                 </button>
 
-                <!-- Tombol Test Cepat -->
-                <button type="button" @click="testChimeSound('westminster')" class="px-3.5 py-2 rounded-xl bg-white/15 hover:bg-white/25 text-white font-bold text-xs transition flex items-center gap-1.5 cursor-pointer" title="Coba Nada Bel">
-                    <span>🔔 Test Nada</span>
-                </button>
+                <!-- Tombol Test Cepat (Grid rapi di HP) -->
+                <div class="grid grid-cols-3 sm:flex items-center gap-2 w-full sm:w-auto">
+                    <button type="button" @click="testChimeSound('westminster')" class="justify-center text-center px-2 sm:px-3.5 py-2 rounded-xl bg-white/15 hover:bg-white/25 text-white font-bold text-[11px] sm:text-xs transition flex items-center gap-1 cursor-pointer truncate" title="Coba Nada Bel">
+                        <span>🔔</span>
+                        <span class="hidden xs:inline">Test </span>Nada
+                    </button>
 
-                <button type="button" @click="testSpeech('Perhatian, ini adalah uji coba pengumuman suara bel sekolah SMA Negeri 1 Lengkong.')" class="px-3.5 py-2 rounded-xl bg-white/15 hover:bg-white/25 text-white font-bold text-xs transition flex items-center gap-1.5 cursor-pointer" title="Coba Pengumuman Suara">
-                    <span>🗣️ Test Suara</span>
-                </button>
+                    <button type="button" @click="testSpeech('Perhatian, ini adalah uji coba pengumuman suara bel sekolah SMA Negeri 1 Lengkong.')" class="justify-center text-center px-2 sm:px-3.5 py-2 rounded-xl bg-white/15 hover:bg-white/25 text-white font-bold text-[11px] sm:text-xs transition flex items-center gap-1 cursor-pointer truncate" title="Coba Pengumuman Suara">
+                        <span>🗣️</span>
+                        <span class="hidden xs:inline">Test </span>Suara
+                    </button>
 
-                <button type="button" @click="testChimeSound('siren')" class="px-3 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs shadow-md transition flex items-center gap-1.5 cursor-pointer">
-                    <span>🚨 Sirine</span>
-                </button>
+                    <button type="button" @click="testChimeSound('siren')" class="justify-center text-center px-2 sm:px-3 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-[11px] sm:text-xs shadow-md transition flex items-center gap-1 cursor-pointer truncate" title="Sirine Darurat">
+                        <span>🚨</span>
+                        <span>Sirine</span>
+                    </button>
+                </div>
 
-                <button type="button" @click="stopAllAudio()" x-show="isPlaying" class="px-3.5 py-2 rounded-xl bg-rose-500/80 hover:bg-rose-600 text-white font-bold text-xs border border-white/20 transition flex items-center gap-1.5 cursor-pointer">
+                <button type="button" @click="stopAllAudio()" x-show="isPlaying" class="w-full sm:w-auto justify-center text-center px-3.5 py-2 rounded-xl bg-rose-500/80 hover:bg-rose-600 text-white font-bold text-xs border border-white/20 transition flex items-center gap-1.5 cursor-pointer">
                     <span>⏹️ Hentikan</span>
                 </button>
             </div>
 
-            <!-- Pengaturan Suara & Fitur Tambahan -->
-            <div class="flex items-center gap-4 text-xs">
+            <!-- Pengaturan Suara & Fitur Tambahan (Pill rapi & responsif) -->
+            <div class="flex flex-col xs:flex-row items-stretch xs:items-center justify-between gap-3 text-xs w-full lg:w-auto bg-black/20 sm:bg-white/5 p-3 rounded-xl sm:rounded-2xl border border-white/10">
                 <!-- Toggle Narasi Suara -->
-                <label class="flex items-center gap-2 cursor-pointer">
+                <label class="flex items-center gap-2 cursor-pointer select-none">
                     <input type="checkbox" x-model="enableVoiceAnnouncement" class="rounded text-amber-500 focus:ring-0">
-                    <span class="text-slate-200 font-medium">Narasi Pengumuman Suara</span>
+                    <span class="text-slate-200 font-medium text-xs">Narasi Pengumuman Suara</span>
                 </label>
 
                 <!-- Master Volume Slider -->
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-2 bg-white/10 sm:bg-transparent px-2.5 py-1.5 sm:p-0 rounded-lg">
                     <span class="text-slate-300">🔊</span>
-                    <input type="range" min="10" max="100" x-model="masterVolume" class="w-20 accent-amber-400">
-                    <span class="text-[11px] font-mono text-amber-300 font-bold" x-text="masterVolume + '%'"></span>
+                    <input type="range" min="10" max="100" x-model="masterVolume" class="w-24 xs:w-20 accent-amber-400">
+                    <span class="text-[11px] font-mono text-amber-300 font-bold w-9 text-right" x-text="masterVolume + '%'"></span>
                 </div>
             </div>
         </div>
@@ -151,28 +156,28 @@
     </div>
 
     <!-- MAIN TABS NAVIGATION -->
-    <div class="border-b border-slate-200 dark:border-slate-800 flex items-center justify-between gap-4">
-        <div class="flex items-center gap-2 overflow-x-auto pb-px">
-            <button type="button" @click="activeTab = 'schedules'" :class="activeTab === 'schedules' ? 'border-amber-500 text-amber-600 dark:text-amber-400 font-extrabold' : 'border-transparent text-slate-600 dark:text-slate-400 font-semibold hover:text-slate-900 hover:border-slate-300'" class="py-3 px-4 text-xs sm:text-sm border-b-2 transition flex items-center gap-2 cursor-pointer whitespace-nowrap">
-                <span>🔔 Jadwal Bel Sekolah Harian</span>
+    <div class="border-b border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div class="flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-px no-scrollbar scroll-smooth">
+            <button type="button" @click="activeTab = 'schedules'" :class="activeTab === 'schedules' ? 'border-amber-500 text-amber-600 dark:text-amber-400 font-extrabold' : 'border-transparent text-slate-600 dark:text-slate-400 font-semibold hover:text-slate-900 hover:border-slate-300'" class="py-2.5 sm:py-3 px-3 sm:px-4 text-xs sm:text-sm border-b-2 transition flex items-center gap-1.5 sm:gap-2 cursor-pointer whitespace-nowrap">
+                <span>🔔 Jadwal Bel Harian</span>
                 <span class="px-2 py-0.5 rounded-full text-[10px] bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 font-mono">{{ $allBells->count() }}</span>
             </button>
-            <button type="button" @click="activeTab = 'soundboard'" :class="activeTab === 'soundboard' ? 'border-amber-500 text-amber-600 dark:text-amber-400 font-extrabold' : 'border-transparent text-slate-600 dark:text-slate-400 font-semibold hover:text-slate-900 hover:border-slate-300'" class="py-3 px-4 text-xs sm:text-sm border-b-2 transition flex items-center gap-2 cursor-pointer whitespace-nowrap">
-                <span>🎛️ Soundboard & Bunyi Instan</span>
-                <span class="px-2 py-0.5 rounded-full text-[10px] bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300 font-mono">{{ count($instantSounds) }} Jenis</span>
+            <button type="button" @click="activeTab = 'soundboard'" :class="activeTab === 'soundboard' ? 'border-amber-500 text-amber-600 dark:text-amber-400 font-extrabold' : 'border-transparent text-slate-600 dark:text-slate-400 font-semibold hover:text-slate-900 hover:border-slate-300'" class="py-2.5 sm:py-3 px-3 sm:px-4 text-xs sm:text-sm border-b-2 transition flex items-center gap-1.5 sm:gap-2 cursor-pointer whitespace-nowrap">
+                <span>🎛️ Soundboard</span>
+                <span class="px-2 py-0.5 rounded-full text-[10px] bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300 font-mono">{{ count($instantSounds) }}</span>
             </button>
-            <button type="button" @click="activeTab = 'anthems'" :class="activeTab === 'anthems' ? 'border-amber-500 text-amber-600 dark:text-amber-400 font-extrabold' : 'border-transparent text-slate-600 dark:text-slate-400 font-semibold hover:text-slate-900 hover:border-slate-300'" class="py-3 px-4 text-xs sm:text-sm border-b-2 transition flex items-center gap-2 cursor-pointer whitespace-nowrap">
-                <span>🇮🇩 Lagu-Lagu Nasional</span>
-                <span class="px-2 py-0.5 rounded-full text-[10px] bg-red-100 dark:bg-red-950 text-red-700 dark:text-red-300 font-mono">10 Lagu</span>
+            <button type="button" @click="activeTab = 'anthems'" :class="activeTab === 'anthems' ? 'border-amber-500 text-amber-600 dark:text-amber-400 font-extrabold' : 'border-transparent text-slate-600 dark:text-slate-400 font-semibold hover:text-slate-900 hover:border-slate-300'" class="py-2.5 sm:py-3 px-3 sm:px-4 text-xs sm:text-sm border-b-2 transition flex items-center gap-1.5 sm:gap-2 cursor-pointer whitespace-nowrap">
+                <span>🇮🇩 Lagu Nasional</span>
+                <span class="px-2 py-0.5 rounded-full text-[10px] bg-red-100 dark:bg-red-950 text-red-700 dark:text-red-300 font-mono">10</span>
             </button>
-            <button type="button" @click="activeTab = 'quran'" :class="activeTab === 'quran' ? 'border-amber-500 text-amber-600 dark:text-amber-400 font-extrabold' : 'border-transparent text-slate-600 dark:text-slate-400 font-semibold hover:text-slate-900 hover:border-slate-300'" class="py-3 px-4 text-xs sm:text-sm border-b-2 transition flex items-center gap-2 cursor-pointer whitespace-nowrap">
-                <span>📖 Murottal Al-Qur'an 114 Surah</span>
+            <button type="button" @click="activeTab = 'quran'" :class="activeTab === 'quran' ? 'border-amber-500 text-amber-600 dark:text-amber-400 font-extrabold' : 'border-transparent text-slate-600 dark:text-slate-400 font-semibold hover:text-slate-900 hover:border-slate-300'" class="py-2.5 sm:py-3 px-3 sm:px-4 text-xs sm:text-sm border-b-2 transition flex items-center gap-1.5 sm:gap-2 cursor-pointer whitespace-nowrap">
+                <span>📖 Murottal 114 Surah</span>
                 <span class="px-2 py-0.5 rounded-full text-[10px] bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-mono">114</span>
             </button>
         </div>
 
-        <div class="shrink-0" x-show="activeTab === 'schedules'">
-            <button type="button" @click="openAddModal()" class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-md transition flex items-center gap-1.5 cursor-pointer">
+        <div class="shrink-0 w-full sm:w-auto flex justify-end" x-show="activeTab === 'schedules'">
+            <button type="button" @click="openAddModal()" class="w-full sm:w-auto justify-center px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-md transition flex items-center gap-1.5 cursor-pointer">
                 <span>+ Tambah Jadwal Bel</span>
             </button>
         </div>
@@ -733,11 +738,11 @@
                 <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 font-medium text-xs sm:text-sm text-slate-800 dark:text-slate-200 leading-relaxed whitespace-pre-line text-center" x-text="selectedAnthem?.lyrics">
                 </div>
 
-                <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
-                    <button type="button" @click="if (selectedAnthem) { playNationalAnthem(selectedAnthem); showLyricsModal = false; }" class="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-xs shadow-md transition flex items-center gap-1.5 cursor-pointer">
+                <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2">
+                    <button type="button" @click="if (selectedAnthem) { playNationalAnthem(selectedAnthem); showLyricsModal = false; }" class="justify-center px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-xs shadow-md transition flex items-center gap-1.5 cursor-pointer">
                         <span>▶️ Putar Lagu Ini</span>
                     </button>
-                    <button type="button" @click="if (selectedAnthem) { setAnthemAsBell(selectedAnthem); showLyricsModal = false; }" class="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs shadow-md transition flex items-center gap-1.5 cursor-pointer">
+                    <button type="button" @click="if (selectedAnthem) { setAnthemAsBell(selectedAnthem); showLyricsModal = false; }" class="justify-center px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs shadow-md transition flex items-center gap-1.5 cursor-pointer">
                         <span>⏰ Pasang Jadwal Bel</span>
                     </button>
                 </div>
