@@ -41,7 +41,7 @@ beforeEach(function () {
     );
 });
 
-test('bk menu is strictly accessible only to koordinator_bk, guru_bk, and bk roles', function () {
+test('bk menu is accessible to koordinator_bk, guru_bk, kepala_sekolah, admin, and super_admin', function () {
     $guru = User::factory()->create([
         'role' => 'guru',
         'roles' => ['guru'],
@@ -62,6 +62,21 @@ test('bk menu is strictly accessible only to koordinator_bk, guru_bk, and bk rol
         'roles' => ['guru', 'guru_bk'],
     ]);
 
+    $kepalaSekolah = User::factory()->create([
+        'role' => 'kepala_sekolah',
+        'roles' => ['kepala_sekolah'],
+    ]);
+
+    $admin = User::factory()->create([
+        'role' => 'admin',
+        'roles' => ['admin'],
+    ]);
+
+    $superAdmin = User::factory()->create([
+        'role' => 'super_admin',
+        'roles' => ['super_admin'],
+    ]);
+
     // Regular guru cannot access BK in active role
     session(['active_role' => 'guru']);
     expect($guru->canAccessInActiveRole('bk'))->toBeFalse();
@@ -77,9 +92,21 @@ test('bk menu is strictly accessible only to koordinator_bk, guru_bk, and bk rol
     // Guru BK can access BK
     session(['active_role' => 'guru_bk']);
     expect($guruBk->canAccessInActiveRole('bk'))->toBeTrue();
+
+    // Kepala Sekolah can access BK
+    session(['active_role' => 'kepala_sekolah']);
+    expect($kepalaSekolah->canAccessInActiveRole('bk'))->toBeTrue();
+
+    // Admin can access BK
+    session(['active_role' => 'admin']);
+    expect($admin->canAccessInActiveRole('bk'))->toBeTrue();
+
+    // Super Admin / Administrator can access BK
+    session(['active_role' => 'super_admin']);
+    expect($superAdmin->canAccessInActiveRole('bk'))->toBeTrue();
 });
 
-test('bk dashboard endpoint rejects unauthorized roles with 403', function () {
+test('bk dashboard endpoint rejects unauthorized roles with 403 and accepts allowed roles', function () {
     $guru = User::factory()->create([
         'role' => 'guru',
         'roles' => ['guru'],
@@ -97,6 +124,26 @@ test('bk dashboard endpoint rejects unauthorized roles with 403', function () {
 
     $this->actingAs($bkUser)
         ->withSession(['active_role' => 'koordinator_bk'])
+        ->get(route('bk.dashboard'))
+        ->assertStatus(200);
+
+    $kepalaSekolah = User::factory()->create([
+        'role' => 'kepala_sekolah',
+        'roles' => ['kepala_sekolah'],
+    ]);
+
+    $this->actingAs($kepalaSekolah)
+        ->withSession(['active_role' => 'kepala_sekolah'])
+        ->get(route('bk.dashboard'))
+        ->assertStatus(200);
+
+    $admin = User::factory()->create([
+        'role' => 'admin',
+        'roles' => ['admin'],
+    ]);
+
+    $this->actingAs($admin)
+        ->withSession(['active_role' => 'admin'])
         ->get(route('bk.dashboard'))
         ->assertStatus(200);
 });

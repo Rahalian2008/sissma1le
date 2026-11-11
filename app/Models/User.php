@@ -332,13 +332,14 @@ class User extends Authenticatable
     {
         $active = $this->active_role;
 
-        // Bimbingan Konseling (BK) HANYA tampil dan bisa digunakan di role Koordinator BK dan Guru BK
+        // Bimbingan Konseling (BK) tampil dan bisa digunakan di role Koordinator BK, Guru BK, Kepala Sekolah, Admin, dan Super Admin (Administrator)
         if ($menuKey === 'bk') {
+            $allowedBkRoles = ['koordinator_bk', 'guru_bk', 'bk', 'kepala_sekolah', 'admin', 'super_admin'];
             if ($active === 'all_roles') {
-                return $this->hasAnyRole(['koordinator_bk', 'guru_bk', 'bk']);
+                return $this->hasAnyRole($allowedBkRoles);
             }
 
-            return in_array($active, ['koordinator_bk', 'guru_bk', 'bk'], true);
+            return in_array($active, $allowedBkRoles, true);
         }
 
         // Super Admin & Admin in all_roles mode always have access to all menus
@@ -373,7 +374,7 @@ class User extends Authenticatable
                 'kurikulum' => ['wakasek_kurikulum', 'kurikulum', 'guru', 'wali_kelas', 'kepala_sekolah', 'siswa'],
                 'lms' => ['wakasek_kurikulum', 'kurikulum', 'guru', 'kepala_sekolah', 'siswa'],
                 'rapor_kurnas' => ['wakasek_kurikulum', 'kurikulum', 'wali_kelas', 'guru', 'kepala_sekolah', 'siswa', 'orang_tua', 'admin', 'super_admin'],
-                'bk' => ['koordinator_bk', 'guru_bk', 'bk'],
+                'bk' => ['koordinator_bk', 'guru_bk', 'bk', 'kepala_sekolah', 'admin', 'super_admin'],
                 'library' => ['kepala_perpustakaan', 'pengelola_perpustakaan', 'pustakawan', 'kepala_administrasi', 'staff', 'tu', 'guru', 'wali_kelas', 'kepala_sekolah', 'siswa'],
                 'tu' => ['kepala_administrasi', 'ta_kesiswaan', 'ta_kepegawaian', 'ta_persuratan', 'ta_sarpras', 'wakasek_sarpras', 'kepala_laboratorium', 'bendahara_bosp', 'bendahara_bopd', 'bendahara_gaji', 'bendahara', 'operator_dapodik', 'operator', 'tu_piket', 'staff', 'tu', 'kepala_sekolah'],
                 'tu_kesiswaan' => ['kepala_administrasi', 'ta_kesiswaan', 'operator_dapodik', 'kepala_sekolah'],
@@ -408,7 +409,7 @@ class User extends Authenticatable
             'kurikulum' => in_array($active, ['wakasek_kurikulum', 'kurikulum', 'guru', 'wali_kelas', 'kepala_sekolah', 'siswa'], true),
             'lms' => in_array($active, ['wakasek_kurikulum', 'kurikulum', 'guru', 'kepala_sekolah', 'siswa'], true),
             'rapor_kurnas' => in_array($active, ['wakasek_kurikulum', 'kurikulum', 'wali_kelas', 'guru', 'kepala_sekolah', 'siswa', 'orang_tua'], true),
-            'bk' => in_array($active, ['koordinator_bk', 'guru_bk', 'bk'], true),
+            'bk' => in_array($active, ['koordinator_bk', 'guru_bk', 'bk', 'kepala_sekolah', 'admin', 'super_admin'], true),
             'library' => in_array($active, ['kepala_perpustakaan', 'pengelola_perpustakaan', 'pustakawan', 'kepala_administrasi', 'staff', 'tu', 'guru', 'wali_kelas', 'kepala_sekolah', 'siswa'], true),
             'tu' => $this->canAccessTuModule() && in_array($active, ['kepala_administrasi', 'ta_kesiswaan', 'ta_kepegawaian', 'ta_persuratan', 'ta_sarpras', 'wakasek_sarpras', 'kepala_laboratorium', 'bendahara_bosp', 'bendahara_bopd', 'bendahara_gaji', 'bendahara', 'operator_dapodik', 'operator', 'tu_piket', 'staff', 'tu', 'kepala_sekolah'], true),
             'tu_kesiswaan' => $this->canAccessTuModule() && in_array($active, ['kepala_administrasi', 'ta_kesiswaan', 'operator_dapodik', 'kepala_sekolah'], true),
@@ -588,12 +589,13 @@ class User extends Authenticatable
     public function isBkAdmin(): bool
     {
         $active = $this->active_role;
-        if (in_array($active, ['koordinator_bk', 'guru_bk', 'bk'], true)) {
+        $allowedBkRoles = ['koordinator_bk', 'guru_bk', 'bk', 'kepala_sekolah', 'admin', 'super_admin'];
+        if (in_array($active, $allowedBkRoles, true)) {
             return true;
         }
 
         if ($active === 'all_roles') {
-            return $this->hasAnyRole(['koordinator_bk', 'guru_bk', 'bk', 'admin', 'super_admin']);
+            return $this->hasAnyRole($allowedBkRoles);
         }
 
         return false;
@@ -601,20 +603,21 @@ class User extends Authenticatable
 
     /**
      * Memiliki hak akses penuh ke seluruh fitur Aplikasi Bimbingan Konseling (BK).
-     * Sesuai ketentuan: Hanya Koordinator BK dan Guru BK (serta Super Admin / Admin).
+     * Sesuai ketentuan: Koordinator BK, Guru BK, Kepala Sekolah, Admin, dan Super Admin (Administrator).
      */
     public function hasFullBkAccess(): bool
     {
         $active = $this->active_role;
-        if (in_array($active, ['koordinator_bk', 'guru_bk', 'bk'], true)) {
+        $allowedBkRoles = ['koordinator_bk', 'guru_bk', 'bk', 'kepala_sekolah', 'admin', 'super_admin'];
+        if (in_array($active, $allowedBkRoles, true)) {
             return true;
         }
 
         if ($active === 'all_roles') {
-            return $this->hasAnyRole(['koordinator_bk', 'guru_bk', 'bk', 'admin', 'super_admin']);
+            return $this->hasAnyRole($allowedBkRoles);
         }
 
-        if ($this->hasAnyRole(['super_admin', 'admin']) && in_array($active, ['super_admin', 'admin'], true)) {
+        if ($this->hasAnyRole(['super_admin', 'admin', 'kepala_sekolah']) && in_array($active, ['super_admin', 'admin', 'kepala_sekolah'], true)) {
             return true;
         }
 

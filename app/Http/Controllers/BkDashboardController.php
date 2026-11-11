@@ -24,14 +24,14 @@ class BkDashboardController extends Controller
     {
         $user = Auth::user();
         $activeRole = session('active_role') ?? $user?->active_role;
-        $allowedBkRoles = ['koordinator_bk', 'guru_bk', 'bk'];
+        $allowedBkRoles = ['koordinator_bk', 'guru_bk', 'bk', 'kepala_sekolah', 'admin', 'super_admin'];
 
         $canAccessBk = in_array($activeRole, $allowedBkRoles, true)
             || ($activeRole === 'all_roles' && $user?->hasAnyRole($allowedBkRoles))
-            || ($user?->hasAnyRole(['super_admin', 'admin']) && in_array($activeRole, array_merge($allowedBkRoles, ['super_admin', 'admin', 'all_roles']), true));
+            || ($user?->hasAnyRole(['super_admin', 'admin', 'kepala_sekolah']) && in_array($activeRole, array_merge($allowedBkRoles, ['all_roles']), true));
 
         if (! $canAccessBk) {
-            abort(403, 'Akses Bimbingan Konseling hanya diperbolehkan untuk Koordinator BK dan Guru BK.');
+            abort(403, 'Akses Bimbingan Konseling hanya diperbolehkan untuk Koordinator BK, Guru BK, Kepala Sekolah, dan Administrator.');
         }
 
         // 1. Metrik 4 Bidang Layanan POP-BK
