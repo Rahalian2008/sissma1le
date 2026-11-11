@@ -36,6 +36,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
@@ -538,9 +539,8 @@ class LmsController extends Controller
             $fileSize = $file->getSize();
         }
 
-        $material = LmsMaterial::create([
+        $materialData = [
             'course_class_id' => $courseClass->id,
-            'learning_objective_id' => $validated['learning_objective_id'] ?? null,
             'title' => $validated['title'],
             'topic' => ($validated['topic'] ?? null) ?: 'Umum / Bab Pengantar',
             'type' => $validated['content_type'],
@@ -551,7 +551,13 @@ class LmsController extends Controller
             'file_size' => $fileSize,
             'start_time' => $request->filled('start_time') ? Carbon::parse($request->input('start_time')) : now(),
             'is_published' => $request->has('is_published') ? (bool) $request->input('is_published') : true,
-        ]);
+        ];
+
+        if (Schema::hasColumn('lms_materials', 'learning_objective_id')) {
+            $materialData['learning_objective_id'] = $validated['learning_objective_id'] ?? null;
+        }
+
+        $material = LmsMaterial::create($materialData);
 
         AuditLog::log('LMS_MATERIAL_CREATED', 'LmsMaterial', $material->id, null, [
             'course' => $courseClass->subject->name,
@@ -667,7 +673,6 @@ class LmsController extends Controller
         ]);
 
         $updateData = [
-            'learning_objective_id' => array_key_exists('learning_objective_id', $validated) ? $validated['learning_objective_id'] : $material->learning_objective_id,
             'title' => $validated['title'],
             'topic' => $validated['topic'] ?: ($material->topic ?: 'Umum'),
             'type' => $validated['content_type'],
@@ -677,6 +682,10 @@ class LmsController extends Controller
             'start_time' => $request->filled('start_time') ? Carbon::parse($request->input('start_time')) : $material->start_time,
             'is_published' => $request->has('is_published') ? (bool) $request->input('is_published') : true,
         ];
+
+        if (Schema::hasColumn('lms_materials', 'learning_objective_id')) {
+            $updateData['learning_objective_id'] = array_key_exists('learning_objective_id', $validated) ? $validated['learning_objective_id'] : $material->learning_objective_id;
+        }
 
         $uploadedFile = $request->file('attachment') ?? $request->file('file');
         if ($uploadedFile) {
@@ -854,9 +863,8 @@ class LmsController extends Controller
             $filePath = $request->file('attachment')->store('lms/assignments', 'public');
         }
 
-        $assignment = LmsAssignment::create([
+        $assignmentData = [
             'course_class_id' => $courseClass->id,
-            'learning_objective_id' => $validated['learning_objective_id'] ?? null,
             'title' => $validated['title'],
             'instructions' => $validated['description'],
             'start_time' => $request->filled('start_time') ? Carbon::parse($request->input('start_time')) : now(),
@@ -868,7 +876,13 @@ class LmsController extends Controller
             'attachment_path' => $filePath,
             'attachment_name' => $request->hasFile('attachment') ? $request->file('attachment')->getClientOriginalName() : null,
             'is_published' => $request->has('is_published') ? (bool) $request->input('is_published') : true,
-        ]);
+        ];
+
+        if (Schema::hasColumn('lms_assignments', 'learning_objective_id')) {
+            $assignmentData['learning_objective_id'] = $validated['learning_objective_id'] ?? null;
+        }
+
+        $assignment = LmsAssignment::create($assignmentData);
 
         AuditLog::log('LMS_ASSIGNMENT_CREATED', 'LmsAssignment', $assignment->id, null, [
             'course' => $courseClass->subject->name,
@@ -1141,7 +1155,6 @@ class LmsController extends Controller
         }
 
         $updateData = [
-            'learning_objective_id' => array_key_exists('learning_objective_id', $validated) ? $validated['learning_objective_id'] : $assignment->learning_objective_id,
             'title' => $validated['title'],
             'topic' => $validated['topic'] ?: ($assignment->topic ?: 'Umum'),
             'instructions' => $validated['instructions'],
@@ -1153,6 +1166,10 @@ class LmsController extends Controller
             'allow_late' => $request->has('allow_late') ? (bool) $request->input('allow_late') : true,
             'is_published' => $request->has('is_published') ? (bool) $request->input('is_published') : true,
         ];
+
+        if (Schema::hasColumn('lms_assignments', 'learning_objective_id')) {
+            $updateData['learning_objective_id'] = array_key_exists('learning_objective_id', $validated) ? $validated['learning_objective_id'] : $assignment->learning_objective_id;
+        }
 
         $uploadedFile = $request->file('attachment') ?? $request->file('file');
         if ($uploadedFile) {
@@ -1203,9 +1220,8 @@ class LmsController extends Controller
         $startTime = ! empty($validated['start_time']) ? Carbon::parse($validated['start_time']) : null;
         $endTime = ! empty($validated['end_time']) ? Carbon::parse($validated['end_time']) : null;
 
-        $quiz = LmsQuiz::create([
+        $quizData = [
             'course_class_id' => $courseClass->id,
-            'learning_objective_id' => $validated['learning_objective_id'] ?? null,
             'title' => $validated['title'],
             'quiz_type' => $validated['quiz_type'],
             'topic' => $request->input('topic'),
@@ -1217,7 +1233,13 @@ class LmsController extends Controller
             'end_time' => $endTime,
             'is_randomized' => $request->has('is_randomized'),
             'is_published' => $request->has('is_published') ? (bool) $request->input('is_published') : true,
-        ]);
+        ];
+
+        if (Schema::hasColumn('lms_quizzes', 'learning_objective_id')) {
+            $quizData['learning_objective_id'] = $validated['learning_objective_id'] ?? null;
+        }
+
+        $quiz = LmsQuiz::create($quizData);
 
         // Tambah butir soal jika disediakan dari form
         if ($request->has('questions') && is_array($request->input('questions'))) {

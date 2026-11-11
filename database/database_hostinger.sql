@@ -4141,6 +4141,7 @@ DROP TABLE IF EXISTS `lms_assignments`;
 CREATE TABLE `lms_assignments` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `course_class_id` bigint unsigned NOT NULL,
+  `learning_objective_id` bigint unsigned DEFAULT NULL,
   `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `topic` varchar(150) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `instructions` text COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -4271,6 +4272,7 @@ DROP TABLE IF EXISTS `lms_materials`;
 CREATE TABLE `lms_materials` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `course_class_id` bigint unsigned NOT NULL,
+  `learning_objective_id` bigint unsigned DEFAULT NULL,
   `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `topic` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Umum',
   `type` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'dokumen',
@@ -4384,6 +4386,7 @@ DROP TABLE IF EXISTS `lms_quizzes`;
 CREATE TABLE `lms_quizzes` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `course_class_id` bigint unsigned NOT NULL,
+  `learning_objective_id` bigint unsigned DEFAULT NULL,
   `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `quiz_type` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'kuis',
   `topic` text COLLATE utf8mb4_unicode_ci,

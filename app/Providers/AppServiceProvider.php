@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use App\Models\SchoolSetting;
 use Carbon\Carbon;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
@@ -47,6 +49,35 @@ class AppServiceProvider extends ServiceProvider
             }
         } catch (\Throwable) {
             // Ignore any filesystem initialization exceptions
+        }
+
+        // Auto-heal missing LMS columns on shared hosting (e.g. Hostinger)
+        if (! Cache::has('lms_schema_checked_20261111')) {
+            try {
+                if (Schema::hasTable('lms_materials') && ! Schema::hasColumn('lms_materials', 'learning_objective_id')) {
+                    Schema::table('lms_materials', function (Blueprint $table) {
+                        $table->unsignedBigInteger('learning_objective_id')->nullable()->after('course_class_id');
+                    });
+                }
+                if (Schema::hasTable('lms_assignments') && ! Schema::hasColumn('lms_assignments', 'learning_objective_id')) {
+                    Schema::table('lms_assignments', function (Blueprint $table) {
+                        $table->unsignedBigInteger('learning_objective_id')->nullable()->after('course_class_id');
+                    });
+                }
+                if (Schema::hasTable('lms_quizzes') && ! Schema::hasColumn('lms_quizzes', 'learning_objective_id')) {
+                    Schema::table('lms_quizzes', function (Blueprint $table) {
+                        $table->unsignedBigInteger('learning_objective_id')->nullable()->after('course_class_id');
+                    });
+                }
+                if (Schema::hasTable('lms_quiz_questions') && ! Schema::hasColumn('lms_quiz_questions', 'learning_objective_id')) {
+                    Schema::table('lms_quiz_questions', function (Blueprint $table) {
+                        $table->unsignedBigInteger('learning_objective_id')->nullable()->after('quiz_id');
+                    });
+                }
+                Cache::forever('lms_schema_checked_20261111', true);
+            } catch (\Throwable) {
+                // Silently ignore if already altered
+            }
         }
 
         View::composer('*', function ($view) {
