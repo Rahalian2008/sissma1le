@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\AuditLog;
 use App\Models\SchoolBell;
+use App\Models\SchoolSetting;
 use App\Services\NationalAnthemService;
 use App\Services\QuranDataService;
 use Carbon\Carbon;
@@ -102,7 +103,7 @@ class SchoolBellController extends Controller
     {
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
-            'time' => ['required', 'string', 'regex:/^([01][0-9]|2[0-3]):[0-5][0-9]$/'],
+            'time' => ['required', 'string', 'regex:/^([01][0-9]|2[0-3]):[0-5][0-9](:[0-5][0-9])?$/'],
             'days' => ['required', 'array', 'min:1'],
             'days.*' => ['string', 'in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu,Minggu'],
             'sound_type' => ['required', 'string', 'in:chime,murottal,voice,siren,custom,song'],
@@ -135,9 +136,11 @@ class SchoolBellController extends Controller
             }
         }
 
+        $time = substr($validated['time'], 0, 5);
+
         $bell = SchoolBell::create([
             'title' => $validated['title'],
-            'time' => $validated['time'],
+            'time' => $time,
             'days' => $validated['days'],
             'sound_type' => $validated['sound_type'],
             'audio_url' => $audioUrl,
@@ -150,9 +153,35 @@ class SchoolBellController extends Controller
             'is_active' => (bool) ($validated['is_active'] ?? true),
         ]);
 
+        SchoolSetting::set('school_bells_initialized', '1', 'school_bell', 'Status inisialisasi jadwal bel sekolah');
         AuditLog::log('CREATE_SCHOOL_BELL', 'SchoolBell', $bell->id, null, $validated);
 
         return back()->with('success', "Jadwal Bel '{$bell->title}' pada pukul {$bell->time} WIB berhasil disimpan.");
+    }
+
+    /**
+     * Kembalikan seluruh jadwal ke setelan default/standar sekolah (13 jadwal).
+     */
+    public function resetDefaults(): RedirectResponse
+    {
+        SchoolBell::query()->delete();
+        SchoolBell::ensureDefaultSchedules(force: true);
+        AuditLog::log('RESET_DEFAULT_SCHOOL_BELLS', 'SchoolBell');
+
+        return back()->with('success', 'Jadwal bel sekolah berhasil dikembalikan ke jadwal standar (13 jadwal).');
+    }
+
+    /**
+     * Hapus semua jadwal bel sekaligus.
+     */
+    public function clearAll(): RedirectResponse
+    {
+        $count = SchoolBell::count();
+        SchoolBell::query()->delete();
+        SchoolSetting::set('school_bells_initialized', '1', 'school_bell', 'Status inisialisasi jadwal bel sekolah');
+        AuditLog::log('CLEAR_ALL_SCHOOL_BELLS', 'SchoolBell');
+
+        return back()->with('success', "Seluruh jadwal bel ({$count} jadwal) berhasil dihapus.");
     }
 
     /**
@@ -162,7 +191,7 @@ class SchoolBellController extends Controller
     {
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
-            'time' => ['required', 'string', 'regex:/^([01][0-9]|2[0-3]):[0-5][0-9]$/'],
+            'time' => ['required', 'string', 'regex:/^([01][0-9]|2[0-3]):[0-5][0-9](:[0-5][0-9])?$/'],
             'days' => ['required', 'array', 'min:1'],
             'days.*' => ['string', 'in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu,Minggu'],
             'sound_type' => ['required', 'string', 'in:chime,murottal,voice,siren,custom,song'],
@@ -205,9 +234,11 @@ class SchoolBellController extends Controller
             $surahName = null;
         }
 
+        $time = substr($validated['time'], 0, 5);
+
         $schoolBell->update([
             'title' => $validated['title'],
-            'time' => $validated['time'],
+            'time' => $time,
             'days' => $validated['days'],
             'sound_type' => $validated['sound_type'],
             'audio_url' => $audioUrl,
@@ -254,6 +285,7 @@ class SchoolBellController extends Controller
         $title = $schoolBell->title;
         $schoolBell->delete();
 
+        SchoolSetting::set('school_bells_initialized', '1', 'school_bell', 'Status inisialisasi jadwal bel sekolah');
         AuditLog::log('DELETE_SCHOOL_BELL', 'SchoolBell', $schoolBell->id);
 
         return back()->with('success', "Jadwal Bel '{$title}' berhasil dihapus.");

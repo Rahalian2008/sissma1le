@@ -188,3 +188,75 @@ test('sidebar has renamed menus SPMB and Bel Sekolah without old TKA badge', fun
     $response->assertSee('Bel Sekolah', false);
     $response->assertDontSee('Bel Sekolah & Murottal 114 Surah', false);
 });
+
+test('can update an existing school bell schedule', function () {
+    $admin = User::firstOrCreate(
+        ['email' => 'admin_test@sman1lengkong.sch.id'],
+        ['name' => 'Admin Test', 'password' => bcrypt('password'), 'role' => 'admin', 'is_active' => true]
+    );
+
+    $bell = SchoolBell::create([
+        'title' => 'Bel Belum Diedit',
+        'time' => '07:15',
+        'days' => ['Senin', 'Selasa'],
+        'sound_type' => 'chime',
+        'volume' => 90,
+        'duration_seconds' => 15,
+        'is_active' => true,
+    ]);
+
+    $response = $this->actingAs($admin)->put(route('school_bell.update', $bell), [
+        'title' => 'Bel Sesudah Diedit',
+        'time' => '07:30',
+        'days' => ['Senin', 'Selasa', 'Rabu'],
+        'sound_type' => 'voice',
+        'voice_text' => 'Pelajaran berikutnya segera dimulai.',
+        'volume' => 100,
+        'duration_seconds' => 20,
+    ]);
+
+    $response->assertSessionHasNoErrors();
+    $response->assertRedirect();
+
+    $this->assertDatabaseHas('school_bells', [
+        'id' => $bell->id,
+        'title' => 'Bel Sesudah Diedit',
+        'time' => '07:30',
+        'sound_type' => 'voice',
+        'voice_text' => 'Pelajaran berikutnya segera dimulai.',
+    ]);
+});
+
+test('can delete a school bell schedule and clearing all does not auto reseed on next index visit', function () {
+    $admin = User::firstOrCreate(
+        ['email' => 'admin_test@sman1lengkong.sch.id'],
+        ['name' => 'Admin Test', 'password' => bcrypt('password'), 'role' => 'admin', 'is_active' => true]
+    );
+
+    $bell = SchoolBell::create([
+        'title' => 'Bel Siap Dihapus',
+        'time' => '09:00',
+        'days' => ['Senin'],
+        'sound_type' => 'chime',
+        'is_active' => true,
+    ]);
+
+    $response = $this->actingAs($admin)->delete(route('school_bell.destroy', $bell));
+    $response->assertRedirect();
+    $this->assertDatabaseMissing('school_bells', ['id' => $bell->id]);
+
+    // Sekarang hapus seluruh jadwal
+    $clearResponse = $this->actingAs($admin)->post(route('school_bell.clear_all'));
+    $clearResponse->assertRedirect();
+    expect(SchoolBell::count())->toBe(0);
+
+    // Kunjungi halaman index - pastikan TIDAK diisi otomatis lagi!
+    $indexResponse = $this->actingAs($admin)->get(route('school_bell.index'));
+    $indexResponse->assertStatus(200);
+    expect(SchoolBell::count())->toBe(0);
+
+    // Sekarang coba reset kembali ke default
+    $resetResponse = $this->actingAs($admin)->post(route('school_bell.reset_defaults'));
+    $resetResponse->assertRedirect();
+    expect(SchoolBell::count())->toBeGreaterThanOrEqual(12);
+});

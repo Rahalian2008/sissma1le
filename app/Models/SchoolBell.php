@@ -76,11 +76,22 @@ class SchoolBell extends Model
     }
 
     /**
-     * Pastikan jadwal default sekolah terpasang jika tabel masih kosong
+     * Pastikan jadwal default sekolah terpasang jika belum pernah diinisialisasi
      */
-    public static function ensureDefaultSchedules(): void
+    public static function ensureDefaultSchedules(bool $force = false): void
     {
-        if (! Schema::hasTable('school_bells') || self::count() > 0) {
+        if (! Schema::hasTable('school_bells')) {
+            return;
+        }
+
+        $isInitialized = (bool) SchoolSetting::get('school_bells_initialized', false);
+        if ($isInitialized && ! $force) {
+            return;
+        }
+
+        if (! $force && self::count() > 0) {
+            SchoolSetting::set('school_bells_initialized', '1', 'school_bell', 'Status inisialisasi jadwal bel sekolah');
+
             return;
         }
 
@@ -254,5 +265,7 @@ class SchoolBell extends Model
         foreach ($defaults as $d) {
             self::create($d);
         }
+
+        SchoolSetting::set('school_bells_initialized', '1', 'school_bell', 'Status inisialisasi jadwal bel sekolah');
     }
 }

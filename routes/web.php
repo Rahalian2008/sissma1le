@@ -905,6 +905,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/', [SchoolBellController::class, 'index'])->name('index');
         Route::get('/kiosk', [SchoolBellController::class, 'kiosk'])->name('kiosk');
         Route::post('/', [SchoolBellController::class, 'store'])->name('store');
+        Route::post('/reset-defaults', [SchoolBellController::class, 'resetDefaults'])->name('reset_defaults');
+        Route::post('/clear-all', [SchoolBellController::class, 'clearAll'])->name('clear_all');
         Route::put('/{schoolBell}', [SchoolBellController::class, 'update'])->name('update');
         Route::post('/{schoolBell}/toggle', [SchoolBellController::class, 'toggle'])->name('toggle');
         Route::delete('/{schoolBell}', [SchoolBellController::class, 'destroy'])->name('destroy');

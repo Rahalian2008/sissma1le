@@ -176,10 +176,24 @@
             </button>
         </div>
 
-        <div class="shrink-0 w-full sm:w-auto flex justify-end" x-show="activeTab === 'schedules'">
-            <button type="button" @click="openAddModal()" class="w-full sm:w-auto justify-center px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-md transition flex items-center gap-1.5 cursor-pointer">
+        <div class="shrink-0 w-full sm:w-auto flex flex-wrap items-center justify-end gap-2" x-show="activeTab === 'schedules'">
+            <button type="button" @click="openAddModal()" class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-md transition flex items-center gap-1.5 cursor-pointer">
                 <span>+ Tambah Jadwal Bel</span>
             </button>
+            <form action="{{ route('school_bell.reset_defaults') }}" method="POST" onsubmit="return confirm('Kembalikan seluruh jadwal ke setelan standar sekolah (13 jadwal)? Jadwal saat ini akan ditimpa.')" class="inline">
+                @csrf
+                <button type="submit" class="px-3 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30 font-bold text-xs transition flex items-center gap-1.5 cursor-pointer" title="Muat 13 Jadwal Default Sekolah">
+                    <span>🔄 Reset Standar</span>
+                </button>
+            </form>
+            @if($allBells->count() > 0)
+            <form action="{{ route('school_bell.clear_all') }}" method="POST" onsubmit="return confirm('Peringatan! Apakah Anda yakin ingin menghapus SEMUA jadwal bel harian? Anda dapat mengisinya kembali atau memuat jadwal standar kapan saja.')" class="inline">
+                @csrf
+                <button type="submit" class="px-3 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/30 font-bold text-xs transition flex items-center gap-1.5 cursor-pointer" title="Hapus Semua Jadwal">
+                    <span>🗑️ Hapus Semua</span>
+                </button>
+            </form>
+            @endif
         </div>
     </div>
 
@@ -216,7 +230,7 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
-                        @foreach($allBells as $idx => $bell)
+                        @forelse($allBells as $idx => $bell)
                             @php
                                 $daysJson = json_encode($bell->days ?? []);
                             @endphp
@@ -285,15 +299,15 @@
                                 <td class="py-3 px-4 text-center">
                                     <div class="flex items-center justify-center gap-1">
                                         <!-- Test Bunyi -->
-                                        <button type="button" @click="playBellRecord({{ json_encode($bell) }})" class="p-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 transition cursor-pointer" title="Uji Bunyikan Sekarang">
+                                        <button type="button" @click="playBellRecordById({{ $bell->id }})" class="p-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 transition cursor-pointer" title="Uji Bunyikan Sekarang">
                                             ▶️
                                         </button>
                                         <!-- Edit -->
-                                        <button type="button" @click="openEditModal({{ json_encode($bell) }})" class="p-1.5 rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 transition cursor-pointer" title="Edit Jadwal">
+                                        <button type="button" @click="openEditModal({{ $bell->id }})" class="p-1.5 rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 transition cursor-pointer" title="Edit Jadwal">
                                             ✏️
                                         </button>
                                         <!-- Hapus -->
-                                        <form action="{{ route('school_bell.destroy', $bell) }}" method="POST" onsubmit="return confirm('Hapus jadwal bel {{ addslashes($bell->title) }}?')" class="inline">
+                                        <form action="{{ route('school_bell.destroy', $bell) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus jadwal bel ini?')" class="inline">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="p-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 transition cursor-pointer" title="Hapus">
@@ -303,7 +317,26 @@
                                     </div>
                                 </td>
                             </tr>
-                        @endforeach
+                        @empty
+                            <tr>
+                                <td colspan="8" class="py-12 text-center text-slate-400">
+                                    <div class="text-3xl mb-2">🔔</div>
+                                    <div class="text-sm font-bold text-slate-700 dark:text-slate-300">Belum ada jadwal bel yang terpasang</div>
+                                    <p class="text-xs text-slate-500 mt-1 max-w-md mx-auto">Seluruh jadwal telah dikosongkan. Anda dapat menambahkan jadwal harian baru sesuai kebutuhan sekolah atau memuat kembali 13 jadwal standar.</p>
+                                    <div class="flex items-center justify-center gap-3 mt-4">
+                                        <button type="button" @click="openAddModal()" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-xs transition cursor-pointer">
+                                            + Tambah Jadwal Baru
+                                        </button>
+                                        <form action="{{ route('school_bell.reset_defaults') }}" method="POST" class="inline">
+                                            @csrf
+                                            <button type="submit" class="px-4 py-2 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-700 dark:text-amber-300 border border-amber-500/30 font-bold text-xs transition cursor-pointer">
+                                                🔄 Muat 13 Jadwal Standar
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
@@ -604,9 +637,7 @@
 
             <form :action="isEdit ? editUrl : '{{ route('school_bell.store') }}'" method="POST" enctype="multipart/form-data" class="space-y-4">
                 @csrf
-                <template x-if="isEdit">
-                    <input type="hidden" name="_method" value="PUT">
-                </template>
+                <input type="hidden" name="_method" value="PUT" x-bind:disabled="!isEdit">
 
                 <div>
                     <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Judul / Peristiwa Bel <span class="text-rose-500">*</span></label>
@@ -673,10 +704,10 @@
 
                 <div>
                     <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">Hari Berlaku <span class="text-rose-500">*</span></label>
-                    <div class="grid grid-cols-3 sm:grid-cols-5 gap-2">
-                        @foreach(['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'] as $day)
-                            <label class="flex items-center gap-2 p-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold cursor-pointer">
-                                <input type="checkbox" name="days[]" value="{{ $day }}" :checked="formData.days.includes('{{ $day }}')" @change="toggleDay('{{ $day }}')" class="rounded text-indigo-600">
+                    <div class="grid grid-cols-3 sm:grid-cols-6 gap-2">
+                        @foreach(['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'] as $day)
+                            <label class="flex items-center gap-2 p-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold cursor-pointer select-none hover:bg-slate-100 dark:hover:bg-slate-700/50 transition">
+                                <input type="checkbox" name="days[]" value="{{ $day }}" x-model="formData.days" class="rounded text-indigo-600 focus:ring-0">
                                 <span>{{ $day }}</span>
                             </label>
                         @endforeach
@@ -787,6 +818,7 @@ function schoolBellApp() {
         audioCtx: null,
 
         // In-memory schedules for instant reliability (No network delays)
+        allBells: @json($allBells),
         todayBells: @json($todayBells),
         lastRungMinute: '',
         nextBellTitle: '{{ $nextBell?->title ?? '' }}',
@@ -1399,6 +1431,7 @@ function schoolBellApp() {
 
         openAddModal() {
             this.isEdit = false;
+            this.editUrl = '';
             this.formData = {
                 title: '',
                 time: '07:00',
@@ -1414,22 +1447,43 @@ function schoolBellApp() {
             this.showModal = true;
         },
 
-        openEditModal(bell) {
+        openEditModal(bellId) {
+            const bell = this.allBells.find(b => b.id == bellId);
+            if (!bell) return;
             this.isEdit = true;
             this.editUrl = `{{ url('/school-bell') }}/${bell.id}`;
+
+            let parsedDays = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'];
+            if (Array.isArray(bell.days)) {
+                parsedDays = [...bell.days];
+            } else if (typeof bell.days === 'string') {
+                try {
+                    parsedDays = JSON.parse(bell.days);
+                } catch (e) {
+                    parsedDays = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'];
+                }
+            }
+
             this.formData = {
-                title: bell.title,
-                time: bell.time,
-                sound_type: bell.sound_type,
+                title: bell.title || '',
+                time: (bell.time || '07:00').substring(0, 5),
+                sound_type: bell.sound_type || 'chime',
                 surah_number: bell.surah_number || '',
                 anthem_id: '',
                 voice_text: bell.voice_text || '',
-                days: bell.days || ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'],
+                days: parsedDays,
                 duration_seconds: bell.duration_seconds || 15,
                 volume: bell.volume || 100,
                 description: bell.description || ''
             };
             this.showModal = true;
+        },
+
+        playBellRecordById(bellId) {
+            const bell = this.allBells.find(b => b.id == bellId);
+            if (bell) {
+                this.playBellRecord(bell);
+            }
         },
 
         toggleDay(day) {
