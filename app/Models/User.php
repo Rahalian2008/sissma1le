@@ -352,6 +352,21 @@ class User extends Authenticatable
             return false;
         }
 
+        // Sub-modul Tata Usaha (Kesiswaan, Kepegawaian, Persuratan, Sarpras, Keuangan) disesuaikan persis dengan role staf
+        if (str_starts_with($menuKey, 'tu_')) {
+            $sub = match ($menuKey) {
+                'tu_kesiswaan' => 'kesiswaan',
+                'tu_kepegawaian' => 'kepegawaian',
+                'tu_persuratan' => 'persuratan',
+                'tu_sarpras' => 'sarpras',
+                'tu_keuangan' => 'keuangan',
+                default => null,
+            };
+            if ($sub) {
+                return $this->canAccessTuSubmodule($sub);
+            }
+        }
+
         // If in All Roles mode, check if ANY of user's roles grants access
         if ($active === 'all_roles') {
             if ($this->role === 'guru' && str_starts_with($menuKey, 'tu')) {
@@ -558,6 +573,56 @@ class User extends Authenticatable
         }
 
         return in_array($this->role, ['staff', 'tu', 'tenaga_administrasi', 'kepala_administrasi'], true) || $this->isTu();
+    }
+
+    /**
+     * Hak akses granular ke 5 sub-modul Tata Usaha (Kesiswaan, Kepegawaian, Persuratan, Sarpras, Keuangan).
+     */
+    public function canAccessTuSubmodule(string $submodule): bool
+    {
+        // 1. Super Admin, Admin, Kepala Sekolah, dan Kepala Administrasi (KTU) memiliki akses penuh ke seluruh sub-modul TU
+        if ($this->isAdmin() || $this->hasAnyRole(['super_admin', 'admin', 'kepala_sekolah', 'kepala_administrasi'])) {
+            return true;
+        }
+
+        // 2. Tenaga Pendidik murni dilarang mengakses modul TU
+        if ($this->role === 'guru' && ! $this->hasAnyRole(['staff', 'tu', 'kepala_administrasi', 'ta_kesiswaan', 'ta_kepegawaian', 'ta_persuratan', 'ta_sarpras', 'bendahara'])) {
+            return false;
+        }
+
+        $active = session('active_role') ?? $this->active_role;
+
+        // 3. Pemetaan role resmi untuk setiap sub-modul TU
+        $rolesMap = [
+            'kesiswaan' => ['ta_kesiswaan', 'kesiswaan', 'wakasek_kesiswaan', 'operator_dapodik', 'operator'],
+            'kepegawaian' => ['ta_kepegawaian', 'operator_dapodik', 'operator'],
+            'persuratan' => ['ta_persuratan', 'tu_piket'],
+            'sarpras' => ['ta_sarpras', 'wakasek_sarpras', 'kepala_laboratorium'],
+            'keuangan' => ['bendahara', 'bendahara_bosp', 'bendahara_bopd', 'bendahara_gaji'],
+        ];
+
+        $allowedForSub = $rolesMap[$submodule] ?? [];
+
+        // Jika dalam mode role aktif spesifik (bukan all_roles dan bukan role umum staff/tu):
+        if ($active !== 'all_roles' && ! in_array($active, ['staff', 'tu', 'tenaga_administrasi'], true)) {
+            return in_array($active, $allowedForSub, true);
+        }
+
+        // Jika dalam mode all_roles atau mode staff umum:
+        // Cek apakah user memiliki hak akses spesifik untuk sub-modul ini
+        if ($this->hasAnyRole($allowedForSub)) {
+            return true;
+        }
+
+        // Fallback untuk staf umum yang belum ditentukan sub-bagian spesifiknya:
+        $hasAnySpecificTuRole = $this->hasAnyRole([
+            'ta_kesiswaan', 'ta_kepegawaian', 'ta_persuratan', 'ta_sarpras', 'bendahara', 'bendahara_bosp', 'bendahara_bopd', 'bendahara_gaji',
+        ]);
+        if (! $hasAnySpecificTuRole && $this->hasAnyRole(['staff', 'tu', 'tenaga_administrasi'])) {
+            return true;
+        }
+
+        return false;
     }
 
     public function isKurikulumAdmin(): bool

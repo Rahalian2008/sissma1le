@@ -15,8 +15,17 @@ use Illuminate\View\View;
 
 class TuKepegawaianController extends Controller
 {
+    private function authorizeKepegawaian(): void
+    {
+        if (! Auth::user()?->canAccessTuSubmodule('kepegawaian')) {
+            abort(403, 'Akses tidak diizinkan. Menu ini dikhususkan untuk staf Administrasi Kepegawaian.');
+        }
+    }
+
     public function index(Request $request): View
     {
+        $this->authorizeKepegawaian();
+
         $hasEmployees = Schema::hasTable('employees');
         $hasLeaves = Schema::hasTable('employee_leaves');
         $masterAvailableCount = Teacher::where('is_active', true)->count();
@@ -115,6 +124,8 @@ class TuKepegawaianController extends Controller
      */
     public function pullFromMaster(Request $request): RedirectResponse
     {
+        $this->authorizeKepegawaian();
+
         try {
             Artisan::call('app:sync-excel-guru-ptk');
             $count = Employee::count();
@@ -187,6 +198,8 @@ class TuKepegawaianController extends Controller
      */
     public function clearData(Request $request): RedirectResponse
     {
+        $this->authorizeKepegawaian();
+
         if (DB::getDriverName() === 'mysql') {
             DB::statement('SET FOREIGN_KEY_CHECKS=0;');
             EmployeeLeave::truncate();

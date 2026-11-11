@@ -6,6 +6,7 @@ use App\Models\BudgetItem;
 use App\Models\CashTransaction;
 use App\Models\Tax;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\View\View;
 
@@ -13,6 +14,10 @@ class TuKeuanganController extends Controller
 {
     public function index(Request $request): View
     {
+        if (! Auth::user()?->canAccessTuSubmodule('keuangan')) {
+            abort(403, 'Akses tidak diizinkan. Menu ini dikhususkan untuk Bendahara dan Pengelola Keuangan.');
+        }
+
         $hasBudgetItems = Schema::hasTable('budget_items');
         $hasCash = Schema::hasTable('cash_transactions');
         $hasTaxes = class_exists(Tax::class) && Schema::hasTable('taxes');

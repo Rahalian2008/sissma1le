@@ -21,8 +21,17 @@ use Illuminate\View\View;
 
 class TuKesiswaanController extends Controller
 {
+    private function authorizeKesiswaan(): void
+    {
+        if (! Auth::user()?->canAccessTuSubmodule('kesiswaan')) {
+            abort(403, 'Akses tidak diizinkan. Menu ini dikhususkan untuk staf Administrasi Kesiswaan.');
+        }
+    }
+
     public function index(Request $request): View
     {
+        $this->authorizeKesiswaan();
+
         $masterAvailableCount = Student::where('is_active', true)->count();
 
         // 1. Metrik Utama Kesiswaan (Hanya yang terdaftar di Administrasi Kesiswaan)
@@ -97,6 +106,8 @@ class TuKesiswaanController extends Controller
      */
     public function pullFromMaster(Request $request): RedirectResponse
     {
+        $this->authorizeKesiswaan();
+
         if (Schema::hasColumn('students', 'is_tu_registered')) {
             $count = Student::where('is_active', true)->update([
                 'is_tu_registered' => true,
@@ -115,6 +126,8 @@ class TuKesiswaanController extends Controller
      */
     public function clearData(Request $request): RedirectResponse
     {
+        $this->authorizeKesiswaan();
+
         if (Schema::hasColumn('students', 'is_tu_registered')) {
             Student::query()->update([
                 'is_tu_registered' => false,
@@ -131,6 +144,8 @@ class TuKesiswaanController extends Controller
      */
     public function legalisirIndex(Request $request): View
     {
+        $this->authorizeKesiswaan();
+
         $query = StudentLegalization::with(['student.schoolClass', 'verifier'])->latest();
 
         if ($request->filled('status')) {
@@ -184,6 +199,8 @@ class TuKesiswaanController extends Controller
      */
     public function legalisirStore(Request $request): RedirectResponse
     {
+        $this->authorizeKesiswaan();
+
         $validated = $request->validate([
             'applicant_name' => ['required', 'string', 'max:150'],
             'student_id' => ['nullable', 'exists:students,id'],
@@ -230,6 +247,8 @@ class TuKesiswaanController extends Controller
      */
     public function legalisirUpdateStatus(Request $request, StudentLegalization $legalization): RedirectResponse
     {
+        $this->authorizeKesiswaan();
+
         $validated = $request->validate([
             'status' => ['required', 'in:diajukan,diverifikasi,selesai,ditolak'],
             'notes' => ['nullable', 'string', 'max:500'],
@@ -259,6 +278,8 @@ class TuKesiswaanController extends Controller
      */
     public function legalisirPrintReceipt(StudentLegalization $legalization): View
     {
+        $this->authorizeKesiswaan();
+
         $school = SchoolIdentity::current();
         $headmasterName = SchoolSetting::get('headmaster_name') ?? $school?->headmaster_name ?? 'Pian Sopian, S.Pd., M.M.Pd.';
         $headmasterNip = SchoolSetting::get('headmaster_nip') ?? $school?->headmaster_nip ?? '197205121998021001';
@@ -278,6 +299,8 @@ class TuKesiswaanController extends Controller
      */
     public function legalisirPrintBook(Request $request): View
     {
+        $this->authorizeKesiswaan();
+
         $query = StudentLegalization::with(['student', 'verifier'])->latest();
 
         if ($request->filled('status')) {
@@ -315,6 +338,8 @@ class TuKesiswaanController extends Controller
      */
     public function legalisirDestroy(StudentLegalization $legalization): RedirectResponse
     {
+        $this->authorizeKesiswaan();
+
         $receipt = $legalization->receipt_number;
         $legalization->delete();
 
@@ -327,6 +352,8 @@ class TuKesiswaanController extends Controller
      */
     public function manualAttendanceIndex(Request $request): View
     {
+        $this->authorizeKesiswaan();
+
         $classes = SchoolClass::orderBy('name')->get();
         $selectedClassId = $request->get('class_id', $classes->first()?->id);
         $selectedClass = $classes->firstWhere('id', $selectedClassId);
@@ -365,6 +392,8 @@ class TuKesiswaanController extends Controller
      */
     public function manualAttendancePrint(Request $request): View
     {
+        $this->authorizeKesiswaan();
+
         $request->validate([
             'class_id' => ['required'],
             'period_type' => ['required', 'in:monthly,weekly,custom'],

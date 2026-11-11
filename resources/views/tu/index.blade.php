@@ -3,6 +3,13 @@
 @section('title', 'Dashboard Manajemen Terpadu')
 
 @section('content')
+@php
+    $canKesiswaan = $user?->canAccessTuSubmodule('kesiswaan') ?? false;
+    $canKepegawaian = $user?->canAccessTuSubmodule('kepegawaian') ?? false;
+    $canPersuratan = $user?->canAccessTuSubmodule('persuratan') ?? false;
+    $canSarpras = $user?->canAccessTuSubmodule('sarpras') ?? false;
+    $canKeuangan = $user?->canAccessTuSubmodule('keuangan') ?? false;
+@endphp
 <div class="space-y-6">
     <!-- Top Welcome Banner & AI Trigger -->
     <div class="bg-gradient-to-r from-slate-900 via-blue-950 to-indigo-950 rounded-2xl p-5 sm:p-6 text-white shadow-xl border border-slate-800 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -38,66 +45,87 @@
             </h2>
             <span class="text-[11px] text-slate-400 hidden sm:inline">Pintasan Layanan Harian Tata Usaha</span>
         </div>
-        <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2.5">
-            <a href="{{ route('letters.incoming.create') }}" class="group flex flex-col items-center justify-center p-3 rounded-xl bg-slate-50 hover:bg-blue-50/80 border border-slate-200/80 hover:border-blue-300 transition text-center shadow-2xs card-hover">
+        <div class="flex flex-wrap items-stretch gap-2.5">
+            @if($canPersuratan)
+            <a href="{{ route('letters.incoming.create') }}" class="group flex flex-col items-center justify-center p-3 rounded-xl bg-slate-50 hover:bg-blue-50/80 border border-slate-200/80 hover:border-blue-300 transition text-center shadow-2xs card-hover flex-1 min-w-[110px] max-w-[160px]">
                 <div class="w-8 h-8 rounded-lg bg-blue-100 group-hover:bg-blue-600 text-blue-600 group-hover:text-white flex items-center justify-center mb-1.5 transition">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
                 </div>
                 <span class="text-[11px] font-bold text-slate-700 group-hover:text-blue-700 leading-tight">Surat Masuk</span>
                 <span class="text-[10px] text-slate-400 mt-0.5">Catat Agenda</span>
             </a>
-            <a href="{{ route('letters.outgoing.create') }}" class="group flex flex-col items-center justify-center p-3 rounded-xl bg-slate-50 hover:bg-sky-50/80 border border-slate-200/80 hover:border-sky-300 transition text-center shadow-2xs card-hover">
+            <a href="{{ route('letters.outgoing.create') }}" class="group flex flex-col items-center justify-center p-3 rounded-xl bg-slate-50 hover:bg-sky-50/80 border border-slate-200/80 hover:border-sky-300 transition text-center shadow-2xs card-hover flex-1 min-w-[110px] max-w-[160px]">
                 <div class="w-8 h-8 rounded-lg bg-sky-100 group-hover:bg-sky-600 text-sky-600 group-hover:text-white flex items-center justify-center mb-1.5 transition">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
                 </div>
                 <span class="text-[11px] font-bold text-slate-700 group-hover:text-sky-700 leading-tight">Surat Keluar</span>
                 <span class="text-[10px] text-slate-400 mt-0.5">Buat Draft</span>
             </a>
-            <a href="{{ route('finance.transactions.index') }}" class="group flex flex-col items-center justify-center p-3 rounded-xl bg-slate-50 hover:bg-rose-50/80 border border-slate-200/80 hover:border-rose-300 transition text-center shadow-2xs card-hover">
+            @endif
+
+            @if($canKeuangan)
+            <a href="{{ route('finance.transactions.index') }}" class="group flex flex-col items-center justify-center p-3 rounded-xl bg-slate-50 hover:bg-rose-50/80 border border-slate-200/80 hover:border-rose-300 transition text-center shadow-2xs card-hover flex-1 min-w-[110px] max-w-[160px]">
                 <div class="w-8 h-8 rounded-lg bg-rose-100 group-hover:bg-rose-600 text-rose-600 group-hover:text-white flex items-center justify-center mb-1.5 transition">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 </div>
                 <span class="text-[11px] font-bold text-slate-700 group-hover:text-rose-700 leading-tight">Kas BKU</span>
                 <span class="text-[10px] text-slate-400 mt-0.5">Catat Transaksi</span>
             </a>
-            <a href="{{ route('warehouse.receipts.index') }}" class="group flex flex-col items-center justify-center p-3 rounded-xl bg-slate-50 hover:bg-amber-50/80 border border-slate-200/80 hover:border-amber-300 transition text-center shadow-2xs card-hover">
+            @endif
+
+            @if($canSarpras)
+            <a href="{{ route('warehouse.receipts.index') }}" class="group flex flex-col items-center justify-center p-3 rounded-xl bg-slate-50 hover:bg-amber-50/80 border border-slate-200/80 hover:border-amber-300 transition text-center shadow-2xs card-hover flex-1 min-w-[110px] max-w-[160px]">
                 <div class="w-8 h-8 rounded-lg bg-amber-100 group-hover:bg-amber-600 text-amber-600 group-hover:text-white flex items-center justify-center mb-1.5 transition">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
                 </div>
                 <span class="text-[11px] font-bold text-slate-700 group-hover:text-amber-700 leading-tight">BAST Gudang</span>
                 <span class="text-[10px] text-slate-400 mt-0.5">Barang Masuk</span>
             </a>
-            <a href="{{ route('guests.kiosk') }}" target="_blank" class="group flex flex-col items-center justify-center p-3 rounded-xl bg-slate-50 hover:bg-emerald-50/80 border border-slate-200/80 hover:border-emerald-300 transition text-center shadow-2xs card-hover">
+            @endif
+
+            @if($canPersuratan || $canKesiswaan || $user?->isAdmin() || $user?->hasRole('kepala_sekolah') || $user?->hasRole('kepala_administrasi'))
+            <a href="{{ route('guests.kiosk') }}" target="_blank" class="group flex flex-col items-center justify-center p-3 rounded-xl bg-slate-50 hover:bg-emerald-50/80 border border-slate-200/80 hover:border-emerald-300 transition text-center shadow-2xs card-hover flex-1 min-w-[110px] max-w-[160px]">
                 <div class="w-8 h-8 rounded-lg bg-emerald-100 group-hover:bg-emerald-600 text-emerald-600 group-hover:text-white flex items-center justify-center mb-1.5 transition">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
                 </div>
                 <span class="text-[11px] font-bold text-slate-700 group-hover:text-emerald-700 leading-tight">Kiosk Tamu</span>
                 <span class="text-[10px] text-slate-400 mt-0.5">Buku Tamu</span>
             </a>
-            <a href="{{ route('students.index') }}" class="group flex flex-col items-center justify-center p-3 rounded-xl bg-slate-50 hover:bg-indigo-50/80 border border-slate-200/80 hover:border-indigo-300 transition text-center shadow-2xs card-hover">
+            @endif
+
+            @if($canKesiswaan)
+            <a href="{{ route('students.index') }}" class="group flex flex-col items-center justify-center p-3 rounded-xl bg-slate-50 hover:bg-indigo-50/80 border border-slate-200/80 hover:border-indigo-300 transition text-center shadow-2xs card-hover flex-1 min-w-[110px] max-w-[160px]">
                 <div class="w-8 h-8 rounded-lg bg-indigo-100 group-hover:bg-indigo-600 text-indigo-600 group-hover:text-white flex items-center justify-center mb-1.5 transition">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path></svg>
                 </div>
                 <span class="text-[11px] font-bold text-slate-700 group-hover:text-indigo-700 leading-tight">Data Siswa</span>
                 <span class="text-[10px] text-slate-400 mt-0.5">Profil & Ringkasan</span>
             </a>
-            <a href="{{ route('duk.index') }}" class="group flex flex-col items-center justify-center p-3 rounded-xl bg-slate-50 hover:bg-teal-50/80 border border-slate-200/80 hover:border-teal-300 transition text-center shadow-2xs card-hover">
+            @endif
+
+            @if($canKepegawaian)
+            <a href="{{ route('duk.index') }}" class="group flex flex-col items-center justify-center p-3 rounded-xl bg-slate-50 hover:bg-teal-50/80 border border-slate-200/80 hover:border-teal-300 transition text-center shadow-2xs card-hover flex-1 min-w-[110px] max-w-[160px]">
                 <div class="w-8 h-8 rounded-lg bg-teal-100 group-hover:bg-teal-600 text-teal-600 group-hover:text-white flex items-center justify-center mb-1.5 transition">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                 </div>
                 <span class="text-[11px] font-bold text-slate-700 group-hover:text-teal-700 leading-tight">DUK Pegawai</span>
                 <span class="text-[10px] text-slate-400 mt-0.5">Pendidik & Tendik</span>
             </a>
-            <a href="{{ route('sarpras.assets.index') }}" class="group flex flex-col items-center justify-center p-3 rounded-xl bg-slate-50 hover:bg-purple-50/80 border border-slate-200/80 hover:border-purple-300 transition text-center shadow-2xs card-hover">
+            @endif
+
+            @if($canSarpras)
+            <a href="{{ route('sarpras.assets.index') }}" class="group flex flex-col items-center justify-center p-3 rounded-xl bg-slate-50 hover:bg-purple-50/80 border border-slate-200/80 hover:border-purple-300 transition text-center shadow-2xs card-hover flex-1 min-w-[110px] max-w-[160px]">
                 <div class="w-8 h-8 rounded-lg bg-purple-100 group-hover:bg-purple-600 text-purple-600 group-hover:text-white flex items-center justify-center mb-1.5 transition">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
                 </div>
                 <span class="text-[11px] font-bold text-slate-700 group-hover:text-purple-700 leading-tight">Aset KIB & KIR</span>
                 <span class="text-[10px] text-slate-400 mt-0.5">SIPD e-BMD</span>
             </a>
+            @endif
         </div>
     </div>
 
+    @if($canKesiswaan)
     <!-- 1. Kesiswaan KPI Cards & Administrative Summary -->
     <div>
         <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-3 gap-2">
@@ -239,9 +267,12 @@
             </a>
         </div>
     </div>
+    @endif
 
+    @if($canKepegawaian || $canKeuangan)
     <!-- 2. Kepegawaian & Keuangan Row -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="grid grid-cols-1 {{ $canKepegawaian && $canKeuangan ? 'lg:grid-cols-2' : '' }} gap-6">
+        @if($canKepegawaian)
         <!-- Kepegawaian Card -->
         <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 flex flex-col justify-between card-hover">
             <div>
@@ -319,7 +350,9 @@
                 </button>
             </div>
         </div>
+        @endif
 
+        @if($canKeuangan)
         <!-- Keuangan Card -->
         <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 flex flex-col justify-between card-hover">
             <div>
@@ -394,10 +427,14 @@
                 </button>
             </div>
         </div>
+        @endif
     </div>
+    @endif
 
-    <!-- 3. Persuratan, Sarpras, Gudang & Arsip 4-Col Grid -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    @if($canPersuratan || $canSarpras)
+    <!-- 3. Persuratan, Sarpras, Gudang & Arsip Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 {{ ($canPersuratan && $canSarpras) ? 'lg:grid-cols-4' : 'lg:grid-cols-2' }} gap-4">
+        @if($canPersuratan)
         <!-- Persuratan Card -->
         <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 flex flex-col justify-between card-hover">
             <div>
@@ -418,7 +455,9 @@
                 <button onclick="triggerAiAnalysis('persuratan')" class="text-purple-600 font-bold hover:underline cursor-pointer">AI Ringkas</button>
             </div>
         </div>
+        @endif
 
+        @if($canSarpras)
         <!-- Sarpras & KIB-KIR Card (SIPD e-BMD) -->
         <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 flex flex-col justify-between card-hover">
             <div>
@@ -496,7 +535,9 @@
                 <button onclick="triggerAiAnalysis('gudang')" class="text-purple-600 font-bold hover:underline cursor-pointer">AI Stok</button>
             </div>
         </div>
+        @endif
 
+        @if($canPersuratan)
         <!-- Arsip Card -->
         <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 flex flex-col justify-between card-hover">
             <div>
@@ -517,10 +558,14 @@
                 <button onclick="triggerAiAnalysis('arsip')" class="text-purple-600 font-bold hover:underline cursor-pointer">AI Arsip</button>
             </div>
         </div>
+        @endif
     </div>
+    @endif
 
+    @if($canKeuangan || $canSarpras)
     <!-- 4. Realtime Operational Activity: Transaksi Kas & Logistik BAST -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="grid grid-cols-1 {{ $canKeuangan && $canSarpras ? 'lg:grid-cols-2' : '' }} gap-6">
+        @if($canKeuangan)
         <!-- Transaksi Kas Terbaru (SPJ BKU) -->
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
             <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
@@ -555,7 +600,9 @@
                 @endforelse
             </div>
         </div>
+        @endif
 
+        @if($canSarpras)
         <!-- BAST Gudang Terbaru & Peringatan Stok Kritis -->
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col justify-between">
             <div>
@@ -605,8 +652,11 @@
             </div>
             @endif
         </div>
+        @endif
     </div>
+    @endif
 
+    @if($canPersuratan)
     <!-- 5. Tables: Recent Incoming Letters & Pending Dispositions -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Surat Masuk Terbaru -->
@@ -657,7 +707,9 @@
             </div>
         </div>
     </div>
+    @endif
 
+    @if($canPersuratan || $canKesiswaan || $user?->isAdmin() || $user?->hasRole('kepala_sekolah') || $user?->hasRole('kepala_administrasi'))
     <!-- 6. Buku Tamu & Kunjungan Terpadu (Unified Digital Guestbook) -->
     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
         <div class="px-5 py-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -791,6 +843,7 @@
             </table>
         </div>
     </div>
+    @endif
 </div>
 
 <!-- Modal AI Analysis Result & Loading -->

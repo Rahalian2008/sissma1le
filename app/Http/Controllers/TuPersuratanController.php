@@ -9,6 +9,7 @@ use App\Models\IncomingLetter;
 use App\Models\OutgoingLetter;
 use App\Models\Sppd;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\View\View;
 
@@ -16,6 +17,10 @@ class TuPersuratanController extends Controller
 {
     public function index(Request $request): View
     {
+        if (! Auth::user()?->canAccessTuSubmodule('persuratan')) {
+            abort(403, 'Akses tidak diizinkan. Menu ini dikhususkan untuk staf Persuratan & Arsip.');
+        }
+
         $hasIncoming = Schema::hasTable('incoming_letters');
         $hasOutgoing = Schema::hasTable('outgoing_letters');
         $hasDispositions = Schema::hasTable('dispositions');
