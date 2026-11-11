@@ -787,6 +787,22 @@
                         </div>
                     @endif
 
+                    @if(Auth::check() && Auth::user()->role === 'super_admin' && ! Auth::user()->hasTwoFactorEnabled() && ! request()->routeIs('profile*'))
+                        <div class="mb-4 p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/15 via-rose-500/10 to-indigo-500/15 border border-amber-500/30 text-amber-900 dark:text-amber-200 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+                            <div class="flex items-center gap-2.5">
+                                <span class="text-xl shrink-0">🛡️</span>
+                                <div>
+                                    <strong class="font-extrabold text-amber-800 dark:text-amber-300">Peringatan Keamanan Super Admin:</strong>
+                                    <span>Akun Anda belum mengaktifkan Otentikasi 2 Langkah (Google Authenticator). Amankan akses super admin dari kebocoran kata sandi sekarang.</span>
+                                </div>
+                            </div>
+                            <a href="{{ route('profile') }}#two-factor-section" class="shrink-0 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-indigo-600 hover:from-amber-400 hover:to-indigo-500 text-white font-bold text-xs shadow-xs transition flex items-center justify-center gap-1.5">
+                                <span>Aktifkan 2FA Sekarang</span>
+                                <span>&rarr;</span>
+                            </a>
+                        </div>
+                    @endif
+
                     @if(Auth::check() && count(Auth::user()->getActiveRoleOptions()) > 1)
                         @php
                             $userActiveRole = Auth::user()->active_role;

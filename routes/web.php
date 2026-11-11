@@ -44,6 +44,7 @@ use App\Http\Controllers\SchoolWebsiteController;
 use App\Http\Controllers\Student\SpmbController;
 use App\Http\Controllers\SupervisionController;
 use App\Http\Controllers\TeachingJournalController;
+use App\Http\Controllers\TwoFactorController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ViolationController;
 use App\Http\Controllers\WebsiteContentController;
@@ -91,6 +92,11 @@ Route::get('/ppdb/daftar', fn () => redirect()->route('spmb.public.register'));
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login'])->name('login.post');
+
+    // Two-Factor Authentication Login Challenge
+    Route::get('/login/two-factor', [TwoFactorController::class, 'showChallenge'])->name('login.two_factor');
+    Route::post('/login/two-factor', [TwoFactorController::class, 'verifyChallenge'])->name('login.two_factor.post');
+    Route::post('/login/two-factor/cancel', [TwoFactorController::class, 'cancelChallenge'])->name('login.two_factor.cancel');
 });
 
 // Quick Role Switcher (Available for instant role testing & evaluation)
@@ -106,6 +112,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/user/switch-role/{role}', [AuthController::class, 'switchActiveRoleGet'])->name('user.switch_role_get');
     Route::get('/profile', [AuthController::class, 'profile'])->name('profile');
     Route::match(['put', 'post'], '/profile', [AuthController::class, 'updateProfile'])->name('profile.update');
+
+    // Two-Factor Authentication Setup & Management (Google Authenticator)
+    Route::get('/user/two-factor-setup', [TwoFactorController::class, 'setup'])->name('two_factor.setup');
+    Route::post('/user/two-factor-enable', [TwoFactorController::class, 'enable'])->name('two_factor.enable');
+    Route::post('/user/two-factor-disable', [TwoFactorController::class, 'disable'])->name('two_factor.disable');
+    Route::post('/user/two-factor-recovery-codes', [TwoFactorController::class, 'regenerateRecoveryCodes'])->name('two_factor.recovery_codes');
 
     // Dashboard Hub
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');

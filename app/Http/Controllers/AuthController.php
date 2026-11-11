@@ -127,6 +127,16 @@ class AuthController extends Controller
             }
 
             if ($isValidPassword) {
+                // Verifikasi Otentikasi 2 Langkah (Google Authenticator) jika telah diaktifkan
+                if ($user->hasTwoFactorEnabled()) {
+                    $request->session()->put([
+                        'auth_2fa_user_id' => $user->id,
+                        'auth_2fa_remember' => $request->boolean('remember'),
+                    ]);
+
+                    return redirect()->route('login.two_factor');
+                }
+
                 Auth::login($user, $request->boolean('remember'));
                 $request->session()->regenerate();
 

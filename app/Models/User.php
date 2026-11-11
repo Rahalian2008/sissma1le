@@ -34,6 +34,9 @@ class User extends Authenticatable
         'is_active',
         'active_role_id',
         'password',
+        'two_factor_secret',
+        'two_factor_recovery_codes',
+        'two_factor_confirmed_at',
     ];
 
     /**
@@ -44,6 +47,8 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'two_factor_secret',
+        'two_factor_recovery_codes',
     ];
 
     /**
@@ -59,6 +64,9 @@ class User extends Authenticatable
             'is_active' => 'boolean',
             'active_role_id' => 'integer',
             'roles' => 'array',
+            'two_factor_confirmed_at' => 'datetime',
+            'two_factor_secret' => 'encrypted',
+            'two_factor_recovery_codes' => 'encrypted:array',
         ];
     }
 
@@ -127,6 +135,44 @@ class User extends Authenticatable
             'operator', 'operator_dapodik', 'ta_kesiswaan', 'ta_kepegawaian', 'ta_sarpras', 'ta_persuratan',
             'tu_piket', 'petugas_piket',
         ]);
+    }
+
+    /**
+     * Check if user has active and confirmed Two-Factor Authentication.
+     */
+    public function hasTwoFactorEnabled(): bool
+    {
+        return ! empty($this->two_factor_secret) && ! is_null($this->two_factor_confirmed_at);
+    }
+
+    /**
+     * Get decrypted recovery codes as an array.
+     *
+     * @return array<string>
+     */
+    public function getRecoveryCodes(): array
+    {
+        return is_array($this->two_factor_recovery_codes) ? $this->two_factor_recovery_codes : [];
+    }
+
+    /**
+     * Consume a recovery code if valid.
+     */
+    public function useRecoveryCode(string $code): bool
+    {
+        $code = strtolower(trim($code));
+        $codes = $this->getRecoveryCodes();
+
+        $index = array_search($code, $codes, true);
+        if ($index !== false) {
+            unset($codes[$index]);
+            $this->two_factor_recovery_codes = array_values($codes);
+            $this->save();
+
+            return true;
+        }
+
+        return false;
     }
 
     /**
