@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\RolePermissionMatrix;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -376,110 +377,7 @@ class User extends Authenticatable
      */
     public function canAccessInActiveRole(string $menuKey): bool
     {
-        $active = $this->active_role;
-
-        // Bimbingan Konseling (BK) tampil dan bisa digunakan di role Koordinator BK, Guru BK, Kepala Sekolah, Admin, dan Super Admin (Administrator)
-        if ($menuKey === 'bk') {
-            $allowedBkRoles = ['koordinator_bk', 'guru_bk', 'bk', 'kepala_sekolah', 'admin', 'super_admin'];
-            if ($active === 'all_roles') {
-                return $this->hasAnyRole($allowedBkRoles);
-            }
-
-            return in_array($active, $allowedBkRoles, true);
-        }
-
-        // Super Admin & Admin in all_roles mode always have access to all menus
-        if ($this->hasAnyRole(['super_admin', 'admin']) && ($active === 'all_roles' || in_array($active, ['super_admin', 'admin'], true))) {
-            return true;
-        }
-
-        // Aturan: Tenaga Pendidik (primary role guru) TIDAK BISA mengakses modul Adm Ketatausahaan
-        if ($this->role === 'guru' && str_starts_with($menuKey, 'tu')) {
-            return false;
-        }
-
-        // Sub-modul Tata Usaha (Kesiswaan, Kepegawaian, Persuratan, Sarpras, Keuangan) disesuaikan persis dengan role staf
-        if (str_starts_with($menuKey, 'tu_')) {
-            $sub = match ($menuKey) {
-                'tu_kesiswaan' => 'kesiswaan',
-                'tu_kepegawaian' => 'kepegawaian',
-                'tu_persuratan' => 'persuratan',
-                'tu_sarpras' => 'sarpras',
-                'tu_keuangan' => 'keuangan',
-                default => null,
-            };
-            if ($sub) {
-                return $this->canAccessTuSubmodule($sub);
-            }
-        }
-
-        // If in All Roles mode, check if ANY of user's roles grants access
-        if ($active === 'all_roles') {
-            if ($this->role === 'guru' && str_starts_with($menuKey, 'tu')) {
-                return false;
-            }
-
-            $allowedRolesForMenu = match ($menuKey) {
-                'master_data' => ['operator_dapodik', 'kepala_administrasi', 'kepala_sekolah', 'admin', 'super_admin'],
-                'kesiswaan' => ['wakasek_kesiswaan', 'kesiswaan', 'wali_kelas', 'pembina_ekstra', 'guru_piket', 'tu_piket', 'petugas_piket', 'koordinator_keagamaan', 'kepala_sekolah', 'ta_kesiswaan', 'guru', 'siswa', 'orang_tua'],
-                'attendance' => ['wakasek_kesiswaan', 'kesiswaan', 'wali_kelas', 'guru_piket', 'tu_piket', 'petugas_piket', 'ta_kesiswaan', 'kepala_sekolah', 'guru', 'staff', 'tu', 'siswa', 'orang_tua'],
-                'early_leave' => ['wakasek_kesiswaan', 'kesiswaan', 'wali_kelas', 'guru_piket', 'tu_piket', 'petugas_piket', 'ta_kesiswaan', 'kepala_sekolah', 'guru', 'siswa', 'orang_tua'],
-                'school_pass' => ['wakasek_kesiswaan', 'kesiswaan', 'wali_kelas', 'guru_piket', 'tu_piket', 'petugas_piket', 'ta_kesiswaan', 'kepala_sekolah', 'guru', 'siswa'],
-                'spmb' => ['wakasek_kesiswaan', 'kesiswaan', 'ta_kesiswaan', 'operator_dapodik', 'kepala_administrasi', 'kepala_sekolah'],
-                'extracurricular' => ['wakasek_kesiswaan', 'kesiswaan', 'pembina_ekstra', 'sekretaris_ekstra', 'kepala_sekolah', 'siswa'],
-                'discipline' => ['wakasek_kesiswaan', 'kesiswaan', 'wali_kelas', 'bk', 'koordinator_bk', 'guru_piket', 'tu_piket', 'petugas_piket', 'kepala_sekolah', 'guru', 'siswa', 'orang_tua'],
-                'tahfidz' => ['wakasek_kesiswaan', 'koordinator_keagamaan', 'wali_kelas', 'kepala_sekolah', 'guru', 'siswa', 'orang_tua'],
-                'habits' => ['wakasek_kesiswaan', 'koordinator_keagamaan', 'wali_kelas', 'kepala_sekolah', 'guru', 'siswa', 'orang_tua'],
-                'raport_digital' => ['wakasek_kesiswaan', 'wali_kelas', 'kepala_sekolah', 'siswa', 'orang_tua'],
-                'kiosk' => ['wakasek_kesiswaan', 'guru_piket', 'tu_piket', 'petugas_piket', 'kepala_administrasi', 'kepala_sekolah'],
-                'kurikulum' => ['wakasek_kurikulum', 'kurikulum', 'guru', 'wali_kelas', 'kepala_sekolah', 'siswa'],
-                'lms' => ['wakasek_kurikulum', 'kurikulum', 'guru', 'kepala_sekolah', 'siswa'],
-                'rapor_kurnas' => ['wakasek_kurikulum', 'kurikulum', 'wali_kelas', 'guru', 'kepala_sekolah', 'siswa', 'orang_tua', 'admin', 'super_admin'],
-                'bk' => ['koordinator_bk', 'guru_bk', 'bk', 'kepala_sekolah', 'admin', 'super_admin'],
-                'library' => ['kepala_perpustakaan', 'pengelola_perpustakaan', 'pustakawan', 'kepala_administrasi', 'staff', 'tu', 'guru', 'wali_kelas', 'kepala_sekolah', 'siswa'],
-                'tu' => ['kepala_administrasi', 'ta_kesiswaan', 'ta_kepegawaian', 'ta_persuratan', 'ta_sarpras', 'wakasek_sarpras', 'kepala_laboratorium', 'bendahara_bosp', 'bendahara_bopd', 'bendahara_gaji', 'bendahara', 'operator_dapodik', 'operator', 'tu_piket', 'staff', 'tu', 'kepala_sekolah'],
-                'tu_kesiswaan' => ['kepala_administrasi', 'ta_kesiswaan', 'operator_dapodik', 'kepala_sekolah'],
-                'tu_kepegawaian' => ['kepala_administrasi', 'ta_kepegawaian', 'operator_dapodik', 'kepala_sekolah'],
-                'tu_persuratan' => ['kepala_administrasi', 'ta_persuratan', 'tu_piket', 'kepala_sekolah'],
-                'tu_sarpras' => ['kepala_administrasi', 'ta_sarpras', 'wakasek_sarpras', 'kepala_laboratorium', 'kepala_sekolah'],
-                'tu_keuangan' => ['kepala_administrasi', 'bendahara_bosp', 'bendahara_bopd', 'bendahara_gaji', 'bendahara', 'kepala_sekolah'],
-                'school_bell' => ['admin', 'super_admin', 'kepala_sekolah', 'wakasek_kesiswaan', 'kesiswaan', 'wakasek_kurikulum', 'kurikulum', 'wakasek_humas', 'humas', 'wakasek_sarpras', 'sarpras', 'tu_piket', 'guru_piket', 'petugas_piket'],
-                'website_content' => ['admin', 'super_admin', 'kepala_sekolah', 'wakasek_kurikulum', 'kurikulum', 'wakasek_kesiswaan', 'kesiswaan', 'wakasek_humas', 'humas', 'wakasek_sarpras', 'sarpras', 'koordinator_bk', 'bk_koordinator', 'guru_bk', 'bk', 'kepala_perpustakaan', 'perpus_kepala', 'koordinator_keagamaan', 'keagamaan', 'guru', 'wali_kelas', 'pembina_ekstra', 'pembina_ekskul', 'tu', 'staff', 'tenaga_administrasi', 'kepala_administrasi', 'operator_dapodik', 'operator', 'tu_piket', 'guru_piket'],
-                default => ['admin', 'super_admin'],
-            };
-
-            return $this->hasAnyRole($allowedRolesForMenu);
-        }
-
-        // Active role specific matching
-        return match ($menuKey) {
-            'master_data' => in_array($active, ['operator_dapodik', 'kepala_administrasi', 'kepala_sekolah'], true),
-            'website_content' => $this->canManageWebsiteContent(),
-            'school_bell' => $this->canAccessSchoolBell(),
-            'kesiswaan' => in_array($active, ['wakasek_kesiswaan', 'kesiswaan', 'wali_kelas', 'pembina_ekstra', 'guru_piket', 'tu_piket', 'petugas_piket', 'koordinator_keagamaan', 'kepala_sekolah', 'ta_kesiswaan', 'guru', 'siswa', 'orang_tua'], true),
-            'attendance' => in_array($active, ['wakasek_kesiswaan', 'kesiswaan', 'wali_kelas', 'guru_piket', 'tu_piket', 'petugas_piket', 'ta_kesiswaan', 'kepala_sekolah', 'guru', 'staff', 'tu', 'siswa', 'orang_tua'], true),
-            'early_leave' => in_array($active, ['wakasek_kesiswaan', 'kesiswaan', 'wali_kelas', 'guru_piket', 'tu_piket', 'petugas_piket', 'ta_kesiswaan', 'kepala_sekolah', 'guru', 'siswa', 'orang_tua'], true),
-            'school_pass' => in_array($active, ['wakasek_kesiswaan', 'kesiswaan', 'wali_kelas', 'guru_piket', 'tu_piket', 'petugas_piket', 'ta_kesiswaan', 'kepala_sekolah', 'guru', 'siswa'], true),
-            'spmb' => in_array($active, ['wakasek_kesiswaan', 'kesiswaan', 'ta_kesiswaan', 'operator_dapodik', 'kepala_administrasi', 'kepala_sekolah'], true),
-            'extracurricular' => in_array($active, ['wakasek_kesiswaan', 'kesiswaan', 'pembina_ekstra', 'sekretaris_ekstra', 'kepala_sekolah', 'siswa'], true),
-            'discipline' => in_array($active, ['wakasek_kesiswaan', 'kesiswaan', 'wali_kelas', 'bk', 'koordinator_bk', 'guru_piket', 'tu_piket', 'petugas_piket', 'kepala_sekolah', 'guru', 'siswa', 'orang_tua'], true),
-            'tahfidz' => in_array($active, ['wakasek_kesiswaan', 'koordinator_keagamaan', 'wali_kelas', 'kepala_sekolah', 'guru', 'siswa', 'orang_tua'], true),
-            'habits' => in_array($active, ['wakasek_kesiswaan', 'koordinator_keagamaan', 'wali_kelas', 'kepala_sekolah', 'guru', 'siswa', 'orang_tua'], true),
-            'raport_digital' => in_array($active, ['wakasek_kesiswaan', 'wali_kelas', 'kepala_sekolah', 'siswa', 'orang_tua'], true),
-            'kiosk' => in_array($active, ['wakasek_kesiswaan', 'guru_piket', 'tu_piket', 'petugas_piket', 'kepala_administrasi', 'kepala_sekolah'], true),
-            'kurikulum' => in_array($active, ['wakasek_kurikulum', 'kurikulum', 'guru', 'wali_kelas', 'kepala_sekolah', 'siswa'], true),
-            'lms' => in_array($active, ['wakasek_kurikulum', 'kurikulum', 'guru', 'kepala_sekolah', 'siswa'], true),
-            'rapor_kurnas' => in_array($active, ['wakasek_kurikulum', 'kurikulum', 'wali_kelas', 'guru', 'kepala_sekolah', 'siswa', 'orang_tua'], true),
-            'bk' => in_array($active, ['koordinator_bk', 'guru_bk', 'bk', 'kepala_sekolah', 'admin', 'super_admin'], true),
-            'library' => in_array($active, ['kepala_perpustakaan', 'pengelola_perpustakaan', 'pustakawan', 'kepala_administrasi', 'staff', 'tu', 'guru', 'wali_kelas', 'kepala_sekolah', 'siswa'], true),
-            'tu' => $this->canAccessTuModule() && in_array($active, ['kepala_administrasi', 'ta_kesiswaan', 'ta_kepegawaian', 'ta_persuratan', 'ta_sarpras', 'wakasek_sarpras', 'kepala_laboratorium', 'bendahara_bosp', 'bendahara_bopd', 'bendahara_gaji', 'bendahara', 'operator_dapodik', 'operator', 'tu_piket', 'staff', 'tu', 'kepala_sekolah'], true),
-            'tu_kesiswaan' => $this->canAccessTuModule() && in_array($active, ['kepala_administrasi', 'ta_kesiswaan', 'operator_dapodik', 'kepala_sekolah'], true),
-            'tu_kepegawaian' => $this->canAccessTuModule() && in_array($active, ['kepala_administrasi', 'ta_kepegawaian', 'operator_dapodik', 'kepala_sekolah'], true),
-            'tu_persuratan' => $this->canAccessTuModule() && in_array($active, ['kepala_administrasi', 'ta_persuratan', 'tu_piket', 'kepala_sekolah'], true),
-            'tu_sarpras' => $this->canAccessTuModule() && in_array($active, ['kepala_administrasi', 'ta_sarpras', 'wakasek_sarpras', 'kepala_laboratorium', 'kepala_sekolah'], true),
-            'tu_keuangan' => $this->canAccessTuModule() && in_array($active, ['kepala_administrasi', 'bendahara_bosp', 'bendahara_bopd', 'bendahara_gaji', 'bendahara', 'kepala_sekolah'], true),
-            default => true,
-        };
+        return RolePermissionMatrix::canAccess($this, $menuKey, $this->active_role);
     }
 
     public function canManageTahfidz(): bool
@@ -609,16 +507,7 @@ class User extends Authenticatable
 
     public function canAccessTuModule(): bool
     {
-        if ($this->isAdmin() || $this->role === 'kepala_sekolah') {
-            return true;
-        }
-
-        // Aturan: Tenaga Pendidik (primary role guru) DILARANG mengakses Adm. Ketatausahaan
-        if ($this->role === 'guru') {
-            return false;
-        }
-
-        return in_array($this->role, ['staff', 'tu', 'tenaga_administrasi', 'kepala_administrasi'], true) || $this->isTu();
+        return RolePermissionMatrix::canAccess($this, 'tu', $this->active_role);
     }
 
     /**
@@ -626,49 +515,7 @@ class User extends Authenticatable
      */
     public function canAccessTuSubmodule(string $submodule): bool
     {
-        // 1. Super Admin, Admin, Kepala Sekolah, dan Kepala Administrasi (KTU) memiliki akses penuh ke seluruh sub-modul TU
-        if ($this->isAdmin() || $this->hasAnyRole(['super_admin', 'admin', 'kepala_sekolah', 'kepala_administrasi'])) {
-            return true;
-        }
-
-        // 2. Tenaga Pendidik murni dilarang mengakses modul TU
-        if ($this->role === 'guru' && ! $this->hasAnyRole(['staff', 'tu', 'kepala_administrasi', 'ta_kesiswaan', 'ta_kepegawaian', 'ta_persuratan', 'ta_sarpras', 'bendahara'])) {
-            return false;
-        }
-
-        $active = session('active_role') ?? $this->active_role;
-
-        // 3. Pemetaan role resmi untuk setiap sub-modul TU
-        $rolesMap = [
-            'kesiswaan' => ['ta_kesiswaan', 'kesiswaan', 'wakasek_kesiswaan', 'operator_dapodik', 'operator'],
-            'kepegawaian' => ['ta_kepegawaian', 'operator_dapodik', 'operator'],
-            'persuratan' => ['ta_persuratan', 'tu_piket'],
-            'sarpras' => ['ta_sarpras', 'wakasek_sarpras', 'kepala_laboratorium'],
-            'keuangan' => ['bendahara', 'bendahara_bosp', 'bendahara_bopd', 'bendahara_gaji'],
-        ];
-
-        $allowedForSub = $rolesMap[$submodule] ?? [];
-
-        // Jika dalam mode role aktif spesifik (bukan all_roles dan bukan role umum staff/tu):
-        if ($active !== 'all_roles' && ! in_array($active, ['staff', 'tu', 'tenaga_administrasi'], true)) {
-            return in_array($active, $allowedForSub, true);
-        }
-
-        // Jika dalam mode all_roles atau mode staff umum:
-        // Cek apakah user memiliki hak akses spesifik untuk sub-modul ini
-        if ($this->hasAnyRole($allowedForSub)) {
-            return true;
-        }
-
-        // Fallback untuk staf umum yang belum ditentukan sub-bagian spesifiknya:
-        $hasAnySpecificTuRole = $this->hasAnyRole([
-            'ta_kesiswaan', 'ta_kepegawaian', 'ta_persuratan', 'ta_sarpras', 'bendahara', 'bendahara_bosp', 'bendahara_bopd', 'bendahara_gaji',
-        ]);
-        if (! $hasAnySpecificTuRole && $this->hasAnyRole(['staff', 'tu', 'tenaga_administrasi'])) {
-            return true;
-        }
-
-        return false;
+        return RolePermissionMatrix::canAccessTuSubmodule($this, $submodule, $this->active_role);
     }
 
     public function isKurikulumAdmin(): bool
@@ -1157,50 +1004,7 @@ class User extends Authenticatable
 
     public function getRoleTitleFor(string $role): string
     {
-        $roleMap = [
-            'all_roles' => 'Semua Peran (Akses Lengkap)',
-            'super_admin' => 'Super Administrator',
-            'admin' => 'Administrator Sistem',
-            'kepala_sekolah' => 'Kepala Sekolah',
-            'wakasek_kurikulum' => 'Wakasek Bid. Kurikulum',
-            'wakasek_kesiswaan' => 'Wakasek Bid. Kesiswaan',
-            'wakasek_humas' => 'Wakasek Bid. Humas',
-            'wakasek_sarpras' => 'Wakasek Bid. Sarpras',
-            'kepala_laboratorium' => 'Kepala Laboratorium',
-            'kepala_perpustakaan' => 'Kepala Perpustakaan',
-            'koordinator_bk' => 'Koordinator BP/BK',
-            'bk_koordinator' => 'Koordinator BP/BK',
-            'koordinator_keagamaan' => 'Koordinator Keagamaan',
-            'wali_kelas' => 'Wali Kelas',
-            'bk' => 'Guru BK',
-            'guru_bk' => 'Guru BK',
-            'guru_piket' => 'Petugas Piket (Guru)',
-            'tu_piket' => 'Petugas Piket (TU)',
-            'petugas_piket' => 'Petugas Piket',
-            'pengelola_perpustakaan' => 'Pengelola Perpustakaan',
-            'pustakawan' => 'Pengelola Perpustakaan',
-            'pembina_ekstra' => 'Pembina Ekstrakurikuler',
-            'guru' => 'Tenaga Pendidik (Guru Mapel)',
-            'kepala_administrasi' => 'Kepala Urusan Tata Usaha',
-            'bendahara_bosp' => 'Bendahara BOSP',
-            'bendahara_bopd' => 'Bendahara BOPD',
-            'bendahara_gaji' => 'Bendahara Gaji',
-            'bendahara' => 'Bendahara Sekolah',
-            'operator_dapodik' => 'Operator Dapodik',
-            'operator' => 'Operator Dapodik / Sekolah',
-            'ta_kesiswaan' => 'Adm. Urusan Kesiswaan',
-            'ta_kepegawaian' => 'Adm. Urusan Kepegawaian',
-            'ta_sarpras' => 'Adm. Urusan Sarpras',
-            'ta_persuratan' => 'Adm. Urusan Persuratan',
-            'staff' => 'Tenaga Kependidikan (Staf TU)',
-            'tu' => 'Staff Tata Usaha',
-            'siswa' => 'Siswa',
-            'orang_tua' => 'Orang Tua / Wali Siswa',
-            'sekretaris_kelas' => 'Sekretaris Kelas',
-            'sekretaris_ekstra' => 'Sekretaris Ekstrakurikuler',
-        ];
-
-        return $roleMap[$role] ?? ucwords(str_replace('_', ' ', $role));
+        return RolePermissionMatrix::getRoleTitle($role, $this);
     }
 
     public function getRoleDisplayName(): string
