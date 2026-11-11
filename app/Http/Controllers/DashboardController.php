@@ -13,6 +13,7 @@ use App\Models\AttendanceSelfie;
 use App\Models\AttendanceSession;
 use App\Models\AuditLog;
 use App\Models\BkCounselingSession;
+use App\Models\ClassLearningAgenda;
 use App\Models\CourseClass;
 use App\Models\EarlyLeaveRequest;
 use App\Models\Extracurricular;
@@ -30,9 +31,11 @@ use App\Models\LmsMaterial;
 use App\Models\LmsQuiz;
 use App\Models\Notification;
 use App\Models\ParentGuardian;
+use App\Models\PicketSchedule;
 use App\Models\QuranTahfidzRecord;
 use App\Models\SchoolClass;
 use App\Models\SchoolExitPermit;
+use App\Models\SchoolHoliday;
 use App\Models\Student;
 use App\Models\StudentAiRaport;
 use App\Models\Teacher;
@@ -113,7 +116,7 @@ class DashboardController extends Controller
                 return $this->counselorDashboard();
             }
             if ($activeRole === 'pembina_ekstra') {
-                return redirect()->route('extracurricular.index');
+                return $this->teacherDashboard();
             }
             if ($activeRole === 'koordinator_keagamaan') {
                 return redirect()->route('tahfidz.index');
@@ -183,7 +186,7 @@ class DashboardController extends Controller
             return redirect()->route('attendance.index');
         }
         if ($primary === 'pembina_ekstra') {
-            return redirect()->route('extracurricular.index');
+            return $this->teacherDashboard();
         }
         if ($primary === 'koordinator_keagamaan') {
             return redirect()->route('tahfidz.index');
@@ -507,6 +510,7 @@ class DashboardController extends Controller
 
         $worshipTahfidzSummary = $this->getWorshipTahfidzDashboardData($class?->id ?? null, null);
         $lmsLibraryData = $this->getLmsLibraryDashboardData($user);
+        $schoolAgendasData = $this->getTodayAgendasAndActivitiesData();
 
         return view('dashboards.combined_multi_role', array_merge(compact(
             'user',
@@ -532,7 +536,8 @@ class DashboardController extends Controller
             'totalEarlyLeavesToday',
             'totalSchoolPassesToday',
             'worshipTahfidzSummary',
-            'lmsLibraryData'
+            'lmsLibraryData',
+            'schoolAgendasData'
         ), $analytics));
     }
 
@@ -543,7 +548,7 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
         $teacher = $user->teacher;
-        $today = Carbon::today()->toDateString();
+        $today = Carbon::today('Asia/Jakarta')->toDateString();
 
         // Sesi presensi aktif hari ini oleh guru ini
         $activeSessions = AttendanceSession::with('schoolClass')
@@ -562,6 +567,7 @@ class DashboardController extends Controller
 
         $worshipTahfidzSummary = $this->getWorshipTahfidzDashboardData(null, null);
         $lmsLibraryData = $this->getLmsLibraryDashboardData(Auth::user());
+        $schoolAgendasData = $this->getTodayAgendasAndActivitiesData();
 
         return view('dashboards.teacher', compact(
             'teacher',
@@ -570,7 +576,8 @@ class DashboardController extends Controller
             'pendingViolations',
             'todayPresentCount',
             'worshipTahfidzSummary',
-            'lmsLibraryData'
+            'lmsLibraryData',
+            'schoolAgendasData'
         ));
     }
 
@@ -585,7 +592,7 @@ class DashboardController extends Controller
         $user = Auth::user();
         $teacher = $user->teacher;
         $class = $teacher?->homeroomClass;
-        $today = Carbon::today()->toDateString();
+        $today = Carbon::today('Asia/Jakarta')->toDateString();
         $classId = $class?->id ?? -1;
 
         $students = $class ? $class->students()->with([
@@ -632,6 +639,7 @@ class DashboardController extends Controller
         $analytics = $this->getDashboardAnalytics($class ? $class->id : -1);
         $worshipTahfidzSummary = $this->getWorshipTahfidzDashboardData($class?->id, null);
         $lmsLibraryData = $this->getLmsLibraryDashboardData(Auth::user());
+        $schoolAgendasData = $this->getTodayAgendasAndActivitiesData();
 
         return view('dashboards.homeroom', array_merge(compact(
             'today',
@@ -647,7 +655,8 @@ class DashboardController extends Controller
             'absentToday',
             'needGuidanceStudents',
             'worshipTahfidzSummary',
-            'lmsLibraryData'
+            'lmsLibraryData',
+            'schoolAgendasData'
         ), $analytics));
     }
 
@@ -739,6 +748,7 @@ class DashboardController extends Controller
         $worshipTahfidzSummary = $this->getWorshipTahfidzDashboardData(null, null);
 
         $analytics = $this->getDashboardAnalytics(null);
+        $schoolAgendasData = $this->getTodayAgendasAndActivitiesData();
 
         return view('dashboards.counselor', array_merge(compact(
             'totalStudents',
@@ -755,7 +765,8 @@ class DashboardController extends Controller
             'habits',
             'completedHabitsCount',
             'habitCompletionRate',
-            'worshipTahfidzSummary'
+            'worshipTahfidzSummary',
+            'schoolAgendasData'
         ), $analytics));
     }
 
@@ -764,7 +775,7 @@ class DashboardController extends Controller
      */
     public function principalDashboard(): View
     {
-        $today = Carbon::today()->toDateString();
+        $today = Carbon::today('Asia/Jakarta')->toDateString();
         $totalStudents = Student::where('is_active', true)->count();
         $todayAttendances = Attendance::whereDate('date', $today)->get();
 
@@ -883,6 +894,7 @@ class DashboardController extends Controller
         $analytics = $this->getDashboardAnalytics(null);
         $worshipTahfidzSummary = $this->getWorshipTahfidzDashboardData(null, null);
         $lmsLibraryData = $this->getLmsLibraryDashboardData(Auth::user());
+        $schoolAgendasData = $this->getTodayAgendasAndActivitiesData();
 
         return view('dashboards.principal', array_merge(compact(
             'totalStudents',
@@ -903,7 +915,8 @@ class DashboardController extends Controller
             'worshipTahfidzSummary',
             'chronicAlpaStudents',
             'criticalGuidanceStudents',
-            'lmsLibraryData'
+            'lmsLibraryData',
+            'schoolAgendasData'
         ), $analytics));
     }
 
@@ -912,7 +925,7 @@ class DashboardController extends Controller
      */
     public function studentAffairsDashboard(): View
     {
-        $today = Carbon::today()->toDateString();
+        $today = Carbon::today('Asia/Jakarta')->toDateString();
         $totalStudents = Student::count();
 
         $todayAttendances = Attendance::where('date', $today)->get();
@@ -933,6 +946,7 @@ class DashboardController extends Controller
 
         $analytics = $this->getDashboardAnalytics(null);
         $lmsLibraryData = $this->getLmsLibraryDashboardData(Auth::user());
+        $schoolAgendasData = $this->getTodayAgendasAndActivitiesData();
 
         return view('dashboards.kesiswaan', array_merge(compact(
             'totalStudents',
@@ -944,7 +958,8 @@ class DashboardController extends Controller
             'totalVerifiedViolations',
             'totalViolationPoints',
             'highRiskStudents',
-            'lmsLibraryData'
+            'lmsLibraryData',
+            'schoolAgendasData'
         ), $analytics));
     }
 
@@ -953,7 +968,7 @@ class DashboardController extends Controller
      */
     public function curriculumDashboard(): View
     {
-        $today = Carbon::today()->toDateString();
+        $today = Carbon::today('Asia/Jakarta')->toDateString();
         $totalStudents = Student::where('is_active', true)->count();
         $totalClasses = SchoolClass::count();
         $activeYear = AcademicYear::where('is_active', true)->first();
@@ -998,6 +1013,7 @@ class DashboardController extends Controller
         // Top Capaian Siswa & Analytics
         $analytics = $this->getDashboardAnalytics(null);
         $lmsLibraryData = $this->getLmsLibraryDashboardData(Auth::user());
+        $schoolAgendasData = $this->getTodayAgendasAndActivitiesData();
 
         return view('dashboards.wakasek_kurikulum', array_merge(compact(
             'totalStudents',
@@ -1012,7 +1028,8 @@ class DashboardController extends Controller
             'totalTahfidzRecords',
             'recentTahfidz',
             'classes',
-            'lmsLibraryData'
+            'lmsLibraryData',
+            'schoolAgendasData'
         ), $analytics));
     }
 
@@ -1021,7 +1038,7 @@ class DashboardController extends Controller
      */
     public function publicRelationsDashboard(): View
     {
-        $today = Carbon::today()->toDateString();
+        $today = Carbon::today('Asia/Jakarta')->toDateString();
         $totalStudents = Student::where('is_active', true)->count();
         $totalParents = ParentGuardian::count();
 
@@ -1079,7 +1096,7 @@ class DashboardController extends Controller
      */
     public function facilitiesDashboard(): View
     {
-        $today = Carbon::today()->toDateString();
+        $today = Carbon::today('Asia/Jakarta')->toDateString();
         $totalStudents = Student::where('is_active', true)->count();
 
         // IoT Devices (10 Mesin RFID & 10 Mesin QR Code)
@@ -1394,7 +1411,7 @@ class DashboardController extends Controller
      */
     public function adminDashboard(): View
     {
-        $today = Carbon::today()->toDateString();
+        $today = Carbon::today('Asia/Jakarta')->toDateString();
         $totalStudents = Student::where('is_active', true)->count();
         $todayAttendances = Attendance::whereDate('date', $today)->get();
 
@@ -1459,6 +1476,7 @@ class DashboardController extends Controller
         $analytics = $this->getDashboardAnalytics(null);
         $worshipTahfidzSummary = $this->getWorshipTahfidzDashboardData(null, null);
         $lmsLibraryData = $this->getLmsLibraryDashboardData(Auth::user());
+        $schoolAgendasData = $this->getTodayAgendasAndActivitiesData();
 
         return view('dashboards.admin', array_merge(compact(
             'stats',
@@ -1469,7 +1487,8 @@ class DashboardController extends Controller
             'devices',
             'recentAudits',
             'worshipTahfidzSummary',
-            'lmsLibraryData'
+            'lmsLibraryData',
+            'schoolAgendasData'
         ), $analytics));
     }
 
@@ -1478,7 +1497,7 @@ class DashboardController extends Controller
      */
     protected function getDashboardAnalytics(?int $classId = null): array
     {
-        $today = Carbon::today()->toDateString();
+        $today = Carbon::today('Asia/Jakarta')->toDateString();
 
         // 1. Presensi Rankings: Alpa, Izin, Sakit
         $topAlpaStudents = Student::with('schoolClass')
@@ -1621,11 +1640,92 @@ class DashboardController extends Controller
     }
 
     /**
+     * Data Agenda, Kalender Akademik, & Kegiatan Sekolah Terupdate Hari Ini
+     */
+    public function getTodayAgendasAndActivitiesData(): array
+    {
+        $today = Carbon::today('Asia/Jakarta')->toDateString();
+        $todayCarbon = Carbon::today('Asia/Jakarta');
+        $todayDayOfWeek = $todayCarbon->dayOfWeek;
+        $dayNameMap = [
+            Carbon::SUNDAY => 'Minggu',
+            Carbon::MONDAY => 'Senin',
+            Carbon::TUESDAY => 'Selasa',
+            Carbon::WEDNESDAY => 'Rabu',
+            Carbon::THURSDAY => 'Kamis',
+            Carbon::FRIDAY => 'Jumat',
+            Carbon::SATURDAY => 'Sabtu',
+        ];
+        $todayDayName = $dayNameMap[$todayDayOfWeek] ?? 'Senin';
+
+        // 1. Agenda Pembelajaran Kelas Hari Ini (ClassLearningAgenda)
+        $todayLearningAgendas = class_exists(ClassLearningAgenda::class) && Schema::hasTable('class_learning_agendas')
+            ? ClassLearningAgenda::with(['teacher'])->whereDate('date', $today)->orderBy('time_slot')->take(10)->get()
+            : collect();
+
+        // 2. Kalender & Agenda Resmi Sekolah Hari Ini (SchoolHoliday active)
+        $activeHolidaysToday = class_exists(SchoolHoliday::class) && Schema::hasTable('school_holidays')
+            ? SchoolHoliday::active()
+                ->whereDate('start_date', '<=', $today)
+                ->whereDate('end_date', '>=', $today)
+                ->get()
+            : collect();
+
+        // 3. Agenda Mendatang (Upcoming 14 Hari)
+        $upcomingEvents = class_exists(SchoolHoliday::class) && Schema::hasTable('school_holidays')
+            ? SchoolHoliday::active()
+                ->whereDate('start_date', '>', $today)
+                ->whereDate('start_date', '<=', $todayCarbon->copy()->addDays(14)->toDateString())
+                ->orderBy('start_date')
+                ->take(5)
+                ->get()
+            : collect();
+
+        // 4. Petugas Piket Hari Ini
+        $todayPicketOfficers = class_exists(PicketSchedule::class) && Schema::hasTable('picket_schedules')
+            ? PicketSchedule::active()->forDay($todayDayName)->with(['teacher', 'user'])->get()
+            : collect();
+
+        // 5. Konseling BK Terjadwal Hari Ini
+        $todayCounselingSessions = class_exists(BkCounselingSession::class) && Schema::hasTable('bk_counseling_sessions')
+            ? BkCounselingSession::with(['student.schoolClass', 'counselor'])
+                ->whereDate('date', $today)
+                ->take(5)
+                ->get()
+            : collect();
+
+        return [
+            'today_date' => $today,
+            'today_formatted' => $todayCarbon->locale('id')->translatedFormat('l, d F Y'),
+            'today_day_name' => $todayDayName,
+            'learning_agendas' => $todayLearningAgendas,
+            'active_holidays' => $activeHolidaysToday,
+            'upcoming_events' => $upcomingEvents,
+            'picket_officers' => $todayPicketOfficers,
+            'counseling_sessions' => $todayCounselingSessions,
+            'is_holiday_today' => $activeHolidaysToday->isNotEmpty(),
+            'total_learning_agendas' => $todayLearningAgendas->count(),
+            'total_counseling' => $todayCounselingSessions->count(),
+        ];
+    }
+
+    /**
      * Ringkasan & Progres Ibadah Bersama (Dhuha, Dzuhur/Jum'at, Keputrian) & Tahfidz Al-Qur'an Juz 30
+     * Barometer berfokus pada jumlah siswa (Hadir, Sakit, Izin, Alpa, Udzur)
      */
     public function getWorshipTahfidzDashboardData(?int $classId = null, ?int $studentId = null): array
     {
         $today = Carbon::today('Asia/Jakarta')->toDateString();
+
+        // Target Populasi Siswa
+        $baseStudentQuery = Student::where('is_active', true);
+        if ($studentId) {
+            $baseStudentQuery->where('id', $studentId);
+        } elseif ($classId) {
+            $baseStudentQuery->where('class_id', $classId);
+        }
+        $targetTotalStudents = (clone $baseStudentQuery)->count();
+        $targetFemaleStudents = (clone $baseStudentQuery)->where('gender', 'P')->count();
 
         // 1. Shalat Dhuha Bersama
         $dhuhaQuery = WorshipAttendance::where('activity_type', WorshipAttendance::ACTIVITY_DHUHA);
@@ -1637,9 +1737,18 @@ class DashboardController extends Controller
 
         $dhuhaToday = (clone $dhuhaQuery)->whereDate('date', $today)->get();
         $dhuhaTodayHadir = $dhuhaToday->whereIn('status', ['HADIR', 'TERLAMBAT'])->count();
+        $dhuhaTodaySakit = $dhuhaToday->where('status', 'SAKIT')->count();
+        $dhuhaTodayIzin = $dhuhaToday->where('status', 'IZIN')->count();
+        $dhuhaTodayAlpa = $dhuhaToday->where('status', 'ALPA')->count();
+        $dhuhaTodayUdzur = $dhuhaToday->whereIn('status', ['UDZUR', 'HALANGAN'])->count();
+        $dhuhaRecordedToday = $dhuhaToday->pluck('student_id')->unique()->count();
+        $dhuhaBelumAbsenToday = max(0, $targetTotalStudents - $dhuhaRecordedToday);
+
         $dhuhaTotalAll = (clone $dhuhaQuery)->count();
         $dhuhaHadirAll = (clone $dhuhaQuery)->whereIn('status', ['HADIR', 'TERLAMBAT'])->count();
-        $dhuhaRate = $dhuhaTotalAll > 0 ? round(($dhuhaHadirAll / $dhuhaTotalAll) * 100, 1) : 0.0;
+        $dhuhaRate = $targetTotalStudents > 0
+            ? round(($dhuhaTodayHadir / $targetTotalStudents) * 100, 1)
+            : ($dhuhaTotalAll > 0 ? round(($dhuhaHadirAll / $dhuhaTotalAll) * 100, 1) : 0.0);
 
         // 2. Shalat Dzuhur / Jum'at Berjamaah
         $dzuhurQuery = WorshipAttendance::where('activity_type', WorshipAttendance::ACTIVITY_DZUHUR_JUMAT);
@@ -1651,9 +1760,18 @@ class DashboardController extends Controller
 
         $dzuhurToday = (clone $dzuhurQuery)->whereDate('date', $today)->get();
         $dzuhurTodayHadir = $dzuhurToday->whereIn('status', ['HADIR', 'TERLAMBAT'])->count();
+        $dzuhurTodaySakit = $dzuhurToday->where('status', 'SAKIT')->count();
+        $dzuhurTodayIzin = $dzuhurToday->where('status', 'IZIN')->count();
+        $dzuhurTodayAlpa = $dzuhurToday->where('status', 'ALPA')->count();
+        $dzuhurTodayUdzur = $dzuhurToday->whereIn('status', ['UDZUR', 'HALANGAN'])->count();
+        $dzuhurRecordedToday = $dzuhurToday->pluck('student_id')->unique()->count();
+        $dzuhurBelumAbsenToday = max(0, $targetTotalStudents - $dzuhurRecordedToday);
+
         $dzuhurTotalAll = (clone $dzuhurQuery)->count();
         $dzuhurHadirAll = (clone $dzuhurQuery)->whereIn('status', ['HADIR', 'TERLAMBAT'])->count();
-        $dzuhurRate = $dzuhurTotalAll > 0 ? round(($dzuhurHadirAll / $dzuhurTotalAll) * 100, 1) : 0.0;
+        $dzuhurRate = $targetTotalStudents > 0
+            ? round(($dzuhurTodayHadir / $targetTotalStudents) * 100, 1)
+            : ($dzuhurTotalAll > 0 ? round(($dzuhurHadirAll / $dzuhurTotalAll) * 100, 1) : 0.0);
 
         // 3. Kegiatan Keputrian (Hari Jum'at)
         $keputrianQuery = WorshipAttendance::where('activity_type', WorshipAttendance::ACTIVITY_KEPUTRIAN);
@@ -1665,9 +1783,18 @@ class DashboardController extends Controller
 
         $keputrianToday = (clone $keputrianQuery)->whereDate('date', $today)->get();
         $keputrianTodayHadir = $keputrianToday->whereIn('status', ['HADIR', 'TERLAMBAT'])->count();
+        $keputrianTodaySakit = $keputrianToday->where('status', 'SAKIT')->count();
+        $keputrianTodayIzin = $keputrianToday->where('status', 'IZIN')->count();
+        $keputrianTodayAlpa = $keputrianToday->where('status', 'ALPA')->count();
+        $keputrianTodayUdzur = $keputrianToday->whereIn('status', ['UDZUR', 'HALANGAN'])->count();
+        $keputrianRecordedToday = $keputrianToday->pluck('student_id')->unique()->count();
+        $keputrianBelumAbsenToday = max(0, $targetFemaleStudents - $keputrianRecordedToday);
+
         $keputrianTotalAll = (clone $keputrianQuery)->count();
         $keputrianHadirAll = (clone $keputrianQuery)->whereIn('status', ['HADIR', 'TERLAMBAT'])->count();
-        $keputrianRate = $keputrianTotalAll > 0 ? round(($keputrianHadirAll / $keputrianTotalAll) * 100, 1) : 0.0;
+        $keputrianRate = $targetFemaleStudents > 0
+            ? round(($keputrianTodayHadir / $targetFemaleStudents) * 100, 1)
+            : ($keputrianTotalAll > 0 ? round(($keputrianHadirAll / $keputrianTotalAll) * 100, 1) : 0.0);
 
         // 4. Presensi Ekstrakurikuler
         $extraQuery = ExtracurricularAttendance::query();
@@ -1679,9 +1806,14 @@ class DashboardController extends Controller
 
         $extraToday = (clone $extraQuery)->whereDate('date', $today)->get();
         $extraTodayHadir = $extraToday->whereIn('status', ['HADIR', 'TERLAMBAT'])->count();
+        $extraTodaySakit = $extraToday->where('status', 'SAKIT')->count();
+        $extraTodayIzin = $extraToday->where('status', 'IZIN')->count();
+        $extraTodayAlpa = $extraToday->where('status', 'ALPA')->count();
         $extraTotalAll = (clone $extraQuery)->count();
         $extraHadirAll = (clone $extraQuery)->whereIn('status', ['HADIR', 'TERLAMBAT'])->count();
-        $extraRate = $extraTotalAll > 0 ? round(($extraHadirAll / $extraTotalAll) * 100, 1) : 0.0;
+        $extraRate = $targetTotalStudents > 0
+            ? round(($extraTodayHadir / $targetTotalStudents) * 100, 1)
+            : ($extraTotalAll > 0 ? round(($extraHadirAll / $extraTotalAll) * 100, 1) : 0.0);
 
         // 5. Tahfidz Al-Qur'an Juz 30
         $tahfidzQuery = QuranTahfidzRecord::query();
@@ -1717,34 +1849,58 @@ class DashboardController extends Controller
         return [
             'dzuhur' => [
                 'today_hadir' => $dzuhurTodayHadir,
-                'today_total' => $dzuhurToday->count(),
+                'today_sakit' => $dzuhurTodaySakit,
+                'today_izin' => $dzuhurTodayIzin,
+                'today_alpa' => $dzuhurTodayAlpa,
+                'today_udzur' => $dzuhurTodayUdzur,
+                'today_total_target' => $targetTotalStudents,
+                'today_recorded' => $dzuhurRecordedToday,
+                'today_belum_absen' => $dzuhurBelumAbsenToday,
+                'today_total' => $dzuhurRecordedToday,
                 'today_record' => $studentId ? $dzuhurToday->first() : null,
-                'total_records' => $dzuhurTotalAll,
-                'hadir_records' => $dzuhurHadirAll,
+                'total_records' => $targetTotalStudents,
+                'hadir_records' => $dzuhurTodayHadir,
                 'rate' => $dzuhurRate,
             ],
             'dhuha' => [
                 'today_hadir' => $dhuhaTodayHadir,
-                'today_total' => $dhuhaToday->count(),
+                'today_sakit' => $dhuhaTodaySakit,
+                'today_izin' => $dhuhaTodayIzin,
+                'today_alpa' => $dhuhaTodayAlpa,
+                'today_udzur' => $dhuhaTodayUdzur,
+                'today_total_target' => $targetTotalStudents,
+                'today_recorded' => $dhuhaRecordedToday,
+                'today_belum_absen' => $dhuhaBelumAbsenToday,
+                'today_total' => $dhuhaRecordedToday,
                 'today_record' => $studentId ? $dhuhaToday->first() : null,
-                'total_records' => $dhuhaTotalAll,
-                'hadir_records' => $dhuhaHadirAll,
+                'total_records' => $targetTotalStudents,
+                'hadir_records' => $dhuhaTodayHadir,
                 'rate' => $dhuhaRate,
             ],
             'keputrian' => [
                 'today_hadir' => $keputrianTodayHadir,
-                'today_total' => $keputrianToday->count(),
+                'today_sakit' => $keputrianTodaySakit,
+                'today_izin' => $keputrianTodayIzin,
+                'today_alpa' => $keputrianTodayAlpa,
+                'today_udzur' => $keputrianTodayUdzur,
+                'today_total_target' => $targetFemaleStudents,
+                'today_recorded' => $keputrianRecordedToday,
+                'today_belum_absen' => $keputrianBelumAbsenToday,
+                'today_total' => $keputrianRecordedToday,
                 'today_record' => $studentId ? $keputrianToday->first() : null,
-                'total_records' => $keputrianTotalAll,
-                'hadir_records' => $keputrianHadirAll,
+                'total_records' => $targetFemaleStudents,
+                'hadir_records' => $keputrianTodayHadir,
                 'rate' => $keputrianRate,
             ],
             'extracurricular' => [
                 'today_hadir' => $extraTodayHadir,
+                'today_sakit' => $extraTodaySakit,
+                'today_izin' => $extraTodayIzin,
+                'today_alpa' => $extraTodayAlpa,
                 'today_total' => $extraToday->count(),
                 'today_record' => $studentId ? $extraToday->first() : null,
-                'total_records' => $extraTotalAll,
-                'hadir_records' => $extraHadirAll,
+                'total_records' => $targetTotalStudents,
+                'hadir_records' => $extraTodayHadir,
                 'rate' => $extraRate,
             ],
             'tahfidz' => [

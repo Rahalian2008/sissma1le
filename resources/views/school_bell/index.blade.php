@@ -254,9 +254,50 @@
                                 </td>
                                 <td class="py-3 px-4">
                                     @if($bell->sound_type === 'murottal')
-                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold border border-emerald-500/20 text-[11px]">
-                                            <span>📖</span>
-                                            <span>Murottal: {{ $bell->surah_name ?: ('Surah Ke-' . $bell->surah_number) }}</span>
+                                        @php
+                                            $sCount = is_array($bell->surah_numbers) ? count($bell->surah_numbers) : ($bell->surah_number ? 1 : 0);
+                                        @endphp
+                                        <div class="space-y-1">
+                                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold border border-emerald-500/20 text-[11px]">
+                                                <span>📖</span>
+                                                @if($sCount > 1)
+                                                    <span>Murottal {{ $sCount }} Surat (Playlist)</span>
+                                                @else
+                                                    <span>Murottal: {{ $bell->surah_name ?: ('Surah Ke-' . $bell->surah_number) }}</span>
+                                                @endif
+                                            </span>
+                                            @if($sCount > 1 && $bell->surah_name)
+                                                <div class="text-[10px] text-slate-500 truncate max-w-xs" title="{{ $bell->surah_name }}">{{ $bell->surah_name }}</div>
+                                            @endif
+                                        </div>
+                                    @elseif($bell->sound_type === 'song')
+                                        @php
+                                            $aCount = is_array($bell->anthem_ids) ? count($bell->anthem_ids) : ($bell->anthem_id ? 1 : 0);
+                                        @endphp
+                                        <div class="space-y-1">
+                                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-red-500/10 text-red-600 dark:text-red-400 font-bold border border-red-500/20 text-[11px]">
+                                                <span>🇮🇩</span>
+                                                @if($aCount > 1)
+                                                    <span>Playlist {{ $aCount }} Lagu Nasional</span>
+                                                @else
+                                                    <span>Lagu Nasional</span>
+                                                @endif
+                                            </span>
+                                            @if($bell->playlist_items && count($bell->playlist_items) > 1)
+                                                <div class="text-[10px] text-slate-500 truncate max-w-xs" title="{{ collect($bell->playlist_items)->pluck('title')->join(', ') }}">
+                                                    {{ collect($bell->playlist_items)->pluck('title')->join(', ') }}
+                                                </div>
+                                            @endif
+                                        </div>
+                                    @elseif($bell->sound_type === 'custom')
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 font-bold border border-indigo-500/20 text-[11px]">
+                                            <span>🎵</span>
+                                            <span>Audio Kustom</span>
+                                        </span>
+                                    @elseif($bell->sound_type === 'voice')
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 font-bold border border-cyan-500/20 text-[11px]">
+                                            <span>🗣️</span>
+                                            <span>Pengumuman Suara</span>
                                         </span>
                                     @elseif($bell->sound_type === 'siren')
                                         <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-rose-500/10 text-rose-600 dark:text-rose-400 font-bold border border-rose-500/20 text-[11px]">
@@ -669,30 +710,135 @@
                     <p class="text-[10px] text-slate-400 mt-1">Sistem akan membacakan teks ini dalam Bahasa Indonesia yang jernih saat bel berbunyi.</p>
                 </div>
 
-                <!-- Pilihan Surah Murottal jika tipe sound_type = murottal -->
-                <div x-show="formData.sound_type === 'murottal'" class="p-3.5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 space-y-3">
-                    <label class="block text-xs font-bold text-emerald-800 dark:text-emerald-300">Pilih Surat Al-Qur'an (1 - 114)</label>
-                    <select name="surah_number" x-model="formData.surah_number" class="w-full px-3 py-2 text-xs bg-white dark:bg-slate-800 border border-emerald-300 dark:border-emerald-700 rounded-xl outline-none text-slate-900 dark:text-white">
-                        <option value="">-- Pilih Surah --</option>
+                <!-- Pilihan Surah Murottal jika tipe sound_type = murottal (Multi-Select Didukung) -->
+                <div x-show="formData.sound_type === 'murottal'" class="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 space-y-3">
+                    <div class="flex items-center justify-between gap-2">
+                        <div>
+                            <label class="block text-xs font-bold text-emerald-800 dark:text-emerald-300">Pilih Surat Al-Qur'an (Bisa Pilih Lebih Dari 1 Surat)</label>
+                            <p class="text-[11px] text-emerald-700/80 dark:text-emerald-400/80">Jika memilih lebih dari 1 surat, sistem akan memutar surat-surat tersebut secara berurutan (playlist otomatis).</p>
+                        </div>
+                        <span class="px-2.5 py-1 rounded-full text-xs font-black bg-emerald-600 text-white shadow-xs shrink-0" x-text="formData.surah_numbers.length + ' Surat Dipilih'"></span>
+                    </div>
+
+                    <!-- Shortcut Pilihan Cepat -->
+                    <div class="flex flex-wrap items-center gap-1.5 pt-1">
+                        <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mr-1">Pilih Cepat:</span>
+                        <button type="button" @click="selectJuz30Surahs()" class="px-2 py-1 rounded-lg bg-emerald-600/15 hover:bg-emerald-600 text-emerald-800 hover:text-white dark:text-emerald-300 text-[10px] font-bold border border-emerald-500/30 transition cursor-pointer">
+                            + Juz 30 (37 Surat)
+                        </button>
+                        <button type="button" @click="select3QulSurahs()" class="px-2 py-1 rounded-lg bg-emerald-600/15 hover:bg-emerald-600 text-emerald-800 hover:text-white dark:text-emerald-300 text-[10px] font-bold border border-emerald-500/30 transition cursor-pointer">
+                            + 3 Qul (Ikhlas, Falaq, Nas)
+                        </button>
+                        <button type="button" @click="selectFeaturedSurahs()" class="px-2 py-1 rounded-lg bg-emerald-600/15 hover:bg-emerald-600 text-emerald-800 hover:text-white dark:text-emerald-300 text-[10px] font-bold border border-emerald-500/30 transition cursor-pointer">
+                            + Surat Utama (Fatihah, Yasin, Rahman, Mulk, dll)
+                        </button>
+                        <button type="button" @click="clearSurahSelection()" class="px-2 py-1 rounded-lg bg-rose-500/10 hover:bg-rose-500 text-rose-600 hover:text-white text-[10px] font-bold border border-rose-500/30 transition cursor-pointer" x-show="formData.surah_numbers.length > 0">
+                            ✕ Hapus Pilihan
+                        </button>
+                    </div>
+
+                    <!-- Filter Pencarian di dalam Modal -->
+                    <div class="relative">
+                        <input type="text" x-model="surahModalSearch" placeholder="Cari nama atau nomor surat..." class="w-full px-3 py-1.5 pl-8 text-xs bg-white dark:bg-slate-800 border border-emerald-300 dark:border-emerald-700 rounded-xl outline-none text-slate-900 dark:text-white">
+                        <span class="absolute left-2.5 top-2 text-slate-400 text-xs">🔍</span>
+                    </div>
+
+                    <!-- Daftar 114 Surat dengan Checkbox Multi-Pilihan -->
+                    <div class="max-h-48 overflow-y-auto p-2 rounded-xl bg-white dark:bg-slate-900 border border-emerald-200 dark:border-emerald-800/60 grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-xs">
                         @foreach($allSurahs as $surah)
-                            <option value="{{ $surah['number'] }}">
-                                Surah {{ $surah['number'] }}. {{ $surah['name'] }} ({{ $surah['translation'] }} - {{ $surah['ayah_count'] }} Ayat)
-                            </option>
+                            <label class="flex items-center gap-2 p-1.5 rounded-lg border cursor-pointer select-none transition"
+                                   :class="formData.surah_numbers.includes({{ $surah['number'] }}) ? 'bg-emerald-100 dark:bg-emerald-950/70 border-emerald-500 font-bold text-emerald-900 dark:text-emerald-200' : 'bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700/60 text-slate-700 dark:text-slate-300 hover:bg-slate-100'"
+                                   x-show="matchModalSurah({{ $surah['number'] }}, '{{ addslashes($surah['name']) }}')">
+                                <input type="checkbox" name="surah_numbers[]" value="{{ $surah['number'] }}"
+                                       :checked="formData.surah_numbers.includes({{ $surah['number'] }})"
+                                       @change="toggleSurahSelection({{ $surah['number'] }})"
+                                       class="rounded text-emerald-600 focus:ring-0">
+                                <span class="font-mono text-[10px] text-emerald-600 dark:text-emerald-400">{{ $surah['number'] }}.</span>
+                                <span class="truncate flex-1">{{ $surah['name'] }}</span>
+                                <span class="font-arabic text-xs text-slate-500 dark:text-slate-400">{{ $surah['arabic'] }}</span>
+                            </label>
                         @endforeach
-                    </select>
+                    </div>
+
+                    <!-- Hidden input fallback untuk single surah_number -->
+                    <input type="hidden" name="surah_number" :value="formData.surah_numbers[0] || ''">
+
+                    <!-- Preview Badge Surat Terpilih -->
+                    <template x-if="formData.surah_numbers.length > 0">
+                        <div class="p-2.5 rounded-xl bg-emerald-100/60 dark:bg-emerald-950/30 border border-emerald-300 dark:border-emerald-800">
+                            <div class="text-[10px] font-bold uppercase tracking-wider text-emerald-800 dark:text-emerald-300 mb-1.5 flex items-center justify-between">
+                                <span>Urutan Pemutaran Playlist Murottal:</span>
+                                <span class="font-mono" x-text="formData.surah_numbers.length + ' surat'"></span>
+                            </div>
+                            <div class="flex flex-wrap gap-1 max-h-24 overflow-y-auto">
+                                <template x-for="(sNum, idx) in formData.surah_numbers" :key="sNum">
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-600 text-white text-[10px] font-semibold">
+                                        <span x-text="(idx + 1) + '. Surat Ke-' + sNum"></span>
+                                        <button type="button" @click="toggleSurahSelection(sNum)" class="hover:text-amber-200 cursor-pointer">×</button>
+                                    </span>
+                                </template>
+                            </div>
+                        </div>
+                    </template>
                 </div>
 
-                <!-- Pilihan Lagu Nasional jika tipe sound_type = song -->
-                <div x-show="formData.sound_type === 'song'" class="p-3.5 rounded-2xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 space-y-2">
-                    <label class="block text-xs font-bold text-red-800 dark:text-red-300">Pilih Lagu Nasional Indonesia (10 Lagu)</label>
-                    <select name="anthem_id" x-model="formData.anthem_id" class="w-full px-3 py-2 text-xs bg-white dark:bg-slate-800 border border-red-300 dark:border-red-700 rounded-xl outline-none text-slate-900 dark:text-white">
-                        <option value="">-- Pilih Lagu Nasional (Atau Gunakan File Upload di Bawah) --</option>
+                <!-- Pilihan Lagu Nasional jika tipe sound_type = song (Multi-Select Didukung) -->
+                <div x-show="formData.sound_type === 'song'" class="p-4 rounded-2xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 space-y-3">
+                    <div class="flex items-center justify-between gap-2">
+                        <div>
+                            <label class="block text-xs font-bold text-red-800 dark:text-red-300">Pilih Lagu Nasional Indonesia (Bisa Pilih Lebih Dari 1 Lagu)</label>
+                            <p class="text-[11px] text-red-700/80 dark:text-red-400/80">Jika memilih beberapa lagu, sistem akan memutar lagu-lagu tersebut secara berurutan (playlist lagu nasional).</p>
+                        </div>
+                        <span class="px-2.5 py-1 rounded-full text-xs font-black bg-red-600 text-white shadow-xs shrink-0" x-text="formData.anthem_ids.length + ' Lagu Dipilih'"></span>
+                    </div>
+
+                    <!-- Shortcut Pilihan Cepat Lagu -->
+                    <div class="flex flex-wrap items-center gap-1.5 pt-1">
+                        <button type="button" @click="selectAllAnthems([{{ collect($nationalAnthems)->map(fn($a) => "'" . $a['id'] . "'")->join(',') }}])" class="px-2 py-1 rounded-lg bg-red-600/15 hover:bg-red-600 text-red-800 hover:text-white dark:text-red-300 text-[10px] font-bold border border-red-500/30 transition cursor-pointer">
+                            + Pilih Semua (10 Lagu)
+                        </button>
+                        <button type="button" @click="clearAnthemSelection()" class="px-2 py-1 rounded-lg bg-rose-500/10 hover:bg-rose-500 text-rose-600 hover:text-white text-[10px] font-bold border border-rose-500/30 transition cursor-pointer" x-show="formData.anthem_ids.length > 0">
+                            ✕ Hapus Pilihan
+                        </button>
+                    </div>
+
+                    <!-- Daftar 10 Lagu Nasional dengan Checkbox Multi-Pilihan -->
+                    <div class="max-h-48 overflow-y-auto p-2 rounded-xl bg-white dark:bg-slate-900 border border-red-200 dark:border-red-800/60 grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-xs">
                         @foreach($nationalAnthems as $anthem)
-                            <option value="{{ $anthem['id'] }}">
-                                {{ $anthem['title'] }} — Cipt: {{ $anthem['composer'] }} ({{ $anthem['category'] }})
-                            </option>
+                            <label class="flex items-start gap-2 p-2 rounded-lg border cursor-pointer select-none transition"
+                                   :class="formData.anthem_ids.includes('{{ $anthem['id'] }}') ? 'bg-red-100 dark:bg-red-950/70 border-red-500 font-bold text-red-900 dark:text-red-200' : 'bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700/60 text-slate-700 dark:text-slate-300 hover:bg-slate-100'">
+                                <input type="checkbox" name="anthem_ids[]" value="{{ $anthem['id'] }}"
+                                       :checked="formData.anthem_ids.includes('{{ $anthem['id'] }}')"
+                                       @change="toggleAnthemSelection('{{ $anthem['id'] }}')"
+                                       class="rounded text-red-600 focus:ring-0 mt-0.5">
+                                <div class="truncate flex-1">
+                                    <div class="font-bold truncate">{{ $anthem['title'] }}</div>
+                                    <div class="text-[10px] text-slate-500 dark:text-slate-400">Cipt: {{ $anthem['composer'] }}</div>
+                                </div>
+                            </label>
                         @endforeach
-                    </select>
+                    </div>
+
+                    <!-- Hidden input fallback untuk single anthem_id -->
+                    <input type="hidden" name="anthem_id" :value="formData.anthem_ids[0] || ''">
+
+                    <!-- Preview Badge Lagu Terpilih -->
+                    <template x-if="formData.anthem_ids.length > 0">
+                        <div class="p-2.5 rounded-xl bg-red-100/60 dark:bg-red-950/30 border border-red-300 dark:border-red-800">
+                            <div class="text-[10px] font-bold uppercase tracking-wider text-red-800 dark:text-red-300 mb-1.5 flex items-center justify-between">
+                                <span>Urutan Pemutaran Playlist Lagu:</span>
+                                <span class="font-mono" x-text="formData.anthem_ids.length + ' lagu'"></span>
+                            </div>
+                            <div class="flex flex-wrap gap-1">
+                                <template x-for="(aid, idx) in formData.anthem_ids" :key="aid">
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-red-600 text-white text-[10px] font-semibold">
+                                        <span x-text="(idx + 1) + '. ' + aid"></span>
+                                        <button type="button" @click="toggleAnthemSelection(aid)" class="hover:text-amber-200 cursor-pointer">×</button>
+                                    </span>
+                                </template>
+                            </div>
+                        </div>
+                    </template>
                 </div>
 
                 <!-- File Audio Kustom jika sound_type = custom atau song -->
@@ -832,12 +978,18 @@ function schoolBellApp() {
         editUrl: '',
         showLyricsModal: false,
         selectedAnthem: null,
+        surahModalSearch: '',
+        playlistQueue: [],
+        currentTrackIndex: 0,
+        isPlaylistMode: false,
         formData: {
             title: '',
             time: '07:00',
             sound_type: 'chime',
             surah_number: '',
+            surah_numbers: [],
             anthem_id: '',
+            anthem_ids: [],
             voice_text: '',
             days: ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'],
             duration_seconds: 15,
@@ -856,10 +1008,16 @@ function schoolBellApp() {
                 }
             });
             this.audioElement.addEventListener('ended', () => {
-                this.isPlaying = false;
-                this.isPlayingMurottal = false;
-                this.isPlayingAnthem = false;
-                this.audioProgressPercent = 0;
+                if (this.isPlaylistMode && this.playlistQueue.length > 0 && this.currentTrackIndex < this.playlistQueue.length - 1) {
+                    this.currentTrackIndex++;
+                    this.playTrackFromQueue(this.currentTrackIndex);
+                } else {
+                    this.isPlaylistMode = false;
+                    this.isPlaying = false;
+                    this.isPlayingMurottal = false;
+                    this.isPlayingAnthem = false;
+                    this.audioProgressPercent = 0;
+                }
             });
 
             // Start High-Resolution Clock and Non-Throttled Auto-Scheduler Interval
@@ -983,8 +1141,20 @@ function schoolBellApp() {
             this.currentAudioTitle = bell.title;
 
             const vol = (bell.volume || 100) * (this.masterVolume / 100) / 100;
+            const items = bell.playlist_items || [];
 
-            if (bell.sound_type === 'murottal' && bell.audio_url) {
+            // Jika memiliki playlist multi-surah atau multi-lagu
+            if (items.length > 1) {
+                this.playlistQueue = items;
+                this.currentTrackIndex = 0;
+                this.isPlaylistMode = true;
+                this.playTrackFromQueue(0, bell.volume);
+            } else if (items.length === 1 && items[0].audio_url) {
+                this.playlistQueue = items;
+                this.currentTrackIndex = 0;
+                this.isPlaylistMode = false;
+                this.playSingleTrack(items[0], bell.volume, bell.title);
+            } else if (bell.sound_type === 'murottal' && bell.audio_url) {
                 this.playMurottalUrl(bell.audio_url, bell.surah_name || bell.title);
             } else if (bell.sound_type === 'siren') {
                 this.testChimeSound('siren');
@@ -1008,6 +1178,57 @@ function schoolBellApp() {
                         this.stopAllAudio();
                     }
                 }, bell.duration_seconds * 1000);
+            }
+        },
+
+        playTrackFromQueue(index, bellVolume = 100) {
+            if (!this.playlistQueue[index]) return;
+            const track = this.playlistQueue[index];
+            const vol = (bellVolume || 100) * (this.masterVolume / 100) / 100;
+            this.isPlaying = true;
+            this.currentAudioTitle = `[Trek ${index + 1}/${this.playlistQueue.length}] ${track.title}`;
+
+            if (track.type === 'murottal') {
+                this.isPlayingMurottal = true;
+                this.currentSurahName = track.title;
+            } else {
+                this.isPlayingAnthem = true;
+                this.currentAnthemTitle = track.title;
+            }
+
+            this.audioElement.src = track.audio_url;
+            this.audioElement.volume = vol;
+            this.audioElement.play().catch(e => console.error(e));
+        },
+
+        playSingleTrack(track, bellVolume = 100, customTitle = null) {
+            const vol = (bellVolume || 100) * (this.masterVolume / 100) / 100;
+            this.currentAudioTitle = customTitle || track.title;
+
+            if (track.type === 'murottal') {
+                this.isPlayingMurottal = true;
+                this.currentSurahName = track.title;
+            } else {
+                this.isPlayingAnthem = true;
+                this.currentAnthemTitle = track.title;
+            }
+
+            this.audioElement.src = track.audio_url;
+            this.audioElement.volume = vol;
+            this.audioElement.play().catch(e => console.error(e));
+        },
+
+        nextTrackInPlaylist() {
+            if (this.isPlaylistMode && this.currentTrackIndex < this.playlistQueue.length - 1) {
+                this.currentTrackIndex++;
+                this.playTrackFromQueue(this.currentTrackIndex);
+            }
+        },
+
+        prevTrackInPlaylist() {
+            if (this.isPlaylistMode && this.currentTrackIndex > 0) {
+                this.currentTrackIndex--;
+                this.playTrackFromQueue(this.currentTrackIndex);
             }
         },
 
@@ -1400,6 +1621,7 @@ function schoolBellApp() {
             this.formData.title = `Murottal Surah ${surah.name}`;
             this.formData.sound_type = 'murottal';
             this.formData.surah_number = surah.number;
+            this.formData.surah_numbers = [Number(surah.number)];
             this.formData.voice_text = `Murottal Al-Qur'an Surah ${surah.name}.`;
             this.formData.duration_seconds = 900;
             this.formData.description = `Murottal Al-Qur'an Surah ${surah.name} (${surah.translation})`;
@@ -1410,6 +1632,7 @@ function schoolBellApp() {
             this.formData.title = `Lagu: ${anthem.title}`;
             this.formData.sound_type = 'song';
             this.formData.anthem_id = anthem.id;
+            this.formData.anthem_ids = [anthem.id];
             this.formData.voice_text = `Memperdengarkan Lagu Nasional: ${anthem.title}.`;
             this.formData.duration_seconds = 180;
             this.formData.description = `${anthem.usage} (Cipt: ${anthem.composer})`;
@@ -1432,12 +1655,15 @@ function schoolBellApp() {
         openAddModal() {
             this.isEdit = false;
             this.editUrl = '';
+            this.surahModalSearch = '';
             this.formData = {
                 title: '',
                 time: '07:00',
                 sound_type: 'chime',
                 surah_number: '',
+                surah_numbers: [],
                 anthem_id: '',
+                anthem_ids: [],
                 voice_text: '',
                 days: ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'],
                 duration_seconds: 15,
@@ -1452,6 +1678,7 @@ function schoolBellApp() {
             if (!bell) return;
             this.isEdit = true;
             this.editUrl = `{{ url('/school-bell') }}/${bell.id}`;
+            this.surahModalSearch = '';
 
             let parsedDays = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'];
             if (Array.isArray(bell.days)) {
@@ -1464,12 +1691,42 @@ function schoolBellApp() {
                 }
             }
 
+            let parsedSurahs = [];
+            if (Array.isArray(bell.surah_numbers)) {
+                parsedSurahs = bell.surah_numbers.map(Number);
+            } else if (typeof bell.surah_numbers === 'string') {
+                try {
+                    parsedSurahs = JSON.parse(bell.surah_numbers).map(Number);
+                } catch (e) {
+                    parsedSurahs = [];
+                }
+            }
+            if (parsedSurahs.length === 0 && bell.surah_number) {
+                parsedSurahs = [Number(bell.surah_number)];
+            }
+
+            let parsedAnthems = [];
+            if (Array.isArray(bell.anthem_ids)) {
+                parsedAnthems = [...bell.anthem_ids];
+            } else if (typeof bell.anthem_ids === 'string') {
+                try {
+                    parsedAnthems = JSON.parse(bell.anthem_ids);
+                } catch (e) {
+                    parsedAnthems = [];
+                }
+            }
+            if (parsedAnthems.length === 0 && bell.anthem_id) {
+                parsedAnthems = [bell.anthem_id];
+            }
+
             this.formData = {
                 title: bell.title || '',
                 time: (bell.time || '07:00').substring(0, 5),
                 sound_type: bell.sound_type || 'chime',
-                surah_number: bell.surah_number || '',
-                anthem_id: '',
+                surah_number: bell.surah_number || (parsedSurahs[0] || ''),
+                surah_numbers: parsedSurahs,
+                anthem_id: bell.anthem_id || (parsedAnthems[0] || ''),
+                anthem_ids: parsedAnthems,
                 voice_text: bell.voice_text || '',
                 days: parsedDays,
                 duration_seconds: bell.duration_seconds || 15,
@@ -1477,6 +1734,75 @@ function schoolBellApp() {
                 description: bell.description || ''
             };
             this.showModal = true;
+        },
+
+        toggleSurahSelection(num) {
+            num = Number(num);
+            const idx = this.formData.surah_numbers.indexOf(num);
+            if (idx > -1) {
+                this.formData.surah_numbers.splice(idx, 1);
+            } else {
+                this.formData.surah_numbers.push(num);
+            }
+            this.formData.surah_number = this.formData.surah_numbers[0] || '';
+        },
+
+        selectJuz30Surahs() {
+            for (let i = 78; i <= 114; i++) {
+                if (!this.formData.surah_numbers.includes(i)) {
+                    this.formData.surah_numbers.push(i);
+                }
+            }
+            this.formData.surah_number = this.formData.surah_numbers[0] || '';
+        },
+
+        select3QulSurahs() {
+            [112, 113, 114].forEach(i => {
+                if (!this.formData.surah_numbers.includes(i)) {
+                    this.formData.surah_numbers.push(i);
+                }
+            });
+            this.formData.surah_number = this.formData.surah_numbers[0] || '';
+        },
+
+        selectFeaturedSurahs() {
+            [1, 18, 36, 55, 56, 67, 78].forEach(i => {
+                if (!this.formData.surah_numbers.includes(i)) {
+                    this.formData.surah_numbers.push(i);
+                }
+            });
+            this.formData.surah_number = this.formData.surah_numbers[0] || '';
+        },
+
+        clearSurahSelection() {
+            this.formData.surah_numbers = [];
+            this.formData.surah_number = '';
+        },
+
+        toggleAnthemSelection(id) {
+            const idx = this.formData.anthem_ids.indexOf(id);
+            if (idx > -1) {
+                this.formData.anthem_ids.splice(idx, 1);
+            } else {
+                this.formData.anthem_ids.push(id);
+            }
+            this.formData.anthem_id = this.formData.anthem_ids[0] || '';
+        },
+
+        selectAllAnthems(ids) {
+            this.formData.anthem_ids = [...ids];
+            this.formData.anthem_id = this.formData.anthem_ids[0] || '';
+        },
+
+        clearAnthemSelection() {
+            this.formData.anthem_ids = [];
+            this.formData.anthem_id = '';
+        },
+
+        matchModalSurah(num, name) {
+            if (!this.surahModalSearch) return true;
+            const q = this.surahModalSearch.toLowerCase();
+            return String(num).includes(q) || name.toLowerCase().includes(q);
         },
 
         playBellRecordById(bellId) {

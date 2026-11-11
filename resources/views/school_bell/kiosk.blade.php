@@ -222,9 +222,23 @@
                             <div class="flex items-center justify-between text-[10px] text-slate-400 mt-2 pt-2 border-t border-white/5">
                                 <span class="capitalize">
                                     @if($bell->sound_type === 'murottal')
-                                        📖 Murottal ({{ $bell->surah_name ?? 'Surah' }})
+                                        @php
+                                            $sCount = is_array($bell->surah_numbers) ? count($bell->surah_numbers) : ($bell->surah_number ? 1 : 0);
+                                        @endphp
+                                        @if($sCount > 1)
+                                            📖 Murottal ({{ $sCount }} Surat)
+                                        @else
+                                            📖 Murottal ({{ $bell->surah_name ?? 'Surah' }})
+                                        @endif
                                     @elseif($bell->sound_type === 'song')
-                                        🎶 Lagu / Mars
+                                        @php
+                                            $aCount = is_array($bell->anthem_ids) ? count($bell->anthem_ids) : ($bell->anthem_id ? 1 : 0);
+                                        @endphp
+                                        @if($aCount > 1)
+                                            🎶 Playlist ({{ $aCount }} Lagu)
+                                        @else
+                                            🎶 Lagu / Mars
+                                        @endif
                                     @elseif($bell->sound_type === 'custom')
                                         🎵 Audio Kustom
                                     @elseif($bell->sound_type === 'voice')
@@ -483,27 +497,74 @@
                         }
                     }, 1000);
 
-                    // 1. Jika ada audio_url (file upload lagu/custom/murottal)
-                    if (bell.audio_url) {
+                    // 1. Jika ada playlist multi-surah atau multi-lagu
+                    const items = bell.playlist_items || [];
+                    if (items.length > 1) {
+                        this.playPlaylistQueue(items, bell.duration_seconds, bell.voice_text);
+                    }
+                    // 2. Jika ada audio_url tunggal (file upload lagu/custom/murottal)
+                    else if (bell.audio_url) {
                         this.playAudioFile(bell.audio_url, bell.duration_seconds, bell.voice_text);
                     } 
-                    // 2. Jika tipe voice narasi
+                    // 3. Jika tipe voice narasi
                     else if (bell.sound_type === 'voice') {
                         this.playChime('chime', () => {
                             this.speakText(bell.voice_text || bell.title);
                         });
                     }
-                    // 3. Jika sirine darurat
+                    // 4. Jika sirine darurat
                     else if (bell.sound_type === 'siren') {
                         this.playSiren(bell.duration_seconds || 15);
                     }
-                    // 4. Default: Nada Chime bel
+                    // 5. Default: Nada Chime bel
                     else {
                         this.playChime('westminster', () => {
                             if (bell.voice_text) {
                                 this.speakText(bell.voice_text);
                             }
                         });
+                    }
+                },
+
+                playPlaylistQueue(items, durationSeconds, voiceTextAfter) {
+                    this.stopAllAudio();
+                    let currentIndex = 0;
+
+                    const playNextInQueue = () => {
+                        if (currentIndex >= items.length) {
+                            this.isPlaying = false;
+                            if (voiceTextAfter) {
+                                this.speakText(voiceTextAfter);
+                            }
+                            return;
+                        }
+
+                        const item = items[currentIndex];
+                        this.currentAudioTitle = `[${currentIndex + 1}/${items.length}] ${item.title}`;
+                        const audio = new Audio(item.audio_url);
+                        audio.volume = this.volumePercent / 100;
+                        this.activeAudioElement = audio;
+
+                        audio.play().catch(err => {
+                            console.warn('Playlist playback error:', err);
+                            currentIndex++;
+                            playNextInQueue();
+                        });
+
+                        audio.onended = () => {
+                            currentIndex++;
+                            playNextInQueue();
+                        };
+                    };
+
+                    playNextInQueue();
+
+                    if (durationSeconds && durationSeconds > 0) {
+                        setTimeout(() => {
+                            if (this.isPlaying) {
+                                this.stopAllAudio();
+                            }
+                        }, durationSeconds * 1000);
                     }
                 },
 

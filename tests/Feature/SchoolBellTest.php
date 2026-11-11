@@ -260,3 +260,79 @@ test('can delete a school bell schedule and clearing all does not auto reseed on
     $resetResponse->assertRedirect();
     expect(SchoolBell::count())->toBeGreaterThanOrEqual(12);
 });
+
+test('can create and update school bell schedule with multiple surahs', function () {
+    $admin = User::firstOrCreate(
+        ['email' => 'admin_test@sman1lengkong.sch.id'],
+        ['name' => 'Admin Test', 'password' => bcrypt('password'), 'role' => 'admin', 'is_active' => true]
+    );
+
+    $response = $this->actingAs($admin)->post(route('school_bell.store'), [
+        'title' => 'Murottal Multi Surat Pagi',
+        'time' => '06:30',
+        'days' => ['Senin', 'Selasa'],
+        'sound_type' => 'murottal',
+        'surah_numbers' => [1, 55, 112],
+        'duration_seconds' => 1200,
+        'volume' => 80,
+    ]);
+
+    $response->assertSessionHasNoErrors();
+    $response->assertRedirect();
+
+    $bell = SchoolBell::where('title', 'Murottal Multi Surat Pagi')->first();
+    expect($bell)->not->toBeNull();
+    expect($bell->surah_numbers)->toBe([1, 55, 112]);
+    expect($bell->surah_number)->toBe(1);
+    expect($bell->playlist_items)->toHaveCount(3);
+    expect($bell->playlist_items[0]['title'])->toContain('Al-Fatihah');
+    expect($bell->playlist_items[1]['title'])->toContain('Ar-Rahman');
+    expect($bell->playlist_items[2]['title'])->toContain('Al-Ikhlas');
+
+    // Update with new surahs
+    $updateResponse = $this->actingAs($admin)->put(route('school_bell.update', $bell), [
+        'title' => 'Murottal 3 Qul Sore',
+        'time' => '15:30',
+        'days' => ['Senin', 'Selasa', 'Rabu'],
+        'sound_type' => 'murottal',
+        'surah_numbers' => [112, 113, 114],
+        'duration_seconds' => 600,
+        'volume' => 90,
+    ]);
+
+    $updateResponse->assertSessionHasNoErrors();
+    $bell->refresh();
+    expect($bell->title)->toBe('Murottal 3 Qul Sore');
+    expect($bell->surah_numbers)->toBe([112, 113, 114]);
+    expect($bell->surah_number)->toBe(112);
+    expect($bell->playlist_items)->toHaveCount(3);
+});
+
+test('can create and update school bell schedule with multiple national anthems', function () {
+    $admin = User::firstOrCreate(
+        ['email' => 'admin_test@sman1lengkong.sch.id'],
+        ['name' => 'Admin Test', 'password' => bcrypt('password'), 'role' => 'admin', 'is_active' => true]
+    );
+
+    $response = $this->actingAs($admin)->post(route('school_bell.store'), [
+        'title' => 'Playlist Upacara Bendera',
+        'time' => '07:15',
+        'days' => ['Senin'],
+        'sound_type' => 'song',
+        'anthem_ids' => ['indonesia-raya', 'hari-merdeka', 'garuda-pancasila'],
+        'duration_seconds' => 400,
+        'volume' => 100,
+    ]);
+
+    $response->assertSessionHasNoErrors();
+    $response->assertRedirect();
+
+    $bell = SchoolBell::where('title', 'Playlist Upacara Bendera')->first();
+    expect($bell)->not->toBeNull();
+    expect($bell->anthem_ids)->toBe(['indonesia-raya', 'hari-merdeka', 'garuda-pancasila']);
+    expect($bell->anthem_id)->toBe('indonesia-raya');
+    expect($bell->playlist_items)->toHaveCount(3);
+    expect($bell->playlist_items[0]['title'])->toBe('Indonesia Raya');
+    expect($bell->playlist_items[1]['title'])->toBe('Hari Merdeka');
+    expect($bell->playlist_items[2]['title'])->toBe('Garuda Pancasila');
+});

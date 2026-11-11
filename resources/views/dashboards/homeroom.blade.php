@@ -318,6 +318,9 @@
     @include('dashboards.partials.habits_analytics')
 
     <!-- Ringkasan Ibadah Bersama & Tahfidz Al-Qur'an Kelas Binaan -->
+    <!-- AGENDA & KEGIATAN SEKOLAH TERUPDATE -->
+    @include('dashboards.partials.school_agendas_summary')
+
     @include('dashboards.partials.worship_tahfidz_summary')
 
     <!-- Ringkasan LMS Pembelajaran & Perpustakaan Digital -->

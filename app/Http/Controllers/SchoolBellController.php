@@ -108,6 +108,11 @@ class SchoolBellController extends Controller
             'days.*' => ['string', 'in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu,Minggu'],
             'sound_type' => ['required', 'string', 'in:chime,murottal,voice,siren,custom,song'],
             'surah_number' => ['nullable', 'integer', 'between:1,114'],
+            'surah_numbers' => ['nullable', 'array'],
+            'surah_numbers.*' => ['integer', 'between:1,114'],
+            'anthem_id' => ['nullable', 'string', 'max:100'],
+            'anthem_ids' => ['nullable', 'array'],
+            'anthem_ids.*' => ['string', 'max:100'],
             'duration_seconds' => ['nullable', 'integer', 'min:5', 'max:3600'],
             'volume' => ['nullable', 'integer', 'between:10,100'],
             'description' => ['nullable', 'string', 'max:500'],
@@ -118,21 +123,69 @@ class SchoolBellController extends Controller
 
         $audioUrl = null;
         $surahName = null;
+        $surahNumbers = null;
+        $anthemIds = null;
+        $playlist = null;
+        $primarySurahNumber = null;
 
         if ($request->hasFile('audio_file')) {
             $path = $request->file('audio_file')->store('school_bells', 'public');
             $audioUrl = asset('storage/'.$path);
-        } elseif ($validated['sound_type'] === 'murottal' && ! empty($validated['surah_number'])) {
-            $surah = QuranDataService::getSurah((int) $validated['surah_number']);
-            if ($surah) {
-                $surahName = $surah['name'];
-                $audioUrl = $surah['audio_url'];
+        } elseif ($validated['sound_type'] === 'murottal') {
+            $rawNumbers = $request->input('surah_numbers');
+            if (empty($rawNumbers) && ! empty($validated['surah_number'])) {
+                $rawNumbers = [$validated['surah_number']];
             }
-        } elseif ($validated['sound_type'] === 'song' && $request->filled('anthem_id')) {
-            $anthems = NationalAnthemService::getNationalAnthems();
-            $anthem = collect($anthems)->firstWhere('id', $request->input('anthem_id'));
-            if ($anthem) {
-                $audioUrl = $anthem['audio_url'];
+            if (! empty($rawNumbers)) {
+                $surahNumbers = array_values(array_unique(array_filter(array_map('intval', (array) $rawNumbers))));
+                $items = [];
+                $names = [];
+                foreach ($surahNumbers as $num) {
+                    $surah = QuranDataService::getSurah($num);
+                    if ($surah) {
+                        $items[] = [
+                            'id' => $surah['number'],
+                            'title' => 'Surah '.$surah['number'].'. '.$surah['name'],
+                            'name' => $surah['name'],
+                            'translation' => $surah['translation'] ?? '',
+                            'audio_url' => $surah['audio_url'],
+                            'type' => 'murottal',
+                        ];
+                        $names[] = $surah['name'];
+                    }
+                }
+                if (! empty($items)) {
+                    $playlist = $items;
+                    $primarySurahNumber = $surahNumbers[0];
+                    $audioUrl = $items[0]['audio_url'];
+                    $surahName = count($names) > 1 ? count($names).' Surat: '.implode(', ', $names) : $names[0];
+                }
+            }
+        } elseif ($validated['sound_type'] === 'song') {
+            $rawAnthems = $request->input('anthem_ids');
+            if (empty($rawAnthems) && $request->filled('anthem_id')) {
+                $rawAnthems = [$request->input('anthem_id')];
+            }
+            if (! empty($rawAnthems)) {
+                $anthemIds = array_values(array_unique(array_filter((array) $rawAnthems)));
+                $allAnthems = collect(NationalAnthemService::getNationalAnthems());
+                $items = [];
+                foreach ($anthemIds as $aid) {
+                    $anthem = $allAnthems->firstWhere('id', $aid);
+                    if ($anthem) {
+                        $items[] = [
+                            'id' => $anthem['id'],
+                            'title' => $anthem['title'],
+                            'composer' => $anthem['composer'] ?? '',
+                            'audio_url' => $anthem['audio_url'],
+                            'type' => 'song',
+                        ];
+                    }
+                }
+                if (! empty($items)) {
+                    $playlist = $items;
+                    $audioUrl = $items[0]['audio_url'];
+                }
             }
         }
 
@@ -144,8 +197,11 @@ class SchoolBellController extends Controller
             'days' => $validated['days'],
             'sound_type' => $validated['sound_type'],
             'audio_url' => $audioUrl,
-            'surah_number' => $validated['surah_number'] ?? null,
+            'surah_number' => $primarySurahNumber ?? ($validated['surah_number'] ?? null),
             'surah_name' => $surahName,
+            'surah_numbers' => $surahNumbers,
+            'anthem_ids' => $anthemIds,
+            'playlist' => $playlist,
             'volume' => $validated['volume'] ?? 100,
             'duration_seconds' => $validated['duration_seconds'] ?? ($validated['sound_type'] === 'murottal' ? 900 : 15),
             'description' => $validated['description'] ?? null,
@@ -196,6 +252,11 @@ class SchoolBellController extends Controller
             'days.*' => ['string', 'in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu,Minggu'],
             'sound_type' => ['required', 'string', 'in:chime,murottal,voice,siren,custom,song'],
             'surah_number' => ['nullable', 'integer', 'between:1,114'],
+            'surah_numbers' => ['nullable', 'array'],
+            'surah_numbers.*' => ['integer', 'between:1,114'],
+            'anthem_id' => ['nullable', 'string', 'max:100'],
+            'anthem_ids' => ['nullable', 'array'],
+            'anthem_ids.*' => ['string', 'max:100'],
             'duration_seconds' => ['nullable', 'integer', 'min:5', 'max:3600'],
             'volume' => ['nullable', 'integer', 'between:10,100'],
             'description' => ['nullable', 'string', 'max:500'],
@@ -206,32 +267,91 @@ class SchoolBellController extends Controller
 
         $audioUrl = $schoolBell->audio_url;
         $surahName = $schoolBell->surah_name;
+        $surahNumbers = $schoolBell->surah_numbers;
+        $anthemIds = $schoolBell->anthem_ids;
+        $playlist = $schoolBell->playlist;
+        $primarySurahNumber = $schoolBell->surah_number;
 
         if ($request->hasFile('audio_file')) {
             $path = $request->file('audio_file')->store('school_bells', 'public');
             $audioUrl = asset('storage/'.$path);
             $surahName = null;
-        } elseif ($validated['sound_type'] === 'murottal' && ! empty($validated['surah_number'])) {
-            $surah = QuranDataService::getSurah((int) $validated['surah_number']);
-            if ($surah) {
-                $surahName = $surah['name'];
-                $audioUrl = $surah['audio_url'];
+            $surahNumbers = null;
+            $anthemIds = null;
+            $playlist = null;
+            $primarySurahNumber = null;
+        } elseif ($validated['sound_type'] === 'murottal') {
+            $rawNumbers = $request->input('surah_numbers');
+            if (empty($rawNumbers) && ! empty($validated['surah_number'])) {
+                $rawNumbers = [$validated['surah_number']];
             }
-        } elseif ($validated['sound_type'] === 'song' && $request->filled('anthem_id')) {
-            $anthems = NationalAnthemService::getNationalAnthems();
-            $anthem = collect($anthems)->firstWhere('id', $request->input('anthem_id'));
-            if ($anthem) {
-                $audioUrl = $anthem['audio_url'];
+            if (! empty($rawNumbers)) {
+                $surahNumbers = array_values(array_unique(array_filter(array_map('intval', (array) $rawNumbers))));
+                $items = [];
+                $names = [];
+                foreach ($surahNumbers as $num) {
+                    $surah = QuranDataService::getSurah($num);
+                    if ($surah) {
+                        $items[] = [
+                            'id' => $surah['number'],
+                            'title' => 'Surah '.$surah['number'].'. '.$surah['name'],
+                            'name' => $surah['name'],
+                            'translation' => $surah['translation'] ?? '',
+                            'audio_url' => $surah['audio_url'],
+                            'type' => 'murottal',
+                        ];
+                        $names[] = $surah['name'];
+                    }
+                }
+                if (! empty($items)) {
+                    $playlist = $items;
+                    $primarySurahNumber = $surahNumbers[0];
+                    $audioUrl = $items[0]['audio_url'];
+                    $surahName = count($names) > 1 ? count($names).' Surat: '.implode(', ', $names) : $names[0];
+                }
+            }
+        } elseif ($validated['sound_type'] === 'song') {
+            $rawAnthems = $request->input('anthem_ids');
+            if (empty($rawAnthems) && $request->filled('anthem_id')) {
+                $rawAnthems = [$request->input('anthem_id')];
+            }
+            if (! empty($rawAnthems)) {
+                $anthemIds = array_values(array_unique(array_filter((array) $rawAnthems)));
+                $allAnthems = collect(NationalAnthemService::getNationalAnthems());
+                $items = [];
+                foreach ($anthemIds as $aid) {
+                    $anthem = $allAnthems->firstWhere('id', $aid);
+                    if ($anthem) {
+                        $items[] = [
+                            'id' => $anthem['id'],
+                            'title' => $anthem['title'],
+                            'composer' => $anthem['composer'] ?? '',
+                            'audio_url' => $anthem['audio_url'],
+                            'type' => 'song',
+                        ];
+                    }
+                }
+                if (! empty($items)) {
+                    $playlist = $items;
+                    $audioUrl = $items[0]['audio_url'];
+                }
             }
             $surahName = null;
-        } elseif (in_array($validated['sound_type'], ['custom', 'song'], true)) {
-            // Pertahankan audio sebelumnya jika tidak ada file baru yang diunggah
+            $primarySurahNumber = null;
+            $surahNumbers = null;
+        } elseif (in_array($validated['sound_type'], ['custom'], true)) {
             $surahName = null;
+            $surahNumbers = null;
+            $primarySurahNumber = null;
         } else {
             if ($schoolBell->sound_type !== $validated['sound_type']) {
                 $audioUrl = null;
+                $playlist = null;
             }
             $surahName = null;
+            $surahNumbers = null;
+            $primarySurahNumber = null;
+            $anthemIds = null;
         }
 
         $time = substr($validated['time'], 0, 5);
@@ -242,8 +362,11 @@ class SchoolBellController extends Controller
             'days' => $validated['days'],
             'sound_type' => $validated['sound_type'],
             'audio_url' => $audioUrl,
-            'surah_number' => $validated['surah_number'] ?? null,
+            'surah_number' => $primarySurahNumber,
             'surah_name' => $surahName,
+            'surah_numbers' => $surahNumbers,
+            'anthem_ids' => $anthemIds,
+            'playlist' => $playlist,
             'volume' => $validated['volume'] ?? 100,
             'duration_seconds' => $validated['duration_seconds'] ?? $schoolBell->duration_seconds,
             'description' => $validated['description'] ?? null,

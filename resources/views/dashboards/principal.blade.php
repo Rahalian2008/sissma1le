@@ -143,8 +143,15 @@
                         <div class="bg-indigo-600 h-full rounded-full transition-all duration-500" style="width: {{ min(100, $dz['rate']) }}%"></div>
                     </div>
                     <div class="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 mt-2">
-                        <span>Hadir Hari Ini: <strong class="text-slate-800 dark:text-white">{{ $dz['today_hadir'] }}</strong></span>
-                        <span>Total Sesi: {{ $dz['total_records'] }}</span>
+                        <span>Hadir Hari Ini: <strong class="text-slate-800 dark:text-white">{{ $dz['today_hadir'] ?? 0 }} Siswa</strong></span>
+                        <span>Target: {{ $dz['today_total_target'] ?? $dz['total_records'] }} Siswa</span>
+                    </div>
+                    <div class="text-[9px] font-bold text-slate-400 dark:text-slate-500 mt-1 flex items-center justify-between pt-1 border-t border-slate-100 dark:border-slate-800/60">
+                        <span>H: <strong class="text-emerald-600">{{ $dz['today_hadir'] ?? 0 }}</strong></span>
+                        <span>S: <strong class="text-amber-600">{{ $dz['today_sakit'] ?? 0 }}</strong></span>
+                        <span>I: <strong class="text-sky-600">{{ $dz['today_izin'] ?? 0 }}</strong></span>
+                        <span>A: <strong class="text-rose-600">{{ $dz['today_alpa'] ?? 0 }}</strong></span>
+                        <span>U: <strong class="text-purple-600">{{ $dz['today_udzur'] ?? 0 }}</strong></span>
                     </div>
                 </div>
                 <div class="pt-3 mt-2 border-t border-slate-100 dark:border-slate-800">
@@ -173,8 +180,15 @@
                         <div class="bg-amber-500 h-full rounded-full transition-all duration-500" style="width: {{ min(100, $dh['rate']) }}%"></div>
                     </div>
                     <div class="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 mt-2">
-                        <span>Hadir Hari Ini: <strong class="text-slate-800 dark:text-white">{{ $dh['today_hadir'] }}</strong></span>
-                        <span>Total Sesi: {{ $dh['total_records'] }}</span>
+                        <span>Hadir Hari Ini: <strong class="text-slate-800 dark:text-white">{{ $dh['today_hadir'] ?? 0 }} Siswa</strong></span>
+                        <span>Target: {{ $dh['today_total_target'] ?? $dh['total_records'] }} Siswa</span>
+                    </div>
+                    <div class="text-[9px] font-bold text-slate-400 dark:text-slate-500 mt-1 flex items-center justify-between pt-1 border-t border-slate-100 dark:border-slate-800/60">
+                        <span>H: <strong class="text-emerald-600">{{ $dh['today_hadir'] ?? 0 }}</strong></span>
+                        <span>S: <strong class="text-amber-600">{{ $dh['today_sakit'] ?? 0 }}</strong></span>
+                        <span>I: <strong class="text-sky-600">{{ $dh['today_izin'] ?? 0 }}</strong></span>
+                        <span>A: <strong class="text-rose-600">{{ $dh['today_alpa'] ?? 0 }}</strong></span>
+                        <span>U: <strong class="text-purple-600">{{ $dh['today_udzur'] ?? 0 }}</strong></span>
                     </div>
                 </div>
                 <div class="pt-3 mt-2 border-t border-slate-100 dark:border-slate-800">
@@ -203,8 +217,15 @@
                         <div class="bg-rose-500 h-full rounded-full transition-all duration-500" style="width: {{ min(100, $kp['rate']) }}%"></div>
                     </div>
                     <div class="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 mt-2">
-                        <span>Hadir Jum'at: <strong class="text-slate-800 dark:text-white">{{ $kp['today_hadir'] }}</strong></span>
-                        <span>Khusus Siswi Putri</span>
+                        <span>Hadir Jum'at: <strong class="text-slate-800 dark:text-white">{{ $kp['today_hadir'] ?? 0 }} Siswi</strong></span>
+                        <span>Target: {{ $kp['today_total_target'] ?? $kp['total_records'] }} Siswi</span>
+                    </div>
+                    <div class="text-[9px] font-bold text-slate-400 dark:text-slate-500 mt-1 flex items-center justify-between pt-1 border-t border-slate-100 dark:border-slate-800/60">
+                        <span>H: <strong class="text-emerald-600">{{ $kp['today_hadir'] ?? 0 }}</strong></span>
+                        <span>S: <strong class="text-amber-600">{{ $kp['today_sakit'] ?? 0 }}</strong></span>
+                        <span>I: <strong class="text-sky-600">{{ $kp['today_izin'] ?? 0 }}</strong></span>
+                        <span>A: <strong class="text-rose-600">{{ $kp['today_alpa'] ?? 0 }}</strong></span>
+                        <span>U: <strong class="text-purple-600">{{ $kp['today_udzur'] ?? 0 }}</strong></span>
                     </div>
                 </div>
                 <div class="pt-3 mt-2 border-t border-slate-100 dark:border-slate-800">
@@ -489,6 +510,9 @@
     </div>
 
     <!-- Ringkasan Ibadah Bersama, Tahfidz Al-Qur'an & Ekstrakurikuler -->
+    <!-- 8. AGENDA & KEGIATAN SEKOLAH TERUPDATE -->
+    @include('dashboards.partials.school_agendas_summary')
+
     @include('dashboards.partials.worship_tahfidz_summary')
 
     <!-- Ringkasan LMS Pembelajaran & Perpustakaan Digital -->

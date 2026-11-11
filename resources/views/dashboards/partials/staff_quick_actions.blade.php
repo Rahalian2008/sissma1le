@@ -212,7 +212,7 @@
                         <span class="truncate">{{ $leaveRoleLabel }}</span>
                     </div>
                     <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1 truncate">
-                        {{ $leaveScopeDescription }}
+                        {{ $leaveScopeDescription }} • <span class="font-semibold text-emerald-600 dark:text-emerald-400">Pengajuan Izin</span>
                     </p>
                 </div>
             </div>
@@ -246,6 +246,14 @@
                     <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1 line-clamp-2">
                         Pencatatan butir kedisiplinan, skor pelanggaran & apresiasi poin prestasi
                     </p>
+                    <div class="flex items-center gap-1.5 mt-2 flex-wrap">
+                        <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-100 dark:bg-amber-900/60 text-amber-800 dark:text-amber-200">
+                            Input Pelanggaran
+                        </span>
+                        <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-indigo-100 dark:bg-indigo-900/60 text-indigo-800 dark:text-indigo-200">
+                            Input Prestasi
+                        </span>
+                    </div>
                 </div>
             </div>
             <div class="mt-3 pt-2.5 border-t border-amber-200/60 dark:border-amber-900/40 flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400">

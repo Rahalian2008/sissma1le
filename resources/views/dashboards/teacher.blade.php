@@ -92,6 +92,9 @@
 
     <!-- Ringkasan Ibadah Bersama & Tahfidz Al-Qur'an (Khusus Koordinator Keagamaan) -->
     @if(Auth::user()->hasRole('koordinator_keagamaan'))
+        <!-- AGENDA & KEGIATAN SEKOLAH TERUPDATE -->
+        @include('dashboards.partials.school_agendas_summary')
+
         @include('dashboards.partials.worship_tahfidz_summary')
     @endif
 </div>

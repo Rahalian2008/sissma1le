@@ -16,7 +16,7 @@
                     LIVE MONITOR
                 </span>
             </div>
-            <h2 class="text-base sm:text-xl font-extrabold text-white mt-1.5 tracking-tight">{{ Auth::user()->getRoleDisplayName() }} — SMAN 1 Lengkong</h2>
+            <h2 class="text-base sm:text-xl font-extrabold text-white mt-1.5 tracking-tight">Administrator SMAN 1 Lengkong</h2>
             <p class="text-xs text-slate-300 mt-0.5">Pantauan presensi terpadu, papan peringkat prestasi, kedisiplinan tata tertib, dan kendali master data.</p>
         </div>
         <div class="flex flex-wrap items-center gap-2">
@@ -265,6 +265,9 @@
 
     <!-- 4. RINGKASAN IBADAH BERSAMA & TAHFIDZ AL-QUR'AN JUZ 30 -->
     @include('dashboards.partials.worship_tahfidz_summary')
+
+    <!-- 4b. AGENDA & KEGIATAN SEKOLAH TERUPDATE -->
+    @include('dashboards.partials.school_agendas_summary')
 
     <!-- 5. RINGKASAN LMS PEMBELAJARAN & PERPUSTAKAAN DIGITAL -->
     @include('dashboards.partials.lms_library_summary')

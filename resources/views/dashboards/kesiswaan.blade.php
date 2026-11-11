@@ -110,6 +110,9 @@
         </div>
     </div>
 
+    <!-- Agenda & Kegiatan Sekolah Terupdate -->
+    @include('dashboards.partials.school_agendas_summary')
+
     <!-- Papan Peringkat Presensi Siswa (Alpa, Izin, Sakit) -->
     @include('dashboards.partials.attendance_rankings')
 

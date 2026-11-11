@@ -362,6 +362,9 @@
 
     <!-- Section 5: Ibadah & Tahfidz Terpadu -->
     <div class="space-y-4 pt-4 border-t border-slate-200 dark:border-slate-800">
+        <!-- AGENDA & KEGIATAN SEKOLAH TERUPDATE -->
+        @include('dashboards.partials.school_agendas_summary')
+
         @include('dashboards.partials.worship_tahfidz_summary')
     </div>
 </div>

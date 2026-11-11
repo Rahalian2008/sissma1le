@@ -133,9 +133,34 @@
                     </div>
                 </div>
 
-                <div class="text-[10px] text-slate-400 dark:text-slate-500 flex items-center justify-between pt-1">
-                    <span>Total Sesi: {{ $w['dzuhur']['total_records'] }}</span>
-                    <span>Hadir: {{ $w['dzuhur']['hadir_records'] }}</span>
+                <!-- Barometer Jumlah Siswa Hari Ini (Hadir, Sakit, Izin, Alpa, Udzur) -->
+                <div class="pt-2 border-t border-indigo-200/60 dark:border-indigo-800/40 space-y-1.5">
+                    <div class="flex items-center justify-between text-[10px] font-bold text-slate-600 dark:text-slate-300">
+                        <span>Barometer Siswa:</span>
+                        <span class="font-extrabold text-indigo-600 dark:text-indigo-400">{{ $w['dzuhur']['today_total_target'] ?? $w['dzuhur']['total_records'] }} Siswa</span>
+                    </div>
+                    <div class="grid grid-cols-5 gap-1 text-center text-[10px]">
+                        <div class="p-1 rounded-md bg-emerald-100/70 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 font-bold" title="Hadir">
+                            <span class="block text-[8px] uppercase">Hadir</span>
+                            <span class="font-black text-xs">{{ $w['dzuhur']['today_hadir'] ?? 0 }}</span>
+                        </div>
+                        <div class="p-1 rounded-md bg-amber-100/70 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 font-bold" title="Sakit">
+                            <span class="block text-[8px] uppercase">Sakit</span>
+                            <span class="font-black text-xs">{{ $w['dzuhur']['today_sakit'] ?? 0 }}</span>
+                        </div>
+                        <div class="p-1 rounded-md bg-sky-100/70 dark:bg-sky-950/60 text-sky-800 dark:text-sky-300 font-bold" title="Izin">
+                            <span class="block text-[8px] uppercase">Izin</span>
+                            <span class="font-black text-xs">{{ $w['dzuhur']['today_izin'] ?? 0 }}</span>
+                        </div>
+                        <div class="p-1 rounded-md bg-rose-100/70 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300 font-bold" title="Alpa">
+                            <span class="block text-[8px] uppercase">Alpa</span>
+                            <span class="font-black text-xs">{{ $w['dzuhur']['today_alpa'] ?? 0 }}</span>
+                        </div>
+                        <div class="p-1 rounded-md bg-purple-100/70 dark:bg-purple-950/60 text-purple-800 dark:text-purple-300 font-bold" title="Udzur">
+                            <span class="block text-[8px] uppercase">Udzur</span>
+                            <span class="font-black text-xs">{{ $w['dzuhur']['today_udzur'] ?? 0 }}</span>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="pt-1">
@@ -209,9 +234,34 @@
                     </div>
                 </div>
 
-                <div class="text-[10px] text-slate-400 dark:text-slate-500 flex items-center justify-between pt-1">
-                    <span>Total Sesi: {{ $w['dhuha']['total_records'] }}</span>
-                    <span>Hadir: {{ $w['dhuha']['hadir_records'] }}</span>
+                <!-- Barometer Jumlah Siswa Hari Ini (Hadir, Sakit, Izin, Alpa, Udzur) -->
+                <div class="pt-2 border-t border-amber-200/60 dark:border-amber-800/40 space-y-1.5">
+                    <div class="flex items-center justify-between text-[10px] font-bold text-slate-600 dark:text-slate-300">
+                        <span>Barometer Siswa:</span>
+                        <span class="font-extrabold text-amber-600 dark:text-amber-400">{{ $w['dhuha']['today_total_target'] ?? $w['dhuha']['total_records'] }} Siswa</span>
+                    </div>
+                    <div class="grid grid-cols-5 gap-1 text-center text-[10px]">
+                        <div class="p-1 rounded-md bg-emerald-100/70 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 font-bold" title="Hadir">
+                            <span class="block text-[8px] uppercase">Hadir</span>
+                            <span class="font-black text-xs">{{ $w['dhuha']['today_hadir'] ?? 0 }}</span>
+                        </div>
+                        <div class="p-1 rounded-md bg-amber-100/70 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 font-bold" title="Sakit">
+                            <span class="block text-[8px] uppercase">Sakit</span>
+                            <span class="font-black text-xs">{{ $w['dhuha']['today_sakit'] ?? 0 }}</span>
+                        </div>
+                        <div class="p-1 rounded-md bg-sky-100/70 dark:bg-sky-950/60 text-sky-800 dark:text-sky-300 font-bold" title="Izin">
+                            <span class="block text-[8px] uppercase">Izin</span>
+                            <span class="font-black text-xs">{{ $w['dhuha']['today_izin'] ?? 0 }}</span>
+                        </div>
+                        <div class="p-1 rounded-md bg-rose-100/70 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300 font-bold" title="Alpa">
+                            <span class="block text-[8px] uppercase">Alpa</span>
+                            <span class="font-black text-xs">{{ $w['dhuha']['today_alpa'] ?? 0 }}</span>
+                        </div>
+                        <div class="p-1 rounded-md bg-purple-100/70 dark:bg-purple-950/60 text-purple-800 dark:text-purple-300 font-bold" title="Udzur">
+                            <span class="block text-[8px] uppercase">Udzur</span>
+                            <span class="font-black text-xs">{{ $w['dhuha']['today_udzur'] ?? 0 }}</span>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="pt-1">
@@ -287,9 +337,34 @@
                     </div>
                 </div>
 
-                <div class="text-[10px] text-slate-400 dark:text-slate-500 flex items-center justify-between pt-1">
-                    <span>Total Sesi: {{ $w['keputrian']['total_records'] }}</span>
-                    <span>Hadir: {{ $w['keputrian']['hadir_records'] }}</span>
+                <!-- Barometer Jumlah Siswa Hari Ini (Hadir, Sakit, Izin, Alpa, Udzur) -->
+                <div class="pt-2 border-t border-rose-200/60 dark:border-rose-800/40 space-y-1.5">
+                    <div class="flex items-center justify-between text-[10px] font-bold text-slate-600 dark:text-slate-300">
+                        <span>Barometer Siswi Putri:</span>
+                        <span class="font-extrabold text-rose-600 dark:text-rose-400">{{ $w['keputrian']['today_total_target'] ?? $w['keputrian']['total_records'] }} Siswi</span>
+                    </div>
+                    <div class="grid grid-cols-5 gap-1 text-center text-[10px]">
+                        <div class="p-1 rounded-md bg-emerald-100/70 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 font-bold" title="Hadir">
+                            <span class="block text-[8px] uppercase">Hadir</span>
+                            <span class="font-black text-xs">{{ $w['keputrian']['today_hadir'] ?? 0 }}</span>
+                        </div>
+                        <div class="p-1 rounded-md bg-amber-100/70 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 font-bold" title="Sakit">
+                            <span class="block text-[8px] uppercase">Sakit</span>
+                            <span class="font-black text-xs">{{ $w['keputrian']['today_sakit'] ?? 0 }}</span>
+                        </div>
+                        <div class="p-1 rounded-md bg-sky-100/70 dark:bg-sky-950/60 text-sky-800 dark:text-sky-300 font-bold" title="Izin">
+                            <span class="block text-[8px] uppercase">Izin</span>
+                            <span class="font-black text-xs">{{ $w['keputrian']['today_izin'] ?? 0 }}</span>
+                        </div>
+                        <div class="p-1 rounded-md bg-rose-100/70 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300 font-bold" title="Alpa">
+                            <span class="block text-[8px] uppercase">Alpa</span>
+                            <span class="font-black text-xs">{{ $w['keputrian']['today_alpa'] ?? 0 }}</span>
+                        </div>
+                        <div class="p-1 rounded-md bg-purple-100/70 dark:bg-purple-950/60 text-purple-800 dark:text-purple-300 font-bold" title="Udzur / Halangan">
+                            <span class="block text-[8px] uppercase">Udzur</span>
+                            <span class="font-black text-xs">{{ $w['keputrian']['today_udzur'] ?? 0 }}</span>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="pt-1">
@@ -363,8 +438,8 @@
                 </div>
 
                 <div class="text-[10px] text-slate-400 dark:text-slate-500 flex items-center justify-between pt-1">
-                    <span>Total Sesi: {{ $w['extracurricular']['total_records'] }}</span>
-                    <span>Hadir: {{ $w['extracurricular']['hadir_records'] }}</span>
+                    <span>Partisipasi Hari Ini: <strong class="text-slate-700 dark:text-slate-300">{{ $w['extracurricular']['today_hadir'] ?? 0 }} Siswa</strong></span>
+                    <span>Total Siswa: {{ $w['extracurricular']['total_records'] ?? 0 }}</span>
                 </div>
 
                 <div class="pt-1">

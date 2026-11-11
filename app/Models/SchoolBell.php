@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Services\NationalAnthemService;
+use App\Services\QuranDataService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -19,6 +21,9 @@ class SchoolBell extends Model
         'audio_url',
         'surah_number',
         'surah_name',
+        'surah_numbers',
+        'anthem_ids',
+        'playlist',
         'volume',
         'duration_seconds',
         'description',
@@ -33,8 +38,125 @@ class SchoolBell extends Model
         'volume' => 'integer',
         'duration_seconds' => 'integer',
         'surah_number' => 'integer',
+        'surah_numbers' => 'array',
+        'anthem_ids' => 'array',
+        'playlist' => 'array',
         'order' => 'integer',
     ];
+
+    protected $appends = [
+        'playlist_items',
+        'anthem_id',
+    ];
+
+    /**
+     * Dapatkan ID lagu nasional pertama (kompatibilitas backward)
+     */
+    public function getAnthemIdAttribute(): ?string
+    {
+        $ids = is_array($this->anthem_ids) ? $this->anthem_ids : (json_decode($this->anthem_ids ?? '[]', true) ?: []);
+
+        return $ids[0] ?? null;
+    }
+
+    /**
+     * Dapatkan daftar item playlist audio untuk bel ini
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    public function getPlaylistItemsAttribute(): array
+    {
+        return $this->getPlaylistItems();
+    }
+
+    /**
+     * Dapatkan daftar item playlist audio (Surah/Lagu Nasional/Custom)
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    public function getPlaylistItems(): array
+    {
+        if (! empty($this->playlist) && is_array($this->playlist)) {
+            return $this->playlist;
+        }
+
+        if ($this->sound_type === 'murottal') {
+            $numbers = ! empty($this->surah_numbers) && is_array($this->surah_numbers)
+                ? $this->surah_numbers
+                : ($this->surah_number ? [$this->surah_number] : []);
+
+            $items = [];
+            foreach ($numbers as $num) {
+                $surah = QuranDataService::getSurah((int) $num);
+                if ($surah) {
+                    $items[] = [
+                        'id' => $surah['number'],
+                        'title' => 'Surah '.$surah['number'].'. '.$surah['name'],
+                        'name' => $surah['name'],
+                        'translation' => $surah['translation'] ?? '',
+                        'audio_url' => $surah['audio_url'],
+                        'type' => 'murottal',
+                    ];
+                }
+            }
+
+            if (! empty($items)) {
+                return $items;
+            }
+
+            if ($this->audio_url) {
+                return [[
+                    'title' => $this->surah_name ? 'Surah '.$this->surah_name : $this->title,
+                    'audio_url' => $this->audio_url,
+                    'type' => 'murottal',
+                ]];
+            }
+        }
+
+        if ($this->sound_type === 'song') {
+            $ids = ! empty($this->anthem_ids) && is_array($this->anthem_ids)
+                ? $this->anthem_ids
+                : [];
+
+            if (! empty($ids)) {
+                $allAnthems = collect(NationalAnthemService::getNationalAnthems());
+                $items = [];
+                foreach ($ids as $id) {
+                    $anthem = $allAnthems->firstWhere('id', $id);
+                    if ($anthem) {
+                        $items[] = [
+                            'id' => $anthem['id'],
+                            'title' => $anthem['title'],
+                            'composer' => $anthem['composer'] ?? '',
+                            'audio_url' => $anthem['audio_url'],
+                            'type' => 'song',
+                        ];
+                    }
+                }
+                if (! empty($items)) {
+                    return $items;
+                }
+            }
+
+            if ($this->audio_url) {
+                return [[
+                    'title' => $this->title,
+                    'audio_url' => $this->audio_url,
+                    'type' => 'song',
+                ]];
+            }
+        }
+
+        if ($this->audio_url) {
+            return [[
+                'title' => $this->title,
+                'audio_url' => $this->audio_url,
+                'type' => $this->sound_type,
+            ]];
+        }
+
+        return [];
+    }
 
     /**
      * Scope untuk jadwal bel aktif

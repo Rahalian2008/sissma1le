@@ -214,6 +214,9 @@
         </div>
     </div>
 
+    <!-- Agenda & Kegiatan Sekolah Terupdate -->
+    @include('dashboards.partials.school_agendas_summary')
+
     <!-- Ringkasan LMS Pembelajaran & Perpustakaan Digital Kurikulum -->
     @include('dashboards.partials.lms_library_summary')
 </div>
