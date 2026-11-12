@@ -13,6 +13,30 @@ class EarlyLeaveRequest extends Model
 
     protected $guarded = ['id'];
 
+    protected static function booted(): void
+    {
+        static::creating(function (EarlyLeaveRequest $model) {
+            if (empty($model->letter_number)) {
+                $model->letter_number = static::generateLetterNumber($model->date ? Carbon::parse($model->date) : null);
+            }
+            if (empty($model->date)) {
+                $model->date = Carbon::today('Asia/Jakarta')->toDateString();
+            }
+            if (empty($model->leave_time)) {
+                $model->leave_time = Carbon::now('Asia/Jakarta')->format('H:i:s');
+            }
+            if (empty($model->reason_category)) {
+                $model->reason_category = 'Lainnya';
+            }
+            if (empty($model->reason)) {
+                $model->reason = 'Izin Pulang Cepat';
+            }
+            if (empty($model->status)) {
+                $model->status = 'PENDING';
+            }
+        });
+    }
+
     protected function casts(): array
     {
         return [

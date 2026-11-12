@@ -49,6 +49,33 @@ class SchoolBell extends Model
         'anthem_id',
     ];
 
+    protected static function booted(): void
+    {
+        static::creating(function (SchoolBell $bell) {
+            if (empty($bell->title)) {
+                $bell->title = 'Bel Sekolah';
+            }
+            if (empty($bell->time)) {
+                $bell->time = '07:00';
+            }
+            if (empty($bell->sound_type)) {
+                $bell->sound_type = 'chime';
+            }
+            if (empty($bell->days)) {
+                $bell->days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'];
+            }
+            if ($bell->volume === null) {
+                $bell->volume = 100;
+            }
+            if ($bell->duration_seconds === null) {
+                $bell->duration_seconds = 15;
+            }
+            if ($bell->is_active === null) {
+                $bell->is_active = true;
+            }
+        });
+    }
+
     /**
      * Dapatkan ID lagu nasional pertama (kompatibilitas backward)
      */

@@ -42,6 +42,39 @@ class QuranTahfidzRecord extends Model
 
     protected static function booted(): void
     {
+        static::creating(function (QuranTahfidzRecord $record) {
+            if (empty($record->class_id) && $record->student_id) {
+                $record->class_id = $record->student?->class_id;
+            }
+            if (empty($record->deposit_date)) {
+                $record->deposit_date = now()->toDateString();
+            }
+            if (empty($record->deposit_time)) {
+                $record->deposit_time = now()->format('H:i:s');
+            }
+            if (empty($record->examiner_name)) {
+                $record->examiner_name = $record->examiner?->name ?? 'Penguji Tahfidz';
+            }
+            if (empty($record->surah_name)) {
+                $record->surah_name = 'Al-Fatihah';
+            }
+            if (empty($record->ayat_range)) {
+                $record->ayat_range = '1-7';
+            }
+            if (empty($record->makhraj)) {
+                $record->makhraj = 'Baik';
+            }
+            if (empty($record->tajwid)) {
+                $record->tajwid = 'Baik';
+            }
+            if (empty($record->kelancaran)) {
+                $record->kelancaran = 'Baik';
+            }
+            if (empty($record->overall_grade)) {
+                $record->overall_grade = 'Lulus';
+            }
+        });
+
         static::saved(function (QuranTahfidzRecord $record) {
             if (($record->ayat_count ?? 0) >= 20) {
                 app(DisciplineAutomationService::class)->recordTahfidzAchievement($record);

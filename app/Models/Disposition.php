@@ -12,6 +12,24 @@ class Disposition extends Model
 
     protected $guarded = [];
 
+    protected static function booted(): void
+    {
+        static::creating(function (Disposition $disp) {
+            if (empty($disp->target_role_or_user)) {
+                $disp->target_role_or_user = 'Waka / Staf Terkait';
+            }
+            if (empty($disp->disposition_date)) {
+                $disp->disposition_date = now()->toDateString();
+            }
+            if (empty($disp->instructions)) {
+                $disp->instructions = 'Untuk ditindaklanjuti';
+            }
+            if (empty($disp->status)) {
+                $disp->status = 'Menunggu';
+            }
+        });
+    }
+
     /**
      * @return array<string, string>
      */

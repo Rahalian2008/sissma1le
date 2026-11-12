@@ -38,6 +38,27 @@ class BkCounselingSession extends Model
         'is_confidential' => 'boolean',
     ];
 
+    protected static function booted(): void
+    {
+        static::creating(function (BkCounselingSession $session) {
+            if (empty($session->session_code)) {
+                $session->session_code = 'BK-CS-'.date('Ymd').'-'.rand(100, 999);
+            }
+            if (empty($session->date)) {
+                $session->date = now()->toDateString();
+            }
+            if (empty($session->topic)) {
+                $session->topic = 'Konseling Individual';
+            }
+            if (empty($session->problem_description)) {
+                $session->problem_description = 'Deskripsi permasalahan konseling siswa';
+            }
+            if (empty($session->status)) {
+                $session->status = 'SELESAI';
+            }
+        });
+    }
+
     public function student(): BelongsTo
     {
         return $this->belongsTo(Student::class);

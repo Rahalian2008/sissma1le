@@ -13,6 +13,21 @@ class Asset extends Model
 
     protected $guarded = [];
 
+    protected static function booted(): void
+    {
+        static::creating(function (Asset $asset) {
+            if (empty($asset->code)) {
+                $asset->code = 'AST-'.date('Y').'-'.strtoupper(substr(uniqid(), -5));
+            }
+            if (empty($asset->name)) {
+                $asset->name = 'Aset Sarpras';
+            }
+            if (empty($asset->procurement_year)) {
+                $asset->procurement_year = (int) date('Y');
+            }
+        });
+    }
+
     /**
      * @return array<string, string>
      */

@@ -35,6 +35,27 @@ class ExtracurricularAttendance extends Model
         ];
     }
 
+    protected static function booted(): void
+    {
+        static::creating(function (ExtracurricularAttendance $model) {
+            if (empty($model->date)) {
+                $model->date = now()->toDateString();
+            }
+            if (empty($model->time)) {
+                $model->time = now()->format('H:i:s');
+            }
+            if (empty($model->class_id) && $model->student_id) {
+                $model->class_id = $model->student?->class_id;
+            }
+            if (empty($model->status)) {
+                $model->status = 'HADIR';
+            }
+            if (empty($model->method)) {
+                $model->method = 'MANUAL';
+            }
+        });
+    }
+
     public function extracurricular(): BelongsTo
     {
         return $this->belongsTo(Extracurricular::class);

@@ -14,6 +14,30 @@ class SchoolExitPermit extends Model
 
     protected $guarded = ['id'];
 
+    protected static function booted(): void
+    {
+        static::creating(function (SchoolExitPermit $model) {
+            if (empty($model->permit_number)) {
+                $model->permit_number = static::generatePermitNumber($model->date ? Carbon::parse($model->date) : null);
+            }
+            if (empty($model->date)) {
+                $model->date = Carbon::today('Asia/Jakarta')->toDateString();
+            }
+            if (empty($model->out_time)) {
+                $model->out_time = Carbon::now('Asia/Jakarta')->format('H:i:s');
+            }
+            if (empty($model->purpose)) {
+                $model->purpose = 'Izin Keluar Lingkungan Sekolah';
+            }
+            if (empty($model->reason)) {
+                $model->reason = 'Keperluan Mendesak';
+            }
+            if (empty($model->status)) {
+                $model->status = 'PENDING';
+            }
+        });
+    }
+
     protected function casts(): array
     {
         return [

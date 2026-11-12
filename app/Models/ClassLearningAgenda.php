@@ -12,6 +12,30 @@ class ClassLearningAgenda extends Model
 
     protected $guarded = ['id'];
 
+    protected static function booted(): void
+    {
+        static::creating(function (ClassLearningAgenda $agenda) {
+            if (empty($agenda->rombel)) {
+                $agenda->rombel = 'Kelas';
+            }
+            if (empty($agenda->date)) {
+                $agenda->date = now()->toDateString();
+            }
+            if (empty($agenda->time_slot)) {
+                $agenda->time_slot = 'Jam Ke-1';
+            }
+            if (empty($agenda->subject)) {
+                $agenda->subject = 'Mata Pelajaran';
+            }
+            if (empty($agenda->teacher_name)) {
+                $agenda->teacher_name = $agenda->teacher?->name ?? 'Guru Mata Pelajaran';
+            }
+            if (empty($agenda->learning_topic)) {
+                $agenda->learning_topic = 'Kegiatan Pembelajaran';
+            }
+        });
+    }
+
     protected $casts = [
         'date' => 'date',
         'teacher_signed' => 'boolean',

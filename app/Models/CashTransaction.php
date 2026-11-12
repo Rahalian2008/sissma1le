@@ -14,6 +14,31 @@ class CashTransaction extends Model
 
     protected $guarded = [];
 
+    protected static function booted(): void
+    {
+        static::creating(function (CashTransaction $tx) {
+            if (empty($tx->evidence_number)) {
+                $count = static::whereYear('transaction_date', date('Y'))->count() + 1;
+                $tx->evidence_number = 'BKK-'.date('Ymd').'-'.str_pad((string) $count, 4, '0', STR_PAD_LEFT);
+            }
+            if (empty($tx->transaction_date)) {
+                $tx->transaction_date = now()->toDateString();
+            }
+            if (empty($tx->description)) {
+                $tx->description = 'Transaksi Kas';
+            }
+            if (empty($tx->recipient_or_payer)) {
+                $tx->recipient_or_payer = 'Bendahara Sekolah';
+            }
+            if ($tx->debit === null) {
+                $tx->debit = 0;
+            }
+            if ($tx->credit === null) {
+                $tx->credit = 0;
+            }
+        });
+    }
+
     /**
      * @return array<string, string>
      */

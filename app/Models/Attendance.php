@@ -59,6 +59,24 @@ class Attendance extends Model
         ];
     }
 
+    protected static function booted(): void
+    {
+        static::creating(function (Attendance $att) {
+            if ($att->student_id && (empty($att->nis) || empty($att->nisn) || empty($att->student_name) || empty($att->class_id))) {
+                $student = Student::find($att->student_id);
+                if ($student) {
+                    $att->nis = $att->nis ?: ($student->nis ?? '-');
+                    $att->nisn = $att->nisn ?: ($student->nisn ?? '-');
+                    $att->student_name = $att->student_name ?: $student->name;
+                    $att->class_id = $att->class_id ?: $student->class_id;
+                }
+            }
+            if (empty($att->time)) {
+                $att->time = now()->format('H:i:s');
+            }
+        });
+    }
+
     public function student(): BelongsTo
     {
         return $this->belongsTo(Student::class);

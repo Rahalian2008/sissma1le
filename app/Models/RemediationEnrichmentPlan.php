@@ -31,6 +31,24 @@ class RemediationEnrichmentPlan extends Model
         ];
     }
 
+    protected static function booted(): void
+    {
+        static::creating(function (RemediationEnrichmentPlan $plan) {
+            if (empty($plan->topic)) {
+                $plan->topic = 'Program Pembelajaran';
+            }
+            if (empty($plan->description)) {
+                $plan->description = 'Rencana pelaksanaan remedial / pengayaan';
+            }
+            if (empty($plan->type)) {
+                $plan->type = 'remedial';
+            }
+            if (empty($plan->status)) {
+                $plan->status = 'terjadwal';
+            }
+        });
+    }
+
     public function courseClass(): BelongsTo
     {
         return $this->belongsTo(CourseClass::class);

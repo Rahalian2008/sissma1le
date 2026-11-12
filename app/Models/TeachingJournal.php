@@ -42,6 +42,24 @@ class TeachingJournal extends Model
         ];
     }
 
+    protected static function booted(): void
+    {
+        static::creating(function (TeachingJournal $journal) {
+            if (empty($journal->date)) {
+                $journal->date = now()->toDateString();
+            }
+            if (empty($journal->topic)) {
+                $journal->topic = 'Kegiatan Pembelajaran';
+            }
+            if (empty($journal->teaching_activities)) {
+                $journal->teaching_activities = 'Pelaksanaan kegiatan belajar mengajar sesuai kurikulum.';
+            }
+            if ($journal->meeting_number === null) {
+                $journal->meeting_number = 1;
+            }
+        });
+    }
+
     public function courseClass(): BelongsTo
     {
         return $this->belongsTo(CourseClass::class);

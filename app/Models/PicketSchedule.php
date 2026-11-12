@@ -14,6 +14,40 @@ class PicketSchedule extends Model
 
     protected $guarded = ['id'];
 
+    protected static function booted(): void
+    {
+        static::creating(function (PicketSchedule $picket) {
+            if (empty($picket->day_name)) {
+                $picket->day_name = 'Senin';
+            }
+            if (empty($picket->person_name)) {
+                $picket->person_name = $picket->teacher?->name ?? ($picket->user?->name ?? 'Petugas Piket');
+            }
+            if (empty($picket->day_number)) {
+                $dayMap = [
+                    'Senin' => 1, 'Selasa' => 2, 'Rabu' => 3, 'Kamis' => 4,
+                    'Jumat' => 5, 'Sabtu' => 6, 'Minggu' => 7,
+                ];
+                $picket->day_number = $dayMap[$picket->day_name] ?? 1;
+            }
+            if (empty($picket->role_type)) {
+                $picket->role_type = 'GURU_PIKET';
+            }
+            if (empty($picket->location)) {
+                $picket->location = 'Pos Piket Gerbang & Lobi Utama';
+            }
+            if (empty($picket->start_time)) {
+                $picket->start_time = '06:30:00';
+            }
+            if (empty($picket->end_time)) {
+                $picket->end_time = '15:30:00';
+            }
+            if ($picket->is_active === null) {
+                $picket->is_active = true;
+            }
+        });
+    }
+
     protected function casts(): array
     {
         return [

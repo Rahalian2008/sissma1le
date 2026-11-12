@@ -14,6 +14,39 @@ class Guest extends Model
 
     protected $guarded = [];
 
+    protected static function booted(): void
+    {
+        static::creating(function (Guest $guest) {
+            if (empty($guest->ticket_number)) {
+                $guest->ticket_number = static::generateTicketNumber();
+            }
+            if (empty($guest->identity_number)) {
+                $guest->identity_number = '-';
+            }
+            if (empty($guest->phone)) {
+                $guest->phone = '-';
+            }
+            if (empty($guest->institution)) {
+                $guest->institution = 'Masyarakat Umum';
+            }
+            if (empty($guest->destination_department)) {
+                $guest->destination_department = 'Tata Usaha';
+            }
+            if (empty($guest->purpose)) {
+                $guest->purpose = 'Kunjungan';
+            }
+            if (empty($guest->check_in_at)) {
+                $guest->check_in_at = Carbon::now('Asia/Jakarta');
+            }
+            if (empty($guest->number_of_guests)) {
+                $guest->number_of_guests = 1;
+            }
+            if (empty($guest->status)) {
+                $guest->status = 'menunggu';
+            }
+        });
+    }
+
     /**
      * @return array<string, string>
      */

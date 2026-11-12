@@ -33,6 +33,24 @@ class BkHomeVisit extends Model
         'visit_date' => 'date',
     ];
 
+    protected static function booted(): void
+    {
+        static::creating(function (BkHomeVisit $visit) {
+            if (empty($visit->visit_code)) {
+                $visit->visit_code = 'BK-HV-'.date('Ymd').'-'.rand(100, 999);
+            }
+            if (empty($visit->visit_date)) {
+                $visit->visit_date = now()->toDateString();
+            }
+            if (empty($visit->case_background)) {
+                $visit->case_background = 'Kunjungan Rumah Siswa';
+            }
+            if (empty($visit->status)) {
+                $visit->status = 'TERLAKSANA';
+            }
+        });
+    }
+
     public function student(): BelongsTo
     {
         return $this->belongsTo(Student::class);

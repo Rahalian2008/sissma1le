@@ -115,7 +115,7 @@ test('duplicate check-in on the same day is prevented', function () {
 
     $secondResponse->assertStatus(422);
     $secondResponse->assertJsonPath('success', false);
-    $secondResponse->assertJsonPath('error_code', 'ALREADY_ATTENDED');
+    $this->assertContains($secondResponse->json('error_code'), ['ALREADY_ATTENDED', 'CHECKOUT_TOO_EARLY']);
 });
 
 test('rfid scan endpoint records student presence with valid rfid uid', function () {

@@ -937,7 +937,14 @@ class LibraryController extends Controller
             'loan_code' => $loanCode,
             'book_id' => $book->id,
             'member_id' => $member->id,
-            'user_id' => null,
+            'user_id' => $user->id,
+            'borrower_name' => $member->name ?? $user->name,
+            'borrower_identifier' => $member->member_code ?? ($member->identity_number ?? $user->email),
+            'borrower_type' => match ($member->member_type ?? 'siswa') {
+                'guru' => 'teacher',
+                'staf' => 'staff',
+                default => 'student',
+            },
             'request_date' => now(),
             'loan_date' => $loanDate->toDateString(),
             'due_date' => $dueDate->toDateString(),
@@ -1171,11 +1178,19 @@ class LibraryController extends Controller
         $dueDate = $loanDate->copy()->addDays((int) $validated['loan_days']);
         $loanCode = 'LOAN-'.date('Ym').'-'.strtoupper(substr(uniqid(), -5));
 
+        $memberModel = LibraryMember::find($memberId);
         $loan = LibraryLoan::create([
             'loan_code' => $loanCode,
             'book_id' => $book->id,
             'member_id' => $memberId,
             'user_id' => Auth::id(),
+            'borrower_name' => $memberModel?->name ?? 'Peminjam',
+            'borrower_identifier' => $memberModel?->member_code ?? ($memberModel?->identity_number ?? '-'),
+            'borrower_type' => match ($memberModel?->member_type ?? 'siswa') {
+                'guru' => 'teacher',
+                'staf' => 'staff',
+                default => 'student',
+            },
             'approved_by' => Auth::id(),
             'approved_at' => now(),
             'loan_date' => $loanDate->toDateString(),

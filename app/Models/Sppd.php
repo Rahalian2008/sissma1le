@@ -12,6 +12,34 @@ class Sppd extends Model
 
     protected $guarded = [];
 
+    protected static function booted(): void
+    {
+        static::creating(function (Sppd $sppd) {
+            if (empty($sppd->sppd_number)) {
+                $count = static::whereYear('departure_date', date('Y'))->count() + 1;
+                $sppd->sppd_number = '090/SPPD/'.str_pad((string) $count, 3, '0', STR_PAD_LEFT).'/'.date('Y');
+            }
+            if (empty($sppd->assignment_purpose)) {
+                $sppd->assignment_purpose = 'Tugas Kedinasan';
+            }
+            if (empty($sppd->departure_location)) {
+                $sppd->departure_location = 'SMAN 1 Lengkong';
+            }
+            if (empty($sppd->destination_location)) {
+                $sppd->destination_location = 'Dinas Pendidikan';
+            }
+            if (empty($sppd->departure_date)) {
+                $sppd->departure_date = now()->toDateString();
+            }
+            if (empty($sppd->return_date)) {
+                $sppd->return_date = now()->toDateString();
+            }
+            if (empty($sppd->ppk_name)) {
+                $sppd->ppk_name = 'Kepala Sekolah';
+            }
+        });
+    }
+
     /**
      * @return array<string, string>
      */

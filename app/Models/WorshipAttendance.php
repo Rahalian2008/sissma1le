@@ -45,6 +45,24 @@ class WorshipAttendance extends Model
 
     protected static function booted(): void
     {
+        static::creating(function (WorshipAttendance $worship) {
+            if (empty($worship->class_id) && $worship->student_id) {
+                $student = Student::find($worship->student_id);
+                if ($student) {
+                    $worship->class_id = $student->class_id;
+                }
+            }
+            if (empty($worship->time)) {
+                $worship->time = now()->format('H:i:s');
+            }
+            if (empty($worship->status)) {
+                $worship->status = 'HADIR';
+            }
+            if (empty($worship->method)) {
+                $worship->method = 'MANUAL';
+            }
+        });
+
         static::saved(function (WorshipAttendance $worship) {
             if ($worship->status === 'HADIR') {
                 app(DisciplineAutomationService::class)->recordWorshipAchievement($worship);

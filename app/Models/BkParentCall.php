@@ -30,6 +30,24 @@ class BkParentCall extends Model
         'call_date' => 'date',
     ];
 
+    protected static function booted(): void
+    {
+        static::creating(function (BkParentCall $call) {
+            if (empty($call->call_code)) {
+                $call->call_code = 'BK-PC-'.date('Ymd').'-'.rand(100, 999);
+            }
+            if (empty($call->call_date)) {
+                $call->call_date = now()->toDateString();
+            }
+            if (empty($call->reason)) {
+                $call->reason = 'Pemanggilan Orang Tua / Wali';
+            }
+            if (empty($call->status)) {
+                $call->status = 'SELESAI';
+            }
+        });
+    }
+
     public function student(): BelongsTo
     {
         return $this->belongsTo(Student::class);

@@ -28,6 +28,27 @@ class TeacherReflection extends Model
         ];
     }
 
+    protected static function booted(): void
+    {
+        static::creating(function (TeacherReflection $refl) {
+            if (empty($refl->reflection_date)) {
+                $refl->reflection_date = now()->toDateString();
+            }
+            if (empty($refl->success_notes)) {
+                $refl->success_notes = '-';
+            }
+            if (empty($refl->challenges_notes)) {
+                $refl->challenges_notes = '-';
+            }
+            if (empty($refl->follow_up_action)) {
+                $refl->follow_up_action = '-';
+            }
+            if (empty($refl->status)) {
+                $refl->status = 'selesai';
+            }
+        });
+    }
+
     public function courseClass(): BelongsTo
     {
         return $this->belongsTo(CourseClass::class);

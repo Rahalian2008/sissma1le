@@ -35,6 +35,27 @@ class StudentLegalization extends Model
         ];
     }
 
+    protected static function booted(): void
+    {
+        static::creating(function (StudentLegalization $model) {
+            if (empty($model->receipt_number)) {
+                $model->receipt_number = static::generateReceiptNumber();
+            }
+            if (empty($model->applicant_name)) {
+                $model->applicant_name = $model->student?->name ?? 'Pemohon';
+            }
+            if (empty($model->document_type)) {
+                $model->document_type = 'Ijazah';
+            }
+            if (empty($model->copies_count)) {
+                $model->copies_count = 1;
+            }
+            if (empty($model->status)) {
+                $model->status = 'diajukan';
+            }
+        });
+    }
+
     public function student(): BelongsTo
     {
         return $this->belongsTo(Student::class);

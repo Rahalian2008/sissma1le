@@ -16,6 +16,10 @@ class LibraryLoan extends Model
         'book_id',
         'member_id',
         'user_id',
+        'borrower_type',
+        'borrower_name',
+        'borrower_identifier',
+        'borrower_class_or_dept',
         'request_date',
         'loan_date',
         'due_date',
@@ -31,6 +35,48 @@ class LibraryLoan extends Model
         'request_notes',
         'notes',
     ];
+
+    protected static function booted(): void
+    {
+        static::creating(function (LibraryLoan $loan) {
+            if (empty($loan->loan_code)) {
+                $prefix = in_array(strtoupper((string) $loan->status), ['PENDING', 'MENUNGGU']) ? 'REQ' : 'LOAN';
+                $loan->loan_code = $prefix.'-'.date('Ym').'-'.strtoupper(substr(uniqid(), -5));
+            }
+            if (empty($loan->user_id)) {
+                $loan->user_id = auth()->id() ?? ($loan->member?->user_id ?? User::first()?->id ?? 1);
+            }
+            if (empty($loan->borrower_name)) {
+                $loan->borrower_name = $loan->member?->name ?? ($loan->user?->name ?? 'Peminjam');
+            }
+            if (empty($loan->borrower_identifier)) {
+                $loan->borrower_identifier = $loan->member?->member_code ?? ($loan->member?->identity_number ?? ($loan->user?->email ?? '-'));
+            }
+            if (empty($loan->borrower_type)) {
+                $memberType = $loan->member?->member_type ?? 'siswa';
+                $loan->borrower_type = match ($memberType) {
+                    'guru' => 'teacher',
+                    'staf' => 'staff',
+                    default => 'student',
+                };
+            }
+            if (empty($loan->loan_date)) {
+                $loan->loan_date = now()->toDateString();
+            }
+            if (empty($loan->due_date)) {
+                $loan->due_date = now()->addDays(7)->toDateString();
+            }
+            if ($loan->fine_amount === null) {
+                $loan->fine_amount = 0;
+            }
+            if ($loan->is_fine_paid === null) {
+                $loan->is_fine_paid = false;
+            }
+            if ($loan->extension_count === null) {
+                $loan->extension_count = 0;
+            }
+        });
+    }
 
     protected function casts(): array
     {
