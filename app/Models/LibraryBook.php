@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class LibraryBook extends Model
 {
@@ -16,6 +17,7 @@ class LibraryBook extends Model
     protected $fillable = [
         'book_code',
         'title',
+        'slug',
         'author',
         'publisher',
         'publish_year',
@@ -41,6 +43,42 @@ class LibraryBook extends Model
         'loans_count',
         'is_active',
     ];
+
+    protected static function booted(): void
+    {
+        static::creating(function (LibraryBook $book) {
+            if (empty($book->slug)) {
+                $book->slug = static::generateUniqueSlug($book->title ?? $book->book_code ?? 'buku');
+            }
+        });
+
+        static::updating(function (LibraryBook $book) {
+            if (empty($book->slug) && ! empty($book->title)) {
+                $book->slug = static::generateUniqueSlug($book->title, $book->id);
+            }
+        });
+    }
+
+    /**
+     * Hasilkan slug unik untuk buku
+     */
+    public static function generateUniqueSlug(string $title, ?int $ignoreId = null): string
+    {
+        $baseSlug = Str::slug($title);
+        if (empty($baseSlug)) {
+            $baseSlug = 'buku';
+        }
+
+        $slug = $baseSlug;
+        $counter = 1;
+
+        while (static::where('slug', $slug)->when($ignoreId, fn ($q) => $q->where('id', '!=', $ignoreId))->exists()) {
+            $slug = $baseSlug.'-'.$counter;
+            $counter++;
+        }
+
+        return $slug;
+    }
 
     protected function casts(): array
     {

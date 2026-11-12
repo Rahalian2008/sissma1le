@@ -73,6 +73,41 @@ test('user dapat menambah buku baru ke katalog perpustakaan', function () {
     ]);
 });
 
+test('buku baru otomatis dibuatkan slug unik dan tidak menyebabkan query exception field slug', function () {
+    $response = $this->actingAs($this->user)->post(route('library.books.store'), [
+        'book_code' => 'LIB-2026-0AE9',
+        'title' => 'putih',
+        'author' => 'asep kuswara',
+        'publish_year' => 2026,
+        'total_copies' => 1,
+        'book_type' => 'fisik',
+        'language' => 'Indonesia',
+        'source' => 'Pengadaan Sekolah',
+    ]);
+
+    $response->assertRedirect();
+    $this->assertDatabaseHas('library_books', [
+        'book_code' => 'LIB-2026-0AE9',
+        'title' => 'putih',
+        'slug' => 'putih',
+    ]);
+
+    // Tambah buku kedua dengan judul sama untuk verifikasi slug unik
+    $response2 = $this->actingAs($this->user)->post(route('library.books.store'), [
+        'book_code' => 'LIB-2026-0AE10',
+        'title' => 'putih',
+        'author' => 'penulis lain',
+        'total_copies' => 1,
+        'book_type' => 'fisik',
+    ]);
+
+    $response2->assertRedirect();
+    $this->assertDatabaseHas('library_books', [
+        'book_code' => 'LIB-2026-0AE10',
+        'slug' => 'putih-1',
+    ]);
+});
+
 test('user dapat membuka dan membaca e-book dengan reader Flip HTML', function () {
     $book = LibraryBook::create([
         'book_code' => 'EBOOK-FLIP-TEST',
@@ -480,7 +515,7 @@ test('user pengelola dapat mengedit dan menghapus buku langsung dari katalog buk
     $waliKelas = User::factory()->create([
         'name' => 'Guru Wali Kelas Test',
         'role' => 'wali_kelas',
-        'roles' => ['wali_kelas', 'guru'],
+        'roles' => ['wali_kelas', 'guru', 'pengelola_perpustakaan'],
     ]);
 
     expect($waliKelas->canManageLibrary())->toBeTrue();

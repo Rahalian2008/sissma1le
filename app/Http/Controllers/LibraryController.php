@@ -347,6 +347,7 @@ class LibraryController extends Controller
         $book = LibraryBook::create([
             'book_code' => $validated['book_code'],
             'title' => $validated['title'],
+            'slug' => LibraryBook::generateUniqueSlug($validated['title']),
             'author' => $validated['author'],
             'publisher' => $validated['publisher'] ?? null,
             'publish_year' => $validated['publish_year'] ?? null,
@@ -492,6 +493,7 @@ class LibraryController extends Controller
         $book->update([
             'book_code' => $validated['book_code'],
             'title' => $validated['title'],
+            'slug' => $book->slug ?: LibraryBook::generateUniqueSlug($validated['title'], $book->id),
             'author' => $validated['author'],
             'publisher' => $validated['publisher'] ?? null,
             'publish_year' => $validated['publish_year'] ?? null,
