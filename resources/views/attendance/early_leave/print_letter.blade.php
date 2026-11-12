@@ -7,62 +7,69 @@
     <style>
         @page {
             size: A4 portrait;
-            margin: 15mm 20mm;
+            margin: 8mm 14mm 6mm 14mm;
+        }
+        * {
+            box-sizing: border-box;
         }
         body {
             font-family: 'Times New Roman', Times, serif;
-            font-size: 11.5pt;
-            line-height: 1.5;
+            font-size: 10pt;
+            line-height: 1.35;
             color: #000;
             background: #fff;
             margin: 0;
-            padding: 10px;
+            padding: 8px;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
         }
         .container {
-            max-width: 800px;
+            max-width: 780px;
             margin: 0 auto;
         }
         .no-print-bar {
             background: #f1f5f9;
             border: 1px solid #cbd5e1;
             border-radius: 8px;
-            padding: 10px 16px;
-            margin-bottom: 20px;
+            padding: 8px 14px;
+            margin-bottom: 12px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             font-family: system-ui, -apple-system, sans-serif;
-            font-size: 13px;
+            font-size: 12px;
         }
         .btn-print {
             background: #d97706;
             color: #fff;
             border: none;
-            padding: 8px 18px;
+            padding: 6px 16px;
             border-radius: 6px;
             font-weight: bold;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
             gap: 6px;
+            font-size: 12px;
         }
         .btn-print:hover { background: #b45309; }
         .btn-close {
             background: #64748b;
             color: #fff;
             border: none;
-            padding: 8px 14px;
+            padding: 6px 12px;
             border-radius: 6px;
             cursor: pointer;
             margin-left: 6px;
+            font-size: 12px;
         }
         .title-block {
             text-align: center;
-            margin: 14px 0 18px 0;
+            margin: 6px 0 8px 0;
         }
         .title-block h3 {
             margin: 0;
-            font-size: 13.5pt;
+            font-size: 12pt;
             font-weight: bold;
             text-decoration: underline;
             letter-spacing: 0.5px;
@@ -71,14 +78,15 @@
         .meta-table {
             width: 100%;
             border-collapse: collapse;
-            margin: 10px 0 16px 0;
+            margin: 4px 0 6px 0;
         }
         .meta-table td {
-            padding: 4px 6px;
+            padding: 2px 4px;
             vertical-align: top;
+            font-size: 9.5pt;
         }
         .meta-table td.label {
-            width: 25%;
+            width: 27%;
             font-weight: 500;
         }
         .meta-table td.colon {
@@ -86,75 +94,116 @@
             text-align: center;
         }
         .meta-table td.value {
-            width: 73%;
+            width: 71%;
         }
         .info-box {
-            border: 1px solid #333;
+            border: 1px solid #444;
             background: #fafafa;
             border-radius: 4px;
-            padding: 10px 14px;
-            margin: 14px 0;
+            padding: 6px 10px;
+            margin: 6px 0;
         }
         .signatures {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 30px;
-            page-break-inside: avoid;
+            margin-top: 10px;
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
         }
         .signatures td {
             text-align: center;
             vertical-align: top;
             width: 25%;
             padding: 0 4px;
-            font-size: 10pt;
+            font-size: 9pt;
+            line-height: 1.25;
         }
         .sig-space {
-            height: 60px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         .sig-name {
             font-weight: bold;
             text-decoration: underline;
-            font-size: 10.5pt;
+            font-size: 9.5pt;
+            line-height: 1.2;
         }
         .sig-title {
-            font-size: 9pt;
+            font-size: 8.5pt;
             color: #222;
+            line-height: 1.2;
         }
         .watermark-valid {
             display: inline-block;
-            border: 1.5px solid #059669;
+            border: 1px solid #059669;
             color: #059669;
-            padding: 2px 6px;
-            font-size: 8pt;
+            padding: 1px 5px;
+            font-size: 7.5pt;
             font-weight: bold;
-            border-radius: 4px;
+            border-radius: 3px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            margin-top: 4px;
         }
         .school-archive-alert {
-            margin-top: 22px;
-            padding: 10px 14px;
-            border: 1.5px dashed #d97706;
+            margin-top: 8px;
+            padding: 5px 8px;
+            border: 1px dashed #d97706;
             background: #fffbeb;
-            font-size: 9.5pt;
+            font-size: 8pt;
+            line-height: 1.25;
             text-align: justify;
-            border-radius: 8px;
-            page-break-inside: avoid;
+            border-radius: 6px;
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
         }
         .pos-security-note {
-            margin-top: 18px;
-            padding: 8px 12px;
+            margin-top: 6px;
+            padding: 5px 8px;
             border: 1px dashed #64748b;
-            font-size: 8.5pt;
+            font-size: 8pt;
+            line-height: 1.25;
             background: #fff;
-            page-break-inside: avoid;
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+            border-radius: 6px;
         }
+
+        /* STRICT 1-PAGE PRINT FORMAT */
         @media print {
             .no-print-bar { display: none !important; }
-            body { padding: 0; }
+            html, body {
+                height: 100% !important;
+                max-height: 297mm !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: hidden !important;
+            }
+            .container {
+                max-width: 100% !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+                page-break-after: avoid !important;
+                break-after: avoid !important;
+            }
+            .header-kop-banner {
+                margin-bottom: 4px !important;
+                padding-bottom: 2px !important;
+            }
+            .header-kop-banner img {
+                max-height: 80px !important;
+                height: auto !important;
+            }
             .info-box { background: transparent !important; }
             .school-archive-alert { background: transparent !important; }
+            * {
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
         }
     </style>
 </head>
@@ -167,7 +216,7 @@
             </div>
             <div>
                 <button type="button" onclick="window.print()" class="btn-print">
-                    🖨️ Cetak Dokumen (Print)
+                    🖨️ Cetak Dokumen (1 Lembar A4)
                 </button>
                 <button type="button" onclick="window.close()" class="btn-close">
                     Tutup
@@ -184,7 +233,7 @@
         </div>
 
         <!-- Paragraf Pembuka -->
-        <p style="text-align: justify; margin-bottom: 12px; text-indent: 30px;">
+        <p style="text-align: justify; margin: 0 0 4px 0; text-indent: 24px; font-size: 9.5pt;">
             Menerangkan dengan sebenarnya bahwa siswa yang tercantum di bawah ini:
         </p>
 
@@ -213,14 +262,14 @@
         </table>
 
         <!-- Rincian Izin Pulang -->
-        <p style="text-align: justify; margin-bottom: 8px;">
+        <p style="text-align: justify; margin: 4px 0 3px 0; font-size: 9.5pt;">
             Diberikan izin untuk <strong>meninggalkan lingkungan sekolah / pulang mendahului jadwal KBM berakhir</strong> pada:
         </p>
 
         <div class="info-box">
             <table class="meta-table" style="margin: 0;">
                 <tr>
-                    <td class="label" style="width: 28%;">Hari, Tanggal</td>
+                    <td class="label" style="width: 27%;">Hari, Tanggal</td>
                     <td class="colon">:</td>
                     <td class="value"><strong>{{ \Carbon\Carbon::parse($earlyLeave->date)->translatedFormat('l, d F Y') }}</strong></td>
                 </tr>
@@ -254,7 +303,7 @@
         </div>
 
         <!-- Paragraf Penutup -->
-        <p style="text-align: justify; margin-top: 12px; text-indent: 30px;">
+        <p style="text-align: justify; margin: 4px 0 6px 0; text-indent: 24px; font-size: 9.5pt;">
             Demikian surat izin pulang cepat ini diberikan dengan sebenarnya untuk dipergunakan sebagaimana mestinya dan menjadi dokumen resmi sekolah.
         </p>
 
@@ -324,8 +373,8 @@
                         2. Verifikasi jam keluar dan pihak penjemput.<br>
                         3. Kode Verifikasi: <code>{{ $earlyLeave->qr_code_token ?? substr(md5($earlyLeave->id), 0, 12) }}</code>
                     </td>
-                    <td style="width: 25%; text-align: center; border-left: 1px dashed #94a3b8; padding-left: 10px;">
-                        Paraf Satpam / Petugas Jaga:<br><br><br>
+                    <td style="width: 25%; text-align: center; border-left: 1px dashed #94a3b8; padding-left: 8px;">
+                        Paraf Satpam / Petugas Jaga:<br><br>
                         ( .................................... )
                     </td>
                 </tr>
