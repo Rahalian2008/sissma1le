@@ -304,6 +304,15 @@
                                             <span>🚨</span>
                                             <span>Sirine Evakuasi</span>
                                         </span>
+                                    @elseif($bell->sound_type === 'soundboard')
+                                        @php
+                                            $sbItem = is_array($bell->playlist) && isset($bell->playlist[0]) ? $bell->playlist[0] : null;
+                                            $sbTitle = $sbItem['title'] ?? 'Soundboard Instan';
+                                        @endphp
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 font-bold border border-indigo-500/20 text-[11px]">
+                                            <span>🎛️</span>
+                                            <span>{{ $sbTitle }}</span>
+                                        </span>
                                     @else
                                         <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold border border-amber-500/20 text-[11px]">
                                             <span>🔔</span>
@@ -502,23 +511,30 @@
                     </p>
                 </div>
 
-                <!-- Kategori Filter Soundboard -->
-                <div class="flex items-center gap-1.5 flex-wrap">
-                    <button type="button" @click="soundboardCategory = 'all'" :class="soundboardCategory === 'all' ? 'bg-indigo-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200'" class="px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer">
-                        Semua ({{ count($instantSounds) }})
-                    </button>
-                    <button type="button" @click="soundboardCategory = 'Nada Bel'" :class="soundboardCategory === 'Nada Bel' ? 'bg-amber-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200'" class="px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer">
-                        🔔 Nada Bel
-                    </button>
-                    <button type="button" @click="soundboardCategory = 'Darurat & Mitigasi'" :class="soundboardCategory === 'Darurat & Mitigasi' ? 'bg-rose-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200'" class="px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer">
-                        🚨 Sirine Bahaya
-                    </button>
-                    <button type="button" @click="soundboardCategory = 'Sinyal & Upacara'" :class="soundboardCategory === 'Sinyal & Upacara' ? 'bg-purple-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200'" class="px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer">
-                        🎺 Upacara & Sinyal
-                    </button>
-                    <button type="button" @click="soundboardCategory = 'Otomasi KBM'" :class="soundboardCategory === 'Otomasi KBM' ? 'bg-emerald-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200'" class="px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer">
-                        🗣️ Pengumuman Narasi
-                    </button>
+                <!-- Kategori Filter & Pencarian Soundboard -->
+                <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+                    <div class="relative w-full sm:w-56">
+                        <input type="text" x-model="soundboardSearch" placeholder="Cari 12 jenis suara..." class="w-full px-3 py-1.5 pl-8 text-xs bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl outline-none text-slate-900 dark:text-white">
+                        <span class="absolute left-2.5 top-2 text-slate-400 text-xs">🔍</span>
+                    </div>
+
+                    <div class="flex items-center gap-1.5 flex-wrap">
+                        <button type="button" @click="soundboardCategory = 'all'" :class="soundboardCategory === 'all' ? 'bg-indigo-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200'" class="px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer">
+                            Semua ({{ count($instantSounds) }})
+                        </button>
+                        <button type="button" @click="soundboardCategory = 'bel'" :class="soundboardCategory === 'bel' ? 'bg-amber-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200'" class="px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer">
+                            🔔 Bel & Interkom (3)
+                        </button>
+                        <button type="button" @click="soundboardCategory = 'darurat'" :class="soundboardCategory === 'darurat' ? 'bg-rose-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200'" class="px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer">
+                            🚨 Sirine Darurat (2)
+                        </button>
+                        <button type="button" @click="soundboardCategory = 'upacara'" :class="soundboardCategory === 'upacara' ? 'bg-purple-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200'" class="px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer">
+                            🎺 Upacara & Peluit (3)
+                        </button>
+                        <button type="button" @click="soundboardCategory = 'pengumuman'" :class="soundboardCategory === 'pengumuman' ? 'bg-emerald-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200'" class="px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer">
+                            🗣️ Pengumuman KBM (4)
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -526,7 +542,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 @foreach($instantSounds as $sound)
                     <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 hover:border-indigo-400 dark:hover:border-indigo-500 shadow-xs hover:shadow-md transition flex flex-col justify-between"
-                         x-show="soundboardCategory === 'all' || soundboardCategory === '{{ $sound['category'] }}'">
+                         x-show="matchSoundboard({{ json_encode($sound) }})">
                         <div>
                             <div class="flex items-center justify-between gap-2 mb-2">
                                 <span class="text-3xl">{{ $sound['icon'] }}</span>
@@ -694,6 +710,7 @@
                         <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Tipe Bunyi <span class="text-rose-500">*</span></label>
                         <select name="sound_type" x-model="formData.sound_type" required class="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl outline-none text-slate-900 dark:text-white">
                             <option value="chime">🔔 Nada Chime Bel Standar</option>
+                            <option value="soundboard">🎛️ Soundboard / Efek Suara Instan (12 Jenis)</option>
                             <option value="murottal">📖 Murottal Al-Qur'an 114 Surah</option>
                             <option value="voice">🗣️ Narasi Suara Pengumuman Saja</option>
                             <option value="siren">🚨 Sirine Peringatan / Darurat</option>
@@ -708,6 +725,61 @@
                     <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Teks Narasi Pengumuman Suara (Dibacakan Otomatis)</label>
                     <input type="text" name="voice_text" x-model="formData.voice_text" placeholder="Contoh: Saatnya jam pelajaran pertama dimulai. Selamat belajar." class="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl outline-none text-slate-900 dark:text-white">
                     <p class="text-[10px] text-slate-400 mt-1">Sistem akan membacakan teks ini dalam Bahasa Indonesia yang jernih saat bel berbunyi.</p>
+                </div>
+
+                <!-- Pilihan 12 Suara Soundboard Instan jika sound_type = soundboard -->
+                <div x-show="formData.sound_type === 'soundboard'" class="p-4 rounded-2xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800 space-y-3">
+                    <div class="flex items-center justify-between gap-2">
+                        <div>
+                            <label class="block text-xs font-bold text-indigo-900 dark:text-indigo-300">Pilih Efek Suara Soundboard (12 Pilihan Siap Bunyi)</label>
+                            <p class="text-[11px] text-indigo-700/80 dark:text-indigo-400/80">Pilih dari 12 nada bel, lonceng, sirine darurat, peluit, trompet, gong, atau narasi otomatis.</p>
+                        </div>
+                        <input type="hidden" name="soundboard_id" :value="formData.soundboard_id">
+                    </div>
+
+                    <!-- Kategori Filter Soundboard di Modal -->
+                    <div class="flex flex-wrap items-center gap-1.5 pt-1">
+                        <button type="button" @click="soundboardModalCategory = 'all'" :class="soundboardModalCategory === 'all' ? 'bg-indigo-600 text-white' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300'" class="px-2.5 py-1 rounded-lg text-[10.5px] font-bold border border-indigo-200 dark:border-indigo-800 transition cursor-pointer">
+                            Semua (12)
+                        </button>
+                        <button type="button" @click="soundboardModalCategory = 'bel'" :class="soundboardModalCategory === 'bel' ? 'bg-amber-600 text-white' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300'" class="px-2.5 py-1 rounded-lg text-[10.5px] font-bold border border-indigo-200 dark:border-indigo-800 transition cursor-pointer">
+                            🔔 Bel & Interkom (3)
+                        </button>
+                        <button type="button" @click="soundboardModalCategory = 'darurat'" :class="soundboardModalCategory === 'darurat' ? 'bg-rose-600 text-white' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300'" class="px-2.5 py-1 rounded-lg text-[10.5px] font-bold border border-indigo-200 dark:border-indigo-800 transition cursor-pointer">
+                            🚨 Sirine (2)
+                        </button>
+                        <button type="button" @click="soundboardModalCategory = 'upacara'" :class="soundboardModalCategory === 'upacara' ? 'bg-purple-600 text-white' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300'" class="px-2.5 py-1 rounded-lg text-[10.5px] font-bold border border-indigo-200 dark:border-indigo-800 transition cursor-pointer">
+                            🎺 Upacara & Sinyal (3)
+                        </button>
+                        <button type="button" @click="soundboardModalCategory = 'pengumuman'" :class="soundboardModalCategory === 'pengumuman' ? 'bg-emerald-600 text-white' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300'" class="px-2.5 py-1 rounded-lg text-[10.5px] font-bold border border-indigo-200 dark:border-indigo-800 transition cursor-pointer">
+                            🗣️ Pengumuman Narasi (4)
+                        </button>
+                    </div>
+
+                    <!-- Grid 12 Suara -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-56 overflow-y-auto p-1">
+                        @foreach($instantSounds as $s)
+                            <div class="p-3 rounded-xl border cursor-pointer transition flex items-start gap-2.5 relative select-none"
+                                 x-show="matchSoundboardModalCategory('{{ $s['category'] }}')"
+                                 :class="formData.soundboard_id === '{{ $s['id'] }}' ? 'bg-indigo-100 dark:bg-indigo-950/80 border-indigo-500 ring-2 ring-indigo-500/30' : 'bg-white dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 hover:border-indigo-300'"
+                                 @click="selectSoundboardOption({{ json_encode($s) }})">
+                                <span class="text-2xl shrink-0 mt-0.5">{{ $s['icon'] }}</span>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center justify-between gap-1">
+                                        <h5 class="text-xs font-extrabold text-slate-900 dark:text-white truncate">{{ $s['name'] }}</h5>
+                                        <span class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 shrink-0">{{ $s['badge'] }}</span>
+                                    </div>
+                                    <p class="text-[10.5px] text-slate-500 dark:text-slate-400 line-clamp-1 mt-0.5">{{ $s['description'] }}</p>
+                                    <div class="flex items-center justify-between mt-2 pt-1 border-t border-slate-100 dark:border-slate-700/50">
+                                        <span class="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 truncate">{{ $s['category'] }}</span>
+                                        <button type="button" @click.stop="playInstantSound('{{ $s['sound_type'] }}', '{{ addslashes($s['name']) }}', '{{ addslashes($s['voice_text'] ?? '') }}')" class="text-[10.5px] font-bold text-indigo-600 dark:text-indigo-300 hover:underline flex items-center gap-1 cursor-pointer shrink-0">
+                                            <span>▶️ Dengar</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
                 </div>
 
                 <!-- Pilihan Surah Murottal jika tipe sound_type = murottal (Multi-Select Didukung) -->
@@ -938,6 +1010,8 @@ function schoolBellApp() {
         surahSearch: '',
         surahCategory: 'all',
         soundboardCategory: 'all',
+        soundboardSearch: '',
+        soundboardModalCategory: 'all',
         anthemCategory: 'all',
 
         currentTimeDisplay: '{{ $currentTime }}:00 WIB',
@@ -986,6 +1060,7 @@ function schoolBellApp() {
             title: '',
             time: '07:00',
             sound_type: 'chime',
+            soundboard_id: 'chime-westminster',
             surah_number: '',
             surah_numbers: [],
             anthem_id: '',
@@ -1162,6 +1237,9 @@ function schoolBellApp() {
                 this.audioElement.src = bell.audio_url;
                 this.audioElement.volume = vol;
                 this.audioElement.play().catch(e => console.error(e));
+            } else if (bell.sound_type === 'soundboard') {
+                const instantType = bell.playlist?.[0]?.sound_type || (bell.audio_url && bell.audio_url.startsWith('soundboard:') ? bell.audio_url.replace('soundboard:', '') : 'westminster');
+                this.playInstantSound(instantType, bell.title, bell.voice_text);
             } else {
                 this.testChimeSound('westminster');
 
@@ -1641,10 +1719,65 @@ function schoolBellApp() {
         setInstantSoundAsBell(sound) {
             this.openAddModal();
             this.formData.title = sound.name;
-            this.formData.sound_type = sound.sound_type.startsWith('siren') ? 'siren' : (sound.voice_text ? 'voice' : 'chime');
+            this.formData.sound_type = 'soundboard';
+            this.formData.soundboard_id = sound.id;
             this.formData.voice_text = sound.voice_text || '';
             this.formData.duration_seconds = sound.voice_text ? 30 : 15;
             this.formData.description = sound.description;
+        },
+
+        matchSoundboard(sound) {
+            let catMatch = false;
+            if (this.soundboardCategory === 'all') {
+                catMatch = true;
+            } else if (this.soundboardCategory === 'bel') {
+                catMatch = ['Bel Jam Pelajaran', 'Bel Pengumuman', 'Bel Interkom'].includes(sound.category);
+            } else if (this.soundboardCategory === 'darurat') {
+                catMatch = ['Tanggap Darurat'].includes(sound.category);
+            } else if (this.soundboardCategory === 'upacara') {
+                catMatch = ['Tata Tertib Lapangan', 'Upacara & Seremoni'].includes(sound.category);
+            } else if (this.soundboardCategory === 'pengumuman') {
+                catMatch = ['Otomasi KBM', 'Ibadah & Karakter'].includes(sound.category);
+            }
+
+            if (!catMatch) return false;
+
+            if (!this.soundboardSearch) return true;
+            const q = this.soundboardSearch.toLowerCase();
+            return (sound.name && sound.name.toLowerCase().includes(q)) ||
+                   (sound.category && sound.category.toLowerCase().includes(q)) ||
+                   (sound.description && sound.description.toLowerCase().includes(q)) ||
+                   (sound.voice_text && sound.voice_text.toLowerCase().includes(q));
+        },
+
+        matchSoundboardModalCategory(category) {
+            if (this.soundboardModalCategory === 'all') return true;
+            if (this.soundboardModalCategory === 'bel') {
+                return ['Bel Jam Pelajaran', 'Bel Pengumuman', 'Bel Interkom'].includes(category);
+            }
+            if (this.soundboardModalCategory === 'darurat') {
+                return ['Tanggap Darurat'].includes(category);
+            }
+            if (this.soundboardModalCategory === 'upacara') {
+                return ['Tata Tertib Lapangan', 'Upacara & Seremoni'].includes(category);
+            }
+            if (this.soundboardModalCategory === 'pengumuman') {
+                return ['Otomasi KBM', 'Ibadah & Karakter'].includes(category);
+            }
+            return true;
+        },
+
+        selectSoundboardOption(sound) {
+            this.formData.soundboard_id = sound.id;
+            if (!this.formData.title || this.formData.title === '' || this.formData.title.startsWith('Bel ')) {
+                this.formData.title = sound.name;
+            }
+            if (sound.voice_text && !this.formData.voice_text) {
+                this.formData.voice_text = sound.voice_text;
+            }
+            if (!this.formData.description) {
+                this.formData.description = sound.description;
+            }
         },
 
         openLyricsModal(anthem) {
@@ -1656,10 +1789,12 @@ function schoolBellApp() {
             this.isEdit = false;
             this.editUrl = '';
             this.surahModalSearch = '';
+            this.soundboardModalCategory = 'all';
             this.formData = {
                 title: '',
                 time: '07:00',
                 sound_type: 'chime',
+                soundboard_id: 'chime-westminster',
                 surah_number: '',
                 surah_numbers: [],
                 anthem_id: '',
@@ -1679,6 +1814,7 @@ function schoolBellApp() {
             this.isEdit = true;
             this.editUrl = `{{ url('/school-bell') }}/${bell.id}`;
             this.surahModalSearch = '';
+            this.soundboardModalCategory = 'all';
 
             let parsedDays = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'];
             if (Array.isArray(bell.days)) {
@@ -1719,10 +1855,23 @@ function schoolBellApp() {
                 parsedAnthems = [bell.anthem_id];
             }
 
+            let parsedSoundboardId = 'chime-westminster';
+            if (bell.sound_type === 'soundboard') {
+                if (bell.playlist && bell.playlist[0] && bell.playlist[0].id) {
+                    parsedSoundboardId = bell.playlist[0].id;
+                } else if (bell.audio_url && bell.audio_url.startsWith('soundboard:')) {
+                    const subType = bell.audio_url.replace('soundboard:', '');
+                    const allSounds = @json($instantSounds);
+                    const found = allSounds.find(s => s.sound_type === subType || s.id === subType);
+                    if (found) parsedSoundboardId = found.id;
+                }
+            }
+
             this.formData = {
                 title: bell.title || '',
                 time: (bell.time || '07:00').substring(0, 5),
                 sound_type: bell.sound_type || 'chime',
+                soundboard_id: parsedSoundboardId,
                 surah_number: bell.surah_number || (parsedSurahs[0] || ''),
                 surah_numbers: parsedSurahs,
                 anthem_id: bell.anthem_id || (parsedAnthems[0] || ''),

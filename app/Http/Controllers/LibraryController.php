@@ -344,6 +344,10 @@ class LibraryController extends Controller
 
         $isDigitalFlip = ! empty($validated['is_digital_flip']) || $validated['book_type'] === 'digital' || ! empty($digitalContent);
 
+        $pagesCount = ! empty($validated['pages_count'])
+            ? (int) $validated['pages_count']
+            : (is_array($digitalContent) ? count($digitalContent) : 0);
+
         $book = LibraryBook::create([
             'book_code' => $validated['book_code'],
             'title' => $validated['title'],
@@ -361,7 +365,7 @@ class LibraryController extends Controller
             'book_type' => $validated['book_type'],
             'cover_image' => $coverPath,
             'description' => $validated['description'] ?? null,
-            'pages_count' => $validated['pages_count'] ?? (is_array($digitalContent) ? count($digitalContent) : null),
+            'pages_count' => $pagesCount,
             'language' => $validated['language'] ?? 'Indonesia',
             'source' => $validated['source'] ?? 'Pengadaan Sekolah',
             'digital_file_path' => $digitalFilePath,
@@ -490,6 +494,10 @@ class LibraryController extends Controller
 
         $isDigitalFlip = ! empty($validated['is_digital_flip']) || $validated['book_type'] === 'digital' || ! empty($digitalContent);
 
+        $pagesCount = ! empty($validated['pages_count'])
+            ? (int) $validated['pages_count']
+            : (is_array($digitalContent) ? count($digitalContent) : ($book->pages_count ?? 0));
+
         $book->update([
             'book_code' => $validated['book_code'],
             'title' => $validated['title'],
@@ -507,7 +515,7 @@ class LibraryController extends Controller
             'book_type' => $validated['book_type'],
             'cover_image' => $coverPath,
             'description' => $validated['description'] ?? null,
-            'pages_count' => $validated['pages_count'] ?? (is_array($digitalContent) ? count($digitalContent) : $book->pages_count),
+            'pages_count' => $pagesCount,
             'language' => $validated['language'] ?? 'Indonesia',
             'source' => $validated['source'] ?? 'Pengadaan Sekolah',
             'digital_file_path' => $digitalFilePath,

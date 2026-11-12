@@ -46,15 +46,27 @@ class LibraryBook extends Model
 
     protected static function booted(): void
     {
-        static::creating(function (LibraryBook $book) {
+        static::saving(function (LibraryBook $book) {
             if (empty($book->slug)) {
-                $book->slug = static::generateUniqueSlug($book->title ?? $book->book_code ?? 'buku');
+                $book->slug = static::generateUniqueSlug($book->title ?? $book->book_code ?? 'buku', $book->id);
             }
-        });
-
-        static::updating(function (LibraryBook $book) {
-            if (empty($book->slug) && ! empty($book->title)) {
-                $book->slug = static::generateUniqueSlug($book->title, $book->id);
+            if ($book->pages_count === null) {
+                $book->pages_count = 0;
+            }
+            if (array_key_exists('page_count', $book->attributes) && $book->attributes['page_count'] === null) {
+                $book->attributes['page_count'] = $book->pages_count ?? 0;
+            }
+            if (array_key_exists('category_name', $book->attributes) && empty($book->attributes['category_name'])) {
+                $book->attributes['category_name'] = 'Umum';
+            }
+            if (array_key_exists('collection_type', $book->attributes) && empty($book->attributes['collection_type'])) {
+                $book->attributes['collection_type'] = $book->book_type === 'digital' ? 'digital' : ($book->book_type === 'fisik' ? 'physical' : 'both');
+            }
+            if (array_key_exists('curriculum', $book->attributes) && empty($book->attributes['curriculum'])) {
+                $book->attributes['curriculum'] = 'Kurikulum Merdeka';
+            }
+            if (array_key_exists('language', $book->attributes) && empty($book->attributes['language'])) {
+                $book->attributes['language'] = 'Indonesia';
             }
         });
     }

@@ -336,3 +336,49 @@ test('can create and update school bell schedule with multiple national anthems'
     expect($bell->playlist_items[1]['title'])->toBe('Hari Merdeka');
     expect($bell->playlist_items[2]['title'])->toBe('Garuda Pancasila');
 });
+
+test('can create and update school bell schedule with soundboard sound', function () {
+    $admin = User::firstOrCreate(
+        ['email' => 'admin_test@sman1lengkong.sch.id'],
+        ['name' => 'Admin Test', 'password' => bcrypt('password'), 'role' => 'admin', 'is_active' => true]
+    );
+
+    $response = $this->actingAs($admin)->post(route('school_bell.store'), [
+        'title' => 'Sirine Siaga Evakuasi Darurat',
+        'time' => '10:00',
+        'days' => ['Senin', 'Selasa'],
+        'sound_type' => 'soundboard',
+        'soundboard_id' => 'siren-emergency',
+        'duration_seconds' => 30,
+        'volume' => 100,
+    ]);
+
+    $response->assertSessionHasNoErrors();
+    $response->assertRedirect();
+
+    $bell = SchoolBell::where('title', 'Sirine Siaga Evakuasi Darurat')->first();
+    expect($bell)->not->toBeNull();
+    expect($bell->sound_type)->toBe('soundboard');
+    expect($bell->audio_url)->toBe('soundboard:siren_fire');
+    expect($bell->playlist)->toBeArray();
+    expect($bell->playlist[0]['id'])->toBe('siren-emergency');
+
+    // Update with another soundboard item
+    $updateResponse = $this->actingAs($admin)->put(route('school_bell.update', $bell), [
+        'title' => 'Peluit Lapangan Apel',
+        'time' => '06:45',
+        'days' => ['Senin'],
+        'sound_type' => 'soundboard',
+        'soundboard_id' => 'whistle-picket',
+        'duration_seconds' => 15,
+        'volume' => 95,
+    ]);
+
+    $updateResponse->assertSessionHasNoErrors();
+    $bell->refresh();
+    expect($bell->title)->toBe('Peluit Lapangan Apel');
+    expect($bell->time)->toBe('06:45');
+    expect($bell->sound_type)->toBe('soundboard');
+    expect($bell->audio_url)->toBe('soundboard:whistle');
+    expect($bell->playlist[0]['id'])->toBe('whistle-picket');
+});

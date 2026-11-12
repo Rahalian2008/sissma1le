@@ -108,6 +108,27 @@ test('buku baru otomatis dibuatkan slug unik dan tidak menyebabkan query excepti
     ]);
 });
 
+test('buku baru tanpa pages_count tidak menyebabkan query exception column pages_count cannot be null', function () {
+    $response = $this->actingAs($this->user)->post(route('library.books.store'), [
+        'book_code' => 'LIB-2026-A8E0',
+        'title' => 'PAI',
+        'author' => 'Budi Permana, R. Kurweni Ukar, Dela Chaerani, Solehkun Kodir',
+        'publish_year' => 2026,
+        'total_copies' => 3,
+        'book_type' => 'fisik',
+        'pages_count' => null,
+        'language' => 'Indonesia',
+        'source' => 'Pengadaan Sekolah',
+    ]);
+
+    $response->assertRedirect();
+    $this->assertDatabaseHas('library_books', [
+        'book_code' => 'LIB-2026-A8E0',
+        'title' => 'PAI',
+        'pages_count' => 0,
+    ]);
+});
+
 test('user dapat membuka dan membaca e-book dengan reader Flip HTML', function () {
     $book = LibraryBook::create([
         'book_code' => 'EBOOK-FLIP-TEST',

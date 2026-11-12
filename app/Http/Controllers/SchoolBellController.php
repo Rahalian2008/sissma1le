@@ -106,7 +106,8 @@ class SchoolBellController extends Controller
             'time' => ['required', 'string', 'regex:/^([01][0-9]|2[0-3]):[0-5][0-9](:[0-5][0-9])?$/'],
             'days' => ['required', 'array', 'min:1'],
             'days.*' => ['string', 'in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu,Minggu'],
-            'sound_type' => ['required', 'string', 'in:chime,murottal,voice,siren,custom,song'],
+            'sound_type' => ['required', 'string', 'in:chime,murottal,voice,siren,custom,song,soundboard'],
+            'soundboard_id' => ['nullable', 'string', 'max:100'],
             'surah_number' => ['nullable', 'integer', 'between:1,114'],
             'surah_numbers' => ['nullable', 'array'],
             'surah_numbers.*' => ['integer', 'between:1,114'],
@@ -187,6 +188,23 @@ class SchoolBellController extends Controller
                     $audioUrl = $items[0]['audio_url'];
                 }
             }
+        } elseif ($validated['sound_type'] === 'soundboard') {
+            $sbId = $request->input('soundboard_id') ?? 'chime-westminster';
+            $allInstant = collect(NationalAnthemService::getInstantSounds());
+            $sound = $allInstant->firstWhere('id', $sbId) ?? $allInstant->first();
+            if ($sound) {
+                $audioUrl = 'soundboard:'.$sound['sound_type'];
+                $playlist = [[
+                    'type' => 'soundboard',
+                    'id' => $sound['id'],
+                    'sound_type' => $sound['sound_type'],
+                    'title' => $sound['name'],
+                    'voice_text' => $sound['voice_text'] ?? null,
+                ]];
+                if (empty($validated['voice_text']) && ! empty($sound['voice_text'])) {
+                    $validated['voice_text'] = $sound['voice_text'];
+                }
+            }
         }
 
         $time = substr($validated['time'], 0, 5);
@@ -203,7 +221,7 @@ class SchoolBellController extends Controller
             'anthem_ids' => $anthemIds,
             'playlist' => $playlist,
             'volume' => $validated['volume'] ?? 100,
-            'duration_seconds' => $validated['duration_seconds'] ?? ($validated['sound_type'] === 'murottal' ? 900 : 15),
+            'duration_seconds' => $validated['duration_seconds'] ?? ($validated['sound_type'] === 'murottal' ? 900 : ($validated['sound_type'] === 'soundboard' ? 30 : 15)),
             'description' => $validated['description'] ?? null,
             'voice_text' => $validated['voice_text'] ?? null,
             'is_active' => (bool) ($validated['is_active'] ?? true),
@@ -250,7 +268,8 @@ class SchoolBellController extends Controller
             'time' => ['required', 'string', 'regex:/^([01][0-9]|2[0-3]):[0-5][0-9](:[0-5][0-9])?$/'],
             'days' => ['required', 'array', 'min:1'],
             'days.*' => ['string', 'in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu,Minggu'],
-            'sound_type' => ['required', 'string', 'in:chime,murottal,voice,siren,custom,song'],
+            'sound_type' => ['required', 'string', 'in:chime,murottal,voice,siren,custom,song,soundboard'],
+            'soundboard_id' => ['nullable', 'string', 'max:100'],
             'surah_number' => ['nullable', 'integer', 'between:1,114'],
             'surah_numbers' => ['nullable', 'array'],
             'surah_numbers.*' => ['integer', 'between:1,114'],
@@ -339,6 +358,27 @@ class SchoolBellController extends Controller
             $surahName = null;
             $primarySurahNumber = null;
             $surahNumbers = null;
+        } elseif ($validated['sound_type'] === 'soundboard') {
+            $sbId = $request->input('soundboard_id') ?? 'chime-westminster';
+            $allInstant = collect(NationalAnthemService::getInstantSounds());
+            $sound = $allInstant->firstWhere('id', $sbId) ?? $allInstant->first();
+            if ($sound) {
+                $audioUrl = 'soundboard:'.$sound['sound_type'];
+                $playlist = [[
+                    'type' => 'soundboard',
+                    'id' => $sound['id'],
+                    'sound_type' => $sound['sound_type'],
+                    'title' => $sound['name'],
+                    'voice_text' => $sound['voice_text'] ?? null,
+                ]];
+                if (empty($validated['voice_text']) && ! empty($sound['voice_text'])) {
+                    $validated['voice_text'] = $sound['voice_text'];
+                }
+            }
+            $surahName = null;
+            $primarySurahNumber = null;
+            $surahNumbers = null;
+            $anthemIds = null;
         } elseif (in_array($validated['sound_type'], ['custom'], true)) {
             $surahName = null;
             $surahNumbers = null;
