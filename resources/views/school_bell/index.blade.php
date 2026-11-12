@@ -180,10 +180,10 @@
             <button type="button" @click="openAddModal()" class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-md transition flex items-center gap-1.5 cursor-pointer">
                 <span>+ Tambah Jadwal Bel</span>
             </button>
-            <form action="{{ route('school_bell.reset_defaults') }}" method="POST" onsubmit="return confirm('Kembalikan seluruh jadwal ke setelan standar sekolah (13 jadwal)? Jadwal saat ini akan ditimpa.')" class="inline">
+            <form action="{{ route('school_bell.reset_defaults') }}" method="POST" onsubmit="return confirm('Kembalikan seluruh jadwal ke setelan resmi SMAN 1 Lengkong TP 2026/2027 (52 jadwal lengkap)? Jadwal saat ini akan ditimpa.')" class="inline">
                 @csrf
-                <button type="submit" class="px-3 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30 font-bold text-xs transition flex items-center gap-1.5 cursor-pointer" title="Muat 13 Jadwal Default Sekolah">
-                    <span>🔄 Reset Standar</span>
+                <button type="submit" class="px-3 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30 font-bold text-xs transition flex items-center gap-1.5 cursor-pointer" title="Muat Jadwal Resmi TP 2026/2027">
+                    <span>🔄 Reset Standar (52 Jadwal)</span>
                 </button>
             </form>
             @if($allBells->count() > 0)
@@ -372,7 +372,7 @@
                                 <td colspan="8" class="py-12 text-center text-slate-400">
                                     <div class="text-3xl mb-2">🔔</div>
                                     <div class="text-sm font-bold text-slate-700 dark:text-slate-300">Belum ada jadwal bel yang terpasang</div>
-                                    <p class="text-xs text-slate-500 mt-1 max-w-md mx-auto">Seluruh jadwal telah dikosongkan. Anda dapat menambahkan jadwal harian baru sesuai kebutuhan sekolah atau memuat kembali 13 jadwal standar.</p>
+                                    <p class="text-xs text-slate-500 mt-1 max-w-md mx-auto">Seluruh jadwal telah dikosongkan. Anda dapat menambahkan jadwal harian baru sesuai kebutuhan sekolah atau memuat jadwal resmi SMAN 1 Lengkong TP 2026/2027.</p>
                                     <div class="flex items-center justify-center gap-3 mt-4">
                                         <button type="button" @click="openAddModal()" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-xs transition cursor-pointer">
                                             + Tambah Jadwal Baru
@@ -380,7 +380,7 @@
                                         <form action="{{ route('school_bell.reset_defaults') }}" method="POST" class="inline">
                                             @csrf
                                             <button type="submit" class="px-4 py-2 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-700 dark:text-amber-300 border border-amber-500/30 font-bold text-xs transition cursor-pointer">
-                                                🔄 Muat 13 Jadwal Standar
+                                                🔄 Muat Jadwal Resmi (52 Jadwal)
                                             </button>
                                         </form>
                                     </div>
@@ -1219,24 +1219,64 @@ function schoolBellApp() {
             const items = bell.playlist_items || [];
 
             // Jika memiliki playlist multi-surah atau multi-lagu
-            if (items.length > 1) {
+            if (items.length > 0) {
                 this.playlistQueue = items;
                 this.currentTrackIndex = 0;
-                this.isPlaylistMode = true;
-                this.playTrackFromQueue(0, bell.volume);
-            } else if (items.length === 1 && items[0].audio_url) {
-                this.playlistQueue = items;
-                this.currentTrackIndex = 0;
-                this.isPlaylistMode = false;
-                this.playSingleTrack(items[0], bell.volume, bell.title);
+                this.isPlaylistMode = items.length > 1;
+
+                if (bell.voice_text) {
+                    this.testChimeSound('westminster');
+                    if (this.enableVoiceAnnouncement) {
+                        setTimeout(() => {
+                            this.testSpeech(bell.voice_text);
+                        }, 2800);
+                        setTimeout(() => {
+                            this.playTrackFromQueue(0, bell.volume);
+                        }, 5800);
+                    } else {
+                        setTimeout(() => {
+                            this.playTrackFromQueue(0, bell.volume);
+                        }, 2800);
+                    }
+                } else {
+                    this.playTrackFromQueue(0, bell.volume);
+                }
             } else if (bell.sound_type === 'murottal' && bell.audio_url) {
-                this.playMurottalUrl(bell.audio_url, bell.surah_name || bell.title);
+                if (bell.voice_text) {
+                    this.testChimeSound('westminster');
+                    if (this.enableVoiceAnnouncement) {
+                        setTimeout(() => { this.testSpeech(bell.voice_text); }, 2800);
+                        setTimeout(() => { this.playMurottalUrl(bell.audio_url, bell.surah_name || bell.title); }, 5800);
+                    } else {
+                        setTimeout(() => { this.playMurottalUrl(bell.audio_url, bell.surah_name || bell.title); }, 2800);
+                    }
+                } else {
+                    this.playMurottalUrl(bell.audio_url, bell.surah_name || bell.title);
+                }
             } else if (bell.sound_type === 'siren') {
                 this.testChimeSound('siren');
             } else if ((bell.sound_type === 'custom' || bell.sound_type === 'song') && bell.audio_url) {
-                this.audioElement.src = bell.audio_url;
-                this.audioElement.volume = vol;
-                this.audioElement.play().catch(e => console.error(e));
+                if (bell.voice_text) {
+                    this.testChimeSound('westminster');
+                    if (this.enableVoiceAnnouncement) {
+                        setTimeout(() => { this.testSpeech(bell.voice_text); }, 2800);
+                        setTimeout(() => {
+                            this.audioElement.src = bell.audio_url;
+                            this.audioElement.volume = vol;
+                            this.audioElement.play().catch(e => console.error(e));
+                        }, 5800);
+                    } else {
+                        setTimeout(() => {
+                            this.audioElement.src = bell.audio_url;
+                            this.audioElement.volume = vol;
+                            this.audioElement.play().catch(e => console.error(e));
+                        }, 2800);
+                    }
+                } else {
+                    this.audioElement.src = bell.audio_url;
+                    this.audioElement.volume = vol;
+                    this.audioElement.play().catch(e => console.error(e));
+                }
             } else if (bell.sound_type === 'soundboard') {
                 const instantType = bell.playlist?.[0]?.sound_type || (bell.audio_url && bell.audio_url.startsWith('soundboard:') ? bell.audio_url.replace('soundboard:', '') : 'westminster');
                 this.playInstantSound(instantType, bell.title, bell.voice_text);

@@ -19,11 +19,19 @@ test('school bell index page loads successfully and seeds default schedules', fu
     $response->assertSee('Al-Fatihah');
     $response->assertSee('An-Nas');
 
-    // Pastikan default schedules telah di-seed
+    // Pastikan default schedules telah di-seed sesuai jadwal kurikulum resmi
     $this->assertDatabaseHas('school_bells', [
-        'time' => '07:00',
+        'time' => '07:15',
         'sound_type' => 'chime',
     ]);
+    $this->assertDatabaseHas('school_bells', [
+        'time' => '06:05',
+        'sound_type' => 'murottal',
+    ]);
+    $this->assertDatabaseHas('school_bells', [
+        'sound_type' => 'song',
+    ]);
+    $this->assertDatabaseCount('school_bells', 52);
 });
 
 test('can create a new school bell schedule with murottal', function () {
