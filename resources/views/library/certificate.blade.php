@@ -106,7 +106,7 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            padding: 12mm 18mm 10mm 18mm;
+            padding: 14mm 22mm 18mm 22mm;
         }
 
         /* Texture Background Halus & Security Guilloche */
@@ -407,10 +407,10 @@
         /* FOOTER SIGNATURES & OFFICIAL SEAL */
         .signatures-row {
             display: grid;
-            grid-template-columns: 1fr 120px 1fr;
+            grid-template-columns: 1fr 130px 1fr;
             align-items: flex-end;
             margin-top: 2px;
-            padding: 0 8px;
+            padding: 0 12px;
         }
 
         .sig-block {
@@ -421,7 +421,7 @@
             font-weight: 700;
             color: #0f2942;
             margin: 0;
-            line-height: 1.2;
+            line-height: 1.25;
         }
         .sig-location-date {
             font-size: 7.5pt;
@@ -430,23 +430,16 @@
             line-height: 1.2;
         }
         .sig-space {
-            height: 38px;
+            height: 48px;
             display: flex;
             align-items: center;
             justify-content: center;
         }
-        .sig-cursive {
-            font-family: 'Great Vibes', cursive;
-            font-size: 19pt;
-            color: #b45309;
-            opacity: 0.85;
-            user-select: none;
-        }
         .sig-rule {
-            width: 170px;
+            width: 175px;
             height: 1px;
             background: #64748b;
-            margin: 0 auto 2px auto;
+            margin: 0 auto 3px auto;
         }
         .sig-name {
             font-size: 9pt;
@@ -472,13 +465,13 @@
             margin-bottom: 2px;
         }
         .gold-seal {
-            width: 58px;
-            height: 58px;
+            width: 52px;
+            height: 52px;
             border-radius: 50%;
             background: radial-gradient(circle, #fef08a 0%, #facc15 40%, #ca8a04 80%, #854d0e 100%);
             border: 2px dashed #78350f;
             box-shadow: 
-                0 4px 10px rgba(180, 83, 9, 0.4),
+                0 4px 10px rgba(180, 83, 9, 0.35),
                 inset 0 2px 4px rgba(255, 255, 255, 0.8);
             display: flex;
             flex-direction: column;
@@ -489,7 +482,7 @@
         }
         .gold-seal-text-top {
             font-family: 'Cinzel', serif;
-            font-size: 6.5pt;
+            font-size: 6pt;
             font-weight: 900;
             color: #451a03;
             letter-spacing: 0.5px;
@@ -497,12 +490,12 @@
         }
         .gold-seal-star {
             color: #78350f;
-            font-size: 9pt;
+            font-size: 8pt;
             line-height: 1;
             margin: 1px 0;
         }
         .gold-seal-text-bot {
-            font-size: 5.5pt;
+            font-size: 5pt;
             font-weight: 800;
             color: #451a03;
             letter-spacing: 1px;
@@ -510,10 +503,10 @@
         }
         .seal-ribbon-left {
             position: absolute;
-            bottom: -13px;
-            left: 11px;
-            width: 15px;
-            height: 25px;
+            bottom: -11px;
+            left: 10px;
+            width: 13px;
+            height: 22px;
             background: linear-gradient(135deg, #b91c1c, #dc2626);
             clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 80%, 0 100%);
             z-index: 4;
@@ -521,10 +514,10 @@
         }
         .seal-ribbon-right {
             position: absolute;
-            bottom: -13px;
-            right: 11px;
-            width: 15px;
-            height: 25px;
+            bottom: -11px;
+            right: 10px;
+            width: 13px;
+            height: 22px;
             background: linear-gradient(135deg, #991b1b, #7f1d1d);
             clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 80%, 0 100%);
             z-index: 4;
@@ -535,7 +528,7 @@
             font-family: monospace;
             color: #64748b;
             letter-spacing: 0.5px;
-            margin-top: 14px;
+            margin-top: 11px;
             text-transform: uppercase;
         }
 
@@ -651,7 +644,7 @@
             <!-- 1. HEADER KOP RESMI -->
             <div class="header-kop">
                 @if(!empty($schoolLogo))
-                    <img src="{{ $schoolLogo }}" alt="Logo {{ $schoolName }}" class="school-logo-img">
+                    <img src="{{ $schoolLogo }}" alt="Logo {{ $schoolName }}" class="school-logo-img" style="height: 44px; max-height: 44px; width: auto; object-fit: contain; margin: 0 auto 3px auto; display: block;">
                 @endif
                 <p class="kop-gov">PEMERINTAH PROVINSI {{ strtoupper($schoolProvince ?? 'JAWA BARAT') }} • DINAS PENDIDIKAN</p>
                 <h4 class="kop-school">{{ $schoolName }}</h4>
@@ -707,9 +700,7 @@
                 <div class="sig-block">
                     <p class="sig-location-date">&nbsp;</p>
                     <p class="sig-role-title">Mengetahui,<br>Kepala {{ $schoolName }}</p>
-                    <div class="sig-space">
-                        <span class="sig-cursive">{{ $headmasterName }}</span>
-                    </div>
+                    <div class="sig-space"></div>
                     <div class="sig-rule"></div>
                     <div class="sig-name">{{ $headmasterName }}</div>
                     <div class="sig-nip">NIP. {{ $headmasterNip }}</div>
@@ -731,9 +722,7 @@
                 <div class="sig-block">
                     <p class="sig-location-date">Ditetapkan di: {{ \App\Models\SchoolSetting::get('school_subdistrict', 'Lengkong') }}, {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}</p>
                     <p class="sig-role-title">Kepala Perpustakaan<br>&nbsp;</p>
-                    <div class="sig-space">
-                        <span class="sig-cursive" style="color: #4338ca;">{{ $librarianName }}</span>
-                    </div>
+                    <div class="sig-space"></div>
                     <div class="sig-rule"></div>
                     <div class="sig-name">{{ $librarianName }}</div>
                     <div class="sig-nip">NIP. {{ $librarianNip }}</div>
