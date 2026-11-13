@@ -37,10 +37,6 @@
             </div>
 
             <div class="flex items-center gap-2 flex-wrap relative z-10">
-                <a href="{{ route('quran.index') }}" class="px-3.5 py-2.5 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 text-white font-extrabold text-xs shadow-md shadow-emerald-600/30 transition flex items-center gap-1.5">
-                    <span class="text-sm">📖</span>
-                    <span>Al-Qur'an Digital</span>
-                </a>
                 <a href="{{ route('tahfidz.create', ['class_id' => $homeroomClass->id]) }}" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs shadow-md shadow-emerald-600/30 transition flex items-center gap-2">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
                     <span>Input Setoran Siswa</span>
@@ -263,10 +259,6 @@
             </div>
 
             <div class="flex items-center gap-2 flex-wrap">
-                <a href="{{ route('quran.index') }}" class="px-3.5 py-2.5 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 text-white font-extrabold text-xs shadow-md shadow-emerald-600/30 transition flex items-center gap-1.5">
-                    <span class="text-sm">📖</span>
-                    <span>Al-Qur'an Digital</span>
-                </a>
                 @if(in_array(Auth::user()->role, ['wali_kelas', 'guru', 'admin', 'super_admin', 'koordinator_keagamaan']))
                     <a href="{{ route('tahfidz.create') }}" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs shadow-md shadow-emerald-600/30 transition flex items-center gap-2">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
