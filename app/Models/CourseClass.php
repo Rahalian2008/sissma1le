@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class CourseClass extends Model
 {
@@ -45,12 +47,32 @@ class CourseClass extends Model
         ];
     }
 
+    protected static function booted(): void
+    {
+        static::saving(function (CourseClass $courseClass) {
+            if (! Schema::hasColumn('course_classes', 'is_security_enabled')) {
+                Schema::table('course_classes', function (Blueprint $table) {
+                    $table->boolean('is_security_enabled')->default(true)->after('is_active');
+                });
+            }
+            if (! Schema::hasColumn('course_classes', 'kktp')) {
+                Schema::table('course_classes', function (Blueprint $table) {
+                    $table->unsignedInteger('kktp')->nullable()->after('description');
+                });
+            }
+        });
+    }
+
     /**
      * Cek apakah proteksi keamanan anti-curang (kunci tab & blokir otomatis) aktif pada kelas ini
      */
     public function isSecurityEnabled(): bool
     {
-        return $this->is_security_enabled !== false;
+        if (! array_key_exists('is_security_enabled', $this->attributes)) {
+            return true;
+        }
+
+        return $this->attributes['is_security_enabled'] !== false && $this->attributes['is_security_enabled'] !== 0 && $this->attributes['is_security_enabled'] !== '0';
     }
 
     /**

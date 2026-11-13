@@ -30,6 +30,7 @@ use App\Services\LmsAiCurriculumService;
 use App\Services\LmsProgressionService;
 use App\Services\LmsQuranAyahService;
 use Carbon\Carbon;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -4446,6 +4447,12 @@ class LmsController extends Controller
 
         if (! $canManage) {
             abort(403, 'Hanya guru mata pelajaran pengampu atau admin yang dapat mengatur status fitur keamanan.');
+        }
+
+        if (! Schema::hasColumn('course_classes', 'is_security_enabled')) {
+            Schema::table('course_classes', function (Blueprint $table) {
+                $table->boolean('is_security_enabled')->default(true)->after('is_active');
+            });
         }
 
         $newStatus = ! $courseClass->isSecurityEnabled();
