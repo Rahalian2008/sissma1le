@@ -2,6 +2,10 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+
 class QuranDataService
 {
     /**
@@ -170,5 +174,191 @@ class QuranDataService
         $featuredNumbers = [1, 18, 36, 55, 56, 67, 78, 93, 112, 113, 114];
 
         return array_intersect_key($all, array_flip($featuredNumbers));
+    }
+
+    /**
+     * Ambil data lengkap ayat-ayat surah beserta teks Arab, Latin, arti Bahasa Indonesia, dan audio.
+     * Menggunakan cache 30 hari untuk performa super cepat (0 ms latency setelah di-cache).
+     *
+     * @return array{number: int, name: string, arabic: string, translation: string, revelation: string, ayah_count: int, description: string, audio_full: string, audio_options: array, prev_surah: ?array, next_surah: ?array, verses: array}|null
+     */
+    public static function getSurahDetail(int $number): ?array
+    {
+        if ($number < 1 || $number > 114) {
+            return null;
+        }
+
+        return Cache::remember('quran_surah_detail_v4_'.$number, now()->addDays(30), function () use ($number) {
+            $baseMeta = self::getSurah($number);
+
+            // 1. Coba ambil dari EQuran API v2 (Sumber Resmi Kemenag RI)
+            try {
+                $response = Http::withoutVerifying()
+                    ->timeout(7)
+                    ->get("https://equran.id/api/v2/surat/{$number}");
+
+                if ($response->successful()) {
+                    $d = $response->json('data');
+                    if ($d && isset($d['ayat']) && is_array($d['ayat'])) {
+                        $verses = [];
+                        foreach ($d['ayat'] as $v) {
+                            $audioUrl = $v['audio']['05'] ?? ($v['audio']['01'] ?? (is_array($v['audio']) ? reset($v['audio']) : null));
+                            $verses[] = [
+                                'number' => (int) ($v['nomorAyat'] ?? 1),
+                                'arabic' => $v['teksArab'] ?? '',
+                                'latin' => $v['teksLatin'] ?? '',
+                                'translation' => $v['teksIndonesia'] ?? '',
+                                'audio' => $audioUrl,
+                                'audio_options' => $v['audio'] ?? [],
+                            ];
+                        }
+
+                        $prev = null;
+                        if (! empty($d['suratSebelumnya']) && is_array($d['suratSebelumnya'])) {
+                            $prev = [
+                                'number' => (int) $d['suratSebelumnya']['nomor'],
+                                'name' => $d['suratSebelumnya']['namaLatin'] ?? '',
+                            ];
+                        } elseif ($number > 1) {
+                            $prevMeta = self::getSurah($number - 1);
+                            if ($prevMeta) {
+                                $prev = ['number' => $number - 1, 'name' => $prevMeta['name']];
+                            }
+                        }
+
+                        $next = null;
+                        if (! empty($d['suratSelanjutnya']) && is_array($d['suratSelanjutnya'])) {
+                            $next = [
+                                'number' => (int) $d['suratSelanjutnya']['nomor'],
+                                'name' => $d['suratSelanjutnya']['namaLatin'] ?? '',
+                            ];
+                        } elseif ($number < 114) {
+                            $nextMeta = self::getSurah($number + 1);
+                            if ($nextMeta) {
+                                $next = ['number' => $number + 1, 'name' => $nextMeta['name']];
+                            }
+                        }
+
+                        $fullAudio = $d['audioFull']['05'] ?? ($d['audioFull']['01'] ?? ($baseMeta['audio_url'] ?? ''));
+                        $rawPlace = $d['tempatTurun'] ?? ($baseMeta['type'] ?? 'Makkiyah');
+                        $normalizedRev = (stripos($rawPlace, 'mekah') !== false || stripos($rawPlace, 'makki') !== false) ? 'Makkiyah' : 'Madaniyah';
+
+                        return [
+                            'number' => (int) $d['nomor'],
+                            'name' => $d['namaLatin'] ?? $baseMeta['name'],
+                            'arabic' => $d['nama'] ?? $baseMeta['arabic'],
+                            'translation' => $d['arti'] ?? $baseMeta['translation'],
+                            'revelation' => $normalizedRev,
+                            'ayah_count' => (int) ($d['jumlahAyat'] ?? count($verses)),
+                            'description' => strip_tags($d['deskripsi'] ?? ''),
+                            'audio_full' => $fullAudio,
+                            'audio_options' => $d['audioFull'] ?? [],
+                            'prev_surah' => $prev,
+                            'next_surah' => $next,
+                            'verses' => $verses,
+                        ];
+                    }
+                }
+            } catch (\Throwable $e) {
+                Log::warning("EQuran API error for surah {$number}: ".$e->getMessage());
+            }
+
+            // 2. Fallback cadangan: Quran API ID
+            try {
+                $response2 = Http::withoutVerifying()
+                    ->timeout(6)
+                    ->get("https://quran-api-id.vercel.app/surahs/{$number}");
+
+                if ($response2->successful()) {
+                    $d2 = $response2->json();
+                    if ($d2 && isset($d2['ayahs']) && is_array($d2['ayahs'])) {
+                        $verses = [];
+                        foreach ($d2['ayahs'] as $v) {
+                            $verses[] = [
+                                'number' => (int) ($v['number']['inSurah'] ?? 1),
+                                'arabic' => $v['arab'] ?? '',
+                                'latin' => $v['translation']['id'] ?? '',
+                                'translation' => $v['translation']['id'] ?? '',
+                                'audio' => $v['audio']['alafasy'] ?? null,
+                                'audio_options' => [],
+                            ];
+                        }
+
+                        return [
+                            'number' => (int) ($d2['number'] ?? $number),
+                            'name' => $d2['name'] ?? $baseMeta['name'],
+                            'arabic' => $d2['asma']['ar']['short'] ?? $baseMeta['arabic'],
+                            'translation' => $d2['asma']['id']['short'] ?? $baseMeta['translation'],
+                            'revelation' => $d2['type']['id'] ?? $baseMeta['type'],
+                            'ayah_count' => (int) ($d2['ayahCount'] ?? count($verses)),
+                            'description' => strip_tags($d2['tafsir']['id'] ?? ''),
+                            'audio_full' => $baseMeta['audio_url'] ?? '',
+                            'audio_options' => [],
+                            'prev_surah' => $number > 1 ? ['number' => $number - 1, 'name' => self::getSurah($number - 1)['name'] ?? ''] : null,
+                            'next_surah' => $number < 114 ? ['number' => $number + 1, 'name' => self::getSurah($number + 1)['name'] ?? ''] : null,
+                            'verses' => $verses,
+                        ];
+                    }
+                }
+            } catch (\Throwable $e2) {
+                Log::warning("Backup Quran API error for surah {$number}: ".$e2->getMessage());
+            }
+
+            // 3. Fallback jika offline: Kembalikan metadata dasar dengan template
+            if ($baseMeta) {
+                return [
+                    'number' => $baseMeta['number'],
+                    'name' => $baseMeta['name'],
+                    'arabic' => $baseMeta['arabic'],
+                    'translation' => $baseMeta['translation'],
+                    'revelation' => $baseMeta['type'],
+                    'ayah_count' => $baseMeta['ayah_count'],
+                    'description' => "Surat {$baseMeta['name']} ({$baseMeta['translation']}) merupakan surat ke-{$baseMeta['number']} dalam Al-Qur'an dan terdiri atas {$baseMeta['ayah_count']} ayat.",
+                    'audio_full' => $baseMeta['audio_url'],
+                    'audio_options' => ['alafasy' => $baseMeta['audio_url']],
+                    'prev_surah' => $number > 1 ? ['number' => $number - 1, 'name' => self::getSurah($number - 1)['name'] ?? ''] : null,
+                    'next_surah' => $number < 114 ? ['number' => $number + 1, 'name' => self::getSurah($number + 1)['name'] ?? ''] : null,
+                    'verses' => [],
+                ];
+            }
+
+            return null;
+        });
+    }
+
+    /**
+     * Dapatkan tafsir surah per ayat (Tafsir Ringkas Kemenag RI)
+     *
+     * @return array<int, string>|null
+     */
+    public static function getSurahTafsir(int $number): ?array
+    {
+        if ($number < 1 || $number > 114) {
+            return null;
+        }
+
+        return Cache::remember('quran_surah_tafsir_v3_'.$number, now()->addDays(30), function () use ($number) {
+            try {
+                $response = Http::withoutVerifying()
+                    ->timeout(6)
+                    ->get("https://equran.id/api/v2/tafsir/{$number}");
+
+                if ($response->successful()) {
+                    $d = $response->json('data');
+                    if ($d && isset($d['tafsir']) && is_array($d['tafsir'])) {
+                        $map = [];
+                        foreach ($d['tafsir'] as $t) {
+                            $map[(int) $t['ayat']] = $t['teks'];
+                        }
+
+                        return $map;
+                    }
+                }
+            } catch (\Throwable $e) {
+                Log::warning("Gagal mengambil tafsir surah {$number}: ".$e->getMessage());
+            }
+
+            return [];
+        });
     }
 }

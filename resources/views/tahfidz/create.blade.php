@@ -55,9 +55,15 @@
             </div>
         </div>
 
-        <span class="hidden sm:inline-flex px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
-            Juz 30 (Amma)
-        </span>
+        <div class="flex items-center gap-2">
+            <a href="{{ route('quran.index') }}" target="_blank" class="px-3 py-1.5 rounded-xl bg-teal-500/10 hover:bg-teal-500/20 text-teal-700 dark:text-teal-300 font-bold text-xs border border-teal-500/30 transition flex items-center gap-1.5">
+                <span>📖 Buka Al-Qur'an Digital</span>
+                <span class="text-[10px]">↗</span>
+            </a>
+            <span class="hidden sm:inline-flex px-3 py-1.5 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
+                Juz 30 (Amma)
+            </span>
+        </div>
     </div>
 
     <!-- Form Card -->

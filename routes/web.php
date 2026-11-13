@@ -34,6 +34,7 @@ use App\Http\Controllers\MasterDataController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PortfolioController;
 use App\Http\Controllers\PublicPortalController;
+use App\Http\Controllers\QuranDigitalController;
 use App\Http\Controllers\QuranTahfidzController;
 use App\Http\Controllers\RaporKurnasController;
 use App\Http\Controllers\ReflectionController;
@@ -391,6 +392,15 @@ Route::middleware('auth')->group(function () {
         Route::get('/print-report', [QuranTahfidzController::class, 'printReport'])->name('print_report');
         Route::get('/report/print', [QuranTahfidzController::class, 'printReport'])->name('report.print');
         Route::delete('/{tahfidz}', [QuranTahfidzController::class, 'destroy'])->name('destroy');
+        Route::get('/quran', fn () => redirect()->route('quran.index'))->name('quran');
+    });
+
+    // Modul Al-Qur'an Digital & Terjemahan Lengkap 114 Surah (Bisa Diakses Seluruh Role)
+    Route::prefix('quran')->name('quran.')->group(function () {
+        Route::get('/', [QuranDigitalController::class, 'index'])->name('index');
+        Route::get('/surah/{number}', [QuranDigitalController::class, 'show'])->name('show');
+        Route::get('/api/surah/{number}', [QuranDigitalController::class, 'apiSurah'])->name('api.surah');
+        Route::get('/api/tafsir/{number}', [QuranDigitalController::class, 'apiTafsir'])->name('api.tafsir');
     });
 
     // AI Analisis Perkembangan Siswa
