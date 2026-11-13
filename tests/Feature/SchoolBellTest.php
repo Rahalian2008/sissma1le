@@ -179,6 +179,8 @@ test('kiosk page loads successfully with soundboard and anthems', function () {
     $response->assertSee('KIOS BEL SEKOLAH TERPADU', false);
     $response->assertSee('Soundboard Instan', false);
     $response->assertSee('Lagu-Lagu Nasional', false);
+    $response->assertSee("Murottal Al-Qur'an", false);
+    $response->assertSee('114 Surah', false);
     $response->assertSee('Indonesia Raya', false);
     $response->assertSee('Garuda Pancasila', false);
 });

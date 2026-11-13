@@ -100,7 +100,7 @@
                     <div>
                         <div class="text-xs uppercase tracking-widest font-black text-amber-200">SEDANG BERBUNYI DI PENGANTAR SUARA</div>
                         <div class="text-xl sm:text-2xl font-black tracking-tight text-white mt-0.5" x-text="currentAudioTitle"></div>
-                        <div class="text-xs text-slate-100 font-medium mt-0.5" x-text="'Tipe: ' + currentAudioType + ' • Durasi sisa: ' + ringingRemainingSeconds + ' detik'"></div>
+                        <div class="text-xs text-slate-100 font-medium mt-0.5" x-text="'Tipe: ' + currentAudioType + (ringingRemainingSeconds > 0 ? ' • Durasi sisa: ' + ringingRemainingSeconds + ' detik' : ' • Streaming Audio Live')"></div>
                     </div>
                 </div>
                 <button type="button" @click="stopAllAudio()" class="px-5 py-2.5 rounded-xl bg-slate-950 text-white hover:bg-slate-900 font-black text-xs transition cursor-pointer border border-white/20 shrink-0">
@@ -261,10 +261,28 @@
                     @endforelse
                 </div>
             </div>
-            <!-- SOUNDBOARD & LAGU NASIONAL PANEL -->
-            <div class="bg-white/5 backdrop-blur-xl rounded-3xl p-6 sm:p-7 border border-white/10 shadow-2xl space-y-6" x-data="{ kioskTab: 'soundboard' }">
+            <!-- SOUNDBOARD, LAGU NASIONAL & MUROTTAL AL-QUR'AN PANEL -->
+            <div class="bg-white/5 backdrop-blur-xl rounded-3xl p-6 sm:p-7 border border-white/10 shadow-2xl space-y-6" 
+                 x-data="{ 
+                     kioskTab: 'soundboard',
+                     murottalSearch: '',
+                     murottalCategory: 'all',
+                     allSurahsList: @json(array_values($allSurahs)),
+                     matchesMurottal(surah) {
+                         const q = this.murottalSearch.trim().toLowerCase();
+                         if (this.murottalCategory === 'juz30' && (surah.number < 78 || surah.number > 114)) return false;
+                         if (this.murottalCategory === 'popular' && ![1, 18, 36, 55, 56, 67, 78, 93, 112, 113, 114].includes(surah.number)) return false;
+                         if (this.murottalCategory === '3qul' && ![112, 113, 114].includes(surah.number)) return false;
+
+                         if (!q) return true;
+                         return surah.name.toLowerCase().includes(q) ||
+                                String(surah.number).includes(q) ||
+                                (surah.translation && surah.translation.toLowerCase().includes(q)) ||
+                                (surah.type && surah.type.toLowerCase().includes(q));
+                     }
+                 }">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/10">
-                    <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-2 flex-wrap">
                         <button type="button" @click="kioskTab = 'soundboard'" :class="kioskTab === 'soundboard' ? 'bg-amber-500 text-slate-950 font-black shadow-lg shadow-amber-500/20' : 'bg-white/10 text-slate-300 hover:bg-white/20 font-bold'" class="px-4 py-2 rounded-xl text-xs transition flex items-center gap-2 cursor-pointer">
                             <span>🎛️ Soundboard Instan</span>
                             <span class="px-1.5 py-0.5 rounded-full text-[10px] bg-slate-950/40 text-amber-900 font-mono font-bold">{{ count($instantSounds) }} Jenis</span>
@@ -272,6 +290,10 @@
                         <button type="button" @click="kioskTab = 'anthems'" :class="kioskTab === 'anthems' ? 'bg-red-600 text-white font-black shadow-lg shadow-red-600/20' : 'bg-white/10 text-slate-300 hover:bg-white/20 font-bold'" class="px-4 py-2 rounded-xl text-xs transition flex items-center gap-2 cursor-pointer">
                             <span>🇮🇩 Lagu-Lagu Nasional</span>
                             <span class="px-1.5 py-0.5 rounded-full text-[10px] bg-white/20 text-white font-mono font-bold">10 Lagu</span>
+                        </button>
+                        <button type="button" @click="kioskTab = 'murottal'" :class="kioskTab === 'murottal' ? 'bg-emerald-500 text-slate-950 font-black shadow-lg shadow-emerald-500/20' : 'bg-white/10 text-slate-300 hover:bg-white/20 font-bold'" class="px-4 py-2 rounded-xl text-xs transition flex items-center gap-2 cursor-pointer">
+                            <span>📖 Murottal Al-Qur'an</span>
+                            <span class="px-1.5 py-0.5 rounded-full text-[10px] bg-slate-950/40 text-emerald-950 font-mono font-bold">114 Surah</span>
                         </button>
                     </div>
 
@@ -325,6 +347,108 @@
                         </div>
                     @endforeach
                 </div>
+
+                <!-- SUB-PANEL 3: MUROTTAL AL-QUR'AN 114 SURAH LENGKAP -->
+                <div x-show="kioskTab === 'murottal'" class="space-y-4">
+                    <!-- Filter & Pencarian Cepat -->
+                    <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 p-3.5 rounded-2xl bg-slate-950/60 border border-white/10">
+                        <div class="relative flex-1">
+                            <input type="text" x-model="murottalSearch" placeholder="Cari nomor, nama surat (misal: Yasin, Al-Mulk, Ar-Rahman), atau arti..." 
+                                   class="w-full px-4 py-2.5 pl-9 text-xs bg-white/5 border border-white/10 rounded-xl outline-none focus:border-emerald-400 text-white placeholder-slate-400">
+                            <span class="absolute left-3 top-3 text-slate-400 text-xs">🔍</span>
+                            <button type="button" x-show="murottalSearch" @click="murottalSearch = ''" class="absolute right-3 top-2.5 text-slate-400 hover:text-white text-xs cursor-pointer">✕</button>
+                        </div>
+
+                        <div class="flex items-center gap-1.5 flex-wrap">
+                            <button type="button" @click="murottalCategory = 'all'" 
+                                    :class="murottalCategory === 'all' ? 'bg-emerald-500 text-slate-950 font-black' : 'bg-white/5 text-slate-300 hover:bg-white/10 font-medium'" 
+                                    class="px-3 py-1.5 rounded-xl text-xs transition cursor-pointer">
+                                Semua (114)
+                            </button>
+                            <button type="button" @click="murottalCategory = 'juz30'" 
+                                    :class="murottalCategory === 'juz30' ? 'bg-emerald-500 text-slate-950 font-black' : 'bg-white/5 text-slate-300 hover:bg-white/10 font-medium'" 
+                                    class="px-3 py-1.5 rounded-xl text-xs transition cursor-pointer">
+                                Juz 30 (37 Surat)
+                            </button>
+                            <button type="button" @click="murottalCategory = 'popular'" 
+                                    :class="murottalCategory === 'popular' ? 'bg-emerald-500 text-slate-950 font-black' : 'bg-white/5 text-slate-300 hover:bg-white/10 font-medium'" 
+                                    class="px-3 py-1.5 rounded-xl text-xs transition cursor-pointer">
+                                ⭐ Surat Utama
+                            </button>
+                            <button type="button" @click="murottalCategory = '3qul'" 
+                                    :class="murottalCategory === '3qul' ? 'bg-emerald-500 text-slate-950 font-black' : 'bg-white/5 text-slate-300 hover:bg-white/10 font-medium'" 
+                                    class="px-3 py-1.5 rounded-xl text-xs transition cursor-pointer">
+                                3 Qul
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Banner Status Murottal Sedang Diputar -->
+                    <div x-show="isPlaying && currentPlayingSurahNumber" class="p-4 rounded-2xl bg-gradient-to-r from-emerald-950 via-teal-950 to-slate-950 border border-emerald-400/50 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-lg animate-pulse">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-400/30 flex items-center justify-center text-xl shrink-0">
+                                📖
+                            </div>
+                            <div>
+                                <div class="text-[10px] uppercase font-bold text-emerald-300 tracking-wider">SEDANG MEMUTAR MUROTTAL SECARA MANUAL</div>
+                                <div class="text-sm font-black text-white" x-text="currentAudioTitle"></div>
+                                <div class="text-[11px] text-emerald-200/70">Qari: Syaikh Mishary Rashid Alafasy • Audio High Quality Streaming</div>
+                            </div>
+                        </div>
+                        <button type="button" @click="stopAllAudio()" class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs transition flex items-center justify-center gap-1.5 cursor-pointer shrink-0">
+                            <span>⏹️ Hentikan Murottal</span>
+                        </button>
+                    </div>
+
+                    <!-- Grid 114 Surah -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 max-h-[620px] overflow-y-auto pr-1">
+                        <template x-for="surah in allSurahsList" :key="surah.number">
+                            <div x-show="matchesMurottal(surah)" 
+                                 class="p-4 rounded-2xl border transition flex flex-col justify-between group relative overflow-hidden"
+                                 :class="currentPlayingSurahNumber === surah.number && isPlaying 
+                                    ? 'bg-emerald-950/70 border-emerald-400 shadow-lg shadow-emerald-500/20 ring-1 ring-emerald-400' 
+                                    : 'bg-white/5 hover:bg-white/10 border-white/10 hover:border-emerald-400/40'">
+                                <div>
+                                    <div class="flex items-start justify-between gap-2 mb-2">
+                                        <div class="flex items-center gap-2.5">
+                                            <span class="w-8 h-8 rounded-xl bg-white/10 border border-white/10 text-emerald-300 font-mono font-black text-xs flex items-center justify-center shrink-0" 
+                                                  x-text="surah.number"></span>
+                                            <div>
+                                                <div class="font-extrabold text-xs text-white group-hover:text-emerald-300 transition" x-text="surah.name"></div>
+                                                <div class="text-[10px] text-slate-400" x-text="surah.translation"></div>
+                                            </div>
+                                        </div>
+                                        <div class="text-right shrink-0">
+                                            <div class="text-base font-bold text-emerald-400" x-text="surah.arabic" dir="rtl"></div>
+                                            <div class="text-[9px] text-slate-400" x-text="surah.ayah_count + ' Ayat • ' + surah.type"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mt-3 pt-2.5 border-t border-white/10 flex items-center justify-between gap-2">
+                                    <button type="button" 
+                                            @click="currentPlayingSurahNumber === surah.number && isPlaying ? stopAllAudio() : playKioskSurah(surah)" 
+                                            :class="currentPlayingSurahNumber === surah.number && isPlaying 
+                                                ? 'bg-rose-600 hover:bg-rose-500 text-white' 
+                                                : 'bg-emerald-600 hover:bg-emerald-500 text-white group-hover:shadow-md group-hover:shadow-emerald-600/30'" 
+                                            class="w-full py-1.5 px-3 rounded-xl font-bold text-xs transition flex items-center justify-center gap-1.5 cursor-pointer">
+                                        <template x-if="currentPlayingSurahNumber === surah.number && isPlaying">
+                                            <span class="flex items-center gap-1.5">
+                                                <span class="w-2 h-2 rounded-full bg-white animate-ping"></span>
+                                                <span>⏹️ Hentikan Murottal</span>
+                                            </span>
+                                        </template>
+                                        <template x-if="!(currentPlayingSurahNumber === surah.number && isPlaying)">
+                                            <span class="flex items-center gap-1.5">
+                                                <span>▶️ Putar Murottal</span>
+                                            </span>
+                                        </template>
+                                    </button>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
             </div>
         </main>
 
@@ -353,6 +477,7 @@
                 isPlaying: false,
                 currentAudioTitle: '',
                 currentAudioType: '',
+                currentPlayingSurahNumber: null,
                 ringingRemainingSeconds: 0,
                 volumePercent: 100,
                 audioContext: null,
@@ -835,6 +960,34 @@
                     }
                 },
 
+                // Play Murottal Surah in Kiosk Manual
+                playKioskSurah(surah) {
+                    this.stopAllAudio();
+                    this.unlockAudioEngine();
+                    this.isPlaying = true;
+                    this.currentAudioTitle = `Surah ${surah.number}. ${surah.name} (${surah.arabic}) - ${surah.translation}`;
+                    this.currentAudioType = "Murottal Al-Qur'an";
+                    this.currentPlayingSurahNumber = surah.number;
+                    this.ringingRemainingSeconds = 0;
+
+                    const audio = new Audio(surah.audio_url);
+                    audio.volume = this.volumePercent / 100;
+                    this.activeAudioElement = audio;
+
+                    audio.play().catch(err => {
+                        console.warn('Murottal stream failed, trying fallback:', err);
+                        if (surah.audio_fallback) {
+                            audio.src = surah.audio_fallback;
+                            audio.play().catch(e => console.error('Audio fallback also failed', e));
+                        }
+                    });
+
+                    audio.onended = () => {
+                        this.isPlaying = false;
+                        this.currentPlayingSurahNumber = null;
+                    };
+                },
+
                 // Play National Anthem in Kiosk
                 playKioskAnthem(anthem) {
                     this.stopAllAudio();
@@ -915,12 +1068,16 @@
                 stopAllAudio() {
                     if (this.activeAudioElement) {
                         this.activeAudioElement.pause();
+                        this.activeAudioElement.currentTime = 0;
                         this.activeAudioElement = null;
                     }
                     if ('speechSynthesis' in window) {
                         window.speechSynthesis.cancel();
                     }
                     this.isPlaying = false;
+                    this.currentAudioTitle = '';
+                    this.currentAudioType = '';
+                    this.currentPlayingSurahNumber = null;
                     this.ringingRemainingSeconds = 0;
                 }
             };

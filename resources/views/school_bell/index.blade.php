@@ -500,11 +500,15 @@
         <div class="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs">
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
                 <div>
-                    <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-2 flex-wrap">
                         <h3 class="text-base font-black text-slate-900 dark:text-white">🎛️ Soundboard & Bunyi Instan (12 Jenis)</h3>
                         <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
                             MANUAL OVERRIDE
                         </span>
+                        <button type="button" @click="activeTab = 'quran'" class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 hover:bg-emerald-500/25 transition cursor-pointer flex items-center gap-1.5">
+                            <span>📖 Putar Murottal 114 Surah Manual</span>
+                            <span class="text-[10px] bg-emerald-600 text-white px-1.5 py-0.5 rounded-full font-mono">114</span>
+                        </button>
                     </div>
                     <p class="text-xs text-slate-500 mt-1 leading-relaxed">
                         Bunyikan bel, lonceng, sirine darurat, terompet upacara, peluit, gong, atau narasi suara instan secara langsung ke speaker sekolah tanpa menunggu jadwal.
