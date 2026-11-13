@@ -162,6 +162,11 @@ class Student extends Model
         return $this->hasMany(QuranTahfidzRecord::class, 'student_id');
     }
 
+    public function cbtSessions(): HasMany
+    {
+        return $this->hasMany(CbtSession::class, 'student_id');
+    }
+
     public function extracurriculars(): BelongsToMany
     {
         return $this->belongsToMany(Extracurricular::class, 'extracurricular_student')

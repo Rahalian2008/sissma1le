@@ -112,6 +112,11 @@ class RolePermissionMatrix
                 'wakasek_kurikulum', 'kurikulum', 'guru', 'wali_kelas', 'siswa',
             ],
 
+            'cbt' => [
+                'super_admin', 'admin', 'kepala_sekolah',
+                'wakasek_kurikulum', 'kurikulum', 'guru', 'wali_kelas', 'siswa',
+            ],
+
             'lms' => [
                 'super_admin', 'admin', 'kepala_sekolah',
                 'wakasek_kurikulum', 'kurikulum', 'guru', 'siswa',

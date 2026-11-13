@@ -226,6 +226,7 @@
                         || request()->routeIs('spmb.*')
                         || request()->routeIs('kiosk.*');
                     $isKurikulumActive = request()->routeIs('lms.*')
+                        || request()->routeIs('cbt.*')
                         || request()->routeIs('rapor_kurnas.*');
                     $isBkActive = request()->routeIs('bk.*');
                     $isTuActive = request()->routeIs('tu.*')
@@ -400,6 +401,16 @@
                         </svg>
                     </button>
                     <div id="kurikulum-menu-desktop" class="sidebar-accordion-menu {{ $isKurikulumActive ? '' : 'hidden' }} pl-3 pr-1 py-1 space-y-1 border-l-2 border-indigo-500/30 ml-4 mt-0.5">
+                        <!-- Ujian Online (CBT) -->
+                        @if($canNav('cbt'))
+                        <a href="{{ route('cbt.index') }}" data-tooltip="Ujian Online (CBT)" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium leading-snug transition {{ request()->routeIs('cbt.*') ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                            <svg class="w-4 h-4 shrink-0 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <span class="sidebar-label font-bold text-amber-300">Ujian Online (CBT)</span>
+                        </a>
+                        @endif
+
                         <!-- LMS Pembelajaran -->
                         @if($canNav('lms'))
                         <a href="{{ route('lms.index') }}" data-tooltip="LMS Pembelajaran" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium leading-snug transition {{ request()->routeIs('lms.*') ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
@@ -1122,6 +1133,16 @@
                     </svg>
                 </button>
                 <div id="kurikulum-menu-mobile" class="{{ $isKurikulumActive ? '' : 'hidden' }} pl-3 pr-1 py-1 space-y-1 border-l-2 border-indigo-500/30 ml-4 mt-0.5">
+                    @if($canNav('cbt'))
+                    <!-- Ujian Online (CBT) -->
+                    <a href="{{ route('cbt.index') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium leading-snug transition {{ request()->routeIs('cbt.*') ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                        <svg class="w-4 h-4 shrink-0 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <span class="font-bold text-amber-300">Ujian Online (CBT)</span>
+                    </a>
+                    @endif
+
                     @if($canNav('lms'))
                     <!-- LMS Pembelajaran -->
                     <a href="{{ route('lms.index') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium leading-snug transition {{ request()->routeIs('lms.*') ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">

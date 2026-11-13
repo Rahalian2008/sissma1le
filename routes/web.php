@@ -17,6 +17,8 @@ use App\Http\Controllers\BkPsychologicalTestController;
 use App\Http\Controllers\BkReferralController;
 use App\Http\Controllers\BkRplController;
 use App\Http\Controllers\BkSociometryController;
+use App\Http\Controllers\Cbt\CbtController;
+use App\Http\Controllers\Cbt\CbtStudentController;
 use App\Http\Controllers\CurriculumDocumentController;
 use App\Http\Controllers\CurriculumPlanController;
 use App\Http\Controllers\DashboardController;
@@ -770,6 +772,50 @@ Route::middleware('auth')->group(function () {
             Route::get('/export/curriculum-matrix', [CurriculumDocumentController::class, 'exportCurriculumMatrix'])->name('export.matrix');
             Route::get('/export/journals', [CurriculumDocumentController::class, 'exportJournals'])->name('export.journals');
         });
+    });
+
+    // =========================================================================
+    // UJIAN ONLINE (CBT - COMPUTER-BASED TEST)
+    // =========================================================================
+    Route::prefix('cbt')->name('cbt.')->group(function () {
+        // Portal Siswa
+        Route::get('/portal', [CbtStudentController::class, 'index'])->name('student.index');
+        Route::post('/exams/{exam}/start', [CbtStudentController::class, 'start'])->name('student.start');
+        Route::get('/exams/{exam}/take', [CbtStudentController::class, 'take'])->name('student.take');
+        Route::post('/exams/{exam}/save-answer', [CbtStudentController::class, 'saveAnswer'])->name('student.save_answer');
+        Route::post('/exams/{exam}/report-violation', [CbtStudentController::class, 'reportViolation'])->name('student.report_violation');
+        Route::post('/exams/{exam}/finish', [CbtStudentController::class, 'finish'])->name('student.finish');
+        Route::get('/exams/{exam}/result', [CbtStudentController::class, 'result'])->name('student.result');
+
+        // Manajemen Ujian (Guru, Wali Kelas, Kurikulum, Admin)
+        Route::get('/', [CbtController::class, 'index'])->name('index');
+        Route::get('/exams/create', [CbtController::class, 'create'])->name('exams.create');
+        Route::post('/exams', [CbtController::class, 'store'])->name('exams.store');
+        Route::get('/exams/{exam}', [CbtController::class, 'show'])->name('exams.show');
+        Route::get('/exams/{exam}/edit', [CbtController::class, 'edit'])->name('exams.edit');
+        Route::put('/exams/{exam}', [CbtController::class, 'update'])->name('exams.update');
+        Route::delete('/exams/{exam}', [CbtController::class, 'destroy'])->name('exams.destroy');
+
+        // Manajemen Butir Soal (Manual, AI & Import)
+        Route::post('/exams/{exam}/questions', [CbtController::class, 'storeQuestion'])->name('exams.questions.store');
+        Route::delete('/exams/{exam}/questions/{question}', [CbtController::class, 'destroyQuestion'])->name('exams.questions.destroy');
+        Route::post('/exams/{exam}/ai-generate', [CbtController::class, 'generateAi'])->name('exams.ai_generate');
+        Route::post('/exams/{exam}/import', [CbtController::class, 'importQuestions'])->name('exams.import');
+
+        // Monitoring & Kontrol Pelanggaran
+        Route::get('/exams/{exam}/monitor', [CbtController::class, 'monitor'])->name('exams.monitor');
+        Route::post('/exams/{exam}/sessions/{session}/unblock', [CbtController::class, 'unblockStudent'])->name('exams.unblock');
+
+        // Penilaian & Rekap Nilai
+        Route::get('/exams/{exam}/results', [CbtController::class, 'results'])->name('exams.results');
+        Route::post('/exams/{exam}/sessions/{session}/grade-essay', [CbtController::class, 'gradeEssay'])->name('exams.grade_essay');
+
+        // Dokumen Kurikulum & Administrasi Ujian Resmi
+        Route::get('/exams/{exam}/documents/kisi-kisi', [CbtController::class, 'printKisiKisi'])->name('documents.kisi_kisi');
+        Route::get('/exams/{exam}/documents/kartu-soal', [CbtController::class, 'printKartuSoal'])->name('documents.kartu_soal');
+        Route::get('/exams/{exam}/documents/kartu-peserta', [CbtController::class, 'printKartuPeserta'])->name('documents.kartu_peserta');
+        Route::get('/exams/{exam}/documents/daftar-hadir', [CbtController::class, 'printDaftarHadir'])->name('documents.daftar_hadir');
+        Route::get('/exams/{exam}/documents/berita-acara', [CbtController::class, 'printBeritaAcara'])->name('documents.berita_acara');
     });
 
     // Perpustakaan Terpadu (Fisik, E-Book Digital Flip HTML, Sirkulasi & Presensi Kunjungan)
