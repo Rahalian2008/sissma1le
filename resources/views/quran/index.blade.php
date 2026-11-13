@@ -166,8 +166,9 @@
                     <div class="flex items-start justify-between gap-3 mb-3">
                         <div class="flex items-center gap-3">
                             <!-- Nomor Surat Badge -->
-                            <div class="w-11 h-11 rounded-2xl bg-emerald-500/10 dark:bg-emerald-500/20 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 font-mono font-black text-sm flex items-center justify-center shrink-0 group-hover:scale-105 group-hover:bg-emerald-600 group-hover:text-white transition">
-                                {{ $surah['number'] }}
+                            <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 dark:bg-emerald-500/20 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 font-black text-sm flex flex-col items-center justify-center shrink-0 group-hover:scale-105 group-hover:bg-emerald-600 group-hover:text-white transition leading-none py-1">
+                                <span class="font-bold">{{ $surah['number'] }}</span>
+                                <span class="font-arabic text-[11px] opacity-80 pt-0.5">{{ $surah['number_arabic'] ?? App\Services\QuranDataService::toArabicDigits($surah['number']) }}</span>
                             </div>
 
                             <div>
@@ -193,11 +194,11 @@
                         <span class="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 font-semibold">
                             {{ $surah['type'] }}
                         </span>
-                        <span class="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 font-semibold font-mono">
-                            {{ $surah['ayah_count'] }} Ayat
+                        <span class="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 font-semibold">
+                            {{ $surah['ayah_count'] }} Ayat <span class="font-arabic font-bold text-emerald-600 dark:text-emerald-400">({{ $surah['ayah_count_arabic'] ?? App\Services\QuranDataService::toArabicDigits($surah['ayah_count']) }})</span>
                         </span>
-                        <span class="px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 font-bold font-mono">
-                            Juz {{ $surah['juz'] }}
+                        <span class="px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 font-bold">
+                            Juz {{ $surah['juz'] }} <span class="font-arabic font-bold">({{ App\Services\QuranDataService::toArabicDigits($surah['juz']) }})</span>
                         </span>
                     </div>
                 </div>

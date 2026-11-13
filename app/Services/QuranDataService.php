@@ -137,10 +137,12 @@ class QuranDataService
             $formattedNum = sprintf('%03d', $num);
             $surahs[$num] = [
                 'number' => $num,
+                'number_arabic' => self::toArabicDigits($num),
                 'name' => $info[0],
                 'arabic' => $info[1],
                 'translation' => $info[2],
                 'ayah_count' => $info[3],
+                'ayah_count_arabic' => self::toArabicDigits($info[3]),
                 'type' => $info[4],
                 'juz' => $info[5],
                 'audio_url' => "https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/{$num}.mp3",
@@ -177,6 +179,17 @@ class QuranDataService
     }
 
     /**
+     * Convert western/latin numbers (0-9) to Eastern Arabic numerals (٠-٩).
+     */
+    public static function toArabicDigits(int|string $number): string
+    {
+        $western = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+        $eastern = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+
+        return str_replace($western, $eastern, (string) $number);
+    }
+
+    /**
      * Ambil data lengkap ayat-ayat surah beserta teks Arab, Latin, arti Bahasa Indonesia, dan audio.
      * Menggunakan cache 30 hari untuk performa super cepat (0 ms latency setelah di-cache).
      *
@@ -188,7 +201,7 @@ class QuranDataService
             return null;
         }
 
-        return Cache::remember('quran_surah_detail_v4_'.$number, now()->addDays(30), function () use ($number) {
+        return Cache::remember('quran_surah_detail_v5_'.$number, now()->addDays(30), function () use ($number) {
             $baseMeta = self::getSurah($number);
 
             // 1. Coba ambil dari EQuran API v2 (Sumber Resmi Kemenag RI)
@@ -203,8 +216,10 @@ class QuranDataService
                         $verses = [];
                         foreach ($d['ayat'] as $v) {
                             $audioUrl = $v['audio']['05'] ?? ($v['audio']['01'] ?? (is_array($v['audio']) ? reset($v['audio']) : null));
+                            $ayahNum = (int) ($v['nomorAyat'] ?? 1);
                             $verses[] = [
-                                'number' => (int) ($v['nomorAyat'] ?? 1),
+                                'number' => $ayahNum,
+                                'number_arabic' => self::toArabicDigits($ayahNum),
                                 'arabic' => $v['teksArab'] ?? '',
                                 'latin' => $v['teksLatin'] ?? '',
                                 'translation' => $v['teksIndonesia'] ?? '',
@@ -245,11 +260,13 @@ class QuranDataService
 
                         return [
                             'number' => (int) $d['nomor'],
+                            'number_arabic' => self::toArabicDigits((int) $d['nomor']),
                             'name' => $d['namaLatin'] ?? $baseMeta['name'],
                             'arabic' => $d['nama'] ?? $baseMeta['arabic'],
                             'translation' => $d['arti'] ?? $baseMeta['translation'],
                             'revelation' => $normalizedRev,
                             'ayah_count' => (int) ($d['jumlahAyat'] ?? count($verses)),
+                            'ayah_count_arabic' => self::toArabicDigits((int) ($d['jumlahAyat'] ?? count($verses))),
                             'description' => strip_tags($d['deskripsi'] ?? ''),
                             'audio_full' => $fullAudio,
                             'audio_options' => $d['audioFull'] ?? [],
@@ -274,8 +291,10 @@ class QuranDataService
                     if ($d2 && isset($d2['ayahs']) && is_array($d2['ayahs'])) {
                         $verses = [];
                         foreach ($d2['ayahs'] as $v) {
+                            $ayahNum = (int) ($v['number']['inSurah'] ?? 1);
                             $verses[] = [
-                                'number' => (int) ($v['number']['inSurah'] ?? 1),
+                                'number' => $ayahNum,
+                                'number_arabic' => self::toArabicDigits($ayahNum),
                                 'arabic' => $v['arab'] ?? '',
                                 'latin' => $v['translation']['id'] ?? '',
                                 'translation' => $v['translation']['id'] ?? '',
@@ -284,13 +303,18 @@ class QuranDataService
                             ];
                         }
 
+                        $surahNumber = (int) ($d2['number'] ?? $number);
+                        $ayahCount = (int) ($d2['ayahCount'] ?? count($verses));
+
                         return [
-                            'number' => (int) ($d2['number'] ?? $number),
+                            'number' => $surahNumber,
+                            'number_arabic' => self::toArabicDigits($surahNumber),
                             'name' => $d2['name'] ?? $baseMeta['name'],
                             'arabic' => $d2['asma']['ar']['short'] ?? $baseMeta['arabic'],
                             'translation' => $d2['asma']['id']['short'] ?? $baseMeta['translation'],
                             'revelation' => $d2['type']['id'] ?? $baseMeta['type'],
-                            'ayah_count' => (int) ($d2['ayahCount'] ?? count($verses)),
+                            'ayah_count' => $ayahCount,
+                            'ayah_count_arabic' => self::toArabicDigits($ayahCount),
                             'description' => strip_tags($d2['tafsir']['id'] ?? ''),
                             'audio_full' => $baseMeta['audio_url'] ?? '',
                             'audio_options' => [],

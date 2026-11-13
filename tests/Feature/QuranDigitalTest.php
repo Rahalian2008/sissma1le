@@ -86,3 +86,16 @@ test('sidebar contains al-quran digital navigation link for users', function () 
     $response->assertSee("Al-Qur'an Digital", false);
     $response->assertSee(route('quran.index'), false);
 });
+
+test('arabic numerals are used in ayah end markers and surah details', function () {
+    $user = User::factory()->create([
+        'role' => 'siswa',
+        'is_active' => true,
+    ]);
+
+    $response = $this->actingAs($user)->get(route('quran.show', 1));
+    $response->assertStatus(200);
+    $response->assertSee('ayah-marker', false);
+    $response->assertSee('١', false); // Eastern Arabic numeral 1
+    $response->assertSee('٧', false); // Eastern Arabic numeral 7 (7 ayat)
+});

@@ -15,6 +15,45 @@
         0%, 100% { background-color: transparent; }
         50% { background-color: rgba(16, 185, 129, 0.2); }
     }
+
+    /* Simbol Ornamen Akhir Ayat Al-Qur'an (Rosette / Medallion Tradisional Khas Mushaf) */
+    .ayah-marker {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        width: 1.45em;
+        height: 1.45em;
+        vertical-align: middle;
+        margin: 0 0.25em 0 0.4em;
+        user-select: none;
+        line-height: 1;
+    }
+    .ayah-marker svg {
+        width: 100%;
+        height: 100%;
+        display: block;
+    }
+    .ayah-marker .ayah-num {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Amiri', 'Traditional Arabic', serif;
+        font-weight: 700;
+        line-height: 1;
+        padding-top: 0.08em;
+    }
+    .ayah-marker .ayah-num.digits-1 {
+        font-size: 0.52em;
+    }
+    .ayah-marker .ayah-num.digits-2 {
+        font-size: 0.44em;
+    }
+    .ayah-marker .ayah-num.digits-3 {
+        font-size: 0.36em;
+    }
 </style>
 @endpush
 
@@ -64,13 +103,13 @@
             <!-- Badges -->
             <div class="flex items-center justify-center gap-2 flex-wrap">
                 <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
-                    SURAT KE-{{ $surah['number'] }}
+                    SURAT KE-{{ $surah['number'] }} ({{ $surah['number_arabic'] ?? App\Services\QuranDataService::toArabicDigits($surah['number']) }})
                 </span>
                 <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-white/10 text-slate-200">
                     {{ $surah['revelation'] }}
                 </span>
                 <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-teal-500/20 text-teal-300 border border-teal-400/30">
-                    {{ $surah['ayah_count'] }} AYAT
+                    {{ $surah['ayah_count'] }} AYAT ({{ $surah['ayah_count_arabic'] ?? App\Services\QuranDataService::toArabicDigits($surah['ayah_count']) }})
                 </span>
             </div>
 
@@ -173,7 +212,7 @@
             <select @change="scrollToAyah($event.target.value)" class="px-2.5 py-1 text-xs font-bold bg-slate-100 dark:bg-slate-800 border-none rounded-xl outline-none text-slate-700 dark:text-slate-300 cursor-pointer">
                 <option value="">Lompat Ayat</option>
                 @for($a = 1; $a <= $surah['ayah_count']; $a++)
-                    <option value="{{ $a }}">Ayat {{ $a }}</option>
+                    <option value="{{ $a }}">Ayat {{ $a }} ({{ App\Services\QuranDataService::toArabicDigits($a) }})</option>
                 @endfor
             </select>
         </div>
@@ -202,11 +241,12 @@
                 <div class="flex items-center justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
                     <div class="flex items-center gap-2">
                         <!-- Nomor Ayat Badge -->
-                        <span class="w-8 h-8 rounded-xl bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 font-mono font-black text-xs flex items-center justify-center">
+                        <span class="w-8 h-8 rounded-xl bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 font-bold text-xs flex items-center justify-center">
                             {{ $verse['number'] }}
                         </span>
-                        <span class="text-[11px] text-slate-400 font-bold uppercase tracking-wider">
-                            Ayat {{ $verse['number'] }}
+                        <span class="text-[11px] text-slate-400 font-bold uppercase tracking-wider flex items-center gap-1">
+                            <span>Ayat {{ $verse['number'] }}</span>
+                            <span class="font-arabic text-emerald-600 dark:text-emerald-400 font-bold text-xs leading-none">({{ $verse['number_arabic'] ?? App\Services\QuranDataService::toArabicDigits($verse['number']) }})</span>
                         </span>
                     </div>
 
@@ -251,13 +291,26 @@
                 </div>
 
                 <!-- Teks Arab Ayat (Kemenag Utsmani) -->
-                <div class="py-2 text-right" dir="rtl">
-                    <span class="font-arabic font-normal text-slate-900 dark:text-emerald-100 leading-loose tracking-wide inline" :class="fontSize">
+                <div class="py-2.5 text-right leading-loose" dir="rtl">
+                    <span class="font-arabic font-normal text-slate-900 dark:text-emerald-100 tracking-wide inline" :class="fontSize">
                         {{ $verse['arabic'] }}
                     </span>
-                    <!-- Simbol Ayat Akhir Arab -->
-                    <span class="font-arabic text-amber-600 dark:text-amber-400 mr-2 text-2xl select-none inline-block">
-                        ۝{{ $verse['number'] }}
+                    <!-- Simbol Ornamen Akhir Ayat (Rosette Tradisional Mushaf dengan Angka Arab) -->
+                    <span class="ayah-marker text-amber-600 dark:text-amber-400 select-none align-middle" :class="fontSize" title="Ayat {{ $verse['number'] }} ({{ $verse['number_arabic'] ?? App\Services\QuranDataService::toArabicDigits($verse['number']) }})">
+                        <svg viewBox="0 0 44 44" fill="none" class="w-full h-full drop-shadow-2xs">
+                            <circle cx="22" cy="22" r="19" stroke="currentColor" stroke-width="1.1" stroke-dasharray="2 2" class="opacity-40" />
+                            <path d="M22,3 L27.4,9.1 L35.4,8.6 L34.9,16.6 L41,22 L34.9,27.4 L35.4,35.4 L27.4,34.9 L22,41 L16.6,34.9 L8.6,35.4 L9.1,27.4 L3,22 L9.1,16.6 L8.6,8.6 L16.6,9.1 Z" 
+                                  stroke="currentColor" stroke-width="1.3" fill="currentColor" fill-opacity="0.08" />
+                            <circle cx="22" cy="22" r="12.5" stroke="currentColor" stroke-width="1.4" />
+                            <circle cx="22" cy="22" r="10.8" stroke="currentColor" stroke-width="0.6" class="opacity-40" />
+                            <circle cx="22" cy="4.5" r="1.1" fill="currentColor" />
+                            <circle cx="40.5" cy="22" r="1.1" fill="currentColor" />
+                            <circle cx="22" cy="39.5" r="1.1" fill="currentColor" />
+                            <circle cx="3.5" cy="22" r="1.1" fill="currentColor" />
+                        </svg>
+                        <span class="ayah-num digits-{{ strlen((string)$verse['number']) }} text-amber-700 dark:text-amber-300">
+                            {{ $verse['number_arabic'] ?? App\Services\QuranDataService::toArabicDigits($verse['number']) }}
+                        </span>
                     </span>
                 </div>
 
@@ -468,11 +521,17 @@
                 }
             },
 
+            toArabicDigits(num) {
+                const eastern = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+                return String(num).replace(/[0-9]/g, d => eastern[parseInt(d, 10)]);
+            },
+
             copyAyahText(arabic, latin, trans, num) {
-                const text = `Surat {{ $surah['name'] }} Ayat ${num}\n\n${arabic}\n\nLatin: ${latin}\n\nArtinya:\n"${trans}"\n\n(Al-Qur'an Digital SMAN 1 Lengkong)`;
+                const arNum = this.toArabicDigits(num);
+                const text = `Surat {{ $surah['name'] }} Ayat ${num} (${arNum})\n\n${arabic} ۝${arNum}\n\nLatin: ${latin}\n\nArtinya:\n"${trans}"\n\n(Al-Qur'an Digital SMAN 1 Lengkong)`;
                 if (navigator.clipboard && navigator.clipboard.writeText) {
                     navigator.clipboard.writeText(text).then(() => {
-                        alert('📋 Teks Ayat ' + num + ' berhasil disalin ke clipboard!');
+                        alert('📋 Teks Ayat ' + num + ' (' + arNum + ') berhasil disalin ke clipboard!');
                     }).catch(() => {
                         this.fallbackCopy(text);
                     });
