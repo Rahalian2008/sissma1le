@@ -262,25 +262,7 @@
                 </div>
             </div>
             <!-- SOUNDBOARD, LAGU NASIONAL & MUROTTAL AL-QUR'AN PANEL -->
-            <div class="bg-white/5 backdrop-blur-xl rounded-3xl p-6 sm:p-7 border border-white/10 shadow-2xl space-y-6" 
-                 x-data="{ 
-                     kioskTab: 'soundboard',
-                     murottalSearch: '',
-                     murottalCategory: 'all',
-                     allSurahsList: @json(array_values($allSurahs)),
-                     matchesMurottal(surah) {
-                         const q = this.murottalSearch.trim().toLowerCase();
-                         if (this.murottalCategory === 'juz30' && (surah.number < 78 || surah.number > 114)) return false;
-                         if (this.murottalCategory === 'popular' && ![1, 18, 36, 55, 56, 67, 78, 93, 112, 113, 114].includes(surah.number)) return false;
-                         if (this.murottalCategory === '3qul' && ![112, 113, 114].includes(surah.number)) return false;
-
-                         if (!q) return true;
-                         return surah.name.toLowerCase().includes(q) ||
-                                String(surah.number).includes(q) ||
-                                (surah.translation && surah.translation.toLowerCase().includes(q)) ||
-                                (surah.type && surah.type.toLowerCase().includes(q));
-                     }
-                 }">
+            <div class="bg-white/5 backdrop-blur-xl rounded-3xl p-6 sm:p-7 border border-white/10 shadow-2xl space-y-6">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/10">
                     <div class="flex items-center gap-2 flex-wrap">
                         <button type="button" @click="kioskTab = 'soundboard'" :class="kioskTab === 'soundboard' ? 'bg-amber-500 text-slate-950 font-black shadow-lg shadow-amber-500/20' : 'bg-white/10 text-slate-300 hover:bg-white/20 font-bold'" class="px-4 py-2 rounded-xl text-xs transition flex items-center gap-2 cursor-pointer">
@@ -488,6 +470,10 @@
                 nextBellTime: '{{ $nextBell?->time ?? "" }}',
                 nextBellDesc: '{{ $nextBell?->description ?? "" }}',
                 schedules: @json($todayBells),
+                kioskTab: 'soundboard',
+                murottalSearch: '',
+                murottalCategory: 'all',
+                allSurahsList: @json(array_values($allSurahs)),
 
                 init() {
                     this.updateClock();
@@ -958,6 +944,20 @@
                             if (text) this.speakText(text);
                         });
                     }
+                },
+
+                // Filter pencarian Murottal di Kiosk
+                matchesMurottal(surah) {
+                    const q = this.murottalSearch ? this.murottalSearch.trim().toLowerCase() : '';
+                    if (this.murottalCategory === 'juz30' && (surah.number < 78 || surah.number > 114)) return false;
+                    if (this.murottalCategory === 'popular' && ![1, 18, 36, 55, 56, 67, 78, 93, 112, 113, 114].includes(surah.number)) return false;
+                    if (this.murottalCategory === '3qul' && ![112, 113, 114].includes(surah.number)) return false;
+
+                    if (!q) return true;
+                    return (surah.name && surah.name.toLowerCase().includes(q)) ||
+                           String(surah.number).includes(q) ||
+                           (surah.translation && surah.translation.toLowerCase().includes(q)) ||
+                           (surah.type && surah.type.toLowerCase().includes(q));
                 },
 
                 // Play Murottal Surah in Kiosk Manual
