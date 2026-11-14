@@ -121,7 +121,7 @@
                         <!-- 1. PILIHAN GANDA (SINGLE CHOICE) -->
                         <template x-if="currentQuestion.question_type === 'multiple_choice'">
                             <div class="space-y-2.5">
-                                <template x-for="(opt, idx) in (currentQuestion.options || [])" :key="idx">
+                                <template x-for="(opt, idx) in (currentQuestion.normalized_options || currentQuestion.options || [])" :key="idx">
                                     <label class="flex items-start gap-3.5 p-3.5 rounded-2xl border cursor-pointer transition"
                                            :class="currentAnswer === opt.key ? 'bg-indigo-50/70 border-indigo-500 text-indigo-950 dark:bg-indigo-950/40 dark:border-indigo-500 dark:text-white shadow-sm' : 'bg-slate-50/60 border-slate-200 hover:bg-slate-100/70 dark:bg-slate-900/40 dark:border-slate-700 dark:hover:bg-slate-700/50 text-slate-800 dark:text-slate-200'">
                                         <input type="radio" :name="'mc_' + currentQuestion.id" :value="opt.key" x-model="currentAnswer" @change="saveCurrentAnswer()" class="mt-0.5 text-indigo-600 focus:ring-indigo-500">
@@ -138,7 +138,7 @@
                         <template x-if="currentQuestion.question_type === 'complex_multiple_choice'">
                             <div class="space-y-2.5">
                                 <div class="text-xs text-slate-500 italic mb-1">*Pilih satu atau lebih jawaban yang benar.</div>
-                                <template x-for="(opt, idx) in (currentQuestion.options || [])" :key="idx">
+                                <template x-for="(opt, idx) in (currentQuestion.normalized_options || currentQuestion.options || [])" :key="idx">
                                     <label class="flex items-start gap-3.5 p-3.5 rounded-2xl border cursor-pointer transition"
                                            :class="(Array.isArray(currentAnswer) && currentAnswer.includes(opt.key)) ? 'bg-indigo-50/70 border-indigo-500 text-indigo-950 dark:bg-indigo-950/40 dark:border-indigo-500 dark:text-white shadow-sm' : 'bg-slate-50/60 border-slate-200 hover:bg-slate-100/70 dark:bg-slate-900/40 dark:border-slate-700 dark:hover:bg-slate-700/50 text-slate-800 dark:text-slate-200'">
                                         <input type="checkbox" :value="opt.key" :checked="Array.isArray(currentAnswer) && currentAnswer.includes(opt.key)" @change="toggleComplexOption(opt.key)" class="mt-0.5 rounded text-indigo-600 focus:ring-indigo-500">
@@ -165,7 +165,7 @@
                                             </tr>
                                         </thead>
                                         <tbody class="divide-y divide-slate-100 dark:divide-slate-700/60">
-                                            <template x-for="(stmt, idx) in (currentQuestion.options || [])" :key="idx">
+                                            <template x-for="(stmt, idx) in (currentQuestion.normalized_options || currentQuestion.options || [])" :key="idx">
                                                 <tr>
                                                     <td class="py-3 px-4 font-medium text-slate-700 dark:text-slate-200" x-text="stmt.statement"></td>
                                                     <td class="py-3 px-4 text-center">
@@ -187,12 +187,12 @@
                             <div class="space-y-3">
                                 <div class="text-xs text-slate-500 italic mb-1">*Pilih pasangan yang tepat untuk setiap premis di kolom kiri.</div>
                                 <div class="space-y-2.5">
-                                    <template x-for="(pair, idx) in (currentQuestion.options || [])" :key="idx">
+                                    <template x-for="(pair, idx) in (currentQuestion.normalized_options || currentQuestion.options || [])" :key="idx">
                                         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700">
                                             <span class="text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-200 sm:w-1/2" x-text="pair.premise"></span>
                                             <select :value="currentAnswer ? currentAnswer[idx] : ''" @change="setMatching(idx, $event.target.value)" class="text-xs rounded-xl bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-700 py-1.5 px-3 text-slate-800 dark:text-white sm:w-1/2 focus:ring-2 focus:ring-indigo-500">
                                                 <option value="">-- Pilih Jawaban --</option>
-                                                <template x-for="(target, tIdx) in (currentQuestion.options || [])" :key="tIdx">
+                                                <template x-for="(target, tIdx) in (currentQuestion.normalized_options || currentQuestion.options || [])" :key="tIdx">
                                                     <option :value="target.response" x-text="target.response"></option>
                                                 </template>
                                             </select>

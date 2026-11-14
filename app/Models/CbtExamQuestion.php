@@ -38,6 +38,13 @@ class CbtExamQuestion extends Model
         ];
     }
 
+    protected $appends = [
+        'type_label',
+        'cognitive_label',
+        'difficulty_label',
+        'normalized_options',
+    ];
+
     public function exam(): BelongsTo
     {
         return $this->belongsTo(CbtExam::class, 'cbt_exam_id');
@@ -81,5 +88,84 @@ class CbtExamQuestion extends Model
             'sukar', 'sulit' => 'Sukar',
             default => 'Sedang',
         };
+    }
+
+    /**
+     * Normalisasi opsi jawaban agar konsisten untuk berbagai format penyimpanan (JSON key-value, list of objects, dsb)
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    public function getNormalizedOptionsAttribute(): array
+    {
+        $opts = $this->options;
+        if (empty($opts)) {
+            return [];
+        }
+
+        if (is_string($opts)) {
+            $decoded = json_decode($opts, true);
+            $opts = (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) ? $decoded : [];
+        }
+
+        if (! is_array($opts)) {
+            return [];
+        }
+
+        $normalized = [];
+
+        if ($this->question_type === 'multiple_choice' || $this->question_type === 'complex_multiple_choice') {
+            foreach ($opts as $key => $val) {
+                if (is_array($val)) {
+                    $k = $val['key'] ?? (is_numeric($key) ? chr(65 + (int) $key) : $key);
+                    $t = $val['text'] ?? ($val['label'] ?? json_encode($val));
+                } else {
+                    $k = is_numeric($key) ? chr(65 + (int) $key) : $key;
+                    $t = strval($val);
+                }
+                $normalized[] = ['key' => strval($k), 'text' => $t];
+            }
+
+            return $normalized;
+        }
+
+        if ($this->question_type === 'true_false') {
+            foreach ($opts as $key => $val) {
+                if (is_array($val)) {
+                    $st = $val['statement'] ?? ($val['text'] ?? json_encode($val));
+                } else {
+                    $st = strval($val);
+                }
+                $normalized[] = ['statement' => $st];
+            }
+
+            return $normalized;
+        }
+
+        if ($this->question_type === 'matching') {
+            if (isset($opts['premises']) && is_array($opts['premises'])) {
+                foreach ($opts['premises'] as $i => $prem) {
+                    $p = is_array($prem) ? ($prem['text'] ?? json_encode($prem)) : strval($prem);
+                    $r = isset($opts['responses'][$i]) ? (is_array($opts['responses'][$i]) ? ($opts['responses'][$i]['text'] ?? json_encode($opts['responses'][$i])) : strval($opts['responses'][$i])) : '';
+                    $normalized[] = ['premise' => $p, 'response' => $r];
+                }
+
+                return $normalized;
+            }
+
+            foreach ($opts as $val) {
+                if (is_array($val)) {
+                    $p = $val['premise'] ?? ($val['left'] ?? json_encode($val));
+                    $r = $val['response'] ?? ($val['right'] ?? '');
+                } else {
+                    $p = strval($val);
+                    $r = '';
+                }
+                $normalized[] = ['premise' => $p, 'response' => $r];
+            }
+
+            return $normalized;
+        }
+
+        return $opts;
     }
 }
