@@ -63,15 +63,24 @@ class CbtStudentController extends Controller
             return back()->with('error', 'Data siswa tidak ditemukan.');
         }
 
-        // 1. Validasi Token Ujian jika ujian memiliki token
-        if (! empty($exam->token)) {
+        // 1. Validasi Akses Perorangan Siswa
+        $existingSession = CbtSession::where('cbt_exam_id', $exam->id)
+            ->where('student_id', $student->id)
+            ->first();
+
+        if ($existingSession && ! $existingSession->is_allowed) {
+            return back()->with('error', '❌ Akses Ujian Dinonaktifkan: Akses ujian Anda saat ini sedang dinonaktifkan oleh Guru/Pengawas ruang. Silakan hubungi pengawas ruang untuk mengaktifkannya.');
+        }
+
+        // 2. Validasi Token Ujian jika ujian MEWAJIBKAN token (Bypass jika require_token = false)
+        if ($exam->require_token && ! empty($exam->token)) {
             $inputToken = strtoupper(trim($request->input('token', '')));
             if ($inputToken !== strtoupper($exam->token)) {
                 return back()->with('error', 'Token ujian yang Anda masukkan salah. Silakan tanyakan token kepada pengawas ujian.');
             }
         }
 
-        // 2. Validasi Jadwal Ujian
+        // 3. Validasi Jadwal Ujian
         if ($exam->start_time && now()->lt($exam->start_time)) {
             return back()->with('error', "Ujian belum dimulai. Ujian dibuka pada: {$exam->start_time->translatedFormat('d F Y H:i')}.");
         }
@@ -158,7 +167,12 @@ class CbtStudentController extends Controller
 
         if (! $session) {
             return redirect()->route('cbt.student.index')
-                ->with('error', 'Sesi ujian belum dimulai. Silakan masukkan token untuk memulai.');
+                ->with('error', 'Sesi ujian belum dimulai. Silakan klik Masuk Ujian untuk memulai.');
+        }
+
+        if (! $session->is_allowed) {
+            return redirect()->route('cbt.student.index')
+                ->with('error', '❌ Akses Ujian Dinonaktifkan: Akses ujian Anda sedang dinonaktifkan oleh Guru/Pengawas.');
         }
 
         if ($session->status === 'submitted') {

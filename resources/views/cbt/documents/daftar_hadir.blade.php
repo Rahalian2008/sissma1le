@@ -3,11 +3,32 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Daftar Hadir Ujian - {{ $exam->title }} - {{ $school['name'] }}</title>
+    <title>Daftar Hadir Ujian - {{ $exam->title }} - {{ $selectedRoom ?: 'Semua Ruang' }}</title>
     
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,600,700,900&display=swap" rel="stylesheet" />
     @vite(['resources/css/app.css'])
+
+    <!-- KaTeX with mhchem Extension -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/mhchem.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            if (typeof renderMathInElement === 'function') {
+                renderMathInElement(document.body, {
+                    delimiters: [
+                        {left: '$$', right: '$$', display: true},
+                        {left: '$', right: '$', display: false},
+                        {left: '\\(', right: '\\)', display: false},
+                        {left: '\\[', right: '\\]', display: true}
+                    ],
+                    throwOnError: false
+                });
+            }
+        });
+    </script>
 
     <style>
         body {
@@ -18,7 +39,7 @@
         @media print {
             @page {
                 size: A4 portrait;
-                margin: 12mm 15mm;
+                margin: 10mm 14mm;
             }
             .no-print {
                 display: none !important;
@@ -38,23 +59,35 @@
         <a href="{{ route('cbt.exams.show', $exam->id) }}" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-sans font-bold transition">
             ← Kembali
         </a>
-        <button onclick="window.print()" class="px-4 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-xs font-sans font-bold flex items-center gap-1.5 transition">
+        <button onclick="window.print()" class="px-4 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-xs font-sans font-bold flex items-center gap-1.5 transition cursor-pointer">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
             Cetak Daftar Hadir
         </button>
     </div>
 
-    <!-- FILTER PER KELAS (NO-PRINT) -->
+    <!-- FILTER BAR: RUANG & FORMAT MANUAL (NO-PRINT) -->
     <div class="no-print mb-6 p-4 rounded-2xl bg-slate-100 border border-slate-200 flex flex-wrap items-center justify-between gap-3 text-xs font-sans">
         <div>
-            <strong>Pilih Rombel / Kelas:</strong> Sesuaikan daftar hadir per kelas.
+            <strong>Opsi Tampilan & Ruang:</strong> Sesuaikan ruang atau gunakan format manual blanko.
         </div>
-        <form method="GET" action="{{ route('cbt.documents.daftar_hadir', $exam->id) }}" class="flex items-center gap-2">
-            <select name="class_id" onchange="this.form.submit()" class="text-xs rounded-xl border-slate-300 py-1.5 px-3">
-                <option value="">-- Semua Kelas Terdaftar --</option>
+        <form method="GET" action="{{ route('cbt.documents.daftar_hadir', $exam->id) }}" class="flex items-center gap-2 flex-wrap">
+            <select name="room" onchange="this.form.submit()" class="text-xs rounded-xl border-slate-300 py-1.5 px-3 bg-white font-bold">
+                <option value="">-- Semua Ruang --</option>
+                @foreach($availableRooms as $r)
+                    <option value="{{ $r }}" {{ ($selectedRoom === $r) ? 'selected' : '' }}>{{ $r }}</option>
+                @endforeach
+            </select>
+
+            <select name="class_id" onchange="this.form.submit()" class="text-xs rounded-xl border-slate-300 py-1.5 px-3 bg-white font-bold">
+                <option value="">-- Semua Kelas --</option>
                 @foreach($exam->classes as $c)
                     <option value="{{ $c->id }}" {{ request('class_id') == $c->id ? 'selected' : '' }}>{{ $c->name }}</option>
                 @endforeach
+            </select>
+
+            <select name="is_manual" onchange="this.form.submit()" class="text-xs rounded-xl border-slate-300 py-1.5 px-3 bg-white font-bold {{ $is_manual ? 'text-amber-700 border-amber-400' : 'text-slate-800' }}">
+                <option value="0" {{ ! $is_manual ? 'selected' : '' }}>Format Otomatis (Terisi Siswa)</option>
+                <option value="1" {{ $is_manual ? 'selected' : '' }}>Format Manual / Blanko Kosong</option>
             </select>
         </form>
     </div>
@@ -84,7 +117,12 @@
 
     <!-- JUDUL DOKUMEN -->
     <div class="text-center mb-4">
-        <h2 class="text-base font-bold uppercase underline tracking-wider">DAFTAR HADIR PESERTA ASESMEN UJIAN ONLINE (CBT)</h2>
+        <h2 class="text-base font-bold uppercase underline tracking-wider">
+            DAFTAR HADIR PESERTA ASESMEN UJIAN ONLINE (CBT)
+            @if($is_manual)
+                <span class="no-print text-amber-700 text-xs block font-sans lowercase mt-0.5">(Format Blanko Manual Tulis Tangan)</span>
+            @endif
+        </h2>
         <div class="text-xs uppercase font-bold mt-0.5 tracking-wider">{{ $exam->title }}</div>
     </div>
 
@@ -114,14 +152,18 @@
                 <td>{{ $exam->duration_minutes }} Menit</td>
             </tr>
             <tr>
-                <td class="py-0.5 font-bold">Ruang / Sesi</td>
+                <td class="py-0.5 font-bold">Ruang Ujian</td>
                 <td>:</td>
-                <td>Ruang Lab CBT / Sesi 1</td>
+                <td class="font-bold uppercase">{{ $selectedRoom ?: 'Semua Ruang' }}</td>
             </tr>
             <tr>
                 <td class="py-0.5 font-bold">Rekap Kehadiran</td>
                 <td>:</td>
-                <td><strong>{{ $stats['present'] }} Hadir</strong> / {{ $stats['total'] }} Siswa ({{ $stats['absent'] }} Tidak Hadir)</td>
+                @if($is_manual)
+                    <td>.......... Hadir / .......... Siswa (.......... Tidak Hadir)</td>
+                @else
+                    <td><strong>{{ $stats['present'] }} Hadir</strong> / {{ $stats['total'] }} Siswa ({{ $stats['absent'] }} Tidak Hadir)</td>
+                @endif
             </tr>
         </table>
     </div>
@@ -130,38 +172,49 @@
     <table class="w-full border-collapse border border-black text-xs mb-6">
         <thead>
             <tr class="bg-slate-100 text-center font-bold">
-                <th class="border border-black p-2 w-10">No</th>
-                <th class="border border-black p-2 w-32">No. Peserta</th>
+                <th class="border border-black p-2 w-8">No</th>
+                <th class="border border-black p-2 w-28">No. Peserta</th>
                 <th class="border border-black p-2 w-20">NIS</th>
                 <th class="border border-black p-2">Nama Lengkap Peserta</th>
-                <th class="border border-black p-2 w-36 text-center" colspan="2">Tanda Tangan</th>
-                <th class="border border-black p-2 w-24">Keterangan</th>
+                <th class="border border-black p-2 w-20">Kelas</th>
+                <th class="border border-black p-2 w-32 text-center" colspan="2">Tanda Tangan</th>
+                <th class="border border-black p-2 w-20">Keterangan</th>
             </tr>
         </thead>
         <tbody>
             @forelse($rows as $row)
-                @php $student = $row['student']; @endphp
-                <tr class="h-10">
-                    <td class="border border-black p-1 text-center font-bold">{{ $row['no'] }}</td>
-                    <td class="border border-black p-1 text-center font-mono">{{ $row['participant_number'] }}</td>
-                    <td class="border border-black p-1 text-center font-mono">{{ $student->nis }}</td>
-                    <td class="border border-black p-1 font-semibold uppercase">{{ $student->name }}</td>
+                @php 
+                    $student = $row['student'] ?? null; 
+                    $no = $row['no'];
+                @endphp
+                <tr class="h-9">
+                    <td class="border border-black p-1 text-center font-bold">{{ $no }}</td>
+                    <td class="border border-black p-1 text-center font-mono text-[11px]">{{ $row['participant_number'] }}</td>
+                    <td class="border border-black p-1 text-center font-mono text-[11px]">{{ $student?->nis ?? ($row['nis'] ?? '') }}</td>
+                    <td class="border border-black p-1 font-semibold uppercase text-[11px]">
+                        {{ $student?->name ?? ($row['name'] ?? '') }}
+                    </td>
+                    <td class="border border-black p-1 text-center font-medium text-[11px]">
+                        {{ $row['class_name'] ?? ($student?->schoolClass?->name ?? '-') }}
+                    </td>
                     
                     <!-- KOLOM TANDA TANGAN ZIG-ZAG -->
-                    @if($row['no'] % 2 !== 0)
-                        <td class="border border-black p-1 text-left align-top w-20 text-[10px]">
-                            <span class="font-bold">{{ $row['no'] }}.</span>
+                    @if($no % 2 !== 0)
+                        <td class="border border-black p-1 text-left align-top w-16 text-[10px]">
+                            <span class="font-bold">{{ $no }}.</span>
                         </td>
-                        <td class="border border-black p-1 w-20"></td>
+                        <td class="border border-black p-1 w-16"></td>
                     @else
-                        <td class="border border-black p-1 w-20"></td>
-                        <td class="border border-black p-1 text-left align-top w-20 text-[10px]">
-                            <span class="font-bold">{{ $row['no'] }}.</span>
+                        <td class="border border-black p-1 w-16"></td>
+                        <td class="border border-black p-1 text-left align-top w-16 text-[10px]">
+                            <span class="font-bold">{{ $no }}.</span>
                         </td>
                     @endif
 
                     <td class="border border-black p-1 text-center text-[10px]">
-                        @if($row['has_attended'])
+                        @if($is_manual)
+                            <span class="text-slate-400">..........</span>
+                        @elseif($row['has_attended'])
                             <span class="font-bold text-emerald-800">HADIR</span>
                         @else
                             <span class="text-slate-400 italic">Belum Selesai</span>
@@ -170,7 +223,7 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="7" class="border border-black p-6 text-center italic">Tidak ada siswa terdaftar pada rombel ini.</td>
+                    <td colspan="8" class="border border-black p-6 text-center italic">Tidak ada siswa terdaftar pada ruang / rombel ini.</td>
                 </tr>
             @endforelse
         </tbody>
@@ -187,7 +240,7 @@
         </div>
         <div class="text-center w-64">
             <div>Lengkong, {{ now()->translatedFormat('d F Y') }}</div>
-            <div class="font-bold">Pengawas Ruang Ujian</div>
+            <div class="font-bold">Pengawas Ruang Ujian ({{ $selectedRoom ?: 'Ruang 01' }})</div>
             <div class="h-20"></div>
             <div class="font-bold underline">(...................................................)</div>
             <div>NIP. .................................................</div>

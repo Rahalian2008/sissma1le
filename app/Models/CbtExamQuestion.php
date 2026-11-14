@@ -17,6 +17,7 @@ class CbtExamQuestion extends Model
         'question_number',
         'question_type',
         'stimulus',
+        'media_path',
         'question_text',
         'options',
         'correct_answer',

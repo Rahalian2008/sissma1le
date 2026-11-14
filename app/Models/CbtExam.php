@@ -21,6 +21,8 @@ class CbtExam extends Model
         'academic_year_id',
         'duration_minutes',
         'token',
+        'require_token',
+        'available_rooms',
         'start_time',
         'end_time',
         'randomize_questions',
@@ -41,6 +43,8 @@ class CbtExam extends Model
     protected function casts(): array
     {
         return [
+            'require_token' => 'boolean',
+            'available_rooms' => 'array',
             'start_time' => 'datetime',
             'end_time' => 'datetime',
             'randomize_questions' => 'boolean',

@@ -18,6 +18,8 @@ class CbtSession extends Model
         'session_token',
         'cbt_username',
         'cbt_password',
+        'room_name',
+        'is_allowed',
         'started_at',
         'finished_at',
         'remaining_seconds',
@@ -44,6 +46,7 @@ class CbtSession extends Model
     protected function casts(): array
     {
         return [
+            'is_allowed' => 'boolean',
             'started_at' => 'datetime',
             'finished_at' => 'datetime',
             'blocked_at' => 'datetime',

@@ -295,13 +295,13 @@
                         </ul>
                     </div>
 
-                    <!-- INPUT TOKEN JIKA ADA -->
-                    <template x-if="selectedExam && selectedExam.token">
+                    <!-- INPUT TOKEN JIKA DIWAJIBKAN OLEH GURU -->
+                    <template x-if="selectedExam && selectedExam.require_token && selectedExam.token">
                         <div class="space-y-1">
                             <label class="block text-xs font-bold text-slate-700 dark:text-slate-300">
                                 Masukkan Token Ujian <span class="text-rose-500">*</span>
                             </label>
-                            <input type="text" name="token" x-model="tokenInput" required placeholder="Contoh: CBT26A" class="w-full text-center uppercase tracking-widest font-mono font-bold text-base rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 py-2.5 px-4 text-indigo-600 dark:text-indigo-400 focus:ring-2 focus:ring-indigo-500">
+                            <input type="text" name="token" x-model="tokenInput" :required="selectedExam && selectedExam.require_token" placeholder="Contoh: CBT26A" class="w-full text-center uppercase tracking-widest font-mono font-bold text-base rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 py-2.5 px-4 text-indigo-600 dark:text-indigo-400 focus:ring-2 focus:ring-indigo-500">
                             <p class="text-[11px] text-slate-400 text-center">Tanyakan 6 digit token kepada pengawas ruang ujian Anda.</p>
                         </div>
                     </template>

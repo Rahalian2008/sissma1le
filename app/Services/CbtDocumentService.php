@@ -87,9 +87,109 @@ class CbtDocumentService
     }
 
     /**
+     * Ambil daftar ruang unik yang tersedia untuk paket ujian ini.
+     *
+     * @return array<int, string>
+     */
+    public function getAvailableRooms(CbtExam $exam): array
+    {
+        $sessionRooms = $exam->sessions()
+            ->whereNotNull('room_name')
+            ->where('room_name', '!=', '')
+            ->distinct()
+            ->pluck('room_name')
+            ->toArray();
+
+        $configuredRooms = is_array($exam->available_rooms) ? $exam->available_rooms : [];
+        $merged = array_unique(array_merge($configuredRooms, $sessionRooms));
+        sort($merged);
+
+        return ! empty($merged) ? array_values($merged) : ['Ruang 01'];
+    }
+
+    /**
+     * Otomatis membagi siswa ke ruang ujian (bisa selang-seling rombel / zig-zag maupun bertahap).
+     *
+     * @param  array<int, string>  $rooms
+     */
+    public function distributeStudentsToRooms(CbtExam $exam, array $rooms, int $capacity = 20, string $mode = 'zigzag'): int
+    {
+        $exam->loadMissing(['classes.students']);
+        $classes = $exam->classes;
+
+        if (empty($rooms)) {
+            $rooms = ['Ruang 01'];
+        }
+
+        // Ambil seluruh siswa aktif dari rombel yang dipilih
+        $studentsByClass = [];
+        foreach ($classes as $cls) {
+            $activeStudents = $cls->students()->where('is_active', true)->orderBy('name')->get();
+            if ($activeStudents->isNotEmpty()) {
+                $studentsByClass[$cls->id] = $activeStudents->values()->all();
+            }
+        }
+
+        $allStudentsSorted = [];
+        if ($mode === 'zigzag' && count($studentsByClass) > 1) {
+            // Selang-seling siswa per rombel agar dalam satu ruang terdapat campuran rombel berbeda (misal 10A dan 11A)
+            $classKeys = array_keys($studentsByClass);
+            $maxCount = max(array_map('count', $studentsByClass));
+            for ($i = 0; $i < $maxCount; $i++) {
+                foreach ($classKeys as $cKey) {
+                    if (isset($studentsByClass[$cKey][$i])) {
+                        $allStudentsSorted[] = $studentsByClass[$cKey][$i];
+                    }
+                }
+            }
+        } else {
+            foreach ($studentsByClass as $sList) {
+                foreach ($sList as $s) {
+                    $allStudentsSorted[] = $s;
+                }
+            }
+        }
+
+        $assignedCount = 0;
+        $roomIndex = 0;
+        $currentRoomCount = 0;
+
+        foreach ($allStudentsSorted as $student) {
+            $currentRoom = $rooms[$roomIndex % count($rooms)];
+
+            $session = $exam->sessions()->firstOrCreate(
+                ['student_id' => $student->id],
+                [
+                    'status' => 'not_started',
+                    'remaining_seconds' => $exam->duration_minutes * 60,
+                ]
+            );
+
+            $session->ensureCredentials();
+            $session->update([
+                'room_name' => $currentRoom,
+            ]);
+
+            $assignedCount++;
+            $currentRoomCount++;
+
+            if ($currentRoomCount >= $capacity && ($roomIndex + 1) < count($rooms)) {
+                $roomIndex++;
+                $currentRoomCount = 0;
+            }
+        }
+
+        $exam->update([
+            'available_rooms' => array_values(array_unique($rooms)),
+        ]);
+
+        return $assignedCount;
+    }
+
+    /**
      * Siapkan seluruh data untuk Cetak Kartu Peserta Ujian (per rombel atau seluruh peserta).
      */
-    public function prepareKartuPesertaData(CbtExam $exam, ?int $classId = null): array
+    public function prepareKartuPesertaData(CbtExam $exam, ?int $classId = null, ?string $roomName = null): array
     {
         $exam->loadMissing(['subject', 'classes']);
 
@@ -120,6 +220,11 @@ class CbtDocumentService
 
             $session->ensureCredentials();
 
+            // Jika filter per ruang aktif, lewati yang tidak sesuai ruang
+            if ($roomName && $session->room_name !== $roomName) {
+                continue;
+            }
+
             $cards[] = [
                 'student' => $student,
                 'session' => $session,
@@ -127,7 +232,7 @@ class CbtDocumentService
                 'username' => $session->cbt_username,
                 'password' => $session->cbt_password,
                 'token' => $exam->token,
-                'room' => 'Ruang '.$student->schoolClass?->name,
+                'room' => $session->room_name ?: ('Ruang '.$student->schoolClass?->name),
             ];
         }
 
@@ -136,42 +241,84 @@ class CbtDocumentService
             'exam' => $exam,
             'cards' => $cards,
             'selectedClass' => $classId ? SchoolClass::find($classId) : null,
+            'selectedRoom' => $roomName,
+            'availableRooms' => $this->getAvailableRooms($exam),
         ];
     }
 
     /**
      * Siapkan data untuk Cetak Daftar Hadir Ujian.
      */
-    public function prepareDaftarHadirData(CbtExam $exam, ?int $classId = null): array
+    public function prepareDaftarHadirData(CbtExam $exam, ?int $classId = null, ?string $roomName = null, bool $isManual = false): array
     {
         $exam->loadMissing(['subject', 'teacher.user', 'classes']);
 
-        $query = Student::with(['schoolClass'])->where('is_active', true);
+        $availableRooms = $this->getAvailableRooms($exam);
+        $selectedClass = $classId ? SchoolClass::find($classId) : null;
 
-        if ($classId) {
-            $query->where('class_id', $classId);
-            $selectedClass = SchoolClass::find($classId);
-        } else {
-            $classIds = $exam->classes->pluck('id')->toArray();
-            if (! empty($classIds)) {
-                $query->whereIn('class_id', $classIds);
+        if ($isManual) {
+            // Generate 30 baris manual kosong (blanko untuk pengawas)
+            $rows = [];
+            for ($i = 1; $i <= 30; $i++) {
+                $rows[] = [
+                    'no' => $i,
+                    'participant_number' => '.........................',
+                    'student' => null,
+                    'nis' => '...................',
+                    'name' => '..................................................................',
+                    'class_name' => '............',
+                    'has_attended' => false,
+                    'session' => null,
+                ];
             }
-            $selectedClass = $exam->classes->first();
+
+            return [
+                'school' => $this->getSchoolMetadata(),
+                'exam' => $exam,
+                'selectedClass' => $selectedClass,
+                'selectedRoom' => $roomName ?: ($availableRooms[0] ?? 'Ruang 01'),
+                'availableRooms' => $availableRooms,
+                'is_manual' => true,
+                'rows' => $rows,
+                'stats' => [
+                    'total' => 30,
+                    'present' => 0,
+                    'absent' => 0,
+                ],
+            ];
         }
 
-        $students = $query->orderBy('name')->get();
+        $sessionQuery = $exam->sessions()->with(['student.schoolClass']);
+        if ($roomName) {
+            $sessionQuery->where('room_name', $roomName);
+        }
+        if ($classId) {
+            $sessionQuery->whereHas('student', function ($q) use ($classId) {
+                $q->where('class_id', $classId);
+            });
+        }
 
-        // Ambil sesi ujian untuk cek status kehadiran
-        $sessions = $exam->sessions()->whereIn('student_id', $students->pluck('id'))->get()->keyBy('student_id');
+        $sessions = $sessionQuery->get();
+
+        // Jika belum ada sesi terdaftar sama sekali, inisialisasi sesi dari rombel ujian
+        if ($sessions->isEmpty()) {
+            $this->prepareKartuPesertaData($exam, $classId, $roomName);
+            $sessions = $sessionQuery->get();
+        }
 
         $rows = [];
-        foreach ($students as $index => $student) {
-            $sess = $sessions->get($student->id);
-            $hasAttended = $sess && in_array($sess->status, ['in_progress', 'submitted', 'blocked', 'timed_out']);
+        foreach ($sessions as $index => $sess) {
+            $student = $sess->student;
+            if (! $student) {
+                continue;
+            }
+
+            $hasAttended = in_array($sess->status, ['in_progress', 'submitted', 'blocked', 'timed_out']);
 
             $rows[] = [
                 'no' => $index + 1,
                 'student' => $student,
+                'class_name' => $student->schoolClass?->name ?? '-',
                 'participant_number' => 'UJN-'.$student->nis.'-'.sprintf('%03d', $exam->id),
                 'has_attended' => $hasAttended,
                 'session' => $sess,
@@ -182,6 +329,9 @@ class CbtDocumentService
             'school' => $this->getSchoolMetadata(),
             'exam' => $exam,
             'selectedClass' => $selectedClass,
+            'selectedRoom' => $roomName,
+            'availableRooms' => $availableRooms,
+            'is_manual' => false,
             'rows' => $rows,
             'stats' => [
                 'total' => count($rows),
@@ -194,32 +344,50 @@ class CbtDocumentService
     /**
      * Siapkan data untuk Cetak Berita Acara Pelaksanaan Ujian (BAP).
      */
-    public function prepareBeritaAcaraData(CbtExam $exam, ?int $classId = null): array
+    public function prepareBeritaAcaraData(CbtExam $exam, ?int $classId = null, ?string $roomName = null, bool $isManual = false): array
     {
         $exam->loadMissing(['subject', 'teacher.user', 'classes']);
 
-        $query = Student::with('schoolClass')->where('is_active', true);
+        $availableRooms = $this->getAvailableRooms($exam);
+        $selectedClass = $classId ? SchoolClass::find($classId) : null;
 
-        if ($classId) {
-            $query->where('class_id', $classId);
-            $selectedClass = SchoolClass::find($classId);
-        } else {
-            $classIds = $exam->classes->pluck('id')->toArray();
-            if (! empty($classIds)) {
-                $query->whereIn('class_id', $classIds);
-            }
-            $selectedClass = $exam->classes->first();
+        if ($isManual) {
+            return [
+                'school' => $this->getSchoolMetadata(),
+                'exam' => $exam,
+                'selectedClass' => $selectedClass,
+                'selectedRoom' => $roomName ?: ($availableRooms[0] ?? 'Ruang 01'),
+                'availableRooms' => $availableRooms,
+                'is_manual' => true,
+                'total_registered' => '......',
+                'total_present' => '......',
+                'total_absent' => '......',
+                'absent_students' => [],
+            ];
         }
 
-        $students = $query->orderBy('name')->get();
-        $sessions = $exam->sessions()->whereIn('student_id', $students->pluck('id'))->get()->keyBy('student_id');
+        $sessionQuery = $exam->sessions()->with(['student.schoolClass']);
+        if ($roomName) {
+            $sessionQuery->where('room_name', $roomName);
+        }
+        if ($classId) {
+            $sessionQuery->whereHas('student', function ($q) use ($classId) {
+                $q->where('class_id', $classId);
+            });
+        }
+
+        $sessions = $sessionQuery->get();
 
         $presentList = [];
         $absentList = [];
 
-        foreach ($students as $student) {
-            $sess = $sessions->get($student->id);
-            $isSubmittedOrOngoing = $sess && in_array($sess->status, ['in_progress', 'submitted', 'blocked', 'timed_out']);
+        foreach ($sessions as $sess) {
+            $student = $sess->student;
+            if (! $student) {
+                continue;
+            }
+
+            $isSubmittedOrOngoing = in_array($sess->status, ['in_progress', 'submitted', 'blocked', 'timed_out']);
 
             if ($isSubmittedOrOngoing) {
                 $presentList[] = $student;
@@ -232,7 +400,10 @@ class CbtDocumentService
             'school' => $this->getSchoolMetadata(),
             'exam' => $exam,
             'selectedClass' => $selectedClass,
-            'total_registered' => $students->count(),
+            'selectedRoom' => $roomName,
+            'availableRooms' => $availableRooms,
+            'is_manual' => false,
+            'total_registered' => count($sessions),
             'total_present' => count($presentList),
             'total_absent' => count($absentList),
             'absent_students' => $absentList,

@@ -385,4 +385,86 @@ class CbtExamTest extends TestCase
         $respBap->assertStatus(200);
         $respBap->assertSee('BERITA ACARA PELAKSANAAN');
     }
+
+    public function test_download_template_import_csv(): void
+    {
+        $response = $this->actingAs($this->teacherUser)->get(route('cbt.exams.download_template'));
+
+        $response->assertStatus(200);
+        $this->assertStringContainsString('text/csv', $response->headers->get('content-type'));
+    }
+
+    public function test_distribute_rooms_and_student_access_toggle(): void
+    {
+        $exam = CbtExam::create([
+            'title' => 'Ujian Multi Ruang & Rombel',
+            'exam_code' => 'UMR-01',
+            'subject_id' => $this->subject->id,
+            'teacher_id' => $this->teacher->id,
+            'duration_minutes' => 60,
+            'status' => 'published',
+            'require_token' => false,
+        ]);
+        $exam->classes()->attach($this->schoolClass->id);
+
+        // 1. Distribusi ke Ruang Ujian
+        $distResp = $this->actingAs($this->teacherUser)->post(route('cbt.exams.distribute_rooms', $exam->id), [
+            'rooms' => 'Ruang 01, Ruang 02',
+            'capacity' => 20,
+            'mode' => 'zigzag',
+        ]);
+        $distResp->assertSessionHas('success');
+
+        $session = CbtSession::where('cbt_exam_id', $exam->id)
+            ->where('student_id', $this->student->id)
+            ->first();
+        $this->assertNotNull($session);
+        $this->assertEquals('Ruang 01', $session->room_name);
+        $this->assertTrue((bool) $session->is_allowed);
+
+        // 2. Kunci / Nonaktifkan Akses Siswa
+        $toggleResp = $this->actingAs($this->teacherUser)->post(route('cbt.exams.toggle_access', [$exam->id, $session->id]));
+        $toggleResp->assertSessionHas('success');
+
+        $session->refresh();
+        $this->assertFalse((bool) $session->is_allowed);
+
+        // Siswa mencoba masuk ujian saat akses dinonaktifkan
+        $startResp = $this->actingAs($this->studentUser)->post(route('cbt.student.start', $exam->id));
+        $startResp->assertSessionHas('error');
+
+        // 3. Aktifkan kembali akses siswa
+        $this->actingAs($this->teacherUser)->post(route('cbt.exams.toggle_access', [$exam->id, $session->id]));
+        $session->refresh();
+        $this->assertTrue((bool) $session->is_allowed);
+    }
+
+    public function test_manual_blanko_documents_generation(): void
+    {
+        $exam = CbtExam::create([
+            'title' => 'Asesmen Manual Blanko',
+            'exam_code' => 'AMB-01',
+            'subject_id' => $this->subject->id,
+            'teacher_id' => $this->teacher->id,
+            'duration_minutes' => 60,
+            'status' => 'published',
+        ]);
+        $exam->classes()->attach($this->schoolClass->id);
+
+        $respHadirManual = $this->actingAs($this->adminUser)->get(route('cbt.documents.daftar_hadir', [
+            'exam' => $exam->id,
+            'is_manual' => 1,
+            'room' => 'Ruang 01',
+        ]));
+        $respHadirManual->assertStatus(200);
+        $respHadirManual->assertSee('Format Blanko Manual Tulis Tangan');
+
+        $respBapManual = $this->actingAs($this->adminUser)->get(route('cbt.documents.berita_acara', [
+            'exam' => $exam->id,
+            'is_manual' => 1,
+            'room' => 'Ruang 01',
+        ]));
+        $respBapManual->assertStatus(200);
+        $respBapManual->assertSee('Format Blanko Manual Tulis Tangan');
+    }
 }

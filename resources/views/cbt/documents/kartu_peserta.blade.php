@@ -44,13 +44,20 @@
         </button>
     </div>
 
-    <!-- FILTER PER KELAS (NO-PRINT) -->
+    <!-- FILTER PER KELAS & RUANG (NO-PRINT) -->
     <div class="no-print mb-6 p-4 rounded-2xl bg-slate-100 border border-slate-200 flex flex-wrap items-center justify-between gap-3 text-xs">
         <div>
-            <strong>Filter Rombel:</strong> Cetak kartu peserta untuk rombel tertentu atau seluruh rombel.
+            <strong>Filter Peserta:</strong> Cetak kartu peserta per ruang atau per rombel kelas.
         </div>
-        <form method="GET" action="{{ route('cbt.documents.kartu_peserta', $exam->id) }}" class="flex items-center gap-2">
-            <select name="class_id" onchange="this.form.submit()" class="text-xs rounded-xl border-slate-300 py-1.5 px-3">
+        <form method="GET" action="{{ route('cbt.documents.kartu_peserta', $exam->id) }}" class="flex items-center gap-2 flex-wrap">
+            <select name="room" onchange="this.form.submit()" class="text-xs rounded-xl border-slate-300 py-1.5 px-3 bg-white font-bold">
+                <option value="">-- Semua Ruang Ujian --</option>
+                @foreach($availableRooms ?? ['Ruang 01'] as $r)
+                    <option value="{{ $r }}" {{ request('room') == $r ? 'selected' : '' }}>{{ $r }}</option>
+                @endforeach
+            </select>
+
+            <select name="class_id" onchange="this.form.submit()" class="text-xs rounded-xl border-slate-300 py-1.5 px-3 bg-white font-bold">
                 <option value="">-- Semua Kelas Terdaftar --</option>
                 @foreach($exam->classes as $c)
                     <option value="{{ $c->id }}" {{ request('class_id') == $c->id ? 'selected' : '' }}>{{ $c->name }}</option>

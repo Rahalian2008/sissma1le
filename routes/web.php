@@ -797,14 +797,19 @@ Route::middleware('auth')->group(function () {
         Route::delete('/exams/{exam}', [CbtController::class, 'destroy'])->name('exams.destroy');
 
         // Manajemen Butir Soal (Manual, AI & Import)
+        Route::get('/exams-template-import', [CbtController::class, 'downloadTemplate'])->name('exams.download_template');
         Route::post('/exams/{exam}/questions', [CbtController::class, 'storeQuestion'])->name('exams.questions.store');
         Route::delete('/exams/{exam}/questions/{question}', [CbtController::class, 'destroyQuestion'])->name('exams.questions.destroy');
         Route::post('/exams/{exam}/ai-generate', [CbtController::class, 'generateAi'])->name('exams.ai_generate');
         Route::post('/exams/{exam}/import', [CbtController::class, 'importQuestions'])->name('exams.import');
 
-        // Monitoring & Kontrol Pelanggaran
+        // Monitoring & Kontrol Pelanggaran & Akses Siswa
         Route::get('/exams/{exam}/monitor', [CbtController::class, 'monitor'])->name('exams.monitor');
         Route::post('/exams/{exam}/sessions/{session}/unblock', [CbtController::class, 'unblockStudent'])->name('exams.unblock');
+        Route::post('/exams/{exam}/distribute-rooms', [CbtController::class, 'distributeRooms'])->name('exams.distribute_rooms');
+        Route::post('/exams/{exam}/sessions/{session}/toggle-access', [CbtController::class, 'toggleStudentAccess'])->name('exams.toggle_access');
+        Route::post('/exams/{exam}/sessions/{session}/update-room', [CbtController::class, 'updateStudentRoom'])->name('exams.update_room');
+        Route::post('/exams/{exam}/bulk-access', [CbtController::class, 'bulkUpdateAccess'])->name('exams.bulk_access');
 
         // Penilaian & Rekap Nilai
         Route::get('/exams/{exam}/results', [CbtController::class, 'results'])->name('exams.results');

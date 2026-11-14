@@ -11,6 +11,12 @@
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700,800,900&display=swap" rel="stylesheet" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
+    <!-- KaTeX with mhchem Extension for Math, Chemistry, Physics & Biology Formulas -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/mhchem.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+
     <style>
         /* Disable text selection and context menu during exam */
         body {
@@ -87,7 +93,7 @@
         <!-- LEMBAR SOAL UTAMA -->
         <div class="flex-1 bg-white dark:bg-slate-800 rounded-3xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm p-6 sm:p-8 flex flex-col justify-between">
             <template x-if="currentQuestion">
-                <div class="space-y-6">
+                <div id="question-content-container" class="space-y-6">
                     <!-- HEADER NOMOR & JENIS SOAL -->
                     <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-4">
                         <div class="flex items-center gap-3">
@@ -105,11 +111,16 @@
                         </div>
                     </div>
 
+                    <!-- STIMULUS SOAL / KONTEKS -->
+                    <template x-if="currentQuestion.stimulus">
+                        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700/80 text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed font-sans" x-text="currentQuestion.stimulus"></div>
+                    </template>
+
                     <!-- TEKS SOAL & MEDIA GAMBAR -->
                     <div class="space-y-4">
                         <template x-if="currentQuestion.media_path">
                             <div class="rounded-2xl overflow-hidden max-w-lg border border-slate-200 dark:border-slate-700">
-                                <img :src="'/storage/' + currentQuestion.media_path" alt="Ilustrasi Soal" class="w-full h-auto object-cover max-h-96">
+                                <img :src="'/storage/' + currentQuestion.media_path" alt="Ilustrasi Soal" class="w-full h-auto object-contain max-h-96">
                             </div>
                         </template>
 
@@ -439,6 +450,27 @@
                     this.startTimer();
                     this.setupAntiCheat();
                     this.requestFullscreen();
+                    this.$watch('currentIndex', () => {
+                        this.renderMath();
+                    });
+                    setTimeout(() => this.renderMath(), 200);
+                },
+
+                renderMath() {
+                    this.$nextTick(() => {
+                        const el = document.getElementById('question-content-container');
+                        if (el && typeof renderMathInElement === 'function') {
+                            renderMathInElement(el, {
+                                delimiters: [
+                                    {left: '$$', right: '$$', display: true},
+                                    {left: '$', right: '$', display: false},
+                                    {left: '\\(', right: '\\)', display: false},
+                                    {left: '\\[', right: '\\]', display: true}
+                                ],
+                                throwOnError: false
+                            });
+                        }
+                    });
                 },
 
                 startTimer() {

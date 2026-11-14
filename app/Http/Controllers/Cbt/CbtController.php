@@ -18,6 +18,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class CbtController extends Controller
 {
@@ -127,6 +128,7 @@ class CbtController extends Controller
             'teacher_id' => $validated['teacher_id'] ?? Auth::user()->teacher?->id,
             'duration_minutes' => $validated['duration_minutes'],
             'token' => strtoupper($validated['token'] ?: Str::random(5)),
+            'require_token' => $request->boolean('require_token'),
             'start_time' => $validated['start_time'] ?? now(),
             'end_time' => $validated['end_time'] ?? now()->addDays(7),
             'randomize_questions' => $request->boolean('randomize_questions'),
@@ -153,11 +155,13 @@ class CbtController extends Controller
     /**
      * Detail Paket Ujian & Manajer Soal.
      */
-    public function show(CbtExam $exam): View
+    public function show(CbtExam $exam, CbtDocumentService $docService): View
     {
-        $exam->load(['subject', 'teacher.user', 'classes', 'questions']);
+        $exam->load(['subject', 'teacher.user', 'classes.students', 'questions']);
+        $sessions = $exam->sessions()->with(['student.schoolClass'])->get();
+        $availableRooms = $docService->getAvailableRooms($exam);
 
-        return view('cbt.exams.show', compact('exam'));
+        return view('cbt.exams.show', compact('exam', 'sessions', 'availableRooms'));
     }
 
     /**
@@ -203,6 +207,7 @@ class CbtController extends Controller
             'teacher_id' => $validated['teacher_id'] ?? $exam->teacher_id,
             'duration_minutes' => $validated['duration_minutes'],
             'token' => strtoupper($validated['token'] ?: $exam->token),
+            'require_token' => $request->boolean('require_token'),
             'start_time' => $validated['start_time'],
             'end_time' => $validated['end_time'],
             'randomize_questions' => $request->boolean('randomize_questions'),
@@ -240,6 +245,157 @@ class CbtController extends Controller
     }
 
     /**
+     * Download Template Format Import Soal (CSV).
+     */
+    public function downloadTemplate(): StreamedResponse
+    {
+        $headers = [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="template_import_soal_cbt.csv"',
+        ];
+
+        return response()->stream(function () {
+            $handle = fopen('php://output', 'w');
+            // Write UTF-8 BOM for Excel compatibility
+            fprintf($handle, chr(0xEF).chr(0xBB).chr(0xBF));
+
+            fputcsv($handle, [
+                'question_type',
+                'question_text',
+                'stimulus',
+                'option_a',
+                'option_b',
+                'option_c',
+                'option_d',
+                'option_e',
+                'correct_answer',
+                'score_weight',
+                'cognitive_level',
+                'difficulty_level',
+                'explanation',
+                'learning_objective',
+                'indicator',
+            ]);
+
+            // Contoh Soal 1: Matematika (LaTeX KaTeX)
+            fputcsv($handle, [
+                'multiple_choice',
+                'Tentukan himpunan penyelesaian dari persamaan kuadrat $x^2 - 5x + 6 = 0$!',
+                'Disajikan persamaan kuadrat aljabar',
+                'x = 2 atau x = 3',
+                'x = -2 atau x = -3',
+                'x = 1 atau x = 6',
+                'x = -1 atau x = -6',
+                'x = 0 atau x = 5',
+                'A',
+                '1.0',
+                'L2',
+                'sedang',
+                'Faktorisasi $(x-2)(x-3)=0$, sehingga $x=2$ atau $x=3$.',
+                'Persamaan Kuadrat',
+                'Peserta didik dapat menentukan akar persamaan kuadrat',
+            ]);
+
+            // Contoh Soal 2: Kimia (mhchem)
+            fputcsv($handle, [
+                'multiple_choice',
+                'Pada reaksi kimia $\\ce{2H2 + O2 -> 2H2O}$, berapakah perbandingan volume gas hidrogen terhadap oksigen pada suhu dan tekanan yang sama?',
+                'Hukum Perbandingan Volume Gay-Lussac',
+                '2 : 1',
+                '1 : 2',
+                '1 : 1',
+                '2 : 3',
+                '3 : 2',
+                'A',
+                '1.0',
+                'L2',
+                'sedang',
+                'Koefisien reaksi menyatakan perbandingan volume gas: 2 volume H2 bereaksi dengan 1 volume O2.',
+                'Stoikiometri Gas',
+                'Menentukan perbandingan volume gas reaksi kimia',
+            ]);
+
+            // Contoh Soal 3: Fisika
+            fputcsv($handle, [
+                'multiple_choice',
+                'Gelombang elektromagnetik memiliki panjang gelombang $\\lambda = 500\\text{ nm}$. Berapakah frekuensi gelombang tersebut jika cepat rambat cahaya $c = 3 \\times 10^8\\text{ m/s}$?',
+                'Konsep Gelombang Elektromagnetik',
+                '$6 \\times 10^{14}\\text{ Hz}$',
+                '$3 \\times 10^{14}\\text{ Hz}$',
+                '$1.5 \\times 10^{14}\\text{ Hz}$',
+                '$5 \\times 10^{14}\\text{ Hz}$',
+                '$6 \\times 10^{15}\\text{ Hz}$',
+                'A',
+                '1.5',
+                'L3',
+                'sukar',
+                '$f = \\frac{c}{\\lambda} = \\frac{3 \\times 10^8}{500 \\times 10^{-9}} = 6 \\times 10^{14}\\text{ Hz}$',
+                'Gelombang Cahaya',
+                'Menghitung frekuensi gelombang berdasarkan panjang gelombang',
+            ]);
+
+            // Contoh Soal 4: Biologi (Genetika)
+            fputcsv($handle, [
+                'multiple_choice',
+                'Pada persilangan dihibrid ercis berbiji bulat kuning (BbKk) dengan sesamanya, persentase kemungkinan fenotipe bulat hijau adalah...',
+                'Hukum Mendel II',
+                '18.75% (3/16)',
+                '56.25% (9/16)',
+                '6.25% (1/16)',
+                '25.00% (4/16)',
+                '50.00% (8/16)',
+                'A',
+                '1.0',
+                'L2',
+                'sedang',
+                'Rasio fenotipe F2 dihibrid adalah 9:3:3:1. Bagian bulat hijau adalah 3/16 atau 18.75%.',
+                'Pewarisan Sifat',
+                'Menghitung persentase fenotipe keturunan persilangan dihibrid',
+            ]);
+
+            // Contoh Soal 5: Isian Singkat
+            fputcsv($handle, [
+                'short_answer',
+                'Zat hijau daun pada tumbuhan yang berfungsi menyerap energi cahaya matahari untuk fotosintesis disebut...',
+                'Fisiologi Tumbuhan',
+                '',
+                '',
+                '',
+                '',
+                '',
+                'Klorofil',
+                '1.0',
+                'L1',
+                'mudah',
+                'Klorofil adalah pigmen fotosintesis.',
+                'Fotosintesis',
+                'Menyebutkan organel/pigmen fotosintesis',
+            ]);
+
+            // Contoh Soal 6: Uraian / Esai
+            fputcsv($handle, [
+                'essay',
+                'Jelaskan perbedaan mendasar antara pembelahan sel secara mitosis dan meiosis beserta fungsinya bagi organisme!',
+                'Pembelahan Sel',
+                '',
+                '',
+                '',
+                '',
+                '',
+                'Mitosis: menghasilkan 2 sel anak identik diploid (2n) untuk pertumbuhan & regenerasi. Meiosis: menghasilkan 4 sel anak haploid (n) untuk gametogenesis.',
+                '2.0',
+                'L3',
+                'sukar',
+                'Kriteria penilaian mencakup jumlah sel anak, sifat kromosom, dan tujuan biologis.',
+                'Pembelahan Sel',
+                'Menganalisis perbedaan mitosis dan meiosis',
+            ]);
+
+            fclose($handle);
+        }, 200, $headers);
+    }
+
+    /**
      * Tambah Butir Soal Baru (Entri Manual).
      */
     public function storeQuestion(Request $request, CbtExam $exam): RedirectResponse
@@ -253,7 +409,15 @@ class CbtController extends Controller
             'indicator' => 'nullable|string',
             'cognitive_level' => 'required|in:L1,L2,L3',
             'difficulty_level' => 'required|in:mudah,sedang,sukar',
+            'question_image' => 'nullable|image|max:5120',
         ]);
+
+        $mediaPath = null;
+        if ($request->hasFile('question_image')) {
+            $mediaPath = $request->file('question_image')->store('cbt_questions', 'public');
+        } elseif ($request->filled('existing_media_path')) {
+            $mediaPath = $request->input('existing_media_path');
+        }
 
         $options = null;
         $correctAnswer = null;
@@ -321,6 +485,7 @@ class CbtController extends Controller
             'question_number' => $nextNum,
             'question_type' => $validated['question_type'],
             'stimulus' => $validated['stimulus'] ?? null,
+            'media_path' => $mediaPath,
             'question_text' => $validated['question_text'],
             'options' => $options,
             'correct_answer' => $correctAnswer,
@@ -405,26 +570,104 @@ class CbtController extends Controller
     }
 
     /**
-     * Import Soal dari Format JSON / Structured Format.
+     * Import Soal dari Format CSV atau JSON.
      */
     public function importQuestions(Request $request, CbtExam $exam): RedirectResponse
     {
         $request->validate([
-            'import_data' => 'required|string',
+            'import_file' => 'nullable|file|mimes:csv,txt|max:5120',
+            'import_data' => 'nullable|string',
         ]);
 
-        $raw = trim($request->import_data);
-        $decoded = json_decode($raw, true);
+        $items = [];
 
-        if (! is_array($decoded)) {
-            return back()->with('error', 'Format data tidak valid. Pastikan data berformat JSON sesuai template.');
+        if ($request->hasFile('import_file')) {
+            $file = $request->file('import_file');
+            $handle = fopen($file->getRealPath(), 'r');
+            if ($handle !== false) {
+                $header = fgetcsv($handle);
+                if ($header !== false) {
+                    $cleanHeader = array_map(function ($col) {
+                        return strtolower(trim(preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $col)));
+                    }, $header);
+
+                    while (($row = fgetcsv($handle)) !== false) {
+                        if (empty($row) || (count($row) === 1 && empty($row[0]))) {
+                            continue;
+                        }
+                        $rowAssoc = [];
+                        foreach ($cleanHeader as $idx => $key) {
+                            $rowAssoc[$key] = $row[$idx] ?? '';
+                        }
+
+                        $type = $rowAssoc['question_type'] ?? 'multiple_choice';
+                        $qText = $rowAssoc['question_text'] ?? '';
+                        if (empty($qText)) {
+                            continue;
+                        }
+
+                        $options = null;
+                        $correctAnswer = $rowAssoc['correct_answer'] ?? null;
+
+                        if ($type === 'multiple_choice') {
+                            $options = [
+                                'A' => $rowAssoc['option_a'] ?? '',
+                                'B' => $rowAssoc['option_b'] ?? '',
+                                'C' => $rowAssoc['option_c'] ?? '',
+                                'D' => $rowAssoc['option_d'] ?? '',
+                                'E' => $rowAssoc['option_e'] ?? '',
+                            ];
+                        } elseif ($type === 'complex_multiple_choice') {
+                            $options = array_filter([
+                                'A' => $rowAssoc['option_a'] ?? '',
+                                'B' => $rowAssoc['option_b'] ?? '',
+                                'C' => $rowAssoc['option_c'] ?? '',
+                                'D' => $rowAssoc['option_d'] ?? '',
+                                'E' => $rowAssoc['option_e'] ?? '',
+                            ]);
+                            if (is_string($correctAnswer)) {
+                                $correctAnswer = array_map('trim', explode(',', $correctAnswer));
+                            }
+                        }
+
+                        $items[] = [
+                            'question_type' => $type,
+                            'stimulus' => ! empty($rowAssoc['stimulus']) ? $rowAssoc['stimulus'] : null,
+                            'question_text' => $qText,
+                            'options' => $options,
+                            'correct_answer' => $correctAnswer,
+                            'score_weight' => ! empty($rowAssoc['score_weight']) ? (float) $rowAssoc['score_weight'] : 1.0,
+                            'learning_objective' => $rowAssoc['learning_objective'] ?? null,
+                            'indicator' => $rowAssoc['indicator'] ?? null,
+                            'cognitive_level' => in_array(strtoupper($rowAssoc['cognitive_level'] ?? ''), ['L1', 'L2', 'L3']) ? strtoupper($rowAssoc['cognitive_level']) : 'L2',
+                            'difficulty_level' => in_array(strtolower($rowAssoc['difficulty_level'] ?? ''), ['mudah', 'sedang', 'sukar']) ? strtolower($rowAssoc['difficulty_level']) : 'sedang',
+                            'explanation' => $rowAssoc['explanation'] ?? null,
+                        ];
+                    }
+                }
+                fclose($handle);
+            }
+        } elseif ($request->filled('import_data')) {
+            $raw = trim($request->import_data);
+            $decoded = json_decode($raw, true);
+
+            if (! is_array($decoded)) {
+                return back()->with('error', 'Format data tidak valid. Pastikan data berformat JSON sesuai template.');
+            }
+
+            $items = isset($decoded['questions']) && is_array($decoded['questions']) ? $decoded['questions'] : $decoded;
+        } else {
+            return back()->with('error', 'Silakan pilih file CSV atau tempel teks JSON untuk mengimpor soal.');
         }
 
-        $items = isset($decoded['questions']) && is_array($decoded['questions']) ? $decoded['questions'] : $decoded;
+        if (empty($items)) {
+            return back()->with('error', 'Tidak ada butir soal yang valid ditemukan.');
+        }
+
         $startNum = ($exam->questions()->max('question_number') ?? 0) + 1;
         $count = 0;
 
-        foreach ($items as $idx => $item) {
+        foreach ($items as $item) {
             if (empty($item['question_text'])) {
                 continue;
             }
@@ -447,7 +690,7 @@ class CbtController extends Controller
         }
 
         return redirect()->route('cbt.exams.show', $exam->id)
-            ->with('success', "Berhasil mengimpor {$count} butir soal.");
+            ->with('success', "✨ Berhasil mengimpor {$count} butir soal ke dalam paket ujian!");
     }
 
     /**
@@ -492,6 +735,103 @@ class CbtController extends Controller
         }
 
         return back()->with('success', "Blokir ujian untuk siswa {$session->student?->name} berhasil dibuka.");
+    }
+
+    /**
+     * Distribusi Siswa ke Ruang Ujian (Otomatis Zig-Zag Rombel / Sequential).
+     */
+    public function distributeRooms(Request $request, CbtExam $exam, CbtDocumentService $docService): RedirectResponse
+    {
+        $request->validate([
+            'rooms' => 'required|string',
+            'capacity' => 'required|integer|min:1|max:100',
+            'mode' => 'required|in:zigzag,sequential',
+        ]);
+
+        $roomNames = array_filter(array_map('trim', explode(',', $request->rooms)));
+        if (empty($roomNames)) {
+            $roomNames = ['Ruang 01'];
+        }
+
+        $count = $docService->distributeStudentsToRooms(
+            $exam,
+            $roomNames,
+            (int) $request->capacity,
+            $request->mode
+        );
+
+        return back()->with('success', "✨ Berhasil mendistribusikan {$count} siswa ke dalam ".count($roomNames).' ruang ujian.');
+    }
+
+    /**
+     * Toggle Akses Masuk Siswa ke Ujian (Aktif / Nonaktif Perorangan).
+     */
+    public function toggleStudentAccess(Request $request, CbtExam $exam, CbtSession $session): JsonResponse|RedirectResponse
+    {
+        $session->update([
+            'is_allowed' => ! $session->is_allowed,
+        ]);
+
+        $statusText = $session->is_allowed ? 'diaktifkan (diizinkan)' : 'dinonaktifkan (dikunci)';
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'is_allowed' => $session->is_allowed,
+                'message' => "Akses ujian untuk {$session->student?->name} berhasil {$statusText}.",
+            ]);
+        }
+
+        return back()->with('success', "Akses ujian untuk siswa {$session->student?->name} berhasil {$statusText}.");
+    }
+
+    /**
+     * Update Ruang Ujian Siswa.
+     */
+    public function updateStudentRoom(Request $request, CbtExam $exam, CbtSession $session): JsonResponse|RedirectResponse
+    {
+        $request->validate([
+            'room_name' => 'required|string|max:50',
+        ]);
+
+        $session->update([
+            'room_name' => trim($request->room_name),
+        ]);
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'room_name' => $session->room_name,
+                'message' => "Ruang ujian {$session->student?->name} diubah ke {$session->room_name}.",
+            ]);
+        }
+
+        return back()->with('success', "Ruang ujian untuk {$session->student?->name} berhasil diubah ke {$session->room_name}.");
+    }
+
+    /**
+     * Update Akses Masal Siswa (Allow All / Block All).
+     */
+    public function bulkUpdateAccess(Request $request, CbtExam $exam): RedirectResponse
+    {
+        $request->validate([
+            'action' => 'required|in:allow_all,block_all',
+            'room_name' => 'nullable|string',
+        ]);
+
+        $isAllowed = $request->action === 'allow_all';
+        $query = $exam->sessions();
+
+        if ($request->filled('room_name')) {
+            $query->where('room_name', $request->room_name);
+        }
+
+        $query->update(['is_allowed' => $isAllowed]);
+
+        $statusText = $isAllowed ? 'diaktifkan' : 'dinonaktifkan';
+        $roomInfo = $request->filled('room_name') ? " pada {$request->room_name}" : '';
+
+        return back()->with('success', "Akses ujian siswa{$roomInfo} berhasil {$statusText}.");
     }
 
     /**
@@ -567,7 +907,8 @@ class CbtController extends Controller
     public function printKartuPeserta(Request $request, CbtExam $exam, CbtDocumentService $docService): View
     {
         $classId = $request->filled('class_id') ? (int) $request->class_id : null;
-        $data = $docService->prepareKartuPesertaData($exam, $classId);
+        $roomName = $request->filled('room') ? trim($request->room) : null;
+        $data = $docService->prepareKartuPesertaData($exam, $classId, $roomName);
 
         return view('cbt.documents.kartu_peserta', $data);
     }
@@ -575,7 +916,9 @@ class CbtController extends Controller
     public function printDaftarHadir(Request $request, CbtExam $exam, CbtDocumentService $docService): View
     {
         $classId = $request->filled('class_id') ? (int) $request->class_id : null;
-        $data = $docService->prepareDaftarHadirData($exam, $classId);
+        $roomName = $request->filled('room') ? trim($request->room) : null;
+        $isManual = $request->boolean('is_manual');
+        $data = $docService->prepareDaftarHadirData($exam, $classId, $roomName, $isManual);
 
         return view('cbt.documents.daftar_hadir', $data);
     }
@@ -583,7 +926,9 @@ class CbtController extends Controller
     public function printBeritaAcara(Request $request, CbtExam $exam, CbtDocumentService $docService): View
     {
         $classId = $request->filled('class_id') ? (int) $request->class_id : null;
-        $data = $docService->prepareBeritaAcaraData($exam, $classId);
+        $roomName = $request->filled('room') ? trim($request->room) : null;
+        $isManual = $request->boolean('is_manual');
+        $data = $docService->prepareBeritaAcaraData($exam, $classId, $roomName, $isManual);
 
         return view('cbt.documents.berita_acara', $data);
     }
