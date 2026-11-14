@@ -122,7 +122,7 @@
     @else
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             @foreach($exams as $exam)
-                <div class="rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 hover:border-indigo-500/40 shadow-xs hover:shadow-md transition flex flex-col justify-between overflow-hidden group">
+                <div class="rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 hover:border-indigo-500/40 shadow-xs hover:shadow-md transition flex flex-col justify-between group">
                     
                     <div class="p-5 sm:p-6 space-y-4">
                         <!-- Header Card: Tipe, Status, Token -->
@@ -207,7 +207,7 @@
                     </div>
 
                     <!-- Footer Action Bar -->
-                    <div class="p-4 bg-slate-50 dark:bg-slate-850 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
+                    <div class="p-4 bg-slate-50 dark:bg-slate-850 border-t border-slate-100 dark:border-slate-800 rounded-b-3xl flex items-center justify-between gap-2">
                         <div class="flex items-center gap-1.5">
                             <a href="{{ route('cbt.exams.show', $exam->id) }}" class="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-xs transition flex items-center gap-1 cursor-pointer">
                                 <span>✏️ Kelola Soal</span>
@@ -221,50 +221,70 @@
                         </div>
 
                         <!-- Dropdown Dokumen & Menu Lengkap -->
-                        <div class="relative" x-data="{ open: false }">
-                            <button type="button" @click="open = !open" @click.outside="open = false" class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold transition cursor-pointer">
-                                <span>⚙️ ▾</span>
+                        <div class="relative" x-data="{ open: false }" @click.away="open = false">
+                            <button type="button" 
+                                    @click="open = !open" 
+                                    class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold transition cursor-pointer flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
+                                    :class="{ 'bg-slate-200 dark:bg-slate-700 text-indigo-600': open }"
+                                    aria-haspopup="true"
+                                    :aria-expanded="open.toString()">
+                                <span>⚙️</span>
+                                <svg class="w-3.5 h-3.5 text-slate-500 transition-transform duration-200" :class="{ 'rotate-180 text-indigo-600': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                             </button>
 
-                            <div x-show="open" x-transition class="absolute right-0 bottom-full mb-2 w-56 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl py-2 z-50 text-xs">
-                                <div class="px-3 py-1 text-[10px] font-black uppercase text-slate-400">Dokumen Kurikulum</div>
-                                <a href="{{ route('cbt.documents.kisi_kisi', $exam->id) }}" target="_blank" class="flex items-center gap-2 px-3 py-1.5 text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/40">
-                                    <span>📑</span>
-                                    <span>Cetak Kisi-Kisi Soal</span>
-                                </a>
-                                <a href="{{ route('cbt.documents.kartu_soal', $exam->id) }}" target="_blank" class="flex items-center gap-2 px-3 py-1.5 text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/40">
-                                    <span>🎴</span>
-                                    <span>Cetak Kartu Soal</span>
-                                </a>
+                            <div x-show="open" 
+                                 x-cloak
+                                 x-transition:enter="transition ease-out duration-150"
+                                 x-transition:enter-start="opacity-0 translate-y-2 scale-95"
+                                 x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                                 x-transition:leave="transition ease-in duration-100"
+                                 x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+                                 x-transition:leave-end="opacity-0 translate-y-2 scale-95"
+                                 class="absolute right-0 bottom-full mb-2 w-64 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl py-2 z-50 text-xs divide-y divide-slate-100 dark:divide-slate-800">
+                                
+                                <div class="py-1">
+                                    <div class="px-3 py-1 text-[10px] font-black uppercase tracking-wider text-slate-400">Dokumen Kurikulum</div>
+                                    <a href="{{ route('cbt.documents.kisi_kisi', $exam->id) }}" target="_blank" class="flex items-center gap-2.5 px-3 py-1.5 text-slate-700 dark:text-slate-200 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 hover:text-indigo-600 transition">
+                                        <span class="text-sm">📑</span>
+                                        <span class="font-medium">Cetak Kisi-Kisi Soal</span>
+                                    </a>
+                                    <a href="{{ route('cbt.documents.kartu_soal', $exam->id) }}" target="_blank" class="flex items-center gap-2.5 px-3 py-1.5 text-slate-700 dark:text-slate-200 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 hover:text-indigo-600 transition">
+                                        <span class="text-sm">🎴</span>
+                                        <span class="font-medium">Cetak Kartu Soal</span>
+                                    </a>
+                                </div>
 
-                                <div class="my-1 border-t border-slate-100 dark:border-slate-800"></div>
-                                <div class="px-3 py-1 text-[10px] font-black uppercase text-slate-400">Dokumen Administrasi Ujian</div>
-                                <a href="{{ route('cbt.documents.kartu_peserta', $exam->id) }}" target="_blank" class="flex items-center gap-2 px-3 py-1.5 text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/40">
-                                    <span>🪪</span>
-                                    <span>Cetak Kartu Peserta (Akun & PIN)</span>
-                                </a>
-                                <a href="{{ route('cbt.documents.daftar_hadir', $exam->id) }}" target="_blank" class="flex items-center gap-2 px-3 py-1.5 text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/40">
-                                    <span>📋</span>
-                                    <span>Cetak Daftar Hadir</span>
-                                </a>
-                                <a href="{{ route('cbt.documents.berita_acara', $exam->id) }}" target="_blank" class="flex items-center gap-2 px-3 py-1.5 text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/40">
-                                    <span>📜</span>
-                                    <span>Cetak Berita Acara (BAP)</span>
-                                </a>
+                                <div class="py-1">
+                                    <div class="px-3 py-1 text-[10px] font-black uppercase tracking-wider text-slate-400">Dokumen Administrasi Ujian</div>
+                                    <a href="{{ route('cbt.documents.kartu_peserta', $exam->id) }}" target="_blank" class="flex items-center gap-2.5 px-3 py-1.5 text-slate-700 dark:text-slate-200 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 hover:text-indigo-600 transition">
+                                        <span class="text-sm">🪪</span>
+                                        <span class="font-medium">Cetak Kartu Peserta (PIN)</span>
+                                    </a>
+                                    <a href="{{ route('cbt.documents.daftar_hadir', $exam->id) }}" target="_blank" class="flex items-center gap-2.5 px-3 py-1.5 text-slate-700 dark:text-slate-200 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 hover:text-indigo-600 transition">
+                                        <span class="text-sm">📋</span>
+                                        <span class="font-medium">Cetak Daftar Hadir</span>
+                                    </a>
+                                    <a href="{{ route('cbt.documents.berita_acara', $exam->id) }}" target="_blank" class="flex items-center gap-2.5 px-3 py-1.5 text-slate-700 dark:text-slate-200 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 hover:text-indigo-600 transition">
+                                        <span class="text-sm">📜</span>
+                                        <span class="font-medium">Cetak Berita Acara (BAP)</span>
+                                    </a>
+                                </div>
 
-                                <div class="my-1 border-t border-slate-100 dark:border-slate-800"></div>
-                                <a href="{{ route('cbt.exams.edit', $exam->id) }}" class="flex items-center gap-2 px-3 py-1.5 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
-                                    <span>🛠️</span>
-                                    <span>Edit Konfigurasi</span>
-                                </a>
-                                <form action="{{ route('cbt.exams.destroy', $exam->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus paket ujian ini? Seluruh soal dan jawaban peserta akan ikut terhapus.')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="w-full text-left flex items-center gap-2 px-3 py-1.5 text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 cursor-pointer">
-                                        <span>🗑️</span>
-                                        <span>Hapus Paket Ujian</span>
-                                    </button>
-                                </form>
+                                <div class="py-1">
+                                    <a href="{{ route('cbt.exams.edit', $exam->id) }}" class="flex items-center gap-2.5 px-3 py-1.5 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition font-medium">
+                                        <span class="text-sm">🛠️</span>
+                                        <span>Edit Konfigurasi</span>
+                                    </a>
+                                    <form action="{{ route('cbt.exams.destroy', $exam->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus paket ujian ini? Seluruh soal dan jawaban peserta akan ikut terhapus.')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="w-full text-left flex items-center gap-2.5 px-3 py-1.5 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition cursor-pointer font-medium">
+                                            <span class="text-sm">🗑️</span>
+                                            <span>Hapus Paket Ujian</span>
+                                        </button>
+                                    </form>
+                                </div>
+
                             </div>
                         </div>
                     </div>
