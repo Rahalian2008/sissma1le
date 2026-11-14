@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Str;
 
 class User extends Authenticatable
 {
@@ -69,6 +70,23 @@ class User extends Authenticatable
             'two_factor_secret' => 'encrypted',
             'two_factor_recovery_codes' => 'encrypted:array',
         ];
+    }
+
+    /**
+     * The "booted" method of the model.
+     */
+    protected static function booted(): void
+    {
+        static::creating(function (User $user) {
+            if (empty($user->email)) {
+                $base = Str::slug($user->username ?: $user->name, '.') ?: 'user';
+                $candidate = $base.'@sma1le.sch.id';
+                if (static::where('email', $candidate)->exists()) {
+                    $candidate = $base.'.'.time().'@sma1le.sch.id';
+                }
+                $user->email = $candidate;
+            }
+        });
     }
 
     /**

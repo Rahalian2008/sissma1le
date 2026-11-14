@@ -136,3 +136,30 @@ test('user management controller supports creating and updating users with 3 rol
         ->and($createdUser->hasRole('bendahara'))->toBeTrue()
         ->and($createdUser->hasRole('staff'))->toBeTrue();
 });
+
+test('user management controller supports creating user without email address', function () {
+    $roleAdmin = Role::firstOrCreate(['name' => 'admin'], ['display_name' => 'Administrator', 'level' => 2]);
+    $superAdmin = User::factory()->create([
+        'role' => 'super_admin',
+        'roles' => ['super_admin'],
+        'is_active' => true,
+    ]);
+
+    $response = $this->actingAs($superAdmin)->post(route('users.store'), [
+        'name' => 'SMAN 1 Lengkong',
+        'username' => '20202265',
+        'password' => 'password123',
+        'role' => 'admin',
+        'role_ids' => [$roleAdmin->id],
+        // email is omitted / null
+    ]);
+
+    $response->assertRedirect();
+    $response->assertSessionHas('success');
+
+    $createdUser = User::where('username', '20202265')->first();
+    expect($createdUser)->not->toBeNull()
+        ->and($createdUser->name)->toBe('SMAN 1 Lengkong')
+        ->and($createdUser->email)->not->toBeNull()
+        ->and($createdUser->email)->toBe('20202265@sma1le.sch.id');
+});

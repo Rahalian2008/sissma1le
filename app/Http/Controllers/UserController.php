@@ -10,6 +10,7 @@ use App\Services\AuditTrailService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class UserController extends Controller
@@ -86,11 +87,21 @@ class UserController extends Controller
             }
         }
 
+        $email = $validated['email'] ?? null;
+        if (empty($email)) {
+            $base = Str::slug($validated['username'], '.') ?: 'user';
+            $candidate = $base.'@sma1le.sch.id';
+            if (User::where('email', $candidate)->exists()) {
+                $candidate = $base.'.'.time().'@sma1le.sch.id';
+            }
+            $email = $candidate;
+        }
+
         $user = User::create([
             'name' => $validated['name'],
             'username' => $validated['username'],
             'nip' => $nip,
-            'email' => $validated['email'] ?? null,
+            'email' => $email,
             'password' => Hash::make($validated['password']),
             'phone' => $validated['phone'] ?? null,
             'role' => $primaryRole,
@@ -170,11 +181,21 @@ class UserController extends Controller
             }
         }
 
+        $email = $validated['email'] ?? $user->email;
+        if (empty($email)) {
+            $base = Str::slug($validated['username'], '.') ?: 'user';
+            $candidate = $base.'@sma1le.sch.id';
+            if (User::where('email', $candidate)->where('id', '!=', $user->id)->exists()) {
+                $candidate = $base.'.'.$user->id.'@sma1le.sch.id';
+            }
+            $email = $candidate;
+        }
+
         $updateData = [
             'name' => $validated['name'],
             'username' => $validated['username'],
             'nip' => $nip,
-            'email' => $validated['email'] ?? null,
+            'email' => $email,
             'phone' => $validated['phone'] ?? null,
             'role' => $primaryRole,
             'roles' => array_values(array_unique($roleNames ?: [$primaryRole])),
