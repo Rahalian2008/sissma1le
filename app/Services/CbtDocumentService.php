@@ -7,6 +7,7 @@ use App\Models\SchoolClass;
 use App\Models\SchoolIdentity;
 use App\Models\SchoolSetting;
 use App\Models\Student;
+use Illuminate\Support\Facades\Schema;
 
 class CbtDocumentService
 {
@@ -93,14 +94,20 @@ class CbtDocumentService
      */
     public function getAvailableRooms(CbtExam $exam): array
     {
-        $sessionRooms = $exam->sessions()
-            ->whereNotNull('room_name')
-            ->where('room_name', '!=', '')
-            ->distinct()
-            ->pluck('room_name')
-            ->toArray();
+        $sessionRooms = [];
 
-        $configuredRooms = is_array($exam->available_rooms) ? $exam->available_rooms : [];
+        if (Schema::hasTable('cbt_sessions') && Schema::hasColumn('cbt_sessions', 'room_name')) {
+            $sessionRooms = $exam->sessions()
+                ->whereNotNull('room_name')
+                ->where('room_name', '!=', '')
+                ->distinct()
+                ->pluck('room_name')
+                ->toArray();
+        }
+
+        $configuredRooms = (Schema::hasTable('cbt_exams') && Schema::hasColumn('cbt_exams', 'available_rooms') && is_array($exam->available_rooms))
+            ? $exam->available_rooms
+            : [];
         $merged = array_unique(array_merge($configuredRooms, $sessionRooms));
         sort($merged);
 
@@ -166,9 +173,11 @@ class CbtDocumentService
             );
 
             $session->ensureCredentials();
-            $session->update([
-                'room_name' => $currentRoom,
-            ]);
+            if (Schema::hasTable('cbt_sessions') && Schema::hasColumn('cbt_sessions', 'room_name')) {
+                $session->update([
+                    'room_name' => $currentRoom,
+                ]);
+            }
 
             $assignedCount++;
             $currentRoomCount++;
@@ -209,6 +218,8 @@ class CbtDocumentService
 
         // Pastikan setiap siswa memiliki sesi CBT / akun peserta
         $cards = [];
+        $hasRoomCol = Schema::hasTable('cbt_sessions') && Schema::hasColumn('cbt_sessions', 'room_name');
+
         foreach ($students as $student) {
             $session = $exam->sessions()->firstOrCreate(
                 ['student_id' => $student->id],
@@ -221,9 +232,13 @@ class CbtDocumentService
             $session->ensureCredentials();
 
             // Jika filter per ruang aktif, lewati yang tidak sesuai ruang
-            if ($roomName && $session->room_name !== $roomName) {
+            if ($hasRoomCol && $roomName && ($session->room_name ?? null) !== $roomName) {
                 continue;
             }
+
+            $roomLabel = ($hasRoomCol && ! empty($session->room_name))
+                ? $session->room_name
+                : ('Ruang '.($student->schoolClass?->name ?? '01'));
 
             $cards[] = [
                 'student' => $student,
@@ -232,7 +247,7 @@ class CbtDocumentService
                 'username' => $session->cbt_username,
                 'password' => $session->cbt_password,
                 'token' => $exam->token,
-                'room' => $session->room_name ?: ('Ruang '.$student->schoolClass?->name),
+                'room' => $roomLabel,
             ];
         }
 
@@ -255,6 +270,7 @@ class CbtDocumentService
 
         $availableRooms = $this->getAvailableRooms($exam);
         $selectedClass = $classId ? SchoolClass::find($classId) : null;
+        $hasRoomCol = Schema::hasTable('cbt_sessions') && Schema::hasColumn('cbt_sessions', 'room_name');
 
         if ($isManual) {
             // Generate 30 baris manual kosong (blanko untuk pengawas)
@@ -289,7 +305,7 @@ class CbtDocumentService
         }
 
         $sessionQuery = $exam->sessions()->with(['student.schoolClass']);
-        if ($roomName) {
+        if ($hasRoomCol && $roomName) {
             $sessionQuery->where('room_name', $roomName);
         }
         if ($classId) {
@@ -350,6 +366,7 @@ class CbtDocumentService
 
         $availableRooms = $this->getAvailableRooms($exam);
         $selectedClass = $classId ? SchoolClass::find($classId) : null;
+        $hasRoomCol = Schema::hasTable('cbt_sessions') && Schema::hasColumn('cbt_sessions', 'room_name');
 
         if ($isManual) {
             return [
@@ -367,7 +384,7 @@ class CbtDocumentService
         }
 
         $sessionQuery = $exam->sessions()->with(['student.schoolClass']);
-        if ($roomName) {
+        if ($hasRoomCol && $roomName) {
             $sessionQuery->where('room_name', $roomName);
         }
         if ($classId) {

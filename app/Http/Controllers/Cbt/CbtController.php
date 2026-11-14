@@ -16,6 +16,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -822,11 +823,13 @@ class CbtController extends Controller
         $isAllowed = $request->action === 'allow_all';
         $query = $exam->sessions();
 
-        if ($request->filled('room_name')) {
+        if ($request->filled('room_name') && Schema::hasTable('cbt_sessions') && Schema::hasColumn('cbt_sessions', 'room_name')) {
             $query->where('room_name', $request->room_name);
         }
 
-        $query->update(['is_allowed' => $isAllowed]);
+        if (Schema::hasTable('cbt_sessions') && Schema::hasColumn('cbt_sessions', 'is_allowed')) {
+            $query->update(['is_allowed' => $isAllowed]);
+        }
 
         $statusText = $isAllowed ? 'diaktifkan' : 'dinonaktifkan';
         $roomInfo = $request->filled('room_name') ? " pada {$request->room_name}" : '';

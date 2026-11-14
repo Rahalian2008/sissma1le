@@ -68,7 +68,7 @@ class CbtStudentController extends Controller
             ->where('student_id', $student->id)
             ->first();
 
-        if ($existingSession && ! $existingSession->is_allowed) {
+        if ($existingSession && $existingSession->is_allowed === false) {
             return back()->with('error', '❌ Akses Ujian Dinonaktifkan: Akses ujian Anda saat ini sedang dinonaktifkan oleh Guru/Pengawas ruang. Silakan hubungi pengawas ruang untuk mengaktifkannya.');
         }
 
@@ -170,7 +170,7 @@ class CbtStudentController extends Controller
                 ->with('error', 'Sesi ujian belum dimulai. Silakan klik Masuk Ujian untuk memulai.');
         }
 
-        if (! $session->is_allowed) {
+        if ($session->is_allowed === false) {
             return redirect()->route('cbt.student.index')
                 ->with('error', '❌ Akses Ujian Dinonaktifkan: Akses ujian Anda sedang dinonaktifkan oleh Guru/Pengawas.');
         }
