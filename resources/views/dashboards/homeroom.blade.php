@@ -3,14 +3,14 @@
 @section('title', 'Dashboard Wali Kelas')
 
 @section('content')
-<div class="space-y-6 max-w-7xl mx-auto">
+<div class="space-y-6 max-w-7xl 2xl:max-w-[1600px] 3xl:max-w-[1880px] mx-auto">
     <!-- Header Wali Kelas -->
-    <div class="bg-gradient-to-r from-slate-900 to-indigo-900 rounded-2xl sm:rounded-3xl p-4 sm:p-8 text-white shadow-xl border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div class="bg-gradient-to-r from-slate-900 to-indigo-900 rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 text-white shadow-xl border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
             <span class="px-3 py-1 bg-white/10 rounded-full text-xs font-semibold text-indigo-300 border border-white/10">
                 Wali Kelas Binaan
             </span>
-            <h2 class="text-xl sm:text-2xl font-extrabold text-white mt-2">Kelas {{ $class->name ?? 'XI-IPA-1' }}</h2>
+            <h2 class="text-lg sm:text-2xl font-extrabold text-white mt-2">Kelas {{ $class->name ?? 'XI-IPA-1' }}</h2>
             <p class="text-xs text-slate-300 mt-1">Wali Kelas: {{ $teacher->name ?? Auth::user()->name }} • Total {{ $students->count() }} Siswa Binaan</p>
         </div>
         <div class="flex items-center gap-3">
@@ -24,30 +24,48 @@
     @include('dashboards.partials.staff_quick_actions')
 
     <!-- Attendance Summary for Class Today -->
-    <div class="grid grid-cols-3 sm:grid-cols-6 gap-2 sm:gap-4">
-        <div class="bg-white dark:bg-slate-900 p-2.5 sm:p-5 rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs">
+    <div class="grid grid-cols-3 sm:grid-cols-6 gap-2 sm:gap-3.5">
+        <div class="bg-white dark:bg-slate-900 p-2.5 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col justify-between">
             <span class="text-[10px] sm:text-[11px] font-bold text-slate-500 uppercase tracking-wider block truncate">Total Siswa</span>
-            <div class="text-lg sm:text-2xl font-black text-slate-900 dark:text-white mt-1">{{ $totalStudents ?? $students->count() }} <span class="text-[10px] sm:text-xs font-semibold text-slate-400">Siswa</span></div>
+            <div class="text-base sm:text-2xl font-black text-slate-900 dark:text-white mt-1 tabular-num flex items-baseline gap-1">
+                <span>{{ $totalStudents ?? $students->count() }}</span>
+                <span class="text-[10px] font-semibold text-slate-400 hidden xs:inline">Siswa</span>
+            </div>
         </div>
-        <div class="bg-white dark:bg-slate-900 p-2.5 sm:p-5 rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs">
+        <div class="bg-white dark:bg-slate-900 p-2.5 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col justify-between">
             <span class="text-[10px] sm:text-[11px] font-bold text-emerald-600 uppercase tracking-wider block truncate">Hadir</span>
-            <div class="text-lg sm:text-2xl font-black text-emerald-600 mt-1">{{ $presentToday }} <span class="text-[10px] sm:text-xs font-semibold text-emerald-500">Siswa</span></div>
+            <div class="text-base sm:text-2xl font-black text-emerald-600 mt-1 tabular-num flex items-baseline gap-1">
+                <span>{{ $presentToday }}</span>
+                <span class="text-[10px] font-semibold text-emerald-500 hidden xs:inline">Siswa</span>
+            </div>
         </div>
-        <div class="bg-white dark:bg-slate-900 p-2.5 sm:p-5 rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs">
+        <div class="bg-white dark:bg-slate-900 p-2.5 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col justify-between">
             <span class="text-[10px] sm:text-[11px] font-bold text-amber-600 uppercase tracking-wider block truncate">Terlambat</span>
-            <div class="text-lg sm:text-2xl font-black text-amber-600 mt-1">{{ $lateToday }} <span class="text-[10px] sm:text-xs font-semibold text-amber-500">Siswa</span></div>
+            <div class="text-base sm:text-2xl font-black text-amber-600 mt-1 tabular-num flex items-baseline gap-1">
+                <span>{{ $lateToday }}</span>
+                <span class="text-[10px] font-semibold text-amber-500 hidden xs:inline">Siswa</span>
+            </div>
         </div>
-        <div class="bg-white dark:bg-slate-900 p-2.5 sm:p-5 rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs">
+        <div class="bg-white dark:bg-slate-900 p-2.5 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col justify-between">
             <span class="text-[10px] sm:text-[11px] font-bold text-sky-600 uppercase tracking-wider block truncate">Izin</span>
-            <div class="text-lg sm:text-2xl font-black text-sky-600 mt-1">{{ $permissionToday }} <span class="text-[10px] sm:text-xs font-semibold text-sky-500">Siswa</span></div>
+            <div class="text-base sm:text-2xl font-black text-sky-600 mt-1 tabular-num flex items-baseline gap-1">
+                <span>{{ $permissionToday }}</span>
+                <span class="text-[10px] font-semibold text-sky-500 hidden xs:inline">Siswa</span>
+            </div>
         </div>
-        <div class="bg-white dark:bg-slate-900 p-2.5 sm:p-5 rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs">
+        <div class="bg-white dark:bg-slate-900 p-2.5 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col justify-between">
             <span class="text-[10px] sm:text-[11px] font-bold text-purple-600 uppercase tracking-wider block truncate">Sakit</span>
-            <div class="text-lg sm:text-2xl font-black text-purple-600 mt-1">{{ $sickToday }} <span class="text-[10px] sm:text-xs font-semibold text-purple-500">Siswa</span></div>
+            <div class="text-base sm:text-2xl font-black text-purple-600 mt-1 tabular-num flex items-baseline gap-1">
+                <span>{{ $sickToday }}</span>
+                <span class="text-[10px] font-semibold text-purple-500 hidden xs:inline">Siswa</span>
+            </div>
         </div>
-        <div class="bg-white dark:bg-slate-900 p-2.5 sm:p-5 rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs">
+        <div class="bg-white dark:bg-slate-900 p-2.5 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col justify-between">
             <span class="text-[10px] sm:text-[11px] font-bold text-rose-600 uppercase tracking-wider block truncate">Alpa</span>
-            <div class="text-lg sm:text-2xl font-black text-rose-600 mt-1">{{ $alphaToday }} <span class="text-[10px] sm:text-xs font-semibold text-rose-500">Siswa</span></div>
+            <div class="text-base sm:text-2xl font-black text-rose-600 mt-1 tabular-num flex items-baseline gap-1">
+                <span>{{ $alphaToday }}</span>
+                <span class="text-[10px] font-semibold text-rose-500 hidden xs:inline">Siswa</span>
+            </div>
         </div>
     </div>
 
@@ -76,28 +94,34 @@
 
     <!-- Students Table -->
     <div class="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden">
-        <div class="p-5 border-b border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div class="p-4 sm:p-5 border-b border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div>
-                <h3 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                    <span>Daftar Siswa Binaan Kelas {{ $class->name ?? '' }}</span>
-                </h3>
-                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Monitoring terpadu presensi multi-kegiatan, capaian Tahfidz Juz 30, serta tata tertib siswa.</p>
+                <div class="flex items-center gap-2">
+                    <h3 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                        <span>Daftar Siswa Binaan Kelas {{ $class->name ?? '' }}</span>
+                    </h3>
+                    <span class="table-swipe-cue">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+                        Geser Tabel →
+                    </span>
+                </div>
+                <p class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5">Monitoring terpadu presensi multi-kegiatan, capaian Tahfidz Juz 30, serta tata tertib siswa.</p>
             </div>
-            <div class="flex items-center gap-3">
-                <span class="text-xs text-slate-400 dark:text-slate-500">Poin Prestasi & Pelanggaran Dihitung Terpisah</span>
+            <div class="flex items-center gap-2">
+                <span class="text-[11px] text-slate-400 dark:text-slate-500 font-medium">Poin Prestasi & Tatib Terpisah</span>
             </div>
         </div>
-        <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs whitespace-nowrap lg:whitespace-normal">
-                <thead class="bg-slate-50 dark:bg-slate-800/70 border-b border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 font-bold uppercase tracking-wider text-[11px]">
+        <div class="responsive-table-container">
+            <table class="w-full text-left text-xs">
+                <thead class="bg-slate-50 dark:bg-slate-800/70 border-b border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 font-bold uppercase tracking-wider text-[10px] sm:text-[11px]">
                     <tr>
-                        <th class="py-3.5 px-4">Nama Siswa / NIS</th>
-                        <th class="py-3.5 px-4 min-w-[220px]">Presensi Hari Ini (Semua Jenis)</th>
-                        <th class="py-3.5 px-4 min-w-[190px]">Hafalan Al-Qur'an (Juz 30)</th>
-                        <th class="py-3.5 px-4">Prestasi Kumulatif</th>
-                        <th class="py-3.5 px-4">Pelanggaran Kumulatif</th>
-                        <th class="py-3.5 px-4">Status Pembinaan</th>
-                        <th class="py-3.5 px-4 text-center">Aksi</th>
+                        <th class="py-3 px-3.5">Nama Siswa / NIS</th>
+                        <th class="py-3 px-3.5 min-w-[200px]">Presensi Hari Ini</th>
+                        <th class="py-3 px-3.5 min-w-[170px]">Hafalan Juz 30</th>
+                        <th class="py-3 px-3.5 text-center">Prestasi</th>
+                        <th class="py-3 px-3.5 text-center">Pelanggaran</th>
+                        <th class="py-3 px-3.5 text-center">Status Pembinaan</th>
+                        <th class="py-3 px-3.5 text-center">Aksi Cepat</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100 dark:divide-slate-800/80">
@@ -129,26 +153,23 @@
                         @endphp
                         <tr class="hover:bg-slate-50/80 dark:hover:bg-slate-800/50 transition">
                             <!-- 1. Nama Siswa & Identitas -->
-                            <td class="py-3.5 px-4">
+                            <td class="py-3 px-3.5">
                                 <div class="font-extrabold text-slate-900 dark:text-white flex items-center gap-1.5">
                                     <span>{{ $s->name }}</span>
                                     @if($s->gender === 'P')
-                                        <span class="text-[9.5px] px-1 py-0.2 rounded bg-pink-50 text-pink-600 dark:bg-pink-950/50 dark:text-pink-300 font-bold" title="Perempuan">P</span>
+                                        <span class="text-[9px] px-1 py-0.2 rounded bg-pink-50 text-pink-600 dark:bg-pink-950/50 dark:text-pink-300 font-bold" title="Perempuan">P</span>
                                     @else
-                                        <span class="text-[9.5px] px-1 py-0.2 rounded bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-300 font-bold" title="Laki-laki">L</span>
+                                        <span class="text-[9px] px-1 py-0.2 rounded bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-300 font-bold" title="Laki-laki">L</span>
                                     @endif
                                 </div>
-                                <div class="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">NIS: {{ $s->nis }} • NISN: {{ $s->nisn }}</div>
+                                <div class="text-[10px] text-slate-400 dark:text-slate-500 font-mono mt-0.5">NIS: {{ $s->nis }}</div>
                             </td>
 
                             <!-- 2. Presensi Hari Ini (Lengkap Semua Jenis) -->
-                            <td class="py-3.5 px-4">
-                                <div class="space-y-1.5 py-0.5">
+                            <td class="py-3 px-3.5">
+                                <div class="space-y-1">
                                     <!-- A. Presensi Utama KBM (Masuk & Pulang) -->
-                                    <div class="flex items-center gap-1.5 flex-wrap">
-                                        <span class="inline-flex items-center justify-center w-5 h-5 rounded-md bg-slate-100 dark:bg-slate-800 text-[10px] font-bold text-slate-600 dark:text-slate-300 shrink-0" title="Presensi Masuk & Pulang KBM">
-                                            🏫
-                                        </span>
+                                    <div class="flex items-center gap-1 flex-wrap">
                                         @if($att)
                                             @php
                                                 $badgeStyle = match($att->status) {
@@ -160,140 +181,84 @@
                                                     default => 'bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-300'
                                                 };
                                             @endphp
-                                            <span class="px-2 py-0.5 rounded-md text-[11px] font-extrabold {{ $badgeStyle }}">
+                                            <span class="px-1.5 py-0.5 rounded text-[10px] font-extrabold {{ $badgeStyle }}">
                                                 KBM: {{ $att->status }} {{ $att->time ? '('.substr($att->time, 0, 5).')' : '' }}
                                             </span>
                                             @if($att->time_out)
-                                                <span class="px-1.5 py-0.5 rounded-md text-[10px] font-bold bg-teal-50 text-teal-700 dark:bg-teal-950/60 dark:text-teal-300 border border-teal-200 dark:border-teal-800" title="Jam Kepulangan">
+                                                <span class="px-1.5 py-0.5 rounded text-[9.5px] font-bold bg-teal-50 text-teal-700 dark:bg-teal-950/60 dark:text-teal-300 border border-teal-200 dark:border-teal-800" title="Jam Kepulangan">
                                                     Plg: {{ substr($att->time_out, 0, 5) }}
-                                                </span>
-                                            @elseif($att->status === 'HADIR' || $att->status === 'TERLAMBAT')
-                                                <span class="px-1.5 py-0.5 rounded-md text-[9.5px] font-semibold text-slate-400 bg-slate-50 dark:bg-slate-800/50 border border-dashed border-slate-200 dark:border-slate-700">
-                                                    Belum Pulang
                                                 </span>
                                             @endif
                                         @else
-                                            <span class="px-2 py-0.5 rounded-md text-[11px] font-bold bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400">
-                                                KBM: Belum Presensi
+                                            <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+                                                KBM: Belum Absen
                                             </span>
                                         @endif
                                     </div>
 
-                                    <!-- B. Presensi Ibadah (Dhuha, Dzuhur/Jum'at, Keputrian) & Ekskul -->
-                                    <div class="flex items-center gap-1.5 flex-wrap">
-                                        <!-- Dhuha -->
+                                    <!-- B. Presensi Ibadah (Dhuha & Dzuhur) -->
+                                    <div class="flex items-center gap-1 flex-wrap text-[9.5px]">
                                         @if($dhuha)
-                                            <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] font-bold {{ $dhuha->status === 'HADIR' || $dhuha->status === 'TERLAMBAT' ? 'bg-amber-100 text-amber-900 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-300 dark:border-amber-800' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400' }}" title="Presensi Shalat Dhuha ({{ $dhuha->time ?? '-' }})">
-                                                <span>☀️ Dhuha:</span>
-                                                <span>{{ $dhuha->status }} {{ $dhuha->time ? '('.substr($dhuha->time, 0, 5).')' : '' }}</span>
-                                            </span>
-                                        @else
-                                            <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] font-medium text-slate-400 dark:text-slate-500 bg-slate-50 dark:bg-slate-800/40 border border-dashed border-slate-200 dark:border-slate-700" title="Belum / Tidak Shalat Dhuha">
-                                                <span>☀️ Dhuha: -</span>
+                                            <span class="px-1 py-0.2 rounded font-bold {{ $dhuha->status === 'HADIR' || $dhuha->status === 'TERLAMBAT' ? 'bg-amber-100 text-amber-900 dark:bg-amber-950/60 dark:text-amber-300' : 'bg-slate-100 text-slate-500 dark:bg-slate-800' }}">
+                                                ☀️ Dhuha: {{ $dhuha->status }}
                                             </span>
                                         @endif
-
-                                        <!-- Dzuhur / Jum'at -->
-                                        @php
-                                            $isFriday = (isset($today) ? date('N', strtotime($today)) : date('N')) == 5;
-                                            $prayerName = $isFriday ? "Jum'at" : "Dzuhur";
-                                        @endphp
                                         @if($dzuhur)
-                                            <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] font-bold {{ $dzuhur->status === 'HADIR' || $dzuhur->status === 'TERLAMBAT' ? 'bg-indigo-100 text-indigo-900 dark:bg-indigo-950/60 dark:text-indigo-300 border border-indigo-300 dark:border-indigo-800' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400' }}" title="Presensi Shalat {{ $prayerName }} ({{ $dzuhur->time ?? '-' }})">
-                                                <span>🕌 {{ $prayerName }}:</span>
-                                                <span>{{ $dzuhur->status }} {{ $dzuhur->time ? '('.substr($dzuhur->time, 0, 5).')' : '' }}</span>
-                                            </span>
-                                        @else
-                                            <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] font-medium text-slate-400 dark:text-slate-500 bg-slate-50 dark:bg-slate-800/40 border border-dashed border-slate-200 dark:border-slate-700" title="Belum / Tidak Shalat {{ $prayerName }}">
-                                                <span>🕌 {{ $prayerName }}: -</span>
-                                            </span>
-                                        @endif
-
-                                        <!-- Keputrian (khusus siswi perempuan jika ada sesi) -->
-                                        @if($s->gender === 'P' && $keputrian)
-                                            <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] font-bold bg-rose-100 text-rose-900 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-300 dark:border-rose-800" title="Presensi Kegiatan Keputrian">
-                                                <span>🌸 Keputrian: {{ $keputrian->status }}</span>
-                                            </span>
-                                        @endif
-
-                                        <!-- Ekstrakurikuler (jika ada sesi hari ini) -->
-                                        @if($extraAtt)
-                                            <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] font-bold bg-purple-100 text-purple-900 dark:bg-purple-950/60 dark:text-purple-300 border border-purple-300 dark:border-purple-800" title="Presensi Ekstrakurikuler">
-                                                <span>🎯 {{ $extraAtt->extracurricular->name ?? 'Ekskul' }}: {{ $extraAtt->status }}</span>
+                                            <span class="px-1 py-0.2 rounded font-bold {{ $dzuhur->status === 'HADIR' || $dzuhur->status === 'TERLAMBAT' ? 'bg-indigo-100 text-indigo-900 dark:bg-indigo-950/60 dark:text-indigo-300' : 'bg-slate-100 text-slate-500 dark:bg-slate-800' }}">
+                                                🕌 Dzuhur: {{ $dzuhur->status }}
                                             </span>
                                         @endif
                                     </div>
                                 </div>
                             </td>
 
-                            <!-- 3. Hafalan Al-Qur'an Juz 30 (Baru & Lengkap) -->
-                            <td class="py-3.5 px-4 min-w-[190px]">
-                                <div class="space-y-1.5">
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-xs font-black text-slate-800 dark:text-slate-100">
-                                            {{ $completedGradeCount }} / {{ $targetCount }} <span class="text-[10px] font-semibold text-slate-400">Surat (Target {{ $targetGrade }})</span>
+                            <!-- 3. Hafalan Al-Qur'an Juz 30 -->
+                            <td class="py-3 px-3.5 min-w-[170px]">
+                                <div class="space-y-1">
+                                    <div class="flex items-center justify-between text-[11px]">
+                                        <span class="font-extrabold text-slate-800 dark:text-slate-200 tabular-num">
+                                            {{ $completedGradeCount }}/{{ $targetCount }} <span class="text-[9.5px] font-normal text-slate-400">Surat</span>
                                         </span>
-                                        <span class="text-[11px] font-black {{ $progressPct >= 100 ? 'text-emerald-600 dark:text-emerald-400' : ($progressPct >= 50 ? 'text-teal-600 dark:text-teal-400' : 'text-amber-600 dark:text-amber-400') }}">
+                                        <span class="font-black tabular-num {{ $progressPct >= 100 ? 'text-emerald-600 dark:text-emerald-400' : ($progressPct >= 50 ? 'text-teal-600 dark:text-teal-400' : 'text-amber-600 dark:text-amber-400') }}">
                                             {{ $progressPct }}%
                                         </span>
                                     </div>
-
-                                    <!-- Progress Bar -->
-                                    <div class="w-full h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden p-0.5 border border-slate-200/60 dark:border-slate-700/60">
-                                        <div class="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full transition-all duration-300" style="width: {{ $progressPct }}%"></div>
-                                    </div>
-
-                                    <!-- Setoran Terakhir atau Total Surat -->
-                                    <div class="flex items-center justify-between text-[10.5px] pt-0.5">
-                                        @if($latestTahfidz)
-                                            <div class="truncate max-w-[130px]" title="Setoran Terakhir: Surat {{ $latestTahfidz->surah_name }} ({{ $latestTahfidz->ayat_range ?? 'Lengkap' }})">
-                                                <span class="text-slate-400 font-medium">Terakhir:</span>
-                                                <span class="font-bold text-slate-700 dark:text-slate-300">{{ $latestTahfidz->surah_name }}</span>
-                                            </div>
-                                            <span class="px-1.5 py-0.2 rounded text-[9.5px] font-extrabold {{ $latestTahfidz->overall_grade === 'Lulus' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300' : 'bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300' }}">
-                                                {{ $latestTahfidz->overall_grade }}
-                                            </span>
-                                        @else
-                                            <span class="text-slate-400 italic text-[10px]">Belum ada setoran</span>
-                                            <span class="text-[9.5px] text-slate-400 font-semibold">Total {{ $totalLulusAll }}/37</span>
-                                        @endif
+                                    <div class="w-full h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                                        <div class="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full" style="width: {{ $progressPct }}%"></div>
                                     </div>
                                 </div>
                             </td>
 
                             <!-- 4. Prestasi Kumulatif -->
-                            <td class="py-3.5 px-4">
-                                <span class="font-black text-amber-600 dark:text-amber-400 text-sm">{{ $achPoints }} Poin</span>
-                                @if($reward['is_eligible'])
-                                    <div class="text-[10px] text-amber-700 dark:text-amber-300 font-semibold">{{ $reward['level'] }}</div>
-                                @endif
+                            <td class="py-3 px-3.5 text-center">
+                                <span class="font-black text-amber-600 dark:text-amber-400 text-xs sm:text-sm tabular-num">+{{ $achPoints }}</span>
                             </td>
 
                             <!-- 5. Pelanggaran Kumulatif -->
-                            <td class="py-3.5 px-4">
-                                <span class="font-black text-rose-600 dark:text-rose-400 text-sm">{{ $violPoints }} Poin</span>
+                            <td class="py-3 px-3.5 text-center">
+                                <span class="font-black text-rose-600 dark:text-rose-400 text-xs sm:text-sm tabular-num">{{ $violPoints }}</span>
                             </td>
 
                             <!-- 6. Status Pembinaan -->
-                            <td class="py-3.5 px-4">
-                                <span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold whitespace-nowrap {{ $guidance['action_needed'] ? 'bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-300 dark:border-rose-800' : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800' }}">
+                            <td class="py-3 px-3.5 text-center">
+                                <span class="px-2 py-0.5 rounded-full text-[9.5px] font-extrabold whitespace-nowrap {{ $guidance['action_needed'] ? 'bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-300 dark:border-rose-800' : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800' }}">
                                     {{ $guidance['level'] }}
                                 </span>
                             </td>
 
                             <!-- 7. Aksi Cepat -->
-                            <td class="py-3.5 px-4 text-center">
-                                <div class="inline-flex items-center gap-1.5">
-                                    <a href="{{ route('reports.student.dossier', $s->id) }}" class="p-1.5 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/50 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 rounded-lg text-xs font-semibold transition" title="Lihat Raport Digital AI & Berkas Dossier Siswa">
-                                        Raport & Dossier
+                            <td class="py-3 px-3.5 text-center">
+                                <div class="inline-flex items-center gap-1">
+                                    <a href="{{ route('reports.student.dossier', $s->id) }}" class="px-2 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 font-bold text-[10.5px] transition whitespace-nowrap" title="Raport Digital & Dossier">
+                                        Raport
                                     </a>
-                                    <a href="{{ route('tahfidz.student', $s->id) }}" class="p-1.5 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/50 dark:hover:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 rounded-lg text-xs font-semibold transition flex items-center gap-1" title="Buku Mutaba'ah & Setor Tahfidz Juz 30">
+                                    <a href="{{ route('tahfidz.student', $s->id) }}" class="px-2 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:hover:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 font-bold text-[10.5px] transition whitespace-nowrap" title="Mutaba'ah Tahfidz">
                                         Tahfidz
                                     </a>
-                                    <a href="{{ route('habits.journal', ['student_id' => $s->id]) }}" class="p-1.5 bg-teal-50 hover:bg-teal-100 dark:bg-teal-950/50 dark:hover:bg-teal-900/60 text-teal-700 dark:text-teal-300 rounded-lg text-xs font-semibold transition" title="Jurnal 7 Kebiasaan Anak Hebat">
-                                        7 Kebiasaan
+                                    <a href="{{ route('habits.journal', ['student_id' => $s->id]) }}" class="px-2 py-1 rounded-lg bg-teal-50 hover:bg-teal-100 dark:bg-teal-950/60 dark:hover:bg-teal-900/60 text-teal-700 dark:text-teal-300 font-bold text-[10.5px] transition whitespace-nowrap" title="Jurnal 7 Kebiasaan">
+                                        Karakter
                                     </a>
-                                    <a href="{{ route('guidance.create', ['student_id' => $s->id]) }}" class="p-1.5 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/50 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 rounded-lg text-xs font-semibold transition" title="Input Catatan Pembinaan">
+                                    <a href="{{ route('guidance.create', ['student_id' => $s->id]) }}" class="px-2 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/60 dark:hover:bg-amber-900/60 text-amber-700 dark:text-amber-300 font-bold text-[10.5px] transition whitespace-nowrap" title="Bimbing Siswa">
                                         Bina
                                     </a>
                                 </div>
