@@ -309,9 +309,10 @@
 
                         @if($q->question_type === 'multiple_choice' || $q->question_type === 'complex_multiple_choice')
                             <div class="space-y-2">
-                                @foreach($normOpts as $opt)
+                                @foreach($normOpts as $idx => $opt)
                                     @php
-                                        $k = $opt['key'] ?? '';
+                                        $k = is_array($opt) ? ($opt['key'] ?? (is_numeric($idx) ? chr(65 + (int)$idx) : $idx)) : chr(65 + $loop->index);
+                                        $optText = is_array($opt) ? ($opt['text'] ?? ($opt['label'] ?? '')) : (is_string($opt) ? $opt : '');
                                         $isCorrect = false;
                                         if ($q->question_type === 'multiple_choice') {
                                             $isCorrect = (string)$k === (string)$q->correct_answer;
@@ -324,7 +325,7 @@
                                         <span class="w-6 h-6 rounded-lg {{ $isCorrect ? 'bg-emerald-600 text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300' }} font-black text-xs flex items-center justify-center shrink-0">
                                             {{ $k }}
                                         </span>
-                                        <div class="flex-1 pt-0.5">{{ $opt['text'] ?? '' }}</div>
+                                        <div class="flex-1 pt-0.5">{{ $optText }}</div>
                                         @if($isCorrect)
                                             <span class="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 text-[10px] font-black uppercase">
                                                 Kunci Jawaban ✓
@@ -349,15 +350,21 @@
                                             $keysMap = [];
                                             if (is_array($q->correct_answer)) {
                                                 foreach ($q->correct_answer as $ka) {
-                                                    if (isset($ka['id'])) $keysMap[$ka['id']] = $ka['is_true'] ?? false;
+                                                    if (is_array($ka) && isset($ka['id'])) {
+                                                        $keysMap[$ka['id']] = $ka['is_true'] ?? false;
+                                                    }
                                                 }
                                             }
                                         @endphp
                                         @foreach($normOpts as $idx => $st)
-                                            @php $isTrue = $keysMap[$st['id'] ?? ''] ?? false; @endphp
+                                            @php 
+                                                $stId = is_array($st) ? ($st['id'] ?? '') : '';
+                                                $stText = is_array($st) ? ($st['statement'] ?? ($st['text'] ?? '-')) : (is_string($st) ? $st : '-');
+                                                $isTrue = $keysMap[$stId] ?? false; 
+                                            @endphp
                                             <tr>
                                                 <td class="p-2.5 font-bold text-slate-400">{{ $idx + 1 }}</td>
-                                                <td class="p-2.5 font-medium text-slate-800 dark:text-slate-200">{{ $st['statement'] ?? '-' }}</td>
+                                                <td class="p-2.5 font-medium text-slate-800 dark:text-slate-200">{{ $stText }}</td>
                                                 <td class="p-2.5 text-center">
                                                     <span class="px-2.5 py-1 rounded-lg text-[10px] font-black uppercase {{ $isTrue ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300' : 'bg-rose-500/15 text-rose-700 dark:text-rose-300' }}">
                                                         {{ $isTrue ? 'BENAR' : 'SALAH' }}
@@ -374,16 +381,24 @@
                                 <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 space-y-2">
                                     <div class="font-black text-indigo-600 dark:text-indigo-400">Premis (Kolom Kiri):</div>
                                     @foreach($normOpts as $pair)
+                                        @php
+                                            $pairId = is_array($pair) ? ($pair['id'] ?? '') : '';
+                                            $premise = is_array($pair) ? ($pair['premise'] ?? ($pair['left'] ?? '-')) : (is_string($pair) ? $pair : '-');
+                                        @endphp
                                         <div class="p-2 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 font-medium">
-                                            <strong>{{ $pair['id'] }}.</strong> {{ $pair['premise'] }}
+                                            <strong>{{ $pairId }}.</strong> {{ $premise }}
                                         </div>
                                     @endforeach
                                 </div>
                                 <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 space-y-2">
                                     <div class="font-black text-amber-600 dark:text-amber-400">Respon (Kolom Kanan):</div>
                                     @foreach($normOpts as $pair)
+                                        @php
+                                            $respId = is_array($pair) ? ($pair['response_id'] ?? '-') : '-';
+                                            $resp = is_array($pair) ? ($pair['response'] ?? ($pair['right'] ?? '-')) : (is_string($pair) ? $pair : '-');
+                                        @endphp
                                         <div class="p-2 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 font-medium">
-                                            <strong>{{ $pair['response_id'] ?? '-' }}.</strong> {{ $pair['response'] }}
+                                            <strong>{{ $respId }}.</strong> {{ $resp }}
                                         </div>
                                     @endforeach
                                 </div>

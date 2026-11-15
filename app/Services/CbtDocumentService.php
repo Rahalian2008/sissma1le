@@ -97,12 +97,16 @@ class CbtDocumentService
         $sessionRooms = [];
 
         if (Schema::hasTable('cbt_sessions') && Schema::hasColumn('cbt_sessions', 'room_name')) {
-            $sessionRooms = $exam->sessions()
-                ->whereNotNull('room_name')
-                ->where('room_name', '!=', '')
-                ->distinct()
-                ->pluck('room_name')
-                ->toArray();
+            try {
+                $sessionRooms = $exam->sessions()
+                    ->whereNotNull('room_name')
+                    ->where('room_name', '!=', '')
+                    ->distinct()
+                    ->pluck('room_name')
+                    ->toArray();
+            } catch (\Throwable $e) {
+                $sessionRooms = [];
+            }
         }
 
         $configuredRooms = (Schema::hasTable('cbt_exams') && Schema::hasColumn('cbt_exams', 'available_rooms') && is_array($exam->available_rooms))
@@ -314,12 +318,27 @@ class CbtDocumentService
             });
         }
 
-        $sessions = $sessionQuery->get();
+        $sessions = collect();
+        try {
+            $sessions = $sessionQuery->get();
+        } catch (\Throwable $e) {
+            $fallbackQuery = $exam->sessions()->with(['student.schoolClass']);
+            if ($classId) {
+                $fallbackQuery->whereHas('student', function ($q) use ($classId) {
+                    $q->where('class_id', $classId);
+                });
+            }
+            $sessions = $fallbackQuery->get();
+        }
 
         // Jika belum ada sesi terdaftar sama sekali, inisialisasi sesi dari rombel ujian
         if ($sessions->isEmpty()) {
             $this->prepareKartuPesertaData($exam, $classId, $roomName);
-            $sessions = $sessionQuery->get();
+            try {
+                $sessions = $sessionQuery->get();
+            } catch (\Throwable $e) {
+                $sessions = $exam->sessions()->with(['student.schoolClass'])->get();
+            }
         }
 
         $rows = [];
@@ -393,7 +412,18 @@ class CbtDocumentService
             });
         }
 
-        $sessions = $sessionQuery->get();
+        $sessions = collect();
+        try {
+            $sessions = $sessionQuery->get();
+        } catch (\Throwable $e) {
+            $fallbackQuery = $exam->sessions()->with(['student.schoolClass']);
+            if ($classId) {
+                $fallbackQuery->whereHas('student', function ($q) use ($classId) {
+                    $q->where('class_id', $classId);
+                });
+            }
+            $sessions = $fallbackQuery->get();
+        }
 
         $presentList = [];
         $absentList = [];

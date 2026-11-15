@@ -165,8 +165,12 @@
                 @if(!empty($normOpts) && is_array($normOpts))
                     <div class="pl-4 space-y-1">
                         @if($q->question_type === 'multiple_choice' || $q->question_type === 'complex_multiple_choice')
-                            @foreach($normOpts as $opt)
-                                <div><strong>{{ $opt['key'] ?? '' }}.</strong> {{ $opt['text'] ?? '' }}</div>
+                            @foreach($normOpts as $idx => $opt)
+                                @php
+                                    $k = is_array($opt) ? ($opt['key'] ?? (is_numeric($idx) ? chr(65 + (int)$idx) : $idx)) : chr(65 + $loop->index);
+                                    $t = is_array($opt) ? ($opt['text'] ?? ($opt['label'] ?? '')) : (is_string($opt) ? $opt : '');
+                                @endphp
+                                <div><strong>{{ $k }}.</strong> {{ $t }}</div>
                             @endforeach
                         @elseif($q->question_type === 'true_false')
                             <table class="w-full border border-black text-[11px] mt-2">
@@ -175,8 +179,11 @@
                                     <th class="border border-black p-1 w-20 text-center">Pilihan</th>
                                 </tr>
                                 @foreach($normOpts as $s)
+                                    @php
+                                        $stmt = is_array($s) ? ($s['statement'] ?? ($s['text'] ?? '-')) : (is_string($s) ? $s : '-');
+                                    @endphp
                                     <tr>
-                                        <td class="border border-black p-1">{{ $s['statement'] ?? '-' }}</td>
+                                        <td class="border border-black p-1">{{ $stmt }}</td>
                                         <td class="border border-black p-1 text-center font-bold">[Benar / Salah]</td>
                                     </tr>
                                 @endforeach
@@ -188,9 +195,13 @@
                                     <th class="border border-black p-1 w-1/2">Respon (Pilihan Kanan)</th>
                                 </tr>
                                 @foreach($normOpts as $p)
+                                    @php
+                                        $premise = is_array($p) ? ($p['premise'] ?? ($p['left'] ?? '-')) : '-';
+                                        $response = is_array($p) ? ($p['response'] ?? ($p['right'] ?? '-')) : (is_string($p) ? $p : '-');
+                                    @endphp
                                     <tr>
-                                        <td class="border border-black p-1">{{ $p['premise'] ?? '-' }}</td>
-                                        <td class="border border-black p-1">{{ $p['response'] ?? '-' }}</td>
+                                        <td class="border border-black p-1">{{ $premise }}</td>
+                                        <td class="border border-black p-1">{{ $response }}</td>
                                     </tr>
                                 @endforeach
                             </table>
