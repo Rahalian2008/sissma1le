@@ -35,7 +35,16 @@ class AttendanceDevice extends Model
 
     public function scopeRfid($query)
     {
-        return $query->where('device_type', 'rfid');
+        return $query->whereIn('device_type', ['rfid', 'RFID']);
+    }
+
+    public function isOnline(): bool
+    {
+        if (! $this->last_ping_at) {
+            return in_array($this->status, ['ONLINE', '1', 'TRUE', 'AKTIF', 'active']);
+        }
+
+        return $this->last_ping_at->gt(now()->subMinutes(10));
     }
 
     public function scopeBarcode($query)

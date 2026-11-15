@@ -556,6 +556,100 @@ class AttendanceController extends Controller
     }
 
     /**
+     * Halaman Modul Konfigurasi & Integrasi Mesin RFID
+     */
+    public function rfidConfig(Request $request): View
+    {
+        $devices = AttendanceDevice::rfid()->orderBy('device_code')->get();
+        if ($devices->isEmpty()) {
+            $devices = AttendanceDevice::orderBy('device_code')->get();
+        }
+
+        $isEnabled = SchoolSetting::get('enable_attendance_rfid', '1') === '1';
+
+        $totalStudents = Student::where('is_active', true)->count();
+        $studentsWithRfid = Student::where('is_active', true)->whereNotNull('rfid_uid')->where('rfid_uid', '!=', '')->count();
+        $studentsWithoutRfid = max(0, $totalStudents - $studentsWithRfid);
+
+        $today = Carbon::today('Asia/Jakarta');
+        $todayRfidScans = Attendance::where('method', 'RFID')->whereDate('date', $today)->count();
+
+        $students = Student::with('schoolClass')
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get(['id', 'name', 'nis', 'class_id', 'rfid_uid']);
+
+        $classes = SchoolClass::orderBy('name')->get();
+
+        $schedule = AttendanceService::getScheduleForDay(Carbon::now('Asia/Jakarta'));
+
+        $recentLogs = Attendance::where('method', 'RFID')
+            ->whereDate('date', $today)
+            ->latest('updated_at')
+            ->take(15)
+            ->get();
+
+        return view('attendance.rfid_config', compact(
+            'devices',
+            'isEnabled',
+            'totalStudents',
+            'studentsWithRfid',
+            'studentsWithoutRfid',
+            'todayRfidScans',
+            'students',
+            'classes',
+            'schedule',
+            'recentLogs'
+        ));
+    }
+
+    /**
+     * Toggle Cepat Status Aktif/Nonaktif Metode Kartu RFID
+     */
+    public function toggleRfidSetting(Request $request): RedirectResponse
+    {
+        $current = SchoolSetting::get('enable_attendance_rfid', '1');
+        $new = $current === '1' ? '0' : '1';
+        SchoolSetting::set('enable_attendance_rfid', $new);
+
+        $statusText = $new === '1' ? 'diaktifkan' : 'dinonaktifkan';
+
+        return back()->with('success', "✨ Kebijakan metode presensi kartu RFID berhasil {$statusText}.");
+    }
+
+    /**
+     * Pasangkan / Daftarkan UID Kartu RFID ke Siswa
+     */
+    public function pairRfidCard(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'student_id' => ['required', 'exists:students,id'],
+            'rfid_uid' => ['required', 'string', 'max:50'],
+        ]);
+
+        $cleanUid = strtoupper(trim($validated['rfid_uid']));
+
+        // Cek duplikasi UID pada siswa lain
+        $duplicate = Student::where('rfid_uid', $cleanUid)
+            ->where('id', '!=', $validated['student_id'])
+            ->first();
+
+        if ($duplicate) {
+            return back()->with('error', "Kartu UID {$cleanUid} sudah digunakan oleh siswa: {$duplicate->name} ({$duplicate->nis}). Harap gunakan kartu RFID lain.");
+        }
+
+        $student = Student::findOrFail($validated['student_id']);
+        $student->update(['rfid_uid' => $cleanUid]);
+
+        AuditLog::log('PAIR_STUDENT_RFID', 'Student', $student->id, null, [
+            'rfid_uid' => $cleanUid,
+            'student_name' => $student->name,
+        ]);
+
+        return back()->with('success', "✨ Kartu RFID (UID: {$cleanUid}) berhasil dipasangkan ke siswa {$student->name} ({$student->schoolClass?->name}).");
+    }
+
+    /**
      * Endpoint API Scan RFID dari Perangkat Fisik / Simulator
      */
     public function scanRfid(Request $request): JsonResponse
@@ -564,7 +658,23 @@ class AttendanceController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Metode Presensi Kartu RFID sedang dinonaktifkan oleh kebijakan sekolah.',
+                'error_code' => 'METHOD_DISABLED',
             ], 403);
+        }
+
+        // Jika request GET tanpa rfid_uid, kembalikan dokumentasi/status endpoint siap pakai
+        if ($request->isMethod('GET') && ! $request->filled('rfid_uid')) {
+            return response()->json([
+                'status' => 'ready',
+                'service' => 'SISSMA1LE RFID Attendance IoT Endpoint',
+                'server_time' => now()->format('Y-m-d H:i:s'),
+                'supported_methods' => ['POST', 'GET'],
+                'payload_example' => [
+                    'rfid_uid' => 'A4B5C6D7',
+                    'device_code' => 'RFID-01',
+                ],
+                'note' => 'Gunakan HTTP POST dengan Content-Type: application/json atau form-data.',
+            ]);
         }
 
         $validated = $request->validate([
@@ -572,9 +682,48 @@ class AttendanceController extends Controller
             'device_code' => ['nullable', 'string'],
         ]);
 
-        $result = $this->attendanceService->processRfidAttendance($validated['rfid_uid'], $validated['device_code'] ?? 'RFID-GATE-01');
+        $cleanUid = strtoupper(trim($validated['rfid_uid']));
+        $deviceCode = ! empty($validated['device_code']) ? trim($validated['device_code']) : 'RFID-01';
+
+        // Update heartbeat perangkat jika terdaftar
+        $device = AttendanceDevice::where('device_code', $deviceCode)->first();
+        if ($device) {
+            $device->update([
+                'last_ping_at' => now(),
+                'status' => 'ONLINE',
+                'ip_address' => $request->ip(),
+            ]);
+        }
+
+        $result = $this->attendanceService->processRfidAttendance($cleanUid, $deviceCode);
 
         return response()->json($result, $result['success'] ? 200 : 422);
+    }
+
+    /**
+     * Endpoint Ping / Heartbeat Mesin RFID
+     */
+    public function pingDevice(Request $request): JsonResponse
+    {
+        $deviceCode = $request->input('device_code', 'RFID-01');
+        $device = AttendanceDevice::where('device_code', $deviceCode)->first();
+
+        if ($device) {
+            $device->update([
+                'last_ping_at' => now(),
+                'status' => 'ONLINE',
+                'ip_address' => $request->ip(),
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => "Heartbeat perangkat {$deviceCode} diterima.",
+            'server_time' => now()->format('Y-m-d H:i:s'),
+            'device_code' => $deviceCode,
+            'status' => 'ONLINE',
+            'rfid_enabled' => SchoolSetting::get('enable_attendance_rfid', '1') === '1',
+        ]);
     }
 
     /**

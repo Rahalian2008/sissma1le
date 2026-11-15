@@ -105,8 +105,9 @@ Route::middleware('guest')->group(function () {
 // Quick Role Switcher (Available for instant role testing & evaluation)
 Route::post('/quick-switch', [AuthController::class, 'quickSwitch'])->name('quick.switch');
 
-// RFID Hardware Device Endpoint (IoT / Card Reader Integration)
-Route::post('/api/attendance/rfid', [AttendanceController::class, 'scanRfid'])->name('api.attendance.rfid');
+// RFID Hardware Device Endpoint (IoT / Microcontroller / Kiosk)
+Route::match(['get', 'post'], '/api/attendance/rfid', [AttendanceController::class, 'scanRfid'])->name('api.attendance.rfid');
+Route::match(['get', 'post'], '/api/attendance/device-ping', [AttendanceController::class, 'pingDevice'])->name('api.attendance.device_ping');
 
 // Authenticated Routes
 Route::middleware('auth')->group(function () {
@@ -141,7 +142,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/qr-session', [AttendanceController::class, 'qrSession'])->name('qr.session');
         Route::post('/qr-session', [AttendanceController::class, 'createQrSession'])->name('qr.session.create');
 
-        // Presensi RFID
+        // Presensi & Konfigurasi Mesin RFID
+        Route::get('/rfid-config', [AttendanceController::class, 'rfidConfig'])->name('rfid.config');
+        Route::post('/rfid-toggle', [AttendanceController::class, 'toggleRfidSetting'])->name('rfid.toggle');
+        Route::post('/rfid-pair-card', [AttendanceController::class, 'pairRfidCard'])->name('rfid.pair_card');
         Route::get('/rfid-simulator', [AttendanceController::class, 'rfidSimulator'])->name('rfid.simulator');
         Route::post('/rfid-scan', [AttendanceController::class, 'scanRfid'])->name('rfid.scan');
 

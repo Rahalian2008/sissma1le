@@ -313,9 +313,15 @@
                     <span class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span>
                     <h3 class="text-base font-bold text-slate-900 dark:text-white">Status Perangkat Presensi Fisik</h3>
                 </div>
-                <a href="{{ route('attendance.rfid.simulator') }}" class="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline inline-flex items-center gap-1">
-                    Buka Simulator <span>→</span>
-                </a>
+                <div class="flex items-center gap-3">
+                    <a href="{{ route('attendance.rfid.config') }}" class="text-xs font-bold text-purple-600 dark:text-purple-400 hover:underline inline-flex items-center gap-1">
+                        ⚙️ Konfigurasi Mesin
+                    </a>
+                    <span class="text-slate-300 dark:text-slate-700">•</span>
+                    <a href="{{ route('attendance.rfid.simulator') }}" class="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline inline-flex items-center gap-1">
+                        Simulator <span>→</span>
+                    </a>
+                </div>
             </div>
             <div class="space-y-3">
                 @foreach($devices as $device)

@@ -60,6 +60,9 @@
                         🔵 Sesi Pulang: {{ $schedule['out_start'] }} - {{ $schedule['out_end'] }} WIB
                     </span>
                     @if(Auth::user()->hasAnyRole(['admin', 'super_admin']))
+                        <a href="{{ route('attendance.rfid.config') }}" class="text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300 text-[10px] bg-purple-50 dark:bg-purple-900/30 px-2 py-0.5 rounded border border-purple-200 dark:border-purple-800 transition shadow-xs inline-flex items-center gap-1 font-bold" title="Konfigurasi Mesin RFID & Pendaftaran Kartu">
+                            <span>📟 Mesin RFID</span>
+                        </a>
                         <a href="{{ route('master.settings') }}" class="text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 text-[10px] bg-indigo-50 dark:bg-indigo-900/30 px-2 py-0.5 rounded border border-indigo-200 dark:border-indigo-800 transition shadow-xs inline-flex items-center gap-1 font-bold">
                             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg> Pengaturan & Geofence
                         </a>
