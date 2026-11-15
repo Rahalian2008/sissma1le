@@ -46,13 +46,13 @@
         </div>
 
         <!-- Mode Toggle -->
-        <div class="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 p-1 rounded-2xl border border-slate-200 dark:border-slate-700">
+        <div class="grid grid-cols-2 sm:flex sm:items-center gap-1.5 sm:gap-2 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl sm:rounded-2xl border border-slate-200 dark:border-slate-700 w-full sm:w-auto">
             <button type="button" onclick="switchManualMode('form')" id="tab-form-btn"
-                class="px-4 py-2 rounded-xl text-xs font-black transition flex items-center gap-2 bg-indigo-600 text-white shadow-xs">
+                class="px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl text-xs font-black transition flex items-center justify-center gap-1.5 bg-indigo-600 text-white shadow-xs">
                 <span>✍️ Form Input Absensi</span>
             </button>
             <button type="button" onclick="switchManualMode('roster')" id="tab-roster-btn"
-                class="px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white">
+                class="px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white">
                 <span>📋 Tabel Rombel</span>
             </button>
         </div>
@@ -92,7 +92,7 @@
     @endif
 
     <!-- ==================== MODE UTAMA: FORM INPUT ABSENSI MANUAL (SESUAI MOCKUP) ==================== -->
-    <div id="mode-form-section" class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+    <div id="mode-form-section" class="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-slate-800 p-3.5 sm:p-6 md:p-8 shadow-sm space-y-4 sm:space-y-6">
         <h2 class="text-base font-black text-slate-900 dark:text-white flex items-center gap-2.5">
             <span class="w-8 h-8 rounded-xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold text-sm shadow-2xs">
                 ✍️

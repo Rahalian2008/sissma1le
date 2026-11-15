@@ -75,82 +75,83 @@
 
     <!-- Section 1: Ringkasan Metrik Terpadu Hari Ini -->
     <div id="ringkasan-terpadu" class="space-y-3">
-        <h3 class="text-sm font-extrabold text-slate-800 dark:text-slate-200 uppercase tracking-wider flex items-center gap-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span>
-            Ringkasan Indikator Kinerja Hari Ini ({{ \Carbon\Carbon::parse($today)->translatedFormat('l, d F Y') }})
+        <h3 class="text-xs sm:text-sm font-extrabold text-slate-800 dark:text-slate-200 uppercase tracking-wider flex items-center gap-1.5 flex-wrap">
+            <span class="w-2.5 h-2.5 rounded-full bg-indigo-500 shrink-0"></span>
+            <span>Ringkasan Kinerja Hari Ini</span>
+            <span class="text-[10px] sm:text-xs text-slate-400 font-semibold lowercase">({{ \Carbon\Carbon::parse($today)->translatedFormat('l, d M Y') }})</span>
         </h3>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
             @if(in_array('guru', $allUserRoles, true))
-                <div class="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center justify-between">
-                    <div>
-                        <div class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Hadir Hari Ini (Sekolah)</div>
-                        <div class="text-3xl font-black text-slate-900 dark:text-white mt-1">{{ $todayPresentCount }}</div>
-                        <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">Siswa hadir / terlambat di sistem</p>
+                <div class="bg-white dark:bg-slate-900 p-3 sm:p-5 rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-xs flex items-center justify-between">
+                    <div class="min-w-0 pr-1">
+                        <div class="text-[10px] sm:text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider truncate">Hadir Hari Ini</div>
+                        <div class="text-xl sm:text-3xl font-black text-slate-900 dark:text-white mt-0.5 sm:mt-1">{{ $todayPresentCount }}</div>
+                        <p class="text-[9.5px] sm:text-[11px] text-slate-400 dark:text-slate-500 mt-0.5 truncate hidden xs:block sm:block">Siswa hadir / terlambat</p>
                     </div>
-                    <div class="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    </div>
-                </div>
-
-                <div class="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center justify-between">
-                    <div>
-                        <div class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Verifikasi Prestasi</div>
-                        <div class="text-3xl font-black text-amber-600 dark:text-amber-400 mt-1">{{ $pendingAchievements }}</div>
-                        <a href="{{ route('achievements.index', ['status' => 'MENUNGGU_VERIFIKASI']) }}" class="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline mt-0.5 inline-block">Lihat antrean →</a>
-                    </div>
-                    <div class="w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+                    <div class="w-9 h-9 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     </div>
                 </div>
 
-                <div class="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center justify-between">
-                    <div>
-                        <div class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Verifikasi Pelanggaran</div>
-                        <div class="text-3xl font-black text-rose-600 dark:text-rose-400 mt-1">{{ $pendingViolations }}</div>
-                        <a href="{{ route('violations.index', ['status' => 'MENUNGGU_VERIFIKASI']) }}" class="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline mt-0.5 inline-block">Lihat antrean →</a>
+                <div class="bg-white dark:bg-slate-900 p-3 sm:p-5 rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-xs flex items-center justify-between">
+                    <div class="min-w-0 pr-1">
+                        <div class="text-[10px] sm:text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider truncate">Verif Prestasi</div>
+                        <div class="text-xl sm:text-3xl font-black text-amber-600 dark:text-amber-400 mt-0.5 sm:mt-1">{{ $pendingAchievements }}</div>
+                        <a href="{{ route('achievements.index', ['status' => 'MENUNGGU_VERIFIKASI']) }}" class="text-[9.5px] sm:text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline mt-0.5 inline-block truncate">Antrean →</a>
                     </div>
-                    <div class="w-12 h-12 rounded-2xl bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                    <div class="w-9 h-9 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-slate-900 p-3 sm:p-5 rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-xs flex items-center justify-between">
+                    <div class="min-w-0 pr-1">
+                        <div class="text-[10px] sm:text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider truncate">Verif Pelanggaran</div>
+                        <div class="text-xl sm:text-3xl font-black text-rose-600 dark:text-rose-400 mt-0.5 sm:mt-1">{{ $pendingViolations }}</div>
+                        <a href="{{ route('violations.index', ['status' => 'MENUNGGU_VERIFIKASI']) }}" class="text-[9.5px] sm:text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline mt-0.5 inline-block truncate">Antrean →</a>
+                    </div>
+                    <div class="w-9 h-9 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0">
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
                     </div>
                 </div>
             @endif
 
             @if(in_array('wali_kelas', $allUserRoles, true) && $class)
-                <div class="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center justify-between">
-                    <div>
-                        <div class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Kehadiran Kelas {{ $class->name }}</div>
-                        <div class="text-3xl font-black text-indigo-600 dark:text-indigo-400 mt-1">{{ $presentToday + $lateToday }}/{{ $totalStudents }}</div>
-                        <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">{{ $permissionToday + $sickToday }} Izin/Sakit • {{ $alphaToday }} Alpa</p>
+                <div class="bg-white dark:bg-slate-900 p-3 sm:p-5 rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-xs flex items-center justify-between">
+                    <div class="min-w-0 pr-1">
+                        <div class="text-[10px] sm:text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider truncate">Kelas {{ $class->name }}</div>
+                        <div class="text-xl sm:text-3xl font-black text-indigo-600 dark:text-indigo-400 mt-0.5 sm:mt-1">{{ $presentToday + $lateToday }}/{{ $totalStudents }}</div>
+                        <p class="text-[9.5px] sm:text-[11px] text-slate-400 dark:text-slate-500 mt-0.5 truncate">{{ $permissionToday + $sickToday }} Izin • {{ $alphaToday }} Alpa</p>
                     </div>
-                    <div class="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                    <div class="w-9 h-9 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
                     </div>
                 </div>
             @endif
 
             @if(in_array('bk', $allUserRoles, true) || in_array('koordinator_bk', $allUserRoles, true) || in_array('guru_bk', $allUserRoles, true))
-                <div class="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center justify-between">
-                    <div>
-                        <div class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Layanan Konseling BK</div>
-                        <div class="text-3xl font-black text-sky-600 dark:text-sky-400 mt-1">{{ $bkCasesCount }}</div>
-                        <a href="{{ route('bk.dashboard') }}" class="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline mt-0.5 inline-block">Buka Dasbor BK →</a>
+                <div class="bg-white dark:bg-slate-900 p-3 sm:p-5 rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-xs flex items-center justify-between">
+                    <div class="min-w-0 pr-1">
+                        <div class="text-[10px] sm:text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider truncate">Layanan BK</div>
+                        <div class="text-xl sm:text-3xl font-black text-sky-600 dark:text-sky-400 mt-0.5 sm:mt-1">{{ $bkCasesCount }}</div>
+                        <a href="{{ route('bk.dashboard') }}" class="text-[9.5px] sm:text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline mt-0.5 inline-block truncate">Dasbor →</a>
                     </div>
-                    <div class="w-12 h-12 rounded-2xl bg-sky-50 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 flex items-center justify-center shrink-0">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                    <div class="w-9 h-9 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-sky-50 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 flex items-center justify-center shrink-0">
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
                     </div>
                 </div>
             @endif
 
             @if(in_array('wakasek_kesiswaan', $allUserRoles, true) || in_array('kesiswaan', $allUserRoles, true))
-                <div class="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center justify-between">
-                    <div>
-                        <div class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Izin Pulang & Keluar</div>
-                        <div class="text-3xl font-black text-purple-600 dark:text-purple-400 mt-1">{{ $totalEarlyLeavesToday + $totalSchoolPassesToday }}</div>
-                        <a href="{{ route('attendance.early-leave.index') }}" class="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline mt-0.5 inline-block">Surat Izin Resmi →</a>
+                <div class="bg-white dark:bg-slate-900 p-3 sm:p-5 rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-xs flex items-center justify-between">
+                    <div class="min-w-0 pr-1">
+                        <div class="text-[10px] sm:text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider truncate">Izin Pulang/Keluar</div>
+                        <div class="text-xl sm:text-3xl font-black text-purple-600 dark:text-purple-400 mt-0.5 sm:mt-1">{{ $totalEarlyLeavesToday + $totalSchoolPassesToday }}</div>
+                        <a href="{{ route('attendance.early-leave.index') }}" class="text-[9.5px] sm:text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline mt-0.5 inline-block truncate">Surat Izin →</a>
                     </div>
-                    <div class="w-12 h-12 rounded-2xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    <div class="w-9 h-9 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                     </div>
                 </div>
             @endif
@@ -159,43 +160,43 @@
 
     <!-- Section 2: Panel Wali Kelas (Jika pengguna memiliki peran Wali Kelas) -->
     @if(in_array('wali_kelas', $allUserRoles, true) && $class)
-        <div id="panel-wali-kelas" class="space-y-4 pt-4 border-t border-slate-200 dark:border-slate-800">
-            <div class="flex items-center justify-between">
+        <div id="panel-wali-kelas" class="space-y-3 sm:space-y-4 pt-3 sm:pt-4 border-t border-slate-200 dark:border-slate-800">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
                 <div>
-                    <h3 class="text-base font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
-                        <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
-                        Tugas Wali Kelas: Kelas Binaan {{ $class->name }}
+                    <h3 class="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0"></span>
+                        <span>Tugas Wali Kelas: Kelas Binaan {{ $class->name }}</span>
                     </h3>
-                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Pemantauan kehadiran harian, ketertiban poin siswa, dan pendampingan siswa kelas binaan.</p>
+                    <p class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5 leading-snug">Pemantauan kehadiran harian, ketertiban poin siswa, dan pendampingan binaan.</p>
                 </div>
-                <a href="{{ route('reports.index', ['class_id' => $class->id]) }}" class="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline">Buka Laporan Kelas Lengkap →</a>
+                <a href="{{ route('reports.index', ['class_id' => $class->id]) }}" class="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline shrink-0">Buka Laporan Kelas →</a>
             </div>
 
             <!-- Breakdown Kehadiran Kelas Binaan -->
-            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-                <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
-                    <span class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Total Siswa</span>
-                    <div class="text-2xl font-black text-slate-900 dark:text-white mt-1">{{ $totalStudents }}</div>
+            <div class="grid grid-cols-3 sm:grid-cols-6 gap-2 sm:gap-3">
+                <div class="bg-white dark:bg-slate-900 p-2.5 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs text-center sm:text-left">
+                    <span class="text-[9.5px] sm:text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block truncate">Total Siswa</span>
+                    <div class="text-lg sm:text-2xl font-black text-slate-900 dark:text-white mt-0.5">{{ $totalStudents }}</div>
                 </div>
-                <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
-                    <span class="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">Hadir</span>
-                    <div class="text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-1">{{ $presentToday }}</div>
+                <div class="bg-white dark:bg-slate-900 p-2.5 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs text-center sm:text-left">
+                    <span class="text-[9.5px] sm:text-[11px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider block truncate">Hadir</span>
+                    <div class="text-lg sm:text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-0.5">{{ $presentToday }}</div>
                 </div>
-                <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
-                    <span class="text-[11px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider">Terlambat</span>
-                    <div class="text-2xl font-black text-amber-600 dark:text-amber-400 mt-1">{{ $lateToday }}</div>
+                <div class="bg-white dark:bg-slate-900 p-2.5 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs text-center sm:text-left">
+                    <span class="text-[9.5px] sm:text-[11px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider block truncate">Terlambat</span>
+                    <div class="text-lg sm:text-2xl font-black text-amber-600 dark:text-amber-400 mt-0.5">{{ $lateToday }}</div>
                 </div>
-                <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
-                    <span class="text-[11px] font-bold text-sky-600 dark:text-sky-400 uppercase tracking-wider">Izin</span>
-                    <div class="text-2xl font-black text-sky-600 dark:text-sky-400 mt-1">{{ $permissionToday }}</div>
+                <div class="bg-white dark:bg-slate-900 p-2.5 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs text-center sm:text-left">
+                    <span class="text-[9.5px] sm:text-[11px] font-bold text-sky-600 dark:text-sky-400 uppercase tracking-wider block truncate">Izin</span>
+                    <div class="text-lg sm:text-2xl font-black text-sky-600 dark:text-sky-400 mt-0.5">{{ $permissionToday }}</div>
                 </div>
-                <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
-                    <span class="text-[11px] font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wider">Sakit</span>
-                    <div class="text-2xl font-black text-purple-600 dark:text-purple-400 mt-1">{{ $sickToday }}</div>
+                <div class="bg-white dark:bg-slate-900 p-2.5 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs text-center sm:text-left">
+                    <span class="text-[9.5px] sm:text-[11px] font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wider block truncate">Sakit</span>
+                    <div class="text-lg sm:text-2xl font-black text-purple-600 dark:text-purple-400 mt-0.5">{{ $sickToday }}</div>
                 </div>
-                <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
-                    <span class="text-[11px] font-bold text-rose-600 dark:text-rose-400 uppercase tracking-wider">Alpa</span>
-                    <div class="text-2xl font-black text-rose-600 dark:text-rose-400 mt-1">{{ $alphaToday }}</div>
+                <div class="bg-white dark:bg-slate-900 p-2.5 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs text-center sm:text-left">
+                    <span class="text-[9.5px] sm:text-[11px] font-bold text-rose-600 dark:text-rose-400 uppercase tracking-wider block truncate">Alpa</span>
+                    <div class="text-lg sm:text-2xl font-black text-rose-600 dark:text-rose-400 mt-0.5">{{ $alphaToday }}</div>
                 </div>
             </div>
 

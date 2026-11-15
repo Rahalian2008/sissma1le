@@ -823,22 +823,22 @@
                             $userActiveRole = Auth::user()->active_role;
                             $userAllRoles = Auth::user()->getActiveRoleOptions();
                         @endphp
-                        <div class="mb-5 p-3 sm:p-3.5 rounded-2xl bg-gradient-to-r from-indigo-50/90 via-purple-50/60 to-emerald-50/70 dark:from-slate-800/90 dark:via-indigo-950/40 dark:to-emerald-950/30 border border-indigo-200/70 dark:border-indigo-800/60 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-2.5">
-                            <div class="flex items-center gap-2.5 min-w-0">
-                                <div class="w-8 h-8 rounded-xl bg-indigo-600 text-white flex items-center justify-center shrink-0 shadow-xs">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+                        <div class="mb-3 sm:mb-5 p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl bg-gradient-to-r from-indigo-50/90 via-purple-50/60 to-emerald-50/70 dark:from-slate-800/90 dark:via-indigo-950/40 dark:to-emerald-950/30 border border-indigo-200/70 dark:border-indigo-800/60 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-2 sm:gap-2.5">
+                            <div class="flex items-center gap-2 sm:gap-2.5 min-w-0">
+                                <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl bg-indigo-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+                                    <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
                                 </div>
                                 <div class="truncate text-xs">
-                                    <div class="text-[10.5px] uppercase tracking-wider font-extrabold text-indigo-700 dark:text-indigo-400">Mode Peran Aktif:</div>
-                                    <div class="font-black text-slate-800 dark:text-white truncate">
+                                    <div class="text-[9.5px] sm:text-[10.5px] uppercase tracking-wider font-extrabold text-indigo-700 dark:text-indigo-400">Mode Peran Aktif:</div>
+                                    <div class="font-black text-slate-800 dark:text-white truncate text-xs sm:text-sm">
                                         {{ Auth::user()->getRoleTitleFor($userActiveRole) }}
                                         @if($userActiveRole === 'all_roles')
-                                            <span class="ml-1 px-1.5 py-0.2 rounded-md bg-amber-500/20 text-amber-600 dark:text-amber-300 font-bold text-[10px]">Semua Aplikasi Terbuka</span>
+                                            <span class="ml-1 px-1.5 py-0.2 rounded-md bg-amber-500/20 text-amber-600 dark:text-amber-300 font-bold text-[9.5px] sm:text-[10px]">Semua Aplikasi</span>
                                         @endif
                                     </div>
                                 </div>
                             </div>
-                            <div class="flex items-center gap-1.5 overflow-x-auto scrollbar-none py-1 sm:flex-wrap shrink-0 max-w-full">
+                            <div class="flex items-center gap-1.5 overflow-x-auto scrollbar-none touch-pan-x select-none py-1 sm:flex-wrap shrink-0 max-w-full">
                                 <span class="text-[10px] font-bold text-slate-400 dark:text-slate-400 mr-1 hidden sm:inline">Pindah Role:</span>
                                 <a href="{{ route('user.switch_role_get', 'all_roles') }}" class="px-2.5 py-1 rounded-xl text-xs font-bold transition flex items-center gap-1 shrink-0 {{ $userActiveRole === 'all_roles' ? 'bg-indigo-600 text-white shadow-xs' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700' }}">
                                     <span>⚡ Semua Akses</span>
@@ -859,8 +859,8 @@
                 </div>
             </main>
 
-            <!-- Floating Back to Top Button -->
-            <button id="back-to-top" onclick="scrollToTop()" aria-label="Kembali ke atas" title="Kembali ke atas" class="fixed bottom-4 right-3 sm:right-4 z-20 w-8 h-8 sm:w-9 sm:h-9 bg-indigo-600/90 hover:bg-indigo-600 text-white rounded-xl shadow-lg hover:shadow-indigo-500/25 transition-all duration-300 opacity-0 pointer-events-none translate-y-3 flex items-center justify-center cursor-pointer">
+            <!-- Floating Back to Top Button (Positioned safely above bottom nav) -->
+            <button id="back-to-top" onclick="scrollToTop()" aria-label="Kembali ke atas" title="Kembali ke atas" class="fixed bottom-20 right-3 sm:bottom-24 sm:right-4 z-30 w-8 h-8 sm:w-9 sm:h-9 bg-indigo-600/90 hover:bg-indigo-600 text-white rounded-xl shadow-lg hover:shadow-indigo-500/25 transition-all duration-300 opacity-0 pointer-events-none translate-y-3 flex items-center justify-center cursor-pointer">
                 <svg class="w-4 h-4 sm:w-4.5 sm:h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 10l7-7m0 0l7 7m-7-7v18"/>
                 </svg>
@@ -1279,12 +1279,12 @@
                 <span class="text-[11px] font-extrabold text-emerald-600 dark:text-emerald-400 -mt-1 truncate">Selfie</span>
             </a>
 
-            <!-- Presensi Manual -->
-            <a href="{{ route('attendance.manual') }}" class="flex-1 min-w-0 flex flex-col items-center justify-center gap-0.5 py-1 px-1 touch-target text-[11px] xs:text-[12px] font-semibold tracking-tight transition active:scale-95 {{ request()->routeIs('attendance.manual*') ? 'text-indigo-600 dark:text-indigo-400 font-extrabold bg-indigo-50/80 dark:bg-indigo-950/60 rounded-xl' : 'text-slate-500 dark:text-slate-400 hover:text-indigo-500' }}">
-                <svg class="w-5 h-5 text-cyan-600 dark:text-cyan-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+            <!-- Presensi Siswa -->
+            <a href="{{ route('attendance.index') }}" class="flex-1 min-w-0 flex flex-col items-center justify-center gap-0.5 py-1 px-1 touch-target text-[11px] xs:text-[12px] font-semibold tracking-tight transition active:scale-95 {{ request()->routeIs('attendance.index*') || request()->routeIs('attendance.manual*') ? 'text-indigo-600 dark:text-indigo-400 font-extrabold bg-indigo-50/80 dark:bg-indigo-950/60 rounded-xl' : 'text-slate-500 dark:text-slate-400 hover:text-indigo-500' }}">
+                <svg class="w-5 h-5 text-indigo-600 dark:text-indigo-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
                 </svg>
-                <span class="truncate max-w-[56px] xs:max-w-none">Manual</span>
+                <span class="truncate max-w-[56px] xs:max-w-none">Presensi</span>
             </a>
         @elseif($bHasRole('siswa'))
             <!-- Siswa: Ajuan Izin/Sakit -->
@@ -1374,14 +1374,14 @@
                 <span class="truncate max-w-[56px] xs:max-w-none">Ajuan</span>
             </a>
 
-            <!-- CENTER FAB: Presensi Manual Cepat -->
-            <a href="{{ route('attendance.manual') }}" class="flex-1 min-w-0 flex flex-col items-center justify-center -mt-5 group" title="Input Presensi Manual">
-                <div class="nav-fab-btn w-12 h-12 rounded-full bg-gradient-to-tr from-cyan-600 to-indigo-600 text-white flex items-center justify-center shadow-lg shadow-cyan-500/35 border-3 border-white dark:border-slate-900 group-hover:scale-105 transition-transform">
+            <!-- CENTER FAB: Pusat Presensi Terpadu -->
+            <a href="{{ route('attendance.index') }}" class="flex-1 min-w-0 flex flex-col items-center justify-center -mt-5 group" title="Pusat Presensi & Absensi">
+                <div class="nav-fab-btn w-12 h-12 rounded-full bg-gradient-to-tr from-indigo-600 to-emerald-500 text-white flex items-center justify-center shadow-lg shadow-indigo-600/35 border-3 border-white dark:border-slate-900 group-hover:scale-105 transition-transform">
                     <svg class="w-5.5 h-5.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
                     </svg>
                 </div>
-                <span class="text-[11px] font-extrabold text-cyan-600 dark:text-cyan-400 -mt-1 truncate">Manual</span>
+                <span class="text-[11px] font-extrabold text-indigo-600 dark:text-indigo-400 -mt-1 truncate">Presensi</span>
             </a>
 
             <!-- Pelanggaran Tata Tertib Siswa -->
