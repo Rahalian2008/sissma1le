@@ -109,7 +109,7 @@
         @endif
 
         <div class="bg-slate-900/90 rounded-3xl p-6 sm:p-10 border border-slate-800 shadow-2xl backdrop-blur-xl">
-            <form action="{{ route('guests.kiosk.store') }}" method="POST" enctype="multipart/form-data" id="guestbook-form" class="space-y-8 text-xs">
+            <form action="{{ route('guests.kiosk.store') }}" method="POST" enctype="multipart/form-data" id="guestbook-form" onsubmit="return prepareSubmit(event)" class="space-y-8 text-xs">
                 @csrf
                 <input type="hidden" name="selfie_image" id="selfie-image-data">
                 <input type="hidden" name="signature_data" id="signature-image-data">
@@ -124,37 +124,61 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
                         <!-- Camera Selfie Module -->
                         <div class="bg-slate-950/60 p-5 rounded-2xl border border-slate-800/80 flex flex-col items-center text-center">
-                            <label class="block font-bold text-slate-200 mb-2">Ambil Foto Selfie Tamu <span class="text-rose-400">*</span></label>
+                            <div class="flex items-center justify-between w-full mb-2">
+                                <label class="font-bold text-slate-200 text-xs flex items-center gap-1.5">
+                                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                                    <span>Ambil Foto Wajah (Selfie) Langsung</span>
+                                    <span class="text-rose-400">*</span>
+                                </label>
+                                <span class="text-[10px] px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 font-semibold">Kamera Otomatis</span>
+                            </div>
                             
-                            <div class="camera-container mb-3 shadow-inner border-2 border-dashed border-slate-700 flex items-center justify-center">
-                                <video id="webcam-video" autoplay playsinline class="hidden"></video>
+                            <div id="camera-container" class="camera-container mb-3 shadow-inner border-2 border-dashed border-slate-700 flex items-center justify-center relative transition-all duration-300">
+                                <video id="webcam-video" autoplay playsinline muted class="hidden"></video>
                                 <img id="selfie-preview" class="hidden" alt="Pratinjau Foto Selfie">
                                 <canvas id="webcam-canvas" class="hidden"></canvas>
+
+                                <!-- Live Badge -->
+                                <div id="camera-live-badge" class="hidden absolute top-3 left-3 bg-rose-600/90 text-white text-[10px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow-md backdrop-blur-xs z-10">
+                                    <span class="w-2 h-2 rounded-full bg-white animate-ping"></span>
+                                    <span>KAMERA LIVE</span>
+                                </div>
+
+                                <!-- Success Badge -->
+                                <div id="camera-success-badge" class="hidden absolute top-3 left-3 bg-emerald-600/90 text-white text-[10px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow-md backdrop-blur-xs z-10">
+                                    <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                                    <span>FOTO SELFIE SIAP</span>
+                                </div>
                                 
                                 <div id="camera-placeholder" class="p-6 text-slate-500 space-y-2">
-                                    <svg class="w-12 h-12 mx-auto text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                                    <div class="text-[11px] leading-tight">Tekan tombol di bawah untuk menyalakan kamera selfie.</div>
+                                    <div class="w-10 h-10 border-3 border-indigo-500 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
+                                    <div class="text-xs text-indigo-300 font-semibold">Sedang membuka kamera selfie otomatis...</div>
+                                    <div class="text-[10px] text-slate-500">Mohon izinkan akses kamera jika peramban meminta izin.</div>
                                 </div>
                             </div>
 
-                            <div class="flex items-center gap-2 flex-wrap justify-center">
-                                <button type="button" id="btn-start-camera" onclick="startCamera()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold transition flex items-center gap-1.5 shadow-sm cursor-pointer">
+                            <div class="flex items-center gap-2 flex-wrap justify-center w-full">
+                                <button type="button" id="btn-start-camera" onclick="startCamera()" class="hidden px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold transition flex items-center gap-1.5 shadow-sm cursor-pointer">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
-                                    Buka Kamera
+                                    <span>Nyalakan Kamera</span>
                                 </button>
-                                <button type="button" id="btn-capture-photo" onclick="captureSelfie()" class="hidden px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold transition flex items-center gap-1.5 shadow-sm cursor-pointer">
+                                <button type="button" id="btn-capture-photo" onclick="captureSelfie()" class="hidden px-5 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-xl font-extrabold text-xs transition flex items-center gap-2 shadow-lg shadow-emerald-500/25 cursor-pointer">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path></svg>
-                                    Ambil Foto
+                                    <span>Ambil Foto Selfie Sekarang</span>
                                 </button>
-                                <button type="button" id="btn-retake-photo" onclick="retakeSelfie()" class="hidden px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl font-semibold transition cursor-pointer">
-                                    Foto Ulang
+                                <button type="button" id="btn-retake-photo" onclick="retakeSelfie()" class="hidden px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl font-bold transition flex items-center gap-1.5 cursor-pointer">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                                    <span>Foto Ulang</span>
+                                </button>
+                                <button type="button" id="btn-switch-camera" onclick="switchCamera()" class="hidden px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs transition flex items-center gap-1.5 cursor-pointer" title="Ganti Kamera Depan/Belakang">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+                                    <span>Ganti Kamera</span>
                                 </button>
                             </div>
 
-                            <!-- Opsi fallback upload file jika kamera tidak diizinkan -->
-                            <div class="mt-3 pt-3 border-t border-slate-800/80 w-full text-[11px] text-slate-400">
-                                <span>Atau unggah file foto:</span>
-                                <input type="file" name="selfie_file" accept="image/*" class="mt-1 block w-full text-slate-400 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[11px] file:font-semibold file:bg-slate-800 file:text-indigo-300 hover:file:bg-slate-700 cursor-pointer">
+                            <div class="mt-3 text-[11px] text-slate-400 flex items-center justify-center gap-1.5">
+                                <svg class="w-3.5 h-3.5 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                                <span>Wajib foto selfie langsung di tempat via kamera resepsionis.</span>
                             </div>
                         </div>
 
@@ -355,35 +379,95 @@
     <!-- Camera & Canvas Scripts -->
     <script>
         let videoStream = null;
+        let currentFacingMode = 'user';
         const video = document.getElementById('webcam-video');
         const preview = document.getElementById('selfie-preview');
         const canvas = document.getElementById('webcam-canvas');
         const placeholder = document.getElementById('camera-placeholder');
+        const cameraContainer = document.getElementById('camera-container');
+        const liveBadge = document.getElementById('camera-live-badge');
+        const successBadge = document.getElementById('camera-success-badge');
         const btnStart = document.getElementById('btn-start-camera');
         const btnCapture = document.getElementById('btn-capture-photo');
         const btnRetake = document.getElementById('btn-retake-photo');
+        const btnSwitch = document.getElementById('btn-switch-camera');
         const hiddenSelfieInput = document.getElementById('selfie-image-data');
 
-        async function startCamera() {
+        async function startCamera(facing = currentFacingMode) {
+            currentFacingMode = facing;
+            if (videoStream) {
+                videoStream.getTracks().forEach(track => track.stop());
+                videoStream = null;
+            }
+
+            placeholder.innerHTML = `
+                <div class="w-10 h-10 border-3 border-indigo-500 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
+                <div class="text-xs text-indigo-300 font-semibold">Sedang membuka kamera selfie otomatis...</div>
+                <div class="text-[10px] text-slate-500">Mohon izinkan akses kamera pada perangkat ini.</div>
+            `;
+            placeholder.classList.remove('hidden');
+            video.classList.add('hidden');
+            preview.classList.add('hidden');
+            if (liveBadge) liveBadge.classList.add('hidden');
+            if (successBadge) successBadge.classList.add('hidden');
+            btnStart.classList.add('hidden');
+            btnCapture.classList.add('hidden');
+            btnRetake.classList.add('hidden');
+            if (btnSwitch) btnSwitch.classList.add('hidden');
+
             try {
-                videoStream = await navigator.mediaDevices.getUserMedia({
-                    video: {
-                        facingMode: 'user',
-                        width: { ideal: 640 },
-                        height: { ideal: 480 }
-                    },
-                    audio: false
-                });
+                let stream = null;
+                try {
+                    stream = await navigator.mediaDevices.getUserMedia({
+                        video: {
+                            facingMode: currentFacingMode,
+                            width: { ideal: 640 },
+                            height: { ideal: 480 }
+                        },
+                        audio: false
+                    });
+                } catch (facingErr) {
+                    // Fallback jika facingMode ditolak oleh browser/driver webcam PC
+                    stream = await navigator.mediaDevices.getUserMedia({
+                        video: true,
+                        audio: false
+                    });
+                }
+
+                videoStream = stream;
                 video.srcObject = videoStream;
+                await video.play().catch(() => {});
+
                 video.classList.remove('hidden');
                 placeholder.classList.add('hidden');
-                preview.classList.add('hidden');
-                btnStart.classList.add('hidden');
+                if (liveBadge) liveBadge.classList.remove('hidden');
                 btnCapture.classList.remove('hidden');
-                btnRetake.classList.add('hidden');
+
+                if (navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
+                    const devices = await navigator.mediaDevices.enumerateDevices();
+                    const videoDevices = devices.filter(d => d.kind === 'videoinput');
+                    if (videoDevices.length > 1 && btnSwitch) {
+                        btnSwitch.classList.remove('hidden');
+                    }
+                }
             } catch (err) {
-                alert('Tidak dapat mengakses kamera: ' + err.message + '. Silakan gunakan opsi unggah file foto di bawah.');
+                console.error('Kamera error:', err);
+                placeholder.innerHTML = `
+                    <svg class="w-12 h-12 mx-auto text-rose-500/80 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                    <div class="text-xs font-bold text-rose-400">Akses Kamera Belum Diizinkan / Tidak Terdeteksi</div>
+                    <div class="text-[11px] text-slate-400 mt-1 max-w-xs mx-auto">Pastikan browser diizinkan menggunakan kamera, lalu tekan tombol di bawah untuk mengaktifkan kembali.</div>
+                `;
+                placeholder.classList.remove('hidden');
+                video.classList.add('hidden');
+                if (liveBadge) liveBadge.classList.add('hidden');
+                btnStart.classList.remove('hidden');
+                btnCapture.classList.add('hidden');
             }
+        }
+
+        function switchCamera() {
+            const nextMode = currentFacingMode === 'user' ? 'environment' : 'user';
+            startCamera(nextMode);
         }
 
         function captureSelfie() {
@@ -396,22 +480,39 @@
             preview.src = dataUrl;
             preview.classList.remove('hidden');
             video.classList.add('hidden');
+            if (liveBadge) liveBadge.classList.add('hidden');
+            if (successBadge) successBadge.classList.remove('hidden');
 
             hiddenSelfieInput.value = dataUrl;
 
-            // Matikan stream video
+            // Matikan stream video kamera setelah foto diambil
             if (videoStream) {
                 videoStream.getTracks().forEach(track => track.stop());
+                videoStream = null;
             }
 
             btnCapture.classList.add('hidden');
+            if (btnSwitch) btnSwitch.classList.add('hidden');
             btnRetake.classList.remove('hidden');
         }
 
         function retakeSelfie() {
             hiddenSelfieInput.value = '';
-            startCamera();
+            if (successBadge) successBadge.classList.add('hidden');
+            startCamera(currentFacingMode);
         }
+
+        // Otomatis buka kamera langsung saat link / halaman dibuka
+        document.addEventListener('DOMContentLoaded', function() {
+            startCamera();
+        });
+
+        // Matikan kamera jika halaman ditutup
+        window.addEventListener('beforeunload', function() {
+            if (videoStream) {
+                videoStream.getTracks().forEach(track => track.stop());
+            }
+        });
 
         // SIGNATURE CANVAS
         const sigCanvas = document.getElementById('signature-canvas');
@@ -488,9 +589,28 @@
         }
 
         function prepareSubmit(e) {
+            const selfieVal = document.getElementById('selfie-image-data').value;
+            if (!selfieVal) {
+                if (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+                alert('⚠️ Foto Wajah (Selfie) Tamu Wajib Diambil Terlebih Dahulu!\n\nSilakan tekan tombol "Ambil Foto Selfie Sekarang" di depan kamera resepsionis sebelum menyimpan data kunjungan.');
+                if (cameraContainer) {
+                    cameraContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    cameraContainer.classList.add('ring-4', 'ring-rose-500');
+                    setTimeout(() => {
+                        cameraContainer.classList.remove('ring-4', 'ring-rose-500');
+                    }, 3500);
+                }
+                return false;
+            }
+
             if (hasSignature) {
                 document.getElementById('signature-image-data').value = sigCanvas.toDataURL('image/png');
             }
+
+            return true;
         }
 
         function openCheckoutModal() {

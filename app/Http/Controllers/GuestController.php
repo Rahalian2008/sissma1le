@@ -86,9 +86,11 @@ class GuestController extends Controller
             'number_of_guests' => ['required', 'integer', 'min:1', 'max:100'],
             'vehicle_type' => ['nullable', 'string', 'max:50'],
             'vehicle_license_plate' => ['nullable', 'string', 'max:30'],
-            'selfie_image' => ['nullable', 'string'], // base64 dari kamera selfie
-            'selfie_file' => ['nullable', 'image', 'max:5120'], // file upload alternatif
+            'selfie_image' => ['required', 'string'], // Wajib foto selfie langsung dari kamera
+            'selfie_file' => ['nullable', 'image', 'max:5120'],
             'signature_data' => ['nullable', 'string'], // base64 digital signature
+        ], [
+            'selfie_image.required' => 'Foto selfie tamu wajib diambil langsung melalui kamera.',
         ]);
 
         $ticketNumber = Guest::generateTicketNumber();
