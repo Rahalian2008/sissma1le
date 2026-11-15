@@ -1611,8 +1611,9 @@ class LibraryController extends Controller
 
         $students = Student::with('schoolClass')->where('is_active', true)->orderBy('name')->get();
         $teachers = Teacher::where('is_active', true)->orderBy('name')->get();
+        $classes = SchoolClass::orderBy('name')->get();
 
-        return view('library.visitors.index', compact('visitors', 'purposeStats', 'students', 'teachers', 'date', 'search'));
+        return view('library.visitors.index', compact('visitors', 'purposeStats', 'students', 'teachers', 'classes', 'date', 'search'));
     }
 
     /**
@@ -1627,6 +1628,8 @@ class LibraryController extends Controller
         $validated = $request->validate([
             'visitor_mode' => ['required', 'in:student,teacher,manual,scan'],
             'student_id' => ['nullable', 'exists:students,id'],
+            'student_ids' => ['nullable', 'array'],
+            'student_ids.*' => ['exists:students,id'],
             'teacher_id' => ['nullable', 'exists:teachers,id'],
             'manual_name' => ['nullable', 'string', 'max:255'],
             'manual_class' => ['nullable', 'string', 'max:100'],
@@ -1634,6 +1637,55 @@ class LibraryController extends Controller
             'purpose' => ['required', 'string', 'max:100'],
             'notes' => ['nullable', 'string', 'max:255'],
         ]);
+
+        // Mode Siswa Khusus: Mendukung Pemilihan Lebih Dari Satu Siswa Sekaligus
+        if ($validated['visitor_mode'] === 'student') {
+            $studentIds = collect($request->input('student_ids', []))
+                ->filter()
+                ->push($request->input('student_id'))
+                ->filter()
+                ->unique()
+                ->values();
+
+            if ($studentIds->isEmpty()) {
+                return back()->with('error', 'Silakan pilih minimal 1 siswa dari master data.');
+            }
+
+            $selectedStudents = Student::with('schoolClass')->whereIn('id', $studentIds)->orderBy('name')->get();
+            $createdCount = 0;
+            $firstStudentName = null;
+            $firstClassName = null;
+
+            foreach ($selectedStudents as $stu) {
+                $member = LibraryMember::where('student_id', $stu->id)->first();
+                $className = 'Kelas '.($stu->schoolClass->name ?? '-');
+
+                LibraryVisitor::create([
+                    'visitor_type' => 'siswa',
+                    'member_id' => $member?->id,
+                    'student_id' => $stu->id,
+                    'teacher_id' => null,
+                    'name' => $stu->name,
+                    'identity_number' => $stu->nisn ?: $stu->nis,
+                    'class_or_institution' => $className,
+                    'purpose' => $validated['purpose'],
+                    'visited_at' => now(),
+                    'notes' => $validated['notes'] ?? null,
+                ]);
+
+                if (! $firstStudentName) {
+                    $firstStudentName = $stu->name;
+                    $firstClassName = $className;
+                }
+                $createdCount++;
+            }
+
+            if ($createdCount === 1) {
+                return back()->with('success', "Presensi kunjungan atas nama '{$firstStudentName}' ({$firstClassName}) berhasil dicatat!");
+            }
+
+            return back()->with('success', "Presensi kunjungan untuk {$createdCount} siswa berhasil dicatat sekaligus!");
+        }
 
         $visitorType = 'umum';
         $studentId = null;
@@ -1681,13 +1733,6 @@ class LibraryController extends Controller
                     }
                 }
             }
-        } elseif ($validated['visitor_mode'] === 'student' && ! empty($validated['student_id'])) {
-            $stu = Student::with('schoolClass')->findOrFail($validated['student_id']);
-            $visitorType = 'siswa';
-            $studentId = $stu->id;
-            $name = $stu->name;
-            $identityNumber = $stu->nisn ?: $stu->nis;
-            $classOrInstitution = 'Kelas '.($stu->schoolClass->name ?? '-');
         } elseif ($validated['visitor_mode'] === 'teacher' && ! empty($validated['teacher_id'])) {
             $tch = Teacher::findOrFail($validated['teacher_id']);
             $visitorType = 'guru';

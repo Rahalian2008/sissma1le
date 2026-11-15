@@ -4,7 +4,9 @@ use App\Models\LibraryBook;
 use App\Models\LibraryCategory;
 use App\Models\LibraryLoan;
 use App\Models\LibraryMember;
+use App\Models\SchoolClass;
 use App\Models\SchoolSetting;
+use App\Models\Student;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
@@ -249,6 +251,69 @@ test('user dapat mencatat presensi pengunjung perpustakaan', function () {
     $this->assertDatabaseHas('library_visitors', [
         'name' => 'Budi Santoso (Tamu Pengawas)',
         'class_or_institution' => 'Dinas Pendidikan',
+        'purpose' => 'Membaca Buku Digital (Flip HTML)',
+    ]);
+});
+
+test('halaman presensi perpustakaan menampilkan pilihan filter kelas dan pencarian siswa', function () {
+    $class = SchoolClass::create(['name' => 'X-A', 'grade' => 'X']);
+    $student = Student::create([
+        'class_id' => $class->id,
+        'name' => 'Ahmad Fulan',
+        'nisn' => '0098765432',
+        'nis' => '54321',
+        'gender' => 'L',
+        'is_active' => true,
+    ]);
+
+    $response = $this->actingAs($this->user)->get(route('library.visitors.index'));
+
+    $response->assertStatus(200);
+    $response->assertSee('Pilihan / Filter Kelas');
+    $response->assertSee('Cari Nama / NISN Siswa');
+    $response->assertSee('Kelas X-A');
+    $response->assertSee('Ahmad Fulan');
+});
+
+test('user dapat mencatat presensi pengunjung perpustakaan untuk banyak siswa sekaligus', function () {
+    $class = SchoolClass::create(['name' => 'XI-MIPA-1', 'grade' => 'XI']);
+    $student1 = Student::create([
+        'class_id' => $class->id,
+        'name' => 'Siswa Satu',
+        'nisn' => '0011111111',
+        'nis' => '11111',
+        'gender' => 'L',
+        'is_active' => true,
+    ]);
+    $student2 = Student::create([
+        'class_id' => $class->id,
+        'name' => 'Siswa Dua',
+        'nisn' => '0022222222',
+        'nis' => '22222',
+        'gender' => 'P',
+        'is_active' => true,
+    ]);
+
+    $response = $this->actingAs($this->user)->post(route('library.visitors.store'), [
+        'visitor_mode' => 'student',
+        'student_ids' => [$student1->id, $student2->id],
+        'purpose' => 'Membaca Buku Digital (Flip HTML)',
+    ]);
+
+    $response->assertRedirect();
+    $response->assertSessionHas('success', 'Presensi kunjungan untuk 2 siswa berhasil dicatat sekaligus!');
+
+    $this->assertDatabaseHas('library_visitors', [
+        'student_id' => $student1->id,
+        'name' => 'Siswa Satu',
+        'visitor_type' => 'siswa',
+        'purpose' => 'Membaca Buku Digital (Flip HTML)',
+    ]);
+
+    $this->assertDatabaseHas('library_visitors', [
+        'student_id' => $student2->id,
+        'name' => 'Siswa Dua',
+        'visitor_type' => 'siswa',
         'purpose' => 'Membaca Buku Digital (Flip HTML)',
     ]);
 });
