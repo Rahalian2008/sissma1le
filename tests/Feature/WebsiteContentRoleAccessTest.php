@@ -163,13 +163,13 @@ test('news creation records publisher attribution and displays it', function () 
 
     expect($article)->not->toBeNull();
     expect($article['created_by_name'])->toBe('Budi Santoso, S.Kom.');
-    expect($article['created_by_role'])->toBe('Tenaga Pendidik (Guru Mapel)');
+    expect($article['created_by_role'])->toBe('Guru Mata Pelajaran');
 
     // View on management page
     $managePage = $this->actingAs($teacher)->get('/master/website-content?tab=news');
     $managePage->assertStatus(200);
     $managePage->assertSee('Budi Santoso, S.Kom.');
-    $managePage->assertSee('(Tenaga Pendidik (Guru Mapel))');
+    $managePage->assertSee('(Guru Mata Pelajaran)');
 
     // View on public website
     $publicWeb = $this->get('/');

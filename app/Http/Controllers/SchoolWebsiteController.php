@@ -152,7 +152,7 @@ class SchoolWebsiteController extends Controller
             return $ekskul;
         });
 
-        // 4. Data Peringkat Prestasi Siswa (Top 10 Leaderboard)
+        // 4. Data Peringkat Prestasi Siswa (Top 5 Leaderboard)
         $topStudents = Student::query()
             ->with('schoolClass')
             ->withSum(['achievements' => fn ($q) => $q->where('status', 'DIVERIFIKASI')], 'points')
@@ -161,7 +161,7 @@ class SchoolWebsiteController extends Controller
             ->orderByDesc('achievements_sum_points')
             ->orderByDesc('achievements_count')
             ->orderBy('name')
-            ->take(10)
+            ->take(5)
             ->get();
 
         if ($topStudents->isEmpty()) {
@@ -171,7 +171,7 @@ class SchoolWebsiteController extends Controller
                 ->withCount(['achievements' => fn ($q) => $q->where('status', 'DIVERIFIKASI')])
                 ->orderByDesc('achievements_sum_points')
                 ->orderByDesc('achievements_count')
-                ->take(10)
+                ->take(5)
                 ->get();
         }
 

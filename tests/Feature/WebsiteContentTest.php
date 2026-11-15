@@ -262,17 +262,17 @@ test('admin can add, update, and delete agenda', function () {
     expect(collect($remaining)->firstWhere('id', $addedId))->toBeNull();
 });
 
-test('public website displays top 10 student achievement ranking leaderboard', function () {
+test('public website displays top 5 student achievement ranking leaderboard', function () {
     $response = $this->get('/');
 
     $response->assertStatus(200);
     $response->assertSee('id="prestasi"', false);
-    $response->assertSee('Rangking Prestasi Siswa (Peringkat 1 - 10)', false);
-    $response->assertSee('Klasemen Top 10');
+    $response->assertSee('Rangking Prestasi Siswa (Peringkat 5 Besar)', false);
+    $response->assertSee('Klasemen Top 5');
     $response->assertSee('JUARA 1 • MEDALI EMAS');
     $response->assertSee('JUARA 2 • MEDALI PERAK');
     $response->assertSee('JUARA 3 • MEDALI PERUNGGU');
-    $response->assertSee('Klasemen Lanjutan (Peringkat 4 s/d 10)');
+    $response->assertSee('Klasemen Lanjutan (Peringkat 4 dan 5)');
 });
 
 test('admin can view staff tab in website content management', function () {

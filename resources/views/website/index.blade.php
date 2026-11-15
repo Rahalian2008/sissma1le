@@ -278,35 +278,7 @@
                 </div>
             </a>
 
-            <!-- Header Running Text -->
-            @php
-                $runningText = $settings['website_running_text'] ?? ('Selamat Datang di Official Portal ' . ($settings['school_name'] ?? 'SMAN 1 Lengkong') . ' Sukabumi • Pusat Ekosistem Pendidikan Digital, Presensi Terpadu & Layanan Ramah Siswa • Unggul dalam Mutu, Berkarakter, dan Berdaya Saing Global.');
-                $runningBadge = $settings['website_running_text_badge'] ?? 'INFO SEKOLAH';
-                $runningSpeed = $settings['website_running_text_speed'] ?? 'normal';
-                $speedDuration = match($runningSpeed) {
-                    'slow' => '48s',
-                    'fast' => '22s',
-                    default => '32s',
-                };
-            @endphp
-            <div class="hidden lg:flex flex-1 items-center mx-3 xl:mx-6 min-w-0 max-w-2xl xl:max-w-4xl py-1.5 px-3 rounded-2xl bg-slate-100/90 dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 shadow-inner group overflow-hidden" 
-                 title="Arahkan kursor mouse untuk berhenti dan membaca informasi">
-                
-                <div class="shrink-0 flex items-center gap-1.5 px-3 py-1 rounded-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 text-white font-black text-[10px] xl:text-[11px] shadow-sm uppercase tracking-wider mr-2.5 select-none">
-                    <span class="inline-block w-2 h-2 rounded-full bg-white animate-pulse"></span>
-                    <span>{{ $runningBadge }}</span>
-                </div>
 
-                <div class="relative flex-1 overflow-hidden h-7 flex items-center">
-                    <div class="header-running-track flex items-center whitespace-nowrap text-xs xl:text-sm font-semibold text-slate-800 dark:text-slate-200 group-hover:[animation-play-state:paused] cursor-default select-none"
-                         style="--header-marquee-duration: {{ $speedDuration }};">
-                        <span class="inline-block px-4">{{ $runningText }}</span>
-                        <span class="inline-block px-4 text-emerald-500 font-black">•</span>
-                        <span class="inline-block px-4">{{ $runningText }}</span>
-                        <span class="inline-block px-4 text-emerald-500 font-black">•</span>
-                    </div>
-                </div>
-            </div>
 
             <!-- Actions: Dark Mode & Gateways -->
             <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
@@ -370,6 +342,40 @@
             </div>
         </div>
 
+        <!-- Dedicated Full-Width Announcement Running Text Bar (Semua Perangkat: Laptop, Desktop, Tablet, Mobile) -->
+        @php
+            $runningText = $settings['website_running_text'] ?? ('Selamat Datang di Official Portal ' . ($settings['school_name'] ?? 'SMAN 1 Lengkong') . ' Sukabumi • Pusat Ekosistem Pendidikan Digital, Presensi Terpadu & Layanan Ramah Siswa • Unggul dalam Mutu, Berkarakter, dan Berdaya Saing Global.');
+            $runningBadge = $settings['website_running_text_badge'] ?? 'INFO SEKOLAH';
+            $runningSpeed = $settings['website_running_text_speed'] ?? 'normal';
+            $speedDuration = match($runningSpeed) {
+                'slow' => '48s',
+                'fast' => '22s',
+                default => '32s',
+            };
+        @endphp
+        <div class="w-full bg-slate-100/95 dark:bg-slate-900/95 border-t border-slate-200/80 dark:border-slate-800/80 backdrop-blur-md shadow-xs select-none">
+            <div class="max-w-7xl 2xl:max-w-[1536px] mx-auto px-3 sm:px-6 lg:px-8 py-1.5 sm:py-2 flex items-center gap-2 sm:gap-3">
+                <div class="shrink-0 flex items-center gap-1.5 px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-lg sm:rounded-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 text-white font-black text-[9px] sm:text-[11px] shadow-sm uppercase tracking-wider select-none">
+                    <span class="inline-block w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-white animate-pulse"></span>
+                    <span>{{ $runningBadge }}</span>
+                </div>
+
+                <div class="relative flex-1 overflow-hidden h-5 sm:h-6 flex items-center group cursor-pointer" title="Arahkan kursor mouse untuk berhenti dan membaca informasi">
+                    <div class="header-running-track flex items-center whitespace-nowrap text-[11px] sm:text-xs lg:text-sm font-semibold text-slate-800 dark:text-slate-200 group-hover:[animation-play-state:paused] select-none"
+                         style="--header-marquee-duration: {{ $speedDuration }};">
+                        <span class="inline-block px-3 sm:px-4">{{ $runningText }}</span>
+                        <span class="inline-block px-3 sm:px-4 text-emerald-500 font-black">✦</span>
+                        <span class="inline-block px-3 sm:px-4">{{ $runningText }}</span>
+                        <span class="inline-block px-3 sm:px-4 text-emerald-500 font-black">✦</span>
+                    </div>
+                </div>
+
+                <div class="hidden md:flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400 shrink-0 font-medium border-l border-slate-300 dark:border-slate-800 pl-3">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
+                    <span>Info Resmi Terkini</span>
+                </div>
+            </div>
+        </div>
 
         <!-- Mobile Drawer Navigation (12 Ordered Menu Items) -->
         <div id="mobile-menu" class="hidden lg:hidden border-t border-slate-200 dark:border-slate-800 px-4 pt-3 pb-6 space-y-2 bg-white/95 dark:bg-slate-950/95 backdrop-blur-xl max-h-[80vh] overflow-y-auto">
@@ -415,7 +421,7 @@
                 </a>
                 <a href="#prestasi" class="mobile-nav-link px-3 py-2 rounded-xl hover:bg-amber-50 dark:hover:bg-slate-800 hover:text-amber-600 transition flex items-center justify-between">
                     <span>🏆 Klasemen & Torehan Prestasi Siswa</span>
-                    <span class="text-[10px] text-amber-500 font-bold">Top 10</span>
+                    <span class="text-[10px] text-amber-500 font-bold">Top 5</span>
                 </a>
                 <a href="#ekosistem-sis" class="mobile-nav-link px-3 py-2 rounded-xl hover:bg-indigo-50 dark:hover:bg-slate-800 hover:text-indigo-600 transition flex items-center justify-between font-bold text-indigo-600 dark:text-indigo-400">
                     <span>💻 Transformasi Digital Terpadu</span>
@@ -450,22 +456,6 @@
                     <a href="{{ route('library.guest_book.index') }}" target="_blank" class="text-center py-2 px-1.5 rounded-xl font-bold text-[11px] bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700">
                         📚 Kios Perpus
                     </a>
-                </div>
-            </div>
-        </div>
-
-        <!-- Mobile Running Text Bar (Layar Ponsel & Tablet) -->
-        <div class="lg:hidden bg-slate-100/95 dark:bg-slate-900/95 border-t border-slate-200/80 dark:border-slate-800 px-3 py-1.5 flex items-center gap-2 overflow-hidden select-none">
-            <span class="shrink-0 px-2 py-0.5 rounded-lg bg-emerald-600 text-white font-black text-[9px] uppercase tracking-wider">
-                {{ $runningBadge }}
-            </span>
-            <div class="relative flex-1 overflow-hidden h-5 flex items-center">
-                <div class="header-running-track flex items-center whitespace-nowrap text-[11px] font-semibold text-slate-700 dark:text-slate-200"
-                     style="--header-marquee-duration: {{ $speedDuration }};">
-                    <span class="inline-block px-3">{{ $runningText }}</span>
-                    <span class="inline-block px-3 text-emerald-500 font-bold">•</span>
-                    <span class="inline-block px-3">{{ $runningText }}</span>
-                    <span class="inline-block px-3 text-emerald-500 font-bold">•</span>
                 </div>
             </div>
         </div>
@@ -1616,7 +1606,7 @@
                     🏆 Klasemen & Torehan Prestasi Siswa
                 </span>
                 <h2 class="font-heading font-black text-2xl sm:text-4xl text-slate-900 dark:text-white tracking-tight">
-                    Rangking Prestasi Siswa (Peringkat 1 - 10)
+                    Rangking Prestasi Siswa (Peringkat 5 Besar)
                 </h2>
                 <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-2 leading-relaxed">
                     Apresiasi dedikasi dan keaktifan peserta didik terbaik SMAN 1 Lengkong berdasarkan akumulasi perolehan poin penghargaan dan torehan prestasi terverifikasi.
@@ -1624,8 +1614,8 @@
 
                 <div class="inline-flex p-1.5 rounded-2xl bg-slate-200/80 dark:bg-slate-800/80 border border-slate-300/60 dark:border-slate-700/60 mt-6 shadow-inner gap-1">
                     <button type="button" onclick="switchPrestasiTab('leaderboard')" id="tab-btn-leaderboard" class="px-5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all shadow-sm flex items-center gap-2 bg-gradient-to-r from-amber-500 to-yellow-500 text-slate-950 shadow-amber-500/25">
-                        <span>🏆 Klasemen Top 10</span>
-                        <span class="px-2 py-0.5 rounded-full bg-slate-950/15 text-slate-950 text-[10px] font-black">10 Terbaik</span>
+                        <span>🏆 Klasemen Top 5</span>
+                        <span class="px-2 py-0.5 rounded-full bg-slate-950/15 text-slate-950 text-[10px] font-black">5 Terbaik</span>
                     </button>
                     <button type="button" onclick="switchPrestasiTab('recent')" id="tab-btn-recent" class="px-5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white flex items-center gap-2">
                         <span>📜 Riwayat Prestasi Terbaru</span>
@@ -1633,13 +1623,13 @@
                 </div>
             </div>
 
-            <!-- VIEW 1: LEADERBOARD TOP 10 -->
+            <!-- VIEW 1: LEADERBOARD TOP 5 -->
             <div id="prestasi-leaderboard-view" class="space-y-10">
                 @php
                     $student1 = $topStudents->get(0);
                     $student2 = $topStudents->get(1);
                     $student3 = $topStudents->get(2);
-                    $remainingStudents = $topStudents->slice(3);
+                    $remainingStudents = $topStudents->slice(3)->take(2);
                     $maxPoints = $topStudents->max('achievements_sum_points') ?: 100;
                 @endphp
 
@@ -1745,19 +1735,19 @@
                     </div>
                 </div>
 
-                <!-- Table Peringkat 4 s/d 10 -->
+                <!-- Table Peringkat 4 dan 5 -->
                 <div class="glass-card rounded-3xl border border-slate-200/80 dark:border-slate-800/80 overflow-hidden shadow-xl">
                     <div class="p-5 sm:p-6 bg-slate-50/70 dark:bg-slate-800/50 border-b border-slate-200/80 dark:border-slate-700/80 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                         <div>
                             <h3 class="font-heading font-black text-base sm:text-lg text-slate-900 dark:text-white flex items-center gap-2">
-                                <span>🎖️ Klasemen Lanjutan (Peringkat 4 s/d 10)</span>
+                                <span>🎖️ Klasemen Lanjutan (Peringkat 4 dan 5)</span>
                             </h3>
                             <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                                Daftar peserta didik berprestasi urutan ke-4 hingga ke-10 berdasarkan total akumulasi poin prestasi.
+                                Daftar peserta didik berprestasi urutan ke-4 dan ke-5 berdasarkan total akumulasi poin prestasi.
                             </p>
                         </div>
                         <div class="text-xs font-bold text-slate-500 dark:text-slate-400 px-3 py-1.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
-                            Kuota: <span class="text-amber-600 dark:text-amber-400 font-black">Top 10 Terbaik</span>
+                            Kuota: <span class="text-amber-600 dark:text-amber-400 font-black">Top 5 Besar</span>
                         </div>
                     </div>
 
@@ -1812,7 +1802,7 @@
                             </div>
                         @empty
                             <div class="p-8 text-center text-slate-500 text-xs">
-                                Belum ada data perolehan poin tambahan untuk peringkat 4-10.
+                                Belum ada data perolehan poin tambahan untuk peringkat 4 dan 5.
                             </div>
                         @endforelse
                     </div>
