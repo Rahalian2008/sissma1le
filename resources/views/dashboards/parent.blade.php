@@ -5,9 +5,9 @@
 @section('content')
 <div class="space-y-6 max-w-7xl mx-auto">
     <!-- Header Orang Tua & Identitas Anak -->
-    <div class="bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 min-w-0">
-            <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-tr from-blue-500 to-indigo-500 p-1 shrink-0 shadow-md overflow-hidden">
+    <div class="bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900 rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 text-white shadow-xl border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-6">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3.5 sm:gap-4 min-w-0">
+            <div class="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-tr from-blue-500 to-indigo-500 p-0.5 sm:p-1 shrink-0 shadow-md overflow-hidden">
                 @php
                     $photoSrc = $student?->photo_path ?? $student?->photo ?? null;
                 @endphp
@@ -16,7 +16,7 @@
                         onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'64\' height=\'64\' viewBox=\'0 0 64 64\'><rect width=\'64\' height=\'64\' fill=\'%231e293b\'/><text x=\'50%25\' y=\'55%25\' font-size=\'20\' font-weight=\'bold\' fill=\'%23ffffff\' dominant-baseline=\'middle\' text-anchor=\'middle\'>{{ strtoupper(substr($student->name ?? 'ST', 0, 2)) }}</text></svg>';"
                         class="w-full h-full object-cover rounded-[12px]">
                 @else
-                    <div class="w-full h-full bg-slate-900 rounded-[12px] flex items-center justify-center font-bold text-lg sm:text-xl text-white">
+                    <div class="w-full h-full bg-slate-900 rounded-[12px] flex items-center justify-center font-bold text-base sm:text-xl text-white">
                         {{ strtoupper(substr($student->name ?? 'ST', 0, 2)) }}
                     </div>
                 @endif
@@ -25,7 +25,7 @@
                 <span class="px-2.5 py-0.5 rounded-full bg-blue-500/20 text-blue-300 text-[11px] sm:text-xs font-semibold border border-blue-500/30">
                     Pemantauan Perkembangan Anak
                 </span>
-                <h2 class="text-xl sm:text-2xl font-extrabold text-white mt-1 truncate">{{ $student->name ?? 'Data Siswa Belum Tertaut' }}</h2>
+                <h2 class="text-lg sm:text-2xl font-extrabold text-white mt-1 truncate">{{ $student->name ?? 'Data Siswa Belum Tertaut' }}</h2>
                 <p class="text-xs text-slate-300 truncate">
                     Kelas {{ $student?->schoolClass?->name ?? '-' }} • NIS: {{ $student?->nis ?? '-' }} • NISN: {{ $student?->nisn ?? '-' }} • Wali: {{ $parentProfile->name ?? Auth::user()->name }}
                 </p>
@@ -33,7 +33,7 @@
         </div>
 
         <!-- Real-time Presence Status Badge for Parent -->
-        <div class="px-5 py-3 rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 text-center md:text-right min-w-[220px]">
+        <div class="w-full md:w-auto md:min-w-[220px] px-4 sm:px-5 py-3 rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 text-center md:text-right shrink-0">
             <div class="text-[11px] font-semibold text-slate-300 uppercase tracking-wider">Status Kehadiran Hari Ini</div>
             @if($todayAttendance && $todayAttendance->status !== 'ALPA')
                 @php
@@ -66,40 +66,40 @@
     </div>
 
     <!-- Poin Summary Cards (Separated strictly!) -->
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-6">
         <!-- 1. Prestasi Anak -->
-        <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs">
+        <div class="bg-white dark:bg-slate-900 p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs">
             <div class="flex items-center justify-between">
                 <span class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Prestasi Terverifikasi</span>
                 <span class="w-8 h-8 rounded-xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center text-sm font-bold">★</span>
             </div>
-            <div class="text-3xl font-black text-amber-600 dark:text-amber-400 mt-3">{{ $student->totalAchievementPoints() }} Poin</div>
+            <div class="text-2xl sm:text-3xl font-black text-amber-600 dark:text-amber-400 mt-2 sm:mt-3">{{ $student->totalAchievementPoints() }} Poin</div>
             <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium">{{ $student->reward_status['level'] }}</p>
         </div>
 
         <!-- 2. Pelanggaran Anak -->
-        <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs">
+        <div class="bg-white dark:bg-slate-900 p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs">
             <div class="flex items-center justify-between">
                 <span class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Catatan Pelanggaran</span>
                 <span class="w-8 h-8 rounded-xl bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 flex items-center justify-center text-sm font-bold">!</span>
             </div>
-            <div class="text-3xl font-black text-rose-600 dark:text-rose-400 mt-3">{{ $student->totalViolationPoints() }} Poin</div>
+            <div class="text-2xl sm:text-3xl font-black text-rose-600 dark:text-rose-400 mt-2 sm:mt-3">{{ $student->totalViolationPoints() }} Poin</div>
             <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium">{{ $student->guidance_status['level'] }}</p>
         </div>
 
         <!-- 3. 7 Kebiasaan Anak -->
-        <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs">
+        <div class="bg-white dark:bg-slate-900 p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs">
             <div class="flex items-center justify-between">
                 <span class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">7 Kebiasaan Hari Ini</span>
                 <span class="w-8 h-8 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-sm font-bold">✓</span>
             </div>
-            <div class="text-3xl font-black text-emerald-600 dark:text-emerald-400 mt-3">{{ $todayHabitLogs->where('is_completed', true)->count() }}/7</div>
+            <div class="text-2xl sm:text-3xl font-black text-emerald-600 dark:text-emerald-400 mt-2 sm:mt-3">{{ $todayHabitLogs->where('is_completed', true)->count() }}/7</div>
             <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Kebiasaan positif terlaksana hari ini</p>
         </div>
     </div>
 
     <!-- Pusat Layanan & Navigasi Pantauan Orang Tua -->
-    <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-5 sm:p-6 shadow-xs">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-slate-800 p-4 sm:p-6 shadow-xs">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3.5 mb-4 border-b border-slate-100 dark:border-slate-800 gap-2">
             <div class="flex items-center gap-2.5">
                 <div class="w-8 h-8 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center font-black text-sm">
@@ -119,7 +119,7 @@
             </span>
         </div>
 
-        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-4">
             <!-- 1. Rapor Kurnas -->
             <a href="{{ route('rapor_kurnas.my_report') }}" class="group p-3.5 rounded-2xl bg-emerald-50/40 dark:bg-emerald-950/20 border border-emerald-200/80 dark:border-emerald-900/60 hover:border-emerald-400 hover:shadow-md transition duration-200 flex flex-col justify-between overflow-hidden">
                 <div class="w-9 h-9 rounded-xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-base mb-2 group-hover:scale-110 transition">
@@ -236,7 +236,7 @@
     </div>
 
     <!-- Papan Peringkat Prestasi Keseluruhan Siswa SMAN 1 Lengkong -->
-    <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-6 sm:p-8 shadow-xs">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-slate-800 p-4 sm:p-6 lg:p-8 shadow-xs">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 mb-6 border-b border-slate-100 dark:border-slate-800 gap-4">
             <div>
                 <div class="inline-flex items-center gap-2 px-3 py-1 bg-amber-50 dark:bg-amber-950/60 rounded-full text-xs font-bold text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 mb-1.5">
@@ -244,7 +244,7 @@
                     <span>•</span>
                     <span>SMAN 1 LENGKONG</span>
                 </div>
-                <h3 class="text-lg sm:text-xl font-black text-slate-900 dark:text-white">
+                <h3 class="text-base sm:text-xl font-black text-slate-900 dark:text-white">
                     Papan Peringkat Siswa Berprestasi
                 </h3>
                 <p class="text-xs text-slate-500 dark:text-slate-400">
@@ -253,7 +253,7 @@
             </div>
 
             <!-- Posisi Putra/Putri -->
-            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
                 <div class="p-3.5 bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 rounded-2xl font-black text-xs shadow-md shrink-0 flex items-center gap-3">
                     <span class="w-8 h-8 rounded-xl bg-white/30 flex items-center justify-center text-sm">★</span>
                     <div>
@@ -267,7 +267,7 @@
                         <div class="text-[11px] font-bold opacity-90">Akumulasi: +{{ $student->totalAchievementPoints() }} Poin</div>
                     </div>
                 </div>
-                <a href="{{ route('discipline.ranking') }}" class="px-4 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-md flex items-center justify-center gap-2 transition text-center shrink-0">
+                <a href="{{ route('discipline.ranking') }}" class="w-full sm:w-auto px-4 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-md flex items-center justify-center gap-2 transition text-center shrink-0">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
                     </svg>
@@ -276,7 +276,7 @@
             </div>
         </div>
 
-        <div class="responsive-table-container">
+        <div class="responsive-table-container overflow-x-auto">
             <table class="w-full text-left text-xs">
                 <thead>
                     <tr class="text-slate-400 border-b border-slate-100 dark:border-slate-800 text-[11px] font-bold uppercase tracking-wider">

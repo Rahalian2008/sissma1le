@@ -5,15 +5,15 @@
 @section('content')
 <div class="space-y-6 max-w-7xl 2xl:max-w-[1600px] 3xl:max-w-[1880px] mx-auto">
     <!-- Student Hero Profile Card -->
-    <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden border border-slate-800">
+    <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 text-white shadow-xl relative overflow-hidden border border-slate-800">
         <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
         <div class="absolute -left-10 -top-10 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
-        <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-5 sm:gap-6">
-            <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-5 min-w-0">
+        <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-6">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3.5 sm:gap-5 min-w-0">
                 <div class="relative shrink-0">
-                    <div class="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 rounded-2xl bg-gradient-to-tr from-indigo-500 to-emerald-400 p-1 shadow-lg shrink-0">
-                        <div class="w-full h-full bg-slate-800 rounded-[14px] flex items-center justify-center font-black text-xl sm:text-2xl text-white">
+                    <div class="w-14 h-14 sm:w-20 sm:h-20 lg:w-24 lg:h-24 rounded-2xl bg-gradient-to-tr from-indigo-500 to-emerald-400 p-1 shadow-lg shrink-0">
+                        <div class="w-full h-full bg-slate-800 rounded-[14px] flex items-center justify-center font-black text-lg sm:text-2xl text-white">
                             {{ strtoupper(substr($student->name, 0, 2)) }}
                         </div>
                     </div>
@@ -25,7 +25,7 @@
                         <span>•</span>
                         <span>TP {{ $student->academicYear?->name ?? '2026/2027' }}</span>
                     </div>
-                    <h2 class="text-lg sm:text-2xl font-extrabold tracking-tight text-white truncate">{{ $student->name }}</h2>
+                    <h2 class="text-base sm:text-2xl font-extrabold tracking-tight text-white truncate">{{ $student->name }}</h2>
                     <div class="flex flex-wrap items-center gap-x-3 sm:gap-x-4 gap-y-1 text-xs text-slate-300 mt-1">
                         <span>NIS: <strong class="text-white font-mono">{{ $student->nis }}</strong></span>
                         <span>NISN: <strong class="text-white font-mono">{{ $student->nisn }}</strong></span>
@@ -35,10 +35,10 @@
             </div>
 
             <!-- Presensi Action Button -->
-            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0">
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 shrink-0 w-full md:w-auto">
                 @if($todayAttendance)
                     @if(!empty($todayAttendance->time_out))
-                        <div class="px-4 sm:px-5 py-2.5 sm:py-3 rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 text-center sm:text-right">
+                        <div class="w-full sm:w-auto px-4 sm:px-5 py-2.5 sm:py-3 rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 text-center sm:text-right">
                             <div class="text-[10px] sm:text-[11px] font-semibold text-slate-300 uppercase tracking-wider">Presensi Hari Ini (Lengkap)</div>
                             <div class="text-xs sm:text-sm font-bold text-emerald-300 mt-0.5 flex items-center justify-center sm:justify-end gap-1.5">
                                 <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
@@ -46,14 +46,14 @@
                             </div>
                         </div>
                     @else
-                        <div class="flex items-center gap-2">
+                        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
                             <div class="px-3 sm:px-4 py-2 sm:py-2.5 rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 text-center sm:text-right">
                                 <div class="text-[10px] font-semibold text-slate-300 uppercase tracking-wider">Masuk: {{ substr($todayAttendance->time, 0, 5) }} WIB</div>
                                 <div class="text-xs font-bold {{ $todayAttendance->status === 'HADIR' ? 'text-emerald-300' : 'text-amber-300' }}">
                                     {{ $todayAttendance->status }}
                                 </div>
                             </div>
-                            <a href="{{ route('attendance.selfie') }}" class="px-4 py-2.5 sm:py-3 bg-gradient-to-r from-sky-500 to-blue-500 hover:from-sky-400 hover:to-blue-400 text-white font-black rounded-2xl shadow-lg shadow-sky-500/30 transition flex items-center justify-center gap-2 text-xs">
+                            <a href="{{ route('attendance.selfie') }}" class="w-full sm:w-auto px-4 py-2.5 sm:py-3 bg-gradient-to-r from-sky-500 to-blue-500 hover:from-sky-400 hover:to-blue-400 text-white font-black rounded-2xl shadow-lg shadow-sky-500/30 transition flex items-center justify-center gap-2 text-xs">
                                 <span>PRESENSI PULANG</span>
                             </a>
                         </div>
@@ -134,7 +134,7 @@
         $primaryExtra = $secExtraQuick ?? ($hasExtraMember ? $studentExtracurriculars->first() : null);
         $primaryExtraAttendance = ($primaryExtra && isset($todayExtraAttendances)) ? $todayExtraAttendances->get($primaryExtra->id) : null;
     @endphp
-    <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-5 sm:p-6 shadow-xs">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-slate-800 p-4 sm:p-6 shadow-xs">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3.5 mb-4 border-b border-slate-100 dark:border-slate-800 gap-2">
             <div class="flex items-center gap-2.5">
                 <div class="w-8 h-8 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-black text-sm">
@@ -154,9 +154,9 @@
             </span>
         </div>
 
-        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-{{ 5 + ($hasExtraMember ? 1 : 0) + ($isFemaleStudent ? 1 : 0) }} gap-3 sm:gap-4">
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-{{ 5 + ($hasExtraMember ? 1 : 0) + ($isFemaleStudent ? 1 : 0) }} gap-2.5 sm:gap-4">
             <!-- LMS Pembelajaran (Ruang Kelas & CBT) -->
-            <a href="{{ route('lms.index') }}" class="group p-4 rounded-2xl border transition duration-200 flex flex-col justify-between overflow-hidden bg-cyan-50/40 dark:bg-cyan-950/20 border-cyan-200/80 dark:border-cyan-800 hover:border-cyan-400 hover:shadow-md">
+            <a href="{{ route('lms.index') }}" class="group p-3 sm:p-4 rounded-xl sm:rounded-2xl border transition duration-200 flex flex-col justify-between overflow-hidden bg-cyan-50/40 dark:bg-cyan-950/20 border-cyan-200/80 dark:border-cyan-800 hover:border-cyan-400 hover:shadow-md">
                 <div class="flex items-start justify-between gap-2 mb-3">
                     <div class="w-10 h-10 rounded-2xl bg-cyan-500/15 text-cyan-600 dark:text-cyan-400 flex items-center justify-center font-bold text-lg group-hover:scale-110 transition shrink-0">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

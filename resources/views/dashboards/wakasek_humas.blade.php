@@ -5,7 +5,7 @@
 @section('content')
 <div class="space-y-6 max-w-7xl mx-auto">
     <!-- Header Wakasek Humas -->
-    <div class="bg-gradient-to-r from-slate-900 via-pink-950 to-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div class="bg-gradient-to-r from-slate-900 via-pink-950 to-slate-900 rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 text-white shadow-xl border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
             <div class="flex flex-wrap items-center gap-2">
                 <span class="px-3 py-1 bg-pink-500/20 text-pink-300 border border-pink-500/30 rounded-full text-xs font-bold tracking-wide">
@@ -16,17 +16,17 @@
                     KEMITRAAN & CITRA SEKOLAH
                 </span>
             </div>
-            <h1 class="text-2xl sm:text-3xl font-black text-white mt-2">Wakasek Bid. Humas</h1>
+            <h1 class="text-xl sm:text-3xl font-black text-white mt-2">Wakasek Bid. Humas</h1>
             <p class="text-xs text-slate-300 mt-1 max-w-2xl leading-relaxed">
                 Pusat komunikasi eksternal sekolah: monitoring komunikasi orang tua, publikasi capaian prestasi siswa (R1-R10), serta penguatan citra positif SMAN 1 Lengkong.
             </p>
         </div>
-        <div class="flex flex-wrap items-center gap-2 sm:gap-3">
-            <a href="{{ route('parent.portal') }}" target="_blank" class="px-4 py-2.5 bg-pink-600 hover:bg-pink-500 text-white font-bold rounded-xl text-xs flex items-center gap-2 shadow-lg shadow-pink-600/30 transition">
+        <div class="flex flex-wrap items-center gap-2 sm:gap-3 w-full md:w-auto">
+            <a href="{{ route('parent.portal') }}" target="_blank" class="w-full sm:w-auto justify-center px-4 py-2.5 bg-pink-600 hover:bg-pink-500 text-white font-bold rounded-xl text-xs flex items-center gap-2 shadow-lg shadow-pink-600/30 transition">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                 Portal Orang Tua Publik
             </a>
-            <a href="{{ route('achievements.index') }}" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded-xl text-xs flex items-center gap-2 border border-slate-700 transition">
+            <a href="{{ route('achievements.index') }}" class="w-full sm:w-auto justify-center px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded-xl text-xs flex items-center gap-2 border border-slate-700 transition">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
                 Kelola Prestasi Siswa
             </a>

@@ -12,7 +12,7 @@
     <!-- ==========================================
          CARD 1: LMS PEMBELAJARAN
          ========================================== -->
-    <div class="rounded-3xl bg-white dark:bg-slate-900 border border-cyan-500/20 dark:border-cyan-500/30 p-5 sm:p-6 shadow-sm hover:shadow-md transition flex flex-col justify-between relative overflow-hidden group">
+    <div class="rounded-2xl sm:rounded-3xl bg-white dark:bg-slate-900 border border-cyan-500/20 dark:border-cyan-500/30 p-4 sm:p-6 shadow-xs hover:shadow-md transition flex flex-col justify-between relative overflow-hidden group">
         <!-- Top Glow Accent -->
         <div class="absolute -right-12 -top-12 w-44 h-44 bg-cyan-500/10 dark:bg-cyan-500/15 rounded-full blur-2xl pointer-events-none group-hover:bg-cyan-500/20 transition-colors"></div>
 
@@ -145,7 +145,7 @@
     <!-- ==========================================
          CARD 2: PERPUSTAKAAN TERPADU & DIGITAL
          ========================================== -->
-    <div class="rounded-3xl bg-white dark:bg-slate-900 border border-amber-500/20 dark:border-amber-500/30 p-5 sm:p-6 shadow-sm hover:shadow-md transition flex flex-col justify-between relative overflow-hidden group">
+    <div class="rounded-2xl sm:rounded-3xl bg-white dark:bg-slate-900 border border-amber-500/20 dark:border-amber-500/30 p-4 sm:p-6 shadow-xs hover:shadow-md transition flex flex-col justify-between relative overflow-hidden group">
         <!-- Top Glow Accent -->
         <div class="absolute -right-12 -top-12 w-44 h-44 bg-amber-500/10 dark:bg-amber-500/15 rounded-full blur-2xl pointer-events-none group-hover:bg-amber-500/20 transition-colors"></div>
 

@@ -1,24 +1,24 @@
 <!-- Modul Karakter: 7 Kebiasaan Anak Indonesia Hebat (Diagram & Persentase Capaian) -->
-<div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-xs p-5 sm:p-7 space-y-6">
+<div class="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-xs p-4 sm:p-6 lg:p-7 space-y-4 sm:space-y-6">
     <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4 gap-3">
         <div>
             <div class="flex items-center gap-2">
-                <span class="w-3 h-3 rounded-full bg-teal-500 animate-pulse"></span>
-                <h3 class="text-base sm:text-lg font-black text-slate-900 dark:text-white">Diagram & Persentase Karakter (7 Kebiasaan Anak Hebat)</h3>
+                <span class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-teal-500 animate-pulse"></span>
+                <h3 class="text-sm sm:text-lg font-black text-slate-900 dark:text-white">Diagram & Persentase Karakter (7 Kebiasaan)</h3>
             </div>
-            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Monitoring realtime ketercapaian 7 pilar pembiasaan karakter peserta didik per {{ \Carbon\Carbon::today()->isoFormat('dddd, D MMMM Y') }}.</p>
+            <p class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5">Monitoring realtime ketercapaian 7 pilar pembiasaan karakter peserta didik per {{ \Carbon\Carbon::today()->isoFormat('dddd, D MMMM Y') }}.</p>
         </div>
         <div class="flex flex-wrap items-center gap-2">
             @if(Auth::user()->role === 'super_admin')
-                <button type="button" onclick="document.getElementById('modal-target-times-dash').classList.remove('hidden')" class="px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-xl text-xs transition flex items-center gap-1 shadow-xs cursor-pointer">
+                <button type="button" onclick="document.getElementById('modal-target-times-dash').classList.remove('hidden')" class="w-full sm:w-auto justify-center px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-xl text-xs transition flex items-center gap-1 shadow-xs cursor-pointer">
                     ⚙️ Atur Target Jam
                 </button>
             @endif
-            <a href="{{ route('habits.charts') }}" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold rounded-xl text-xs transition inline-flex items-center gap-1">
+            <a href="{{ route('habits.charts') }}" class="w-full sm:w-auto justify-center px-3 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold rounded-xl text-xs transition inline-flex items-center gap-1">
                 Diagram Detail <span>→</span>
             </a>
             @if(Route::has('habits.report'))
-                <a href="{{ route('habits.report') }}" class="px-3.5 py-1.5 bg-teal-600 hover:bg-teal-500 text-white font-bold rounded-xl text-xs transition shadow-xs">
+                <a href="{{ route('habits.report') }}" class="w-full sm:w-auto justify-center text-center px-3.5 py-1.5 bg-teal-600 hover:bg-teal-500 text-white font-bold rounded-xl text-xs transition shadow-xs">
                     Laporan Karakter
                 </a>
             @endif

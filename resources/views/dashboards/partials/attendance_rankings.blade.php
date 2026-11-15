@@ -1,5 +1,5 @@
 <!-- Papan Peringkat Presensi: Siswa Paling Sering Alpa, Izin, dan Sakit -->
-<div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-xs p-5 sm:p-7 space-y-6">
+<div class="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-xs p-4 sm:p-6 lg:p-7 space-y-4 sm:space-y-6">
     <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4 gap-2">
         <div>
             <div class="flex items-center gap-2">

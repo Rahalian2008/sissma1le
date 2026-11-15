@@ -14,20 +14,20 @@
     ];
 @endphp
 
-<div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs p-5 sm:p-7 space-y-6">
+<div class="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs p-4 sm:p-6 lg:p-7 space-y-4 sm:space-y-6">
     <!-- Header Section -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4 gap-3">
         <div>
-            <div class="flex items-center gap-2.5">
-                <span class="w-3 h-3 rounded-full bg-blue-500 shadow-xs shadow-blue-500/50"></span>
-                <h3 class="text-base sm:text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
-                    <span>📅 Agenda & Kegiatan Sekolah Terupdate</span>
+            <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-blue-500 shadow-xs shadow-blue-500/50"></span>
+                <h3 class="text-sm sm:text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
+                    <span>📅 Agenda & Kegiatan Sekolah</span>
                 </h3>
-                <span class="px-2.5 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 font-bold text-[10px] border border-blue-200 dark:border-blue-800">
+                <span class="px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 font-bold text-[10px] border border-blue-200 dark:border-blue-800">
                     {{ $agendas['today_formatted'] }}
                 </span>
             </div>
-            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+            <p class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-1">
                 Pantauan agenda pembelajaran harian kelas, kegiatan kalender sekolah, petugas piket, serta agenda terjadwal per hari ini.
             </p>
         </div>
@@ -38,7 +38,7 @@
                 <span>{{ $agendas['is_holiday_today'] ? 'Kegiatan Khusus / Libur' : 'KBM Efektif Aktif' }}</span>
             </span>
             @if(Route::has('class_learning_agendas.index'))
-                <a href="{{ route('class_learning_agendas.index') }}" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white font-extrabold rounded-xl text-xs transition shadow-xs flex items-center gap-1">
+                <a href="{{ route('class_learning_agendas.index') }}" class="w-full sm:w-auto justify-center px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white font-extrabold rounded-xl text-xs transition shadow-xs flex items-center gap-1">
                     <span>Semua Agenda KBM &rarr;</span>
                 </a>
             @endif

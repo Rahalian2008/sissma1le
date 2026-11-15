@@ -5,7 +5,7 @@
 @section('content')
 <div class="space-y-6 max-w-7xl mx-auto">
     <!-- Header Wakasek Sarpras -->
-    <div class="bg-gradient-to-r from-slate-900 via-teal-950 to-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div class="bg-gradient-to-r from-slate-900 via-teal-950 to-slate-900 rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 text-white shadow-xl border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
             <div class="flex flex-wrap items-center gap-2">
                 <span class="px-3 py-1 bg-teal-500/20 text-teal-300 border border-teal-500/30 rounded-full text-xs font-bold tracking-wide">
@@ -16,17 +16,17 @@
                     INFRASTRUKTUR PRESENSI IOT AKTIF
                 </span>
             </div>
-            <h1 class="text-2xl sm:text-3xl font-black text-white mt-2">Wakasek Bid. Sarpras</h1>
+            <h1 class="text-xl sm:text-3xl font-black text-white mt-2">Wakasek Bid. Sarpras</h1>
             <p class="text-xs text-slate-300 mt-1 max-w-2xl leading-relaxed">
                 Supervisi sarana dan teknologi presensi: pemantauan mesin IoT RFID, Scanner QR Code gerbang, geofence radius sekolah, dan fasilitas pendukung kegiatan siswa.
             </p>
         </div>
-        <div class="flex flex-wrap items-center gap-2 sm:gap-3">
-            <a href="{{ route('kiosk.index') }}" target="_blank" class="px-4 py-2.5 bg-teal-600 hover:bg-teal-500 text-white font-bold rounded-xl text-xs flex items-center gap-2 shadow-lg shadow-teal-600/30 transition">
+        <div class="flex flex-wrap items-center gap-2 sm:gap-3 w-full md:w-auto">
+            <a href="{{ route('kiosk.index') }}" target="_blank" class="w-full sm:w-auto justify-center px-4 py-2.5 bg-teal-600 hover:bg-teal-500 text-white font-bold rounded-xl text-xs flex items-center gap-2 shadow-lg shadow-teal-600/30 transition">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                 Layar Kiosk TV Display
             </a>
-            <a href="{{ route('attendance.history') }}" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded-xl text-xs flex items-center gap-2 border border-slate-700 transition">
+            <a href="{{ route('attendance.history') }}" class="w-full sm:w-auto justify-center px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded-xl text-xs flex items-center gap-2 border border-slate-700 transition">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
                 Log Scan Hari Ini
             </a>

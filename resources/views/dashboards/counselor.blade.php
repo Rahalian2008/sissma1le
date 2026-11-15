@@ -5,7 +5,7 @@
 @section('content')
 <div class="space-y-6 w-full max-w-7xl mx-auto">
     <!-- Header Layanan Bimbingan & Konseling -->
-    <div class="bg-gradient-to-r from-slate-950 via-purple-950 to-slate-900 rounded-3xl p-5 sm:p-8 text-white shadow-2xl border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div class="bg-gradient-to-r from-slate-950 via-purple-950 to-slate-900 rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 text-white shadow-2xl border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
             <div class="flex flex-wrap items-center gap-2">
                 <span class="px-3 py-1 bg-purple-500/20 text-purple-300 border border-purple-500/30 rounded-full text-xs font-bold tracking-wide">
@@ -21,7 +21,7 @@
                 Pusat pendampingan holistik siswa: pemantauan terpadu kedisiplinan tata tertib, deteksi dini presensi bermasalah, pembiasaan karakter 7 KAIH, ibadah, keputrian, ekstrakurikuler, dan tahfidz Al-Qur'an.
             </p>
         </div>
-        <div class="flex flex-wrap items-center gap-2">
+        <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
             <a href="{{ route('guidance.create') }}" class="w-full sm:w-auto justify-center px-4 py-2.5 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl text-xs flex items-center gap-2 shadow-lg shadow-purple-600/30 transition">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                 + Buka Catatan Pembinaan Baru
@@ -304,11 +304,11 @@
     </div>
 
     <!-- Ambang Batas Tindakan Pembinaan (Tata Tertib SMAN 1 Lengkong) -->
-    <div class="bg-white dark:bg-slate-900 p-5 sm:p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs">
+    <div class="bg-white dark:bg-slate-900 p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs">
         <h3 class="text-sm font-bold text-slate-900 dark:text-white mb-1">Ambang Batas Tindakan Pembinaan (Tata Tertib SMAN 1 Lengkong)</h3>
         <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">Sistem memberikan <strong>NOTIFIKASI PERLU TINDAKAN</strong> saat siswa mencapai ambang batas poin berikut:</p>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 text-xs">
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-3 text-xs">
             <div class="p-3 bg-yellow-50 dark:bg-yellow-950/40 border border-yellow-200 dark:border-yellow-800/60 rounded-2xl">
                 <span class="font-bold text-yellow-800 dark:text-yellow-300">75 - 124 Poin</span>
                 <p class="text-[11px] text-yellow-700 dark:text-yellow-400 mt-1">Bimbingan Wali Kelas</p>
@@ -325,7 +325,7 @@
                 <span class="font-bold text-rose-800 dark:text-rose-300">200 Poin</span>
                 <p class="text-[11px] text-rose-700 dark:text-rose-400 mt-1">SP 3 - BK & Kesiswaan</p>
             </div>
-            <div class="p-3 bg-red-100 dark:bg-red-950/60 border border-red-300 dark:border-red-800 rounded-2xl">
+            <div class="p-3 bg-red-100 dark:bg-red-950/60 border border-red-300 dark:border-red-800 rounded-2xl col-span-2 sm:col-span-1">
                 <span class="font-bold text-red-900 dark:text-red-200">&gt; 200 Poin</span>
                 <p class="text-[11px] text-red-800 dark:text-red-300 mt-1">Rapat Pleno Dewan Guru</p>
             </div>
@@ -333,13 +333,13 @@
     </div>
 
     <!-- DAFTAR SISWA MENCAPAI AMBANG PEMBINAAN (ACTION REQUIRED) -->
-    <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden">
-        <div class="p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden">
+        <div class="p-4 sm:p-5 border-b border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div>
-                <h3 class="text-base font-bold text-slate-900 dark:text-white">Daftar Siswa Mencapai Ambang Pembinaan</h3>
+                <h3 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white">Daftar Siswa Mencapai Ambang Pembinaan</h3>
                 <p class="text-xs text-slate-500 dark:text-slate-400">Daftar siswa dengan akumulasi poin pelanggaran &ge; 75 poin yang memerlukan intervensi BK</p>
             </div>
-            <span class="px-3 py-1 rounded-full bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 font-bold text-xs">
+            <span class="px-3 py-1 rounded-full bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 font-bold text-xs self-start sm:self-center">
                 {{ $studentsNeedingAction->count() }} Kasus Perlu Tindakan
             </span>
         </div>
@@ -402,9 +402,9 @@
     </div>
 
     <!-- DETEKSI DINI MASALAH SISWA: ALPA KRONIS & SERING TERLAMBAT -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         <!-- Deteksi Siswa Alpa Kronis / Risiko Membolos -->
-        <div class="bg-white dark:bg-slate-900 rounded-3xl p-5 sm:p-6 border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col justify-between">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col justify-between">
             <div>
                 <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800 mb-3">
                     <div>
@@ -420,14 +420,14 @@
 
                 <div class="space-y-2.5">
                     @forelse($chronicAlpaStudents as $sAlpa)
-                        <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/50 flex items-center justify-between gap-3">
+                        <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/50 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3">
                             <div class="min-w-0">
                                 <div class="font-bold text-xs text-slate-800 dark:text-slate-200 truncate">{{ $sAlpa->name }}</div>
                                 <div class="text-[11px] text-slate-500 dark:text-slate-400">
                                     Kelas {{ $sAlpa->schoolClass?->name ?? '-' }} &bull; NISN: {{ $sAlpa->nisn }}
                                 </div>
                             </div>
-                            <div class="text-right shrink-0 flex items-center gap-2">
+                            <div class="text-right shrink-0 flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto">
                                 <span class="px-2.5 py-1 rounded-lg text-xs font-black bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/30">
                                     {{ $sAlpa->total_alpa }}x Alpa
                                 </span>
@@ -454,7 +454,7 @@
         </div>
 
         <!-- Deteksi Siswa Sering Terlambat -->
-        <div class="bg-white dark:bg-slate-900 rounded-3xl p-5 sm:p-6 border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col justify-between">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col justify-between">
             <div>
                 <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800 mb-3">
                     <div>
@@ -470,14 +470,14 @@
 
                 <div class="space-y-2.5">
                     @forelse($chronicLateStudents as $sLate)
-                        <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/50 flex items-center justify-between gap-3">
+                        <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/50 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3">
                             <div class="min-w-0">
                                 <div class="font-bold text-xs text-slate-800 dark:text-slate-200 truncate">{{ $sLate->name }}</div>
                                 <div class="text-[11px] text-slate-500 dark:text-slate-400">
                                     Kelas {{ $sLate->schoolClass?->name ?? '-' }} &bull; NISN: {{ $sLate->nisn }}
                                 </div>
                             </div>
-                            <div class="text-right shrink-0 flex items-center gap-2">
+                            <div class="text-right shrink-0 flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto">
                                 <span class="px-2.5 py-1 rounded-lg text-xs font-black bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/30">
                                     {{ $sLate->total_terlambat }}x Terlambat
                                 </span>

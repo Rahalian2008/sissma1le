@@ -1,32 +1,32 @@
 <!-- Modul Tata Tertib Terpadu: Rangking, Frekuensi, Ambang Batas Penghargaan & Peringatan -->
-<div class="space-y-6">
+<div class="space-y-4 sm:space-y-6">
     <!-- Header Rekapitulasi Tata Tertib -->
-    <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 p-5 rounded-3xl text-white shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4 border border-slate-800">
+    <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 p-4 sm:p-5 rounded-2xl sm:rounded-3xl text-white shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 border border-slate-800">
         <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-2xl bg-indigo-500/20 border border-indigo-400/30 flex items-center justify-center text-indigo-300 font-bold text-lg">
+            <div class="w-10 h-10 rounded-2xl bg-indigo-500/20 border border-indigo-400/30 flex items-center justify-center text-indigo-300 font-bold text-lg shrink-0">
                 ⚖
             </div>
             <div>
-                <h3 class="text-base font-black text-white">Rekapitulasi Tata Tertib</h3>
+                <h3 class="text-sm sm:text-base font-black text-white">Rekapitulasi Tata Tertib</h3>
                 <p class="text-xs text-slate-300">Statistik kedisiplinan, prestasi, dan pemantauan tindak lanjut bimbingan konseling.</p>
             </div>
         </div>
-        <div class="flex items-center gap-2 sm:gap-3 text-xs">
-            <div class="px-3.5 py-2 bg-white/10 rounded-2xl border border-white/10 flex items-center gap-2">
-                <span class="text-emerald-400 font-bold">Total Prestasi</span>
-                <span class="font-black text-white ml-1 tabular-num">{{ $topAchievers->sum('count') }} Catatan</span>
+        <div class="flex flex-wrap items-center gap-2 sm:gap-3 text-xs">
+            <div class="px-3 py-1.5 sm:px-3.5 sm:py-2 bg-white/10 rounded-xl sm:rounded-2xl border border-white/10 flex items-center gap-1.5">
+                <span class="text-emerald-400 font-bold">Total Prestasi:</span>
+                <span class="font-black text-white tabular-num">{{ $topAchievers->sum('count') }} Catatan</span>
             </div>
-            <div class="px-3.5 py-2 bg-white/10 rounded-2xl border border-white/10 flex items-center gap-2">
-                <span class="text-rose-400 font-bold">Total Pelanggaran</span>
-                <span class="font-black text-white ml-1 tabular-num">{{ $topViolators->sum('count') }} Kasus</span>
+            <div class="px-3 py-1.5 sm:px-3.5 sm:py-2 bg-white/10 rounded-xl sm:rounded-2xl border border-white/10 flex items-center gap-1.5">
+                <span class="text-rose-400 font-bold">Total Pelanggaran:</span>
+                <span class="font-black text-white tabular-num">{{ $topViolators->sum('count') }} Kasus</span>
             </div>
         </div>
     </div>
 
     <!-- Baris 1: Rangking Prestasi vs Rangking Pelanggaran -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         <!-- Rangking Prestasi Siswa -->
-        <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-xs p-5 sm:p-6 space-y-4">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-xs p-4 sm:p-6 space-y-3 sm:space-y-4">
             <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
                 <div class="flex items-center gap-2">
                     <span class="w-8 h-8 rounded-xl bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 flex items-center justify-center font-black text-sm">★</span>
@@ -72,7 +72,7 @@
         </div>
 
         <!-- Rangking Pelanggaran Siswa -->
-        <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-xs p-5 sm:p-6 space-y-4">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-xs p-4 sm:p-6 space-y-3 sm:space-y-4">
             <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
                 <div class="flex items-center gap-2">
                     <span class="w-8 h-8 rounded-xl bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 flex items-center justify-center font-black text-sm">⚠</span>
@@ -119,9 +119,9 @@
     </div>
 
     <!-- Baris 2: Prestasi & Pelanggaran Sering Dilakukan -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         <!-- Prestasi Sering Dilakukan -->
-        <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-xs p-5 sm:p-6 space-y-4">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-xs p-4 sm:p-6 space-y-3 sm:space-y-4">
             <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
                 <div class="flex items-center gap-2">
                     <span class="w-7 h-7 rounded-lg bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 flex items-center justify-center text-xs font-bold">🏆</span>
@@ -158,7 +158,7 @@
         </div>
 
         <!-- Pelanggaran Sering Terjadi -->
-        <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-xs p-5 sm:p-6 space-y-4">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-xs p-4 sm:p-6 space-y-3 sm:space-y-4">
             <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
                 <div class="flex items-center gap-2">
                     <span class="w-7 h-7 rounded-lg bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 flex items-center justify-center text-xs font-bold">🚫</span>
@@ -196,9 +196,9 @@
     </div>
 
     <!-- Baris 3: Siswa Mendekati/Mendapatkan Penghargaan & Peringatan -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         <!-- Siswa Mendekati / Mendapatkan Penghargaan -->
-        <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-xs p-5 sm:p-6 space-y-4">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-xs p-4 sm:p-6 space-y-3 sm:space-y-4">
             <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
                 <div class="flex items-center gap-2">
                     <span class="w-7 h-7 rounded-lg bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 flex items-center justify-center text-xs font-bold">🎖️</span>
@@ -241,7 +241,7 @@
         </div>
 
         <!-- Siswa Mendekati / Mendapatkan Peringatan & Pembinaan -->
-        <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-xs p-5 sm:p-6 space-y-4">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-xs p-4 sm:p-6 space-y-3 sm:space-y-4">
             <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
                 <div class="flex items-center gap-2">
                     <span class="w-7 h-7 rounded-lg bg-rose-100 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300 flex items-center justify-center text-xs font-bold">🚨</span>

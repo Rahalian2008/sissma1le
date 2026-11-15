@@ -21,17 +21,17 @@
     $extraEnd = \App\Models\SchoolSetting::get('extra_attendance_end', \App\Models\SchoolSetting::get('extracurricular_end_time', '17:30'));
 @endphp
 
-<div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs p-5 sm:p-7 space-y-6">
+<div class="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs p-4 sm:p-6 lg:p-7 space-y-4 sm:space-y-6">
     <!-- Header Section -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4 gap-3">
         <div>
-            <div class="flex items-center gap-2.5">
-                <span class="w-3 h-3 rounded-full bg-indigo-500 shadow-xs shadow-indigo-500/50"></span>
-                <h3 class="text-base sm:text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
-                    <span>📊 Ringkasan Presensi Ibadah & Progres Tahfidz Al-Qur'an</span>
+            <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-indigo-500 shadow-xs shadow-indigo-500/50"></span>
+                <h3 class="text-sm sm:text-lg font-black text-slate-900 dark:text-white flex items-center gap-1.5 sm:gap-2">
+                    <span>📊 Presensi Ibadah & Tahfidz Juz 30</span>
                 </h3>
             </div>
-            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+            <p class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-1">
                 @if($isStudentOrParent)
                     Rekam jejak kehadiran Shalat Dzuhur/Jum'at, Dhuha, Keputrian, Ekstrakurikuler, dan capaian Juz 30 ananda <strong>{{ $student->name }}</strong>.
                 @else
@@ -56,7 +56,7 @@
                 <span>🎯 Ekskul</span>
             </a>
             <a href="{{ route('tahfidz.index') }}" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold rounded-xl text-xs transition shadow-xs flex items-center gap-1">
-                <span>📖 Tahfidz Juz 30 →</span>
+                <span>📖 Tahfidz →</span>
             </a>
         </div>
     </div>
