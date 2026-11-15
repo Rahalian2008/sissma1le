@@ -1,4 +1,4 @@
-<nav aria-label="Navigasi Menu Presensi" class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-xl sm:rounded-2xl p-1.5 sm:p-2.5 shadow-xs mb-3.5 sm:mb-6 overflow-x-auto scrollbar-none touch-pan-x select-none">
+<nav aria-label="Navigasi Menu Presensi" class="w-full max-w-full min-w-0 bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-xl sm:rounded-2xl p-1.5 sm:p-2.5 shadow-xs mb-3.5 sm:mb-6 overflow-x-auto scrollbar-none touch-pan-x select-none">
     <div class="flex items-center gap-1.5 sm:gap-2 min-w-max sm:min-w-0 sm:flex-wrap">
         <!-- 1. Presensi Utama -->
         <a href="{{ route('attendance.index') }}" 

@@ -3,7 +3,7 @@
 @section('title', 'Proyektor Sesi Presensi QR Guru')
 
 @section('content')
-<div class="space-y-6 max-w-6xl mx-auto">
+<div class="w-full max-w-6xl min-w-0 mx-auto space-y-4 sm:space-y-6">
     <!-- Header -->
     <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-3xl p-6 text-white shadow-xl border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>

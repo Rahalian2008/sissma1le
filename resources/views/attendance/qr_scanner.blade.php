@@ -3,7 +3,7 @@
 @section('title', 'Scan QR Code Presensi Siswa & Kelas')
 
 @section('content')
-<div class="max-w-4xl mx-auto space-y-6">
+<div class="w-full max-w-4xl min-w-0 mx-auto space-y-4 sm:space-y-6">
     <!-- Header Banner -->
     <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-3xl p-6 text-white shadow-xl border border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4">
         <div class="text-center md:text-left">

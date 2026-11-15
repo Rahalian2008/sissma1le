@@ -32,7 +32,7 @@
 @endpush
 
 @section('content')
-<div class="max-w-5xl mx-auto space-y-6">
+<div class="w-full max-w-5xl min-w-0 mx-auto space-y-4 sm:space-y-6">
     @include('attendance.partials.nav')
     <!-- Header -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">

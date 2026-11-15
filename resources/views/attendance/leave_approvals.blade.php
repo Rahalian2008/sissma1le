@@ -3,7 +3,7 @@
 @section('title', 'Persetujuan Izin, Sakit & Pulang Cepat Siswa')
 
 @section('content')
-<div class="space-y-6">
+<div class="w-full max-w-full min-w-0 space-y-4 sm:space-y-6">
     @include('attendance.partials.nav')
     <!-- Header -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">

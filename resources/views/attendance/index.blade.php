@@ -3,7 +3,7 @@
 @section('title', 'Presensi Utama')
 
 @section('content')
-<div class="space-y-5">
+<div class="w-full max-w-full min-w-0 space-y-4 sm:space-y-5">
     @include('attendance.partials.nav')
 
     {{-- Banner Notifikasi Cetak Surat Resmi (Pulang Cepat / Izin Keluar Sekolah) --}}

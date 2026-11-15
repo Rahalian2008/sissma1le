@@ -3,7 +3,7 @@
 @section('title', 'Ajuan Izin, Sakit & Pulang Cepat Siswa')
 
 @section('content')
-<div class="max-w-4xl mx-auto space-y-6">
+<div class="w-full max-w-4xl min-w-0 mx-auto space-y-4 sm:space-y-6">
     @include('attendance.partials.nav')
     <!-- Header Notice -->
     <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-3xl p-6 text-white shadow-xl border border-slate-800">
