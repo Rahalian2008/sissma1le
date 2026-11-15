@@ -838,13 +838,13 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="flex flex-wrap items-center gap-1.5 shrink-0">
+                            <div class="flex items-center gap-1.5 overflow-x-auto scrollbar-none py-1 sm:flex-wrap shrink-0 max-w-full">
                                 <span class="text-[10px] font-bold text-slate-400 dark:text-slate-400 mr-1 hidden sm:inline">Pindah Role:</span>
-                                <a href="{{ route('user.switch_role_get', 'all_roles') }}" class="px-2.5 py-1 rounded-xl text-xs font-bold transition flex items-center gap-1 {{ $userActiveRole === 'all_roles' ? 'bg-indigo-600 text-white shadow-xs' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700' }}">
+                                <a href="{{ route('user.switch_role_get', 'all_roles') }}" class="px-2.5 py-1 rounded-xl text-xs font-bold transition flex items-center gap-1 shrink-0 {{ $userActiveRole === 'all_roles' ? 'bg-indigo-600 text-white shadow-xs' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700' }}">
                                     <span>⚡ Semua Akses</span>
                                 </a>
                                 @foreach($userAllRoles as $rSlug)
-                                    <a href="{{ route('user.switch_role_get', $rSlug) }}" class="px-2.5 py-1 rounded-xl text-xs font-semibold transition flex items-center gap-1 {{ $userActiveRole === $rSlug ? 'bg-indigo-600 text-white font-bold shadow-xs' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700' }}" title="Beralih ke {{ Auth::user()->getRoleTitleFor($rSlug) }}">
+                                    <a href="{{ route('user.switch_role_get', $rSlug) }}" class="px-2.5 py-1 rounded-xl text-xs font-semibold transition flex items-center gap-1 shrink-0 {{ $userActiveRole === $rSlug ? 'bg-indigo-600 text-white font-bold shadow-xs' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700' }}" title="Beralih ke {{ Auth::user()->getRoleTitleFor($rSlug) }}">
                                         @if($userActiveRole === $rSlug)
                                             <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
                                         @endif

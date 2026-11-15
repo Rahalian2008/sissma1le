@@ -8,70 +8,70 @@
     @include('library.partials.nav')
 
     <!-- Header -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-xs">
-        <div>
-            <div class="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider mb-1">Presensi Pengunjung</div>
-            <h1 class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white flex items-center gap-2">
+    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 sm:gap-4 p-4 sm:p-6 bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl sm:rounded-3xl shadow-xs">
+        <div class="min-w-0">
+            <div class="text-[11px] sm:text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider mb-1">Presensi Pengunjung</div>
+            <h1 class="text-lg sm:text-xl lg:text-2xl font-black text-slate-900 dark:text-white flex items-center gap-2">
                 <span>📝 Buku Tamu & Presensi Perpustakaan</span>
             </h1>
-            <p class="text-xs sm:text-sm text-slate-500 mt-1">
+            <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
                 Pencatatan kehadiran pengunjung perpustakaan mandiri melalui Scan Barcode, Master Data Siswa & Guru, atau Entri Tamu Manual.
             </p>
         </div>
 
-        <div class="flex items-center gap-2 flex-wrap">
-            <a href="{{ route('library.guest_book.index') }}" target="_blank" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md transition flex items-center gap-1.5">
-                <span>🖥️ Buka Kiosk Tamu Mandiri</span>
+        <div class="grid grid-cols-2 sm:flex sm:items-center gap-2 w-full lg:w-auto shrink-0">
+            <a href="{{ route('library.guest_book.index') }}" target="_blank" class="px-3.5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-sm transition flex items-center justify-center gap-1.5 text-center">
+                <span>🖥️ Kiosk Tamu</span>
             </a>
-            <a href="{{ route('library.reports.visitors') }}" class="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-md transition flex items-center gap-1.5">
-                <span>📊 Laporan Pengunjung</span>
+            <a href="{{ route('library.reports.visitors') }}" class="px-3.5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-sm transition flex items-center justify-center gap-1.5 text-center">
+                <span>📊 Laporan</span>
             </a>
-            <a href="{{ route('library.index') }}" class="px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-300 font-semibold text-xs transition">
+            <a href="{{ route('library.index') }}" class="col-span-2 sm:col-auto px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold text-xs transition text-center border border-slate-200/80 dark:border-slate-700">
                 &larr; Dashboard
             </a>
         </div>
     </div>
 
     <!-- Form Presensi Kunjungan Cepat -->
-    <div class="bg-gradient-to-br from-indigo-950/40 via-slate-900 to-indigo-900/40 border border-indigo-800/40 rounded-3xl p-6 shadow-sm">
-        <h2 class="text-base font-bold text-white mb-4 flex items-center gap-2">
+    <div class="bg-gradient-to-br from-indigo-950/40 via-slate-900 to-indigo-900/40 border border-indigo-800/40 rounded-2xl sm:rounded-3xl p-3.5 sm:p-6 shadow-sm">
+        <h2 class="text-sm sm:text-base font-bold text-white mb-3 sm:mb-4 flex items-center gap-2">
             <span>✨ Catat Kunjungan Baru Sekarang</span>
         </h2>
 
-        <form action="{{ route('library.visitors.store') }}" method="POST" class="space-y-4">
+        <form action="{{ route('library.visitors.store') }}" method="POST" class="space-y-3.5 sm:space-y-4">
             @csrf
 
             <!-- Mode Pemilihan Pengunjung -->
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 <label class="cursor-pointer">
                     <input type="radio" name="visitor_mode" value="scan" checked onchange="switchVisitorMode('scan')" class="peer sr-only">
-                    <div class="p-3 rounded-2xl bg-slate-800/80 border border-slate-700 text-slate-300 text-center peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-500 peer-checked:shadow-md transition">
-                        <div class="text-lg mb-1">⚡</div>
-                        <div class="text-xs font-bold">Scan Barcode / NISN</div>
+                    <div class="p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-slate-800/80 border border-slate-700 text-slate-300 text-center peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-500 peer-checked:shadow-md transition">
+                        <div class="text-base sm:text-lg mb-0.5">⚡</div>
+                        <div class="text-[11px] sm:text-xs font-bold leading-tight">Scan Barcode / NISN</div>
                     </div>
                 </label>
 
                 <label class="cursor-pointer">
                     <input type="radio" name="visitor_mode" value="student" onchange="switchVisitorMode('student')" class="peer sr-only">
-                    <div class="p-3 rounded-2xl bg-slate-800/80 border border-slate-700 text-slate-300 text-center peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-500 peer-checked:shadow-md transition">
-                        <div class="text-lg mb-1">🎓</div>
-                        <div class="text-xs font-bold">Pilih Siswa (Master)</div>
+                    <div class="p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-slate-800/80 border border-slate-700 text-slate-300 text-center peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-500 peer-checked:shadow-md transition">
+                        <div class="text-base sm:text-lg mb-0.5">🎓</div>
+                        <div class="text-[11px] sm:text-xs font-bold leading-tight">Pilih Siswa (Master)</div>
                     </div>
                 </label>
 
                 <label class="cursor-pointer">
                     <input type="radio" name="visitor_mode" value="teacher" onchange="switchVisitorMode('teacher')" class="peer sr-only">
-                    <div class="p-3 rounded-2xl bg-slate-800/80 border border-slate-700 text-slate-300 text-center peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-500 peer-checked:shadow-md transition">
-                        <div class="text-lg mb-1">👨‍🏫</div>
-                        <div class="text-xs font-bold">Pilih Guru (Master)</div>
+                    <div class="p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-slate-800/80 border border-slate-700 text-slate-300 text-center peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-500 peer-checked:shadow-md transition">
+                        <div class="text-base sm:text-lg mb-0.5">👨‍🏫</div>
+                        <div class="text-[11px] sm:text-xs font-bold leading-tight">Pilih Guru (Master)</div>
                     </div>
                 </label>
 
                 <label class="cursor-pointer">
                     <input type="radio" name="visitor_mode" value="manual" onchange="switchVisitorMode('manual')" class="peer sr-only">
-                    <div class="p-3 rounded-2xl bg-slate-800/80 border border-slate-700 text-slate-300 text-center peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-500 peer-checked:shadow-md transition">
-                        <div class="text-lg mb-1">✍️</div>
-                        <div class="text-xs font-bold">Entri Tamu Manual</div>
+                    <div class="p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-slate-800/80 border border-slate-700 text-slate-300 text-center peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-500 peer-checked:shadow-md transition">
+                        <div class="text-base sm:text-lg mb-0.5">✍️</div>
+                        <div class="text-[11px] sm:text-xs font-bold leading-tight">Entri Tamu Manual</div>
                     </div>
                 </label>
             </div>
@@ -113,8 +113,8 @@
                 </div>
 
                 <!-- Toolbar Pilihan & Counter -->
-                <div class="flex flex-wrap items-center justify-between gap-2 pt-1 pb-0.5">
-                    <div class="flex items-center gap-2">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-1 pb-0.5">
+                    <div class="flex items-center justify-between sm:justify-start gap-2">
                         <span id="selected-student-count-badge" class="px-2.5 py-1 rounded-lg bg-slate-800 text-slate-400 font-bold text-xs border border-slate-700 transition">
                             0 Siswa Dipilih
                         </span>
@@ -123,12 +123,12 @@
                         </span>
                     </div>
 
-                    <div class="flex items-center gap-1.5">
-                        <button type="button" id="btn-select-all-class" onclick="selectAllFilteredStudents(true)" class="px-2.5 py-1 rounded-lg bg-indigo-600/80 hover:bg-indigo-600 text-white text-[11px] font-bold shadow-xs transition flex items-center gap-1">
-                            <span>☑️ Pilih Semua (Kelas Ini)</span>
+                    <div class="grid grid-cols-2 sm:flex sm:items-center gap-1.5 w-full sm:w-auto">
+                        <button type="button" id="btn-select-all-class" onclick="selectAllFilteredStudents(true)" class="px-2.5 py-2 sm:py-1 rounded-lg bg-indigo-600/80 hover:bg-indigo-600 text-white text-[11px] font-bold shadow-xs transition flex items-center justify-center gap-1 text-center cursor-pointer">
+                            <span>☑️ Pilih Semua</span>
                         </button>
-                        <button type="button" onclick="selectAllFilteredStudents(false)" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] font-semibold border border-slate-700 transition">
-                            <span>Kosongkan Pilihan</span>
+                        <button type="button" onclick="selectAllFilteredStudents(false)" class="px-2.5 py-2 sm:py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] font-semibold border border-slate-700 transition flex items-center justify-center cursor-pointer">
+                            <span>Kosongkan</span>
                         </button>
                     </div>
                 </div>
@@ -137,7 +137,7 @@
                 <div id="selected-students-chips-wrapper" class="hidden p-2.5 rounded-2xl bg-indigo-950/40 border border-indigo-800/40 space-y-1.5">
                     <div class="text-[10px] font-bold uppercase tracking-wider text-indigo-300 flex items-center justify-between">
                         <span>Daftar Siswa yang Akan Dipresensikan:</span>
-                        <span class="text-[10px] text-slate-400 font-normal">Klik tanda ✕ pada nama untuk membatalkan</span>
+                        <span class="text-[10px] text-slate-400 font-normal">Klik ✕ untuk batal</span>
                     </div>
                     <div id="selected-students-chips" class="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto"></div>
                 </div>
@@ -146,7 +146,7 @@
                 <div class="border border-slate-700/80 rounded-2xl bg-slate-950/70 p-2 overflow-hidden shadow-inner">
                     <div id="student-list-container" class="max-h-60 sm:max-h-68 overflow-y-auto space-y-1.5 pr-1 divide-y divide-slate-800/60">
                         @foreach($students as $s)
-                            <label class="student-item flex items-center justify-between p-2 rounded-xl border border-slate-800/60 bg-slate-900/50 hover:bg-slate-800/70 hover:border-indigo-500/50 cursor-pointer transition select-none group"
+                            <label class="student-item flex items-center justify-between p-2.5 sm:p-2 rounded-xl border border-slate-800/60 bg-slate-900/50 hover:bg-slate-800/70 hover:border-indigo-500/50 cursor-pointer transition select-none group min-h-[48px]"
                                    id="student-item-{{ $s->id }}"
                                    data-id="{{ $s->id }}"
                                    data-class-id="{{ $s->class_id }}"
@@ -156,7 +156,7 @@
                                    data-nisn="{{ $s->nisn }}"
                                    data-nis="{{ $s->nis }}">
                                 <div class="flex items-center gap-2.5 min-w-0">
-                                    <input type="checkbox" name="student_ids[]" value="{{ $s->id }}" onchange="handleStudentCheckboxChange(this)" class="student-checkbox w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 focus:ring-offset-slate-900 bg-slate-800 border-slate-700 cursor-pointer shrink-0">
+                                    <input type="checkbox" name="student_ids[]" value="{{ $s->id }}" onchange="handleStudentCheckboxChange(this)" class="student-checkbox w-4.5 h-4.5 rounded text-indigo-600 focus:ring-indigo-500 focus:ring-offset-slate-900 bg-slate-800 border-slate-700 cursor-pointer shrink-0">
                                     <div class="min-w-0">
                                         <div class="text-xs font-bold text-white group-hover:text-indigo-300 transition truncate">{{ $s->name }}</div>
                                         <div class="text-[10.5px] text-slate-400 flex items-center gap-2 mt-0.5">
@@ -202,10 +202,10 @@
             </div>
 
             <!-- Pilihan Keperluan Kunjungan & Tombol Submit -->
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
-                <div class="sm:col-span-2">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-2.5 sm:gap-3 pt-2">
+                <div class="md:col-span-2">
                     <label class="block text-xs font-bold text-slate-300 mb-1">Keperluan Kunjungan <span class="text-rose-500">*</span></label>
-                    <select name="purpose" required class="w-full px-3 py-2 text-xs bg-slate-950 border border-slate-700 rounded-xl outline-none text-white">
+                    <select name="purpose" required class="w-full px-3 py-2.5 sm:py-2 text-xs bg-slate-950 border border-slate-700 rounded-xl outline-none text-white font-medium">
                         <option value="Membaca Buku Digital (Flip HTML)">Membaca Buku Digital (Flip HTML)</option>
                         <option value="Membaca Buku Fisik di Ruang Baca">Membaca Buku Fisik di Ruang Baca</option>
                         <option value="Meminjam / Mengembalikan Buku">Meminjam / Mengembalikan Buku</option>
@@ -217,8 +217,8 @@
                 </div>
 
                 <div class="flex items-end">
-                    <button type="submit" class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-black text-xs shadow-md transition transform active:scale-95 cursor-pointer">
-                        ✓ Catat Presensi Hadir
+                    <button type="submit" class="w-full py-3 sm:py-2.5 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-black text-xs sm:text-sm shadow-md transition transform active:scale-95 cursor-pointer flex items-center justify-center gap-1.5">
+                        <span>✓ Catat Presensi Hadir</span>
                     </button>
                 </div>
             </div>
@@ -226,35 +226,42 @@
     </div>
 
     <!-- Rekap Statistik Kunjungan & Tabel Riwayat -->
-    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6">
         <!-- Rekap Keperluan Hari Ini -->
-        <div class="lg:col-span-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-5 shadow-xs space-y-3">
-            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Rekap Keperluan Hari Ini</h3>
-            <div class="space-y-2">
+        <div class="lg:col-span-1 bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl sm:rounded-3xl p-3.5 sm:p-5 shadow-xs space-y-3">
+            <div class="flex items-center justify-between">
+                <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Rekap Keperluan Hari Ini</h3>
+                <span class="text-[10px] font-bold text-indigo-500">{{ count($purposeStats) }} Kategori</span>
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-1 gap-2">
                 @forelse($purposeStats as $stat)
-                    <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-800 flex items-center justify-between text-xs">
-                        <span class="font-medium text-slate-700 dark:text-slate-300 truncate pr-2">{{ $stat->purpose }}</span>
-                        <span class="px-2 py-0.5 rounded-full bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 font-bold shrink-0">{{ $stat->total }}</span>
+                    <div class="p-2 sm:p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-800 flex items-center justify-between text-xs">
+                        <span class="font-medium text-slate-700 dark:text-slate-300 truncate pr-1 text-[11px] sm:text-xs">{{ $stat->purpose }}</span>
+                        <span class="px-1.5 py-0.5 rounded-full bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 font-black text-[10px] sm:text-xs shrink-0">{{ $stat->total }}</span>
                     </div>
                 @empty
-                    <div class="py-6 text-center text-slate-400 text-xs">
+                    <div class="col-span-full py-4 text-center text-slate-400 text-xs">
                         Belum ada data kunjungan hari ini.
                     </div>
                 @endforelse
             </div>
         </div>
 
-        <!-- Tabel Riwayat Pengunjung -->
-        <div class="lg:col-span-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl overflow-hidden shadow-xs">
-            <div class="p-4 border-b border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3">
+        <!-- Tabel & Kartu Riwayat Pengunjung (Adaptive: Card View on Mobile, Table on Desktop) -->
+        <div class="lg:col-span-3 bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl sm:rounded-3xl overflow-hidden shadow-xs">
+            <div class="p-3.5 sm:p-4 border-b border-slate-100 dark:border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-3">
                 <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
                     <span>📋 Daftar Riwayat Pengunjung</span>
                 </h3>
 
-                <form action="{{ route('library.visitors.index') }}" method="GET" class="flex items-center gap-2">
-                    <input type="date" name="date" value="{{ $date }}" onchange="this.form.submit()" class="px-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl outline-none text-slate-800 dark:text-slate-200">
-                    <input type="text" name="search" value="{{ $search }}" placeholder="Cari nama..." class="px-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl outline-none text-slate-800 dark:text-slate-200">
-                    <button type="submit" class="px-3 py-1.5 bg-indigo-600 text-white rounded-xl text-xs font-semibold">Cari</button>
+                <form action="{{ route('library.visitors.index') }}" method="GET" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full md:w-auto">
+                    <div class="grid grid-cols-1 xs:grid-cols-2 sm:flex sm:items-center gap-2 flex-1">
+                        <input type="date" name="date" value="{{ $date }}" onchange="this.form.submit()" class="px-2.5 py-2 sm:py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl outline-none text-slate-800 dark:text-slate-200">
+                        <input type="text" name="search" value="{{ $search }}" placeholder="Cari nama..." class="px-2.5 py-2 sm:py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl outline-none text-slate-800 dark:text-slate-200">
+                    </div>
+                    <button type="submit" class="px-4 py-2 sm:py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1">
+                        <span>🔍 Cari</span>
+                    </button>
                 </form>
             </div>
 
@@ -263,7 +270,39 @@
                     Tidak ada catatan kunjungan pada tanggal ini.
                 </div>
             @else
-                <div class="overflow-x-auto">
+                <!-- 1. Tampilan Mobile Phone (Adaptive Card View - No Horizontal Scroll) -->
+                <div class="md:hidden space-y-2.5 p-3 sm:p-4">
+                    @foreach($visitors as $v)
+                        <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-800 space-y-2 transition hover:border-indigo-400">
+                            <div class="flex items-start justify-between gap-2">
+                                <div class="min-w-0 flex-1">
+                                    <div class="font-bold text-xs sm:text-sm text-slate-900 dark:text-white truncate">{{ $v->name }}</div>
+                                    <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 flex items-center gap-1.5 flex-wrap">
+                                        <span>{{ $v->class_or_institution ?? '-' }}</span>
+                                        @if($v->identity_number)
+                                            <span class="text-slate-300 dark:text-slate-600">•</span>
+                                            <span class="font-mono text-[10px] text-slate-400">{{ $v->identity_number }}</span>
+                                        @endif
+                                    </div>
+                                </div>
+                                <span class="px-2 py-0.5 rounded-lg text-[10px] font-bold uppercase shrink-0 {{ $v->visitor_type === 'siswa' ? 'bg-cyan-500/15 text-cyan-600 dark:text-cyan-400' : ($v->visitor_type === 'guru' ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400' : 'bg-purple-500/15 text-purple-600 dark:text-purple-400') }}">
+                                    {{ $v->visitor_type }}
+                                </span>
+                            </div>
+                            <div class="flex items-center justify-between text-[11px] pt-1.5 border-t border-slate-200/60 dark:border-slate-700/60 flex-wrap gap-1">
+                                <span class="font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-900 px-2 py-0.5 rounded-md border border-slate-200 dark:border-slate-700/80 text-[10.5px]">
+                                    📖 {{ $v->purpose }}
+                                </span>
+                                <span class="text-[10px] font-mono text-slate-400">
+                                    🕒 {{ $v->visited_at->format('H:i') }} WIB • {{ $v->visited_at->format('d/m/Y') }}
+                                </span>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+
+                <!-- 2. Tampilan Tablet & Desktop (Multi-Column Structured Table) -->
+                <div class="hidden md:block overflow-x-auto">
                     <table class="w-full text-xs text-left">
                         <thead class="text-[11px] text-slate-400 uppercase bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800">
                             <tr>
@@ -378,7 +417,7 @@
                 const selectedText = classSelect.options[classSelect.selectedIndex].text;
                 btnSelectAll.innerHTML = `<span>☑️ Pilih Semua (${selectedText.replace('--', '').trim()})</span>`;
             } else {
-                btnSelectAll.innerHTML = `<span>☑️ Pilih Semua yang Tampil</span>`;
+                btnSelectAll.innerHTML = `<span>☑️ Pilih Semua</span>`;
             }
         }
     }

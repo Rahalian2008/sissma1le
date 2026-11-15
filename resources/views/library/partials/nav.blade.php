@@ -6,7 +6,7 @@
     })->where('status', 'MENUNGGU')->count() : 0;
 @endphp
 
-<nav aria-label="Navigasi Menu Perpustakaan Digital" class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-2 sm:p-2.5 shadow-xs mb-6 overflow-x-auto scrollbar-thin">
+<nav aria-label="Navigasi Menu Perpustakaan Digital" class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-1.5 sm:p-2.5 shadow-xs mb-4 sm:mb-6 overflow-x-auto scrollbar-none touch-pan-x select-none">
     <div class="flex items-center gap-1.5 sm:gap-2 min-w-max sm:min-w-0 sm:flex-wrap">
         <!-- Dashboard -->
         <a href="{{ route('library.index') }}" 
