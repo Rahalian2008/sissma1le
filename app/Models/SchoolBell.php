@@ -270,6 +270,88 @@ class SchoolBell extends Model
     }
 
     /**
+     * Memperbaiki dan menyelaraskan jadwal Jumat (14:00 Ekstrakurikuler, 15:00 Pulang)
+     * dan memastikan narasi suara pengumuman pada Murottal Pra-KBM terisi otomatis.
+     */
+    public static function fixFridayScheduleAndAnnouncements(): void
+    {
+        if (! Schema::hasTable('school_bells')) {
+            return;
+        }
+
+        // Hanya jalankan jika jadwal sudah terisi (minimal 10 jadwal)
+        if (self::count() < 10) {
+            return;
+        }
+
+        // 1. Perbaiki bel jam 14:00 hari Jumat jika masih bertuliskan Pulang Sekolah
+        $friday14 = self::where(function ($q) {
+            $q->where('title', 'like', '%Pulang Sekolah%Jumat%')
+                ->orWhere('title', 'like', '%Bel Pulang Sekolah (Jumat)%')
+                ->orWhere(function ($sub) {
+                    $sub->where('time', 'like', '14:00%')->where('sound_type', 'murottal');
+                });
+        })->first();
+
+        if ($friday14) {
+            $friday14->update([
+                'title' => 'Bel Mulai Kegiatan Ekstrakurikuler (Jumat)',
+                'sound_type' => 'chime',
+                'surah_numbers' => null,
+                'surah_number' => null,
+                'surah_name' => null,
+                'audio_url' => null,
+                'duration_seconds' => 15,
+                'description' => 'Kegiatan pembelajaran reguler selesai, saatnya memulai kegiatan Ekstrakurikuler hari Jumat (14.00 - 15.00 WIB)',
+                'voice_text' => 'Perhatian, kegiatan belajar mengajar reguler hari Jumat telah selesai. Kepada seluruh siswa yang mengikuti kegiatan ekstrakurikuler, dipersilakan menuju ke lokasi kegiatan masing-masing.',
+            ]);
+        }
+
+        // 2. Pastikan bel 15:00 hari Jumat (Pulang Sekolah & Selesai Ekstrakurikuler) sudah ada
+        $friday15Exists = self::where(function ($q) {
+            $q->where('time', '15:00')->orWhere('time', 'like', '15:00%');
+        })->where(function ($q) {
+            $q->where('title', 'like', '%Jumat%');
+        })->exists();
+
+        if (! $friday15Exists) {
+            self::create([
+                'title' => 'Bel Pulang Sekolah & Selesai Ekstrakurikuler (Jumat) + Murottal 15 Menit',
+                'time' => '15:00',
+                'days' => ['Jumat'],
+                'sound_type' => 'murottal',
+                'surah_numbers' => [93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114],
+                'volume' => 85,
+                'duration_seconds' => 900,
+                'description' => 'Bel kepulangan KBM dan selesai ekstrakurikuler hari Jumat diiringi Murottal 15 menit 22 Surat Pendek Juz Amma (Ad-Duha s.d An-Nas / 3 Qul)',
+                'voice_text' => 'Seluruh rangkaian kegiatan pembelajaran dan ekstrakurikuler hari Jumat telah selesai. Selamat pulang ke rumah masing-masing, berhati-hati di jalan, selamat berakhir pekan dan salam hangat untuk keluarga di rumah.',
+                'is_active' => true,
+                'order' => 53,
+            ]);
+        }
+
+        // 3. Pastikan Murottal pagi jam 06:05 memiliki narasi salam pengumuman
+        $praKbmTexts = [
+            'Senin' => 'Selamat pagi civitas akademika SMAN 1 Lengkong. Mengawali pagi awal pekan dengan penuh rasa syukur dan berkah, mari bersama kita dengarkan lantunan Murottal Al-Qur\'an.',
+            'Selasa' => 'Selamat pagi civitas akademika SMAN 1 Lengkong. Mengawali pagi hari Selasa yang penuh semangat, mari bersama kita dengarkan lantunan Murottal Al-Qur\'an Surah Yasin.',
+            'Rabu' => 'Selamat pagi civitas akademika SMAN 1 Lengkong. Mengawali pagi hari Rabu bersama bimbingan Wali Kelas dan literasi Al-Qur\'an, mari bersama kita dengarkan lantunan Murottal Al-Qur\'an.',
+            'Kamis' => 'Selamat pagi civitas akademika SMAN 1 Lengkong. Mengawali pagi hari Kamis sebelum pelaksanaan Shalat Dhuha bersama, mari bersama kita dengarkan lantunan Murottal Al-Qur\'an.',
+            'Jumat' => 'Selamat pagi civitas akademika SMAN 1 Lengkong di hari Jumat yang mulia dan penuh berkah. Mari bersama kita dengarkan lantunan Murottal Al-Qur\'an.',
+        ];
+
+        foreach ($praKbmTexts as $day => $text) {
+            $morningBell = self::where('time', 'like', '06:05%')
+                ->where('title', 'like', "%{$day}%")
+                ->where('sound_type', 'murottal')
+                ->first();
+
+            if ($morningBell && empty($morningBell->voice_text)) {
+                $morningBell->update(['voice_text' => $text]);
+            }
+        }
+    }
+
+    /**
      * Pastikan jadwal default sekolah terpasang jika belum pernah diinisialisasi
      */
     public static function ensureDefaultSchedules(bool $force = false): void
@@ -280,11 +362,14 @@ class SchoolBell extends Model
 
         $isInitialized = (bool) SchoolSetting::get('school_bells_initialized', false);
         if ($isInitialized && ! $force) {
+            self::fixFridayScheduleAndAnnouncements();
+
             return;
         }
 
         if (! $force && self::count() > 0) {
             SchoolSetting::set('school_bells_initialized', '1', 'school_bell', 'Status inisialisasi jadwal bel sekolah');
+            self::fixFridayScheduleAndAnnouncements();
 
             return;
         }

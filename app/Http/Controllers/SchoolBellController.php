@@ -234,7 +234,7 @@ class SchoolBellController extends Controller
     }
 
     /**
-     * Kembalikan seluruh jadwal ke setelan resmi SMAN 1 Lengkong TP 2026/2027 (52 jadwal lengkap).
+     * Kembalikan seluruh jadwal ke setelan resmi SMAN 1 Lengkong TP 2026/2027 (53 jadwal lengkap).
      */
     public function resetDefaults(): RedirectResponse
     {
@@ -242,7 +242,7 @@ class SchoolBellController extends Controller
         SchoolBell::ensureDefaultSchedules(force: true);
         AuditLog::log('RESET_DEFAULT_SCHOOL_BELLS', 'SchoolBell');
 
-        return back()->with('success', 'Jadwal bel sekolah berhasil disinkronkan ke jadwal resmi SMAN 1 Lengkong TP 2026/2027 (52 jadwal lengkap).');
+        return back()->with('success', 'Jadwal bel sekolah berhasil disinkronkan ke jadwal resmi SMAN 1 Lengkong TP 2026/2027 (53 jadwal lengkap).');
     }
 
     /**

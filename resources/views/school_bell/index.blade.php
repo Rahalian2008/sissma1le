@@ -180,10 +180,10 @@
             <button type="button" @click="openAddModal()" class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-md transition flex items-center gap-1.5 cursor-pointer">
                 <span>+ Tambah Jadwal Bel</span>
             </button>
-            <form action="{{ route('school_bell.reset_defaults') }}" method="POST" onsubmit="return confirm('Kembalikan seluruh jadwal ke setelan resmi SMAN 1 Lengkong TP 2026/2027 (52 jadwal lengkap)? Jadwal saat ini akan ditimpa.')" class="inline">
+            <form action="{{ route('school_bell.reset_defaults') }}" method="POST" onsubmit="return confirm('Kembalikan seluruh jadwal ke setelan resmi SMAN 1 Lengkong TP 2026/2027 (53 jadwal lengkap)? Jadwal saat ini akan ditimpa.')" class="inline">
                 @csrf
                 <button type="submit" class="px-3 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30 font-bold text-xs transition flex items-center gap-1.5 cursor-pointer" title="Muat Jadwal Resmi TP 2026/2027">
-                    <span>🔄 Reset Standar (52 Jadwal)</span>
+                    <span>🔄 Reset Standar (53 Jadwal)</span>
                 </button>
             </form>
             @if($allBells->count() > 0)
@@ -380,7 +380,7 @@
                                         <form action="{{ route('school_bell.reset_defaults') }}" method="POST" class="inline">
                                             @csrf
                                             <button type="submit" class="px-4 py-2 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-700 dark:text-amber-300 border border-amber-500/30 font-bold text-xs transition cursor-pointer">
-                                                🔄 Muat Jadwal Resmi (52 Jadwal)
+                                                🔄 Muat Jadwal Resmi (53 Jadwal)
                                             </button>
                                         </form>
                                     </div>
