@@ -8,8 +8,14 @@
 
 @theme {
     --font-sans: 'Outfit', 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
-    --breakpoint-3xl: 120rem; /* 1920px (Full HD+ & 2K) */
-    --breakpoint-4xl: 160rem; /* 2560px (2K QHD & 4K UHD) */
+    --breakpoint-xs: 23.4375rem; /* 375px (Mobile Kecil / iPhone SE) */
+    --breakpoint-sm: 40rem;      /* 640px (Mobile Standar & Phablet) */
+    --breakpoint-md: 48rem;      /* 768px (Tablet Portrait / iPad Mini) */
+    --breakpoint-lg: 64rem;      /* 1024px (Tablet Landscape / iPad Pro / Small Laptop) */
+    --breakpoint-xl: 80rem;      /* 1280px (Standard Desktop / Laptop) */
+    --breakpoint-2xl: 96rem;     /* 1536px (Full HD Widescreen Monitor) */
+    --breakpoint-3xl: 120rem;    /* 1920px (Full HD+ & 2K QHD & Smart TV) */
+    --breakpoint-4xl: 160rem;    /* 2560px (2K QHD, 4K UHD, Kiosk & Proyektor) */
 }
 
 /* ==========================================================
@@ -59,14 +65,21 @@ html {
 /* Full HD+ & 2K QHD Widescreen Monitors (1741px - 2200px) */
 @media (min-width: 1741px) and (max-width: 2200px) {
     html {
-        font-size: 16.25px;
+        font-size: 16.5px;
     }
 }
 
 /* 4K UHD & Large Display TV Kiosks (>2200px) */
-@media (min-width: 2201px) {
+@media (min-width: 2201px) and (max-width: 2800px) {
     html {
-        font-size: 17.5px;
+        font-size: 18px;
+    }
+}
+
+/* Ultra-Wide Large Smart TV & Projectors (>2800px) */
+@media (min-width: 2801px) {
+    html {
+        font-size: 20px;
     }
 }
 
@@ -978,4 +991,212 @@ textarea:focus-visible {
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
     }
+}
+
+/* ==========================================================
+   11. Universal Adaptive Layout & Responsive Design Engine
+   (Mobile, Tablet, Laptop, Desktop, 2K/4K, Smart TV, Kiosks)
+   ========================================================== */
+
+/* 11.1 Universal Zero-Horizontal-Overflow Guard */
+html, body {
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
+}
+
+#main-scroll-area,
+.content-area,
+.dashboard-viewport {
+    max-width: 100%;
+    min-width: 0;
+}
+
+/* 11.2 Adaptive Form Grid System (Mobile-First 1 col -> Tablet 2 cols -> Desktop 3-4 cols) */
+.adaptive-form-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    width: 100%;
+}
+
+@media (min-width: 640px) {
+    .adaptive-form-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1.25rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .adaptive-form-grid-3 {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 1.25rem;
+    }
+    .adaptive-form-grid-4 {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 1.25rem;
+    }
+}
+
+/* 11.3 Adaptive Metric & Stat Grid System */
+.adaptive-metric-grid {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 0.75rem;
+    width: 100%;
+}
+
+@media (min-width: 480px) {
+    .adaptive-metric-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.875rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .adaptive-metric-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 1rem;
+    }
+}
+
+@media (min-width: 1280px) {
+    .adaptive-metric-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 1.25rem;
+    }
+}
+
+@media (min-width: 1920px) {
+    .adaptive-metric-grid {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 1.5rem;
+    }
+}
+
+@media (min-width: 2560px) {
+    .adaptive-metric-grid {
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        gap: 1.75rem;
+    }
+}
+
+/* 11.4 Universal Modal Viewport Containment */
+.modal-viewport-safe {
+    width: 100%;
+    max-width: min(94vw, 36rem);
+    max-height: min(90vh, 52rem);
+    margin: auto;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 1.5rem;
+}
+
+@media (min-width: 768px) {
+    .modal-viewport-safe-lg {
+        max-width: min(92vw, 54rem);
+    }
+}
+
+@media (min-width: 1280px) {
+    .modal-viewport-safe-xl {
+        max-width: min(88vw, 72rem);
+    }
+}
+
+/* 11.5 Smart TV, Android TV, Kiosk Display & Projector Engine */
+@media (min-width: 1921px) {
+    .tv-scale-container {
+        max-width: 100%;
+        padding-left: 2.5rem !important;
+        padding-right: 2.5rem !important;
+    }
+
+    .tv-legible {
+        font-size: 1.15rem !important;
+        line-height: 1.6 !important;
+    }
+
+    .tv-title {
+        font-size: 2rem !important;
+        line-height: 1.3 !important;
+    }
+
+    .stat-card, .kiosk-widget, .glass-card {
+        padding: 1.75rem !important;
+        border-radius: 1.75rem !important;
+    }
+
+    /* D-Pad Remote Controller Navigation Focus Indicator */
+    :focus-visible {
+        outline: 4px solid #38bdf8 !important;
+        outline-offset: 4px !important;
+        box-shadow: 0 0 25px rgba(56, 189, 248, 0.6) !important;
+    }
+}
+
+/* Orientation Adaptations: Landscape vs Portrait Standing Kiosks */
+@media (orientation: portrait) and (min-height: 800px) {
+    .kiosk-portrait-stack {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 1.25rem !important;
+    }
+    .kiosk-portrait-scroll {
+        max-height: 42vh !important;
+    }
+}
+
+@media (orientation: landscape) and (min-width: 1280px) {
+    .kiosk-landscape-grid {
+        display: grid !important;
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    }
+}
+
+/* Fullscreen Mode Optimization (Smart TV / Kiosk Display) */
+@media (display-mode: fullscreen) {
+    body {
+        user-select: none;
+    }
+    .kiosk-header {
+        padding-top: 0.75rem !important;
+        padding-bottom: 0.75rem !important;
+    }
+}
+
+/* 11.6 Touch Ergonomics & Text Wrapping Guards */
+.touch-target-safe {
+    min-height: 44px;
+    min-width: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    touch-action: manipulation;
+}
+
+.break-word-safe {
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
+    hyphens: auto;
+}
+
+/* Flexible Table Column Widths */
+.table-responsive-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 1rem;
+}
+
+.table-responsive-wrapper table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
 }
