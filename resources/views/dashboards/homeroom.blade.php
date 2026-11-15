@@ -5,16 +5,16 @@
 @section('content')
 <div class="space-y-6 max-w-7xl mx-auto">
     <!-- Header Wali Kelas -->
-    <div class="bg-gradient-to-r from-slate-900 to-indigo-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div class="bg-gradient-to-r from-slate-900 to-indigo-900 rounded-2xl sm:rounded-3xl p-4 sm:p-8 text-white shadow-xl border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
             <span class="px-3 py-1 bg-white/10 rounded-full text-xs font-semibold text-indigo-300 border border-white/10">
                 Wali Kelas Binaan
             </span>
-            <h2 class="text-2xl font-extrabold text-white mt-2">Kelas {{ $class->name ?? 'XI-IPA-1' }}</h2>
+            <h2 class="text-xl sm:text-2xl font-extrabold text-white mt-2">Kelas {{ $class->name ?? 'XI-IPA-1' }}</h2>
             <p class="text-xs text-slate-300 mt-1">Wali Kelas: {{ $teacher->name ?? Auth::user()->name }} • Total {{ $students->count() }} Siswa Binaan</p>
         </div>
         <div class="flex items-center gap-3">
-            <a href="{{ route('reports.index', ['class_id' => $class->id ?? null]) }}" class="px-4 py-2.5 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl text-xs flex items-center gap-2 border border-white/20 transition">
+            <a href="{{ route('reports.index', ['class_id' => $class->id ?? null]) }}" class="w-full sm:w-auto px-4 py-2.5 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2 border border-white/20 transition">
                 Cetak Rekap Kelas
             </a>
         </div>
@@ -24,30 +24,30 @@
     @include('dashboards.partials.staff_quick_actions')
 
     <!-- Attendance Summary for Class Today -->
-    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
-        <div class="bg-white p-4 sm:p-5 rounded-3xl border border-slate-200 shadow-xs">
-            <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Jumlah Siswa</span>
-            <div class="text-2xl font-black text-slate-900 mt-1">{{ $totalStudents ?? $students->count() }} <span class="text-xs font-semibold text-slate-400">Siswa</span></div>
+    <div class="grid grid-cols-3 sm:grid-cols-6 gap-2 sm:gap-4">
+        <div class="bg-white dark:bg-slate-900 p-2.5 sm:p-5 rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs">
+            <span class="text-[10px] sm:text-[11px] font-bold text-slate-500 uppercase tracking-wider block truncate">Total Siswa</span>
+            <div class="text-lg sm:text-2xl font-black text-slate-900 dark:text-white mt-1">{{ $totalStudents ?? $students->count() }} <span class="text-[10px] sm:text-xs font-semibold text-slate-400">Siswa</span></div>
         </div>
-        <div class="bg-white p-4 sm:p-5 rounded-3xl border border-slate-200 shadow-xs">
-            <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Hadir</span>
-            <div class="text-2xl font-black text-emerald-600 mt-1">{{ $presentToday }} <span class="text-xs font-semibold text-emerald-500">Siswa</span></div>
+        <div class="bg-white dark:bg-slate-900 p-2.5 sm:p-5 rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs">
+            <span class="text-[10px] sm:text-[11px] font-bold text-emerald-600 uppercase tracking-wider block truncate">Hadir</span>
+            <div class="text-lg sm:text-2xl font-black text-emerald-600 mt-1">{{ $presentToday }} <span class="text-[10px] sm:text-xs font-semibold text-emerald-500">Siswa</span></div>
         </div>
-        <div class="bg-white p-4 sm:p-5 rounded-3xl border border-slate-200 shadow-xs">
-            <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Terlambat</span>
-            <div class="text-2xl font-black text-amber-600 mt-1">{{ $lateToday }} <span class="text-xs font-semibold text-amber-500">Siswa</span></div>
+        <div class="bg-white dark:bg-slate-900 p-2.5 sm:p-5 rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs">
+            <span class="text-[10px] sm:text-[11px] font-bold text-amber-600 uppercase tracking-wider block truncate">Terlambat</span>
+            <div class="text-lg sm:text-2xl font-black text-amber-600 mt-1">{{ $lateToday }} <span class="text-[10px] sm:text-xs font-semibold text-amber-500">Siswa</span></div>
         </div>
-        <div class="bg-white p-4 sm:p-5 rounded-3xl border border-slate-200 shadow-xs">
-            <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Izin</span>
-            <div class="text-2xl font-black text-sky-600 mt-1">{{ $permissionToday }} <span class="text-xs font-semibold text-sky-500">Siswa</span></div>
+        <div class="bg-white dark:bg-slate-900 p-2.5 sm:p-5 rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs">
+            <span class="text-[10px] sm:text-[11px] font-bold text-sky-600 uppercase tracking-wider block truncate">Izin</span>
+            <div class="text-lg sm:text-2xl font-black text-sky-600 mt-1">{{ $permissionToday }} <span class="text-[10px] sm:text-xs font-semibold text-sky-500">Siswa</span></div>
         </div>
-        <div class="bg-white p-4 sm:p-5 rounded-3xl border border-slate-200 shadow-xs">
-            <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Sakit</span>
-            <div class="text-2xl font-black text-purple-600 mt-1">{{ $sickToday }} <span class="text-xs font-semibold text-purple-500">Siswa</span></div>
+        <div class="bg-white dark:bg-slate-900 p-2.5 sm:p-5 rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs">
+            <span class="text-[10px] sm:text-[11px] font-bold text-purple-600 uppercase tracking-wider block truncate">Sakit</span>
+            <div class="text-lg sm:text-2xl font-black text-purple-600 mt-1">{{ $sickToday }} <span class="text-[10px] sm:text-xs font-semibold text-purple-500">Siswa</span></div>
         </div>
-        <div class="bg-white p-4 sm:p-5 rounded-3xl border border-slate-200 shadow-xs">
-            <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Alpa</span>
-            <div class="text-2xl font-black text-rose-600 mt-1">{{ $alphaToday }} <span class="text-xs font-semibold text-rose-500">Siswa</span></div>
+        <div class="bg-white dark:bg-slate-900 p-2.5 sm:p-5 rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs">
+            <span class="text-[10px] sm:text-[11px] font-bold text-rose-600 uppercase tracking-wider block truncate">Alpa</span>
+            <div class="text-lg sm:text-2xl font-black text-rose-600 mt-1">{{ $alphaToday }} <span class="text-[10px] sm:text-xs font-semibold text-rose-500">Siswa</span></div>
         </div>
     </div>
 

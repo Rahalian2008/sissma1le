@@ -838,7 +838,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="flex items-center gap-1.5 overflow-x-auto scrollbar-none touch-pan-x select-none py-1 sm:flex-wrap shrink-0 max-w-full">
+                            <div class="flex items-center gap-1.5 overflow-x-auto scrollbar-none touch-pan-x select-none py-1 sm:flex-wrap shrink-0 max-w-full pr-6 sm:pr-0">
                                 <span class="text-[10px] font-bold text-slate-400 dark:text-slate-400 mr-1 hidden sm:inline">Pindah Role:</span>
                                 <a href="{{ route('user.switch_role_get', 'all_roles') }}" class="px-2.5 py-1 rounded-xl text-xs font-bold transition flex items-center gap-1 shrink-0 {{ $userActiveRole === 'all_roles' ? 'bg-indigo-600 text-white shadow-xs' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700' }}">
                                     <span>⚡ Semua Akses</span>
