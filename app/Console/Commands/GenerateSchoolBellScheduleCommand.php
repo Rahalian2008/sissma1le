@@ -47,11 +47,12 @@ class GenerateSchoolBellScheduleCommand extends Command
         SchoolSetting::set('school_bells_initialized', '1', 'school_bell', 'Status inisialisasi jadwal bel sekolah');
 
         $this->info("Berhasil men-generate {$newCount} jadwal bel sekolah terpadu:");
-        $this->line('- Murottal Pra-KBM (06.05 - 06.25 WIB) 20 menit: Senin s.d Jumat berbeda surat');
+        $this->line('- Murottal Pra-KBM (06.05 - 06.25 WIB) 20 menit: Senin s.d Jumat berbeda surat didahului bel & pengumuman');
         $this->line('- Bel Pembuka Kegiatan Pagi (06.30 WIB): Upacara, Senam, Literasi Wali Kelas, Shalat Dhuha');
-        $this->line('- Istirahat Ke-1: Bel + 2 Lagu Nasional berbeda setiap hari (Total 10 lagu nasional terdistribusi tanpa kembar)');
-        $this->line('- Istirahat Ke-2: Bel + Murottal 15 menit (Ishoma Dzuhur & Persiapan Shalat Jumat)');
-        $this->line('- Bel Pulang Sekolah: Bel + Murottal 15 menit penutup pembelajaran');
+        $this->line('- Istirahat Ke-1: Bel + Pengumuman + jeda 3 detik + 2 Lagu Nasional berbeda setiap hari');
+        $this->line('- Istirahat Ke-2: Bel + Pengumuman + jeda 3 detik + Murottal 15 menit (Ishoma Dzuhur & Shalat Jumat)');
+        $this->line('- Jumat 14.00 WIB: Bel Selesai KBM & Mulai Kegiatan Ekstrakurikuler');
+        $this->line('- Bel Pulang Sekolah (Senin s.d Jumat 15.00 WIB): Bel + Pengumuman + jeda 3 detik + Murottal 15 menit penutup pembelajaran');
         $this->line('- Seluruh jam bel pergantian jam pelajaran (KBM) sesuai dokumen resmi jadwal sekolah.');
 
         return self::SUCCESS;

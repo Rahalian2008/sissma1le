@@ -1221,77 +1221,58 @@ function schoolBellApp() {
 
             const vol = (bell.volume || 100) * (this.masterVolume / 100) / 100;
             const items = bell.playlist_items || [];
+            const hasAudioContent = items.length > 0 || (bell.sound_type === 'murottal' && bell.audio_url) || ((bell.sound_type === 'custom' || bell.sound_type === 'song') && bell.audio_url);
 
-            // Jika memiliki playlist multi-surah atau multi-lagu
-            if (items.length > 0) {
-                this.playlistQueue = items;
-                this.currentTrackIndex = 0;
-                this.isPlaylistMode = items.length > 1;
-
-                if (bell.voice_text) {
-                    this.testChimeSound('westminster');
-                    if (this.enableVoiceAnnouncement) {
-                        setTimeout(() => {
-                            this.testSpeech(bell.voice_text);
-                        }, 2800);
-                        setTimeout(() => {
-                            this.playTrackFromQueue(0, bell.volume);
-                        }, 5800);
-                    } else {
-                        setTimeout(() => {
-                            this.playTrackFromQueue(0, bell.volume);
-                        }, 2800);
-                    }
-                } else {
+            const playTargetAudio = () => {
+                if (items.length > 0) {
+                    this.playlistQueue = items;
+                    this.currentTrackIndex = 0;
+                    this.isPlaylistMode = items.length > 1;
                     this.playTrackFromQueue(0, bell.volume);
-                }
-            } else if (bell.sound_type === 'murottal' && bell.audio_url) {
-                if (bell.voice_text) {
-                    this.testChimeSound('westminster');
-                    if (this.enableVoiceAnnouncement) {
-                        setTimeout(() => { this.testSpeech(bell.voice_text); }, 2800);
-                        setTimeout(() => { this.playMurottalUrl(bell.audio_url, bell.surah_name || bell.title); }, 5800);
-                    } else {
-                        setTimeout(() => { this.playMurottalUrl(bell.audio_url, bell.surah_name || bell.title); }, 2800);
-                    }
-                } else {
+                } else if (bell.sound_type === 'murottal' && bell.audio_url) {
                     this.playMurottalUrl(bell.audio_url, bell.surah_name || bell.title);
-                }
-            } else if (bell.sound_type === 'siren') {
-                this.testChimeSound('siren');
-            } else if ((bell.sound_type === 'custom' || bell.sound_type === 'song') && bell.audio_url) {
-                if (bell.voice_text) {
-                    this.testChimeSound('westminster');
-                    if (this.enableVoiceAnnouncement) {
-                        setTimeout(() => { this.testSpeech(bell.voice_text); }, 2800);
-                        setTimeout(() => {
-                            this.audioElement.src = bell.audio_url;
-                            this.audioElement.volume = vol;
-                            this.audioElement.play().catch(e => console.error(e));
-                        }, 5800);
-                    } else {
-                        setTimeout(() => {
-                            this.audioElement.src = bell.audio_url;
-                            this.audioElement.volume = vol;
-                            this.audioElement.play().catch(e => console.error(e));
-                        }, 2800);
-                    }
-                } else {
+                } else if ((bell.sound_type === 'custom' || bell.sound_type === 'song') && bell.audio_url) {
                     this.audioElement.src = bell.audio_url;
                     this.audioElement.volume = vol;
                     this.audioElement.play().catch(e => console.error(e));
                 }
-            } else if (bell.sound_type === 'soundboard') {
+            };
+
+            // 1. Jika Sirine Darurat
+            if (bell.sound_type === 'siren') {
+                this.testChimeSound('siren');
+            } 
+            // 2. Jika Soundboard Instan
+            else if (bell.sound_type === 'soundboard') {
                 const instantType = bell.playlist?.[0]?.sound_type || (bell.audio_url && bell.audio_url.startsWith('soundboard:') ? bell.audio_url.replace('soundboard:', '') : 'westminster');
                 this.playInstantSound(instantType, bell.title, bell.voice_text);
-            } else {
-                this.testChimeSound('westminster');
-
-                if (this.enableVoiceAnnouncement && bell.voice_text) {
-                    setTimeout(() => {
+            }
+            // 3. Jika Bel memiliki Murottal atau Lagu Wajib Nasional / Audio
+            // Alur: Suara Bel Chime -> Pengumuman Suara -> Jeda Tepat 3 Detik -> Murottal / Lagu Nasional Otomatis Berbunyi
+            else if (hasAudioContent) {
+                this.testChimeSound('westminster', null, () => {
+                    if (this.enableVoiceAnnouncement && bell.voice_text) {
+                        this.testSpeech(bell.voice_text, () => {
+                            // Jeda 3 detik setelah pengumuman bel selesai berbicara
+                            setTimeout(() => {
+                                playTargetAudio();
+                            }, 3000);
+                        });
+                    } else {
+                        // Jika tanpa teks pengumuman, jeda 3 detik setelah bel chime selesai
+                        setTimeout(() => {
+                            playTargetAudio();
+                        }, 3000);
+                    }
+                });
+            }
+            // 4. Bel Reguler Standar (Pergantian Jam KBM / Pengumuman Suara Saja)
+            else {
+                this.testChimeSound('westminster', null, () => {
+                    if (this.enableVoiceAnnouncement && bell.voice_text) {
                         this.testSpeech(bell.voice_text);
-                    }, 2800);
-                }
+                    }
+                });
             }
 
             if (bell.duration_seconds && bell.duration_seconds > 0) {
@@ -1354,8 +1335,11 @@ function schoolBellApp() {
             }
         },
 
-        testSpeech(text) {
-            if (!('speechSynthesis' in window)) return;
+        testSpeech(text, onEnded = null) {
+            if (!('speechSynthesis' in window) || !text) {
+                if (onEnded) onEnded();
+                return;
+            }
             window.speechSynthesis.cancel();
 
             const utterance = new SpeechSynthesisUtterance(text);
@@ -1368,6 +1352,22 @@ function schoolBellApp() {
             const idVoice = voices.find(v => v.lang.startsWith('id') || v.lang.startsWith('in'));
             if (idVoice) {
                 utterance.voice = idVoice;
+            }
+
+            if (onEnded) {
+                let called = false;
+                const done = () => {
+                    if (!called) {
+                        called = true;
+                        onEnded();
+                    }
+                };
+                utterance.onend = done;
+                utterance.onerror = done;
+                // Safety timer fallback berdasarkan jumlah kata dalam teks pengumuman
+                const words = text.split(/\s+/).filter(Boolean).length;
+                const estimatedMs = Math.max(3500, (words * 450) + 1500);
+                setTimeout(done, estimatedMs);
             }
 
             window.speechSynthesis.speak(utterance);
@@ -1642,7 +1642,7 @@ function schoolBellApp() {
             this.currentAudioTitle = '';
         },
 
-        testChimeSound(type, announcementText = null) {
+        testChimeSound(type, announcementText = null, onChimeEnded = null) {
             this.initAudioContext();
             this.stopAllAudio();
             this.isPlaying = true;
@@ -1698,20 +1698,27 @@ function schoolBellApp() {
                     });
                 }
 
-                if (announcementText && this.enableVoiceAnnouncement) {
-                    setTimeout(() => {
-                        this.testSpeech(announcementText);
-                    }, (type === 'twotone' ? 1200 : (type === 'threetone' ? 1800 : 4200)));
-                }
+                const chimeDuration = type === 'twotone' ? 1400 : (type === 'threetone' ? 2000 : (type === 'siren' ? 3500 : 4200));
 
                 setTimeout(() => {
-                    if (!this.isPlayingMurottal && !this.isPlayingAnthem) {
+                    if (onChimeEnded) {
+                        onChimeEnded();
+                    } else if (announcementText && this.enableVoiceAnnouncement) {
+                        this.testSpeech(announcementText);
+                    } else if (!this.isPlayingMurottal && !this.isPlayingAnthem) {
                         this.isPlaying = false;
                     }
-                }, 5000);
+                }, chimeDuration);
+
+                setTimeout(() => {
+                    if (!this.isPlayingMurottal && !this.isPlayingAnthem && !onChimeEnded) {
+                        this.isPlaying = false;
+                    }
+                }, 5500);
             } catch (e) {
                 console.error(e);
                 this.isPlaying = false;
+                if (onChimeEnded) onChimeEnded();
             }
         },
 

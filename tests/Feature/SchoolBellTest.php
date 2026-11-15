@@ -31,7 +31,17 @@ test('school bell index page loads successfully and seeds default schedules', fu
     $this->assertDatabaseHas('school_bells', [
         'sound_type' => 'song',
     ]);
-    $this->assertDatabaseCount('school_bells', 52);
+    $this->assertDatabaseHas('school_bells', [
+        'time' => '14:00',
+        'title' => 'Bel Mulai Kegiatan Ekstrakurikuler (Jumat)',
+        'sound_type' => 'chime',
+    ]);
+    $this->assertDatabaseHas('school_bells', [
+        'time' => '15:00',
+        'title' => 'Bel Pulang Sekolah & Selesai Ekstrakurikuler (Jumat) + Murottal 15 Menit',
+        'sound_type' => 'murottal',
+    ]);
+    $this->assertDatabaseCount('school_bells', 53);
 });
 
 test('can create a new school bell schedule with murottal', function () {
@@ -391,4 +401,29 @@ test('can create and update school bell schedule with soundboard sound', functio
     expect($bell->sound_type)->toBe('soundboard');
     expect($bell->audio_url)->toBe('soundboard:whistle');
     expect($bell->playlist[0]['id'])->toBe('whistle-picket');
+});
+
+test('friday schedule has extracurricular at 14:00 and dismissal with murottal at 15:00 and morning murottal has announcements', function () {
+    SchoolBell::query()->delete();
+    SchoolBell::ensureDefaultSchedules(force: true);
+
+    $extraBell = SchoolBell::where('time', '14:00')->whereJsonContains('days', 'Jumat')->first();
+    expect($extraBell)->not->toBeNull();
+    expect($extraBell->title)->toContain('Ekstrakurikuler');
+    expect($extraBell->sound_type)->toBe('chime');
+    expect($extraBell->voice_text)->toContain('kegiatan ekstrakurikuler');
+
+    $pulangFriday = SchoolBell::where('time', '15:00')->whereJsonContains('days', 'Jumat')->first();
+    expect($pulangFriday)->not->toBeNull();
+    expect($pulangFriday->title)->toContain('Bel Pulang Sekolah');
+    expect($pulangFriday->sound_type)->toBe('murottal');
+    expect($pulangFriday->voice_text)->toContain('pembelajaran dan ekstrakurikuler hari Jumat telah selesai');
+
+    // Check Pra-KBM morning Murottal has voice_text
+    $morningBells = SchoolBell::where('time', '06:05')->where('sound_type', 'murottal')->get();
+    expect($morningBells)->toHaveCount(5);
+    foreach ($morningBells as $mb) {
+        expect($mb->voice_text)->not->toBeEmpty();
+        expect($mb->voice_text)->toContain('Selamat pagi');
+    }
 });

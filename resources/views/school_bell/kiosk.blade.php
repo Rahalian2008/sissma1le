@@ -608,26 +608,49 @@
                         }
                     }, 1000);
 
-                    // 1. Jika ada playlist multi-surah atau multi-lagu
                     const items = bell.playlist_items || [];
-                    if (items.length > 1) {
-                        this.playPlaylistQueue(items, bell.duration_seconds, bell.voice_text);
+                    const hasAudioContent = items.length > 0 || (bell.sound_type === 'murottal' && bell.audio_url) || ((bell.sound_type === 'custom' || bell.sound_type === 'song') && bell.audio_url);
+
+                    const playAudioContent = () => {
+                        if (items.length > 1) {
+                            this.playPlaylistQueue(items, bell.duration_seconds);
+                        } else if (items.length === 1) {
+                            this.playAudioFile(items[0].audio_url, bell.duration_seconds);
+                        } else if (bell.audio_url) {
+                            this.playAudioFile(bell.audio_url, bell.duration_seconds);
+                        }
+                    };
+
+                    // 1. Jika bel memiliki konten Murottal / Lagu Nasional / Audio
+                    // Alur: Suara Bel Chime -> Pengumuman Suara -> Jeda Tepat 3 Detik -> Murottal / Lagu Nasional
+                    if (hasAudioContent) {
+                        this.playChime('westminster', () => {
+                            if (bell.voice_text) {
+                                this.speakText(bell.voice_text, () => {
+                                    // Jeda 3 detik setelah pengumuman selesai berbicara
+                                    setTimeout(() => {
+                                        playAudioContent();
+                                    }, 3000);
+                                });
+                            } else {
+                                // Jeda 3 detik setelah bel chime jika tanpa teks pengumuman
+                                setTimeout(() => {
+                                    playAudioContent();
+                                }, 3000);
+                            }
+                        });
                     }
-                    // 2. Jika ada audio_url tunggal (file upload lagu/custom/murottal)
-                    else if (bell.audio_url) {
-                        this.playAudioFile(bell.audio_url, bell.duration_seconds, bell.voice_text);
-                    } 
-                    // 3. Jika tipe voice narasi
+                    // 2. Jika tipe voice narasi
                     else if (bell.sound_type === 'voice') {
                         this.playChime('chime', () => {
                             this.speakText(bell.voice_text || bell.title);
                         });
                     }
-                    // 4. Jika sirine darurat
+                    // 3. Jika sirine darurat
                     else if (bell.sound_type === 'siren') {
                         this.playSiren(bell.duration_seconds || 15);
                     }
-                    // 5. Default: Nada Chime bel
+                    // 4. Default: Nada Chime bel reguler (Pergantian Jam KBM)
                     else {
                         this.playChime('westminster', () => {
                             if (bell.voice_text) {
@@ -637,16 +660,13 @@
                     }
                 },
 
-                playPlaylistQueue(items, durationSeconds, voiceTextAfter) {
+                playPlaylistQueue(items, durationSeconds) {
                     this.stopAllAudio();
                     let currentIndex = 0;
 
                     const playNextInQueue = () => {
                         if (currentIndex >= items.length) {
                             this.isPlaying = false;
-                            if (voiceTextAfter) {
-                                this.speakText(voiceTextAfter);
-                            }
                             return;
                         }
 
@@ -683,7 +703,7 @@
                     this.triggerBell(bell);
                 },
 
-                playAudioFile(url, durationSeconds, voiceTextAfter) {
+                playAudioFile(url, durationSeconds) {
                     this.stopAllAudio();
                     const audio = new Audio(url);
                     audio.volume = this.volumePercent / 100;
@@ -699,18 +719,12 @@
                         if (this.activeAudioElement === audio) {
                             audio.pause();
                             this.isPlaying = false;
-                            if (voiceTextAfter) {
-                                this.speakText(voiceTextAfter);
-                            }
                         }
                     }, maxDuration);
 
                     audio.onended = () => {
                         clearTimeout(stopTimeout);
                         this.isPlaying = false;
-                        if (voiceTextAfter) {
-                            this.speakText(voiceTextAfter);
-                        }
                     };
                 },
 
@@ -817,8 +831,11 @@
                     }, durationSeconds * 1000);
                 },
 
-                speakText(text) {
-                    if (!('speechSynthesis' in window) || !text) return;
+                speakText(text, onEndedCallback = null) {
+                    if (!('speechSynthesis' in window) || !text) {
+                        if (onEndedCallback) onEndedCallback();
+                        return;
+                    }
                     window.speechSynthesis.cancel();
 
                     const utterance = new SpeechSynthesisUtterance(text);
@@ -830,6 +847,22 @@
                     const idVoice = voices.find(v => v.lang.includes('id') || v.lang.includes('ID'));
                     if (idVoice) {
                         utterance.voice = idVoice;
+                    }
+
+                    if (onEndedCallback) {
+                        let called = false;
+                        const done = () => {
+                            if (!called) {
+                                called = true;
+                                onEndedCallback();
+                            }
+                        };
+                        utterance.onend = done;
+                        utterance.onerror = done;
+                        // Safety fallback timer berdasarkan jumlah kata teks
+                        const words = text.split(/\s+/).filter(Boolean).length;
+                        const estimatedMs = Math.max(3500, (words * 450) + 1500);
+                        setTimeout(done, estimatedMs);
                     }
 
                     window.speechSynthesis.speak(utterance);
