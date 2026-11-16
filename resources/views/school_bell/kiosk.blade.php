@@ -757,83 +757,67 @@
                     const ctx = this.audioContext;
                     const now = ctx.currentTime;
                     const masterGain = ctx.createGain();
-                    masterGain.gain.setValueAtTime((this.volumePercent / 100) * 0.4, now);
+                    masterGain.gain.setValueAtTime((this.volumePercent / 100) * 0.45, now);
                     masterGain.connect(ctx.destination);
 
                     let notes = [];
-                    let totalDurationMs = 2500;
+                    let stepDur = 0.52;
+                    let decayDur = 1.25;
 
                     if (type === 'ganti_jam' || type === 'twotone') {
                         // Bel Pergantian Jam: Ding-Dong Ringkas 2-Nada (E5 -> C5)
-                        notes = [
-                            { f: 659.25, t: 0.0, d: 0.45 },
-                            { f: 523.25, t: 0.45, d: 0.90 },
-                        ];
-                        totalDurationMs = 1500;
+                        notes = [659.25, 523.25];
+                        stepDur = 0.45;
+                        decayDur = 0.95;
                     } else if (type === 'istirahat') {
                         // Bel Istirahat: Melodi Marimba Ceria 5-Nada (F4 - A4 - C5 - E5 - C5)
-                        notes = [
-                            { f: 349.23, t: 0.0, d: 0.35 },
-                            { f: 440.00, t: 0.38, d: 0.35 },
-                            { f: 523.25, t: 0.76, d: 0.35 },
-                            { f: 659.25, t: 1.14, d: 0.35 },
-                            { f: 523.25, t: 1.52, d: 0.90 },
-                        ];
-                        totalDurationMs = 2500;
+                        notes = [349.23, 440.00, 523.25, 659.25, 523.25];
+                        stepDur = 0.38;
+                        decayDur = 0.90;
                     } else if (type === 'bel_masuk') {
                         // Bel Masuk KBM: Melodi Semangat 4-Nada Menaik (E4 - G4 - C5 - E5)
-                        notes = [
-                            { f: 329.63, t: 0.0, d: 0.50 },
-                            { f: 392.00, t: 0.50, d: 0.50 },
-                            { f: 523.25, t: 1.00, d: 0.50 },
-                            { f: 659.25, t: 1.50, d: 1.20 },
-                        ];
-                        totalDurationMs = 2800;
+                        notes = [329.63, 392.00, 523.25, 659.25];
+                        stepDur = 0.48;
+                        decayDur = 1.30;
                     } else if (type === 'pulang') {
                         // Bel Pulang Sekolah: Fanfare Penutup Megah (C5 - G4 - A4 - C5 - D5 - C5)
-                        notes = [
-                            { f: 523.25, t: 0.0, d: 0.40 },
-                            { f: 392.00, t: 0.42, d: 0.40 },
-                            { f: 440.00, t: 0.84, d: 0.40 },
-                            { f: 523.25, t: 1.26, d: 0.45 },
-                            { f: 587.33, t: 1.71, d: 0.45 },
-                            { f: 523.25, t: 2.16, d: 1.40 },
-                        ];
-                        totalDurationMs = 3600;
+                        notes = [523.25, 392.00, 440.00, 523.25, 587.33, 523.25];
+                        stepDur = 0.42;
+                        decayDur = 1.50;
                     } else if (type === 'threetone') {
-                        // Standard 3-Tone chime (Ding - Dang - Dong)
-                        notes = [
-                            { f: 523.25, t: 0.0, d: 0.50 },
-                            { f: 659.25, t: 0.50, d: 0.50 },
-                            { f: 783.99, t: 1.00, d: 0.90 },
-                        ];
-                        totalDurationMs = 2000;
+                        notes = [523.25, 659.25, 783.99];
+                        stepDur = 0.45;
+                        decayDur = 1.10;
                     } else {
-                        // Westminster Chime (E - C - D - G)
-                        notes = [
-                            { f: 329.63, t: 0.0, d: 0.70 },
-                            { f: 261.63, t: 0.75, d: 0.70 },
-                            { f: 293.66, t: 1.50, d: 0.70 },
-                            { f: 196.00, t: 2.25, d: 1.40 },
-                        ];
-                        totalDurationMs = 3800;
+                        // Westminster Chime Standar (8 Nada Harmonis)
+                        notes = [659.25, 415.30, 739.99, 493.88, 659.25, 739.99, 830.61, 659.25];
+                        stepDur = 0.52;
+                        decayDur = 1.25;
                     }
 
-                    notes.forEach(n => {
-                        const osc = ctx.createOscillator();
-                        const g = ctx.createGain();
-                        osc.type = 'sine';
-                        osc.frequency.setValueAtTime(n.f, now + n.t);
+                    let t = now;
+                    notes.forEach((freq) => {
+                        [1, 2.02].forEach((harmonic, hIdx) => {
+                            const osc = ctx.createOscillator();
+                            const gain = ctx.createGain();
+                            osc.type = hIdx === 0 ? 'sine' : 'triangle';
+                            osc.frequency.value = freq * harmonic;
 
-                        g.gain.setValueAtTime(0.001, now + n.t);
-                        g.gain.exponentialRampToValueAtTime(1.0, now + n.t + 0.04);
-                        g.gain.exponentialRampToValueAtTime(0.0001, now + n.t + n.d);
+                            const hGain = hIdx === 0 ? 0.4 : 0.12;
+                            gain.gain.setValueAtTime(0.001, t);
+                            gain.gain.exponentialRampToValueAtTime(hGain, t + 0.04);
+                            gain.gain.exponentialRampToValueAtTime(0.0001, t + decayDur);
 
-                        osc.connect(g);
-                        g.connect(masterGain);
-                        osc.start(now + n.t);
-                        osc.stop(now + n.t + n.d + 0.1);
+                            osc.connect(gain);
+                            gain.connect(masterGain);
+
+                            osc.start(t);
+                            osc.stop(t + decayDur + 0.1);
+                        });
+                        t += stepDur;
                     });
+
+                    const totalDurationMs = Math.round((t - now + decayDur) * 1000);
 
                     setTimeout(() => {
                         this.isPlaying = false;
@@ -1004,12 +988,24 @@
                         osc.start(now);
                         osc.stop(t);
                         setTimeout(() => { this.isPlaying = false; }, (t - now) * 1000);
-                    } else if (type === 'threetone' || type === 'voice_kbm_start' || type === 'voice_home') {
-                        this.playChime('threetone', () => {
+                    } else if (type === 'bel_masuk' || type === 'voice_start' || type === 'voice_kbm_start') {
+                        this.playChime('bel_masuk', () => {
                             if (text) this.speakText(text);
                         });
-                    } else if (type === 'twotone' || type === 'voice_break' || type === 'voice_prayer') {
-                        this.playChime('twotone', () => {
+                    } else if (type === 'ganti_jam' || type === 'twotone') {
+                        this.playChime('ganti_jam', () => {
+                            if (text) this.speakText(text);
+                        });
+                    } else if (type === 'istirahat' || type === 'voice_break') {
+                        this.playChime('istirahat', () => {
+                            if (text) this.speakText(text);
+                        });
+                    } else if (type === 'pulang' || type === 'voice_home') {
+                        this.playChime('pulang', () => {
+                            if (text) this.speakText(text);
+                        });
+                    } else if (type === 'threetone' || type === 'voice_prayer') {
+                        this.playChime('threetone', () => {
                             if (text) this.speakText(text);
                         });
                     } else {

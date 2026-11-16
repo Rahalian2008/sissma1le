@@ -1637,10 +1637,16 @@ function schoolBellApp() {
                 osc.start(now);
                 osc.stop(t);
                 setTimeout(() => { this.isPlaying = false; }, (t - now) * 1000);
-            } else if (type === 'threetone' || type === 'voice_kbm_start' || type === 'voice_home') {
+            } else if (type === 'bel_masuk' || type === 'voice_start' || type === 'voice_kbm_start') {
+                this.testChimeSound('bel_masuk', text);
+            } else if (type === 'ganti_jam' || type === 'twotone') {
+                this.testChimeSound('ganti_jam', text);
+            } else if (type === 'istirahat' || type === 'voice_break') {
+                this.testChimeSound('istirahat', text);
+            } else if (type === 'pulang' || type === 'voice_home') {
+                this.testChimeSound('pulang', text);
+            } else if (type === 'threetone' || type === 'voice_prayer') {
                 this.testChimeSound('threetone', text);
-            } else if (type === 'twotone' || type === 'voice_break' || type === 'voice_prayer') {
-                this.testChimeSound('twotone', text);
             } else {
                 // Westminster default
                 this.testChimeSound('westminster', text);
