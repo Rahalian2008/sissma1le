@@ -210,7 +210,10 @@
                     </p>
                 </div>
                 <div class="flex items-center gap-2 shrink-0">
-                    <!-- Mobile Quick SPMB Pill -->
+                    <!-- Mobile Quick Bel & SPMB Pill -->
+                    <a href="{{ route('school_bell.index') }}" class="sm:hidden px-2 py-0.5 rounded-full bg-amber-400 text-slate-950 font-black text-[10px] shadow-xs flex items-center gap-1">
+                        <span>🔔 Bel</span>
+                    </a>
                     <a href="{{ route('spmb.public.register') }}" class="sm:hidden px-2.5 py-0.5 rounded-full bg-gradient-to-r from-emerald-400 to-teal-300 text-slate-950 font-black text-[10px] shadow-xs flex items-center gap-1">
                         <span>🎓 SPMB</span>
                     </a>
@@ -219,6 +222,10 @@
                             <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
                             Sistem Akademik Online
                         </span>
+                        <span class="text-indigo-400">|</span>
+                        <a href="{{ route('school_bell.index') }}" target="_blank" class="hover:text-amber-300 transition flex items-center gap-1 font-bold text-amber-300">
+                            <span>🔔 Bel Sekolah</span>
+                        </a>
                         <span class="text-indigo-400">|</span>
                         <a href="{{ route('kiosk.index') }}" target="_blank" class="hover:text-amber-300 transition flex items-center gap-1 font-semibold text-white">
                             <span>📺 Kios TV</span>
@@ -293,6 +300,9 @@
 
                 <!-- Kiosk Ecosystem Quick Links -->
                 <div class="hidden xl:flex items-center gap-1.5">
+                    <a href="{{ route('school_bell.index') }}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold text-amber-700 dark:text-amber-300 bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/40 dark:hover:bg-amber-900/50 border border-amber-300 dark:border-amber-700/60 transition" title="Bel Sekolah Digital Otomatis & Standby">
+                        <span>🔔 Bel Sekolah</span>
+                    </a>
                     <a href="{{ route('kiosk.index') }}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 bg-slate-100 hover:bg-slate-200/70 dark:bg-slate-800/80 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 transition" title="Layar Display TV Lobby Sekolah">
                         <svg class="w-3.5 h-3.5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
@@ -2335,7 +2345,16 @@
             </div>
 
             <!-- Role Pane: TAMU / ALUMNI -->
-            <div id="role-pane-tamu" class="role-pane hidden grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-4xl mx-auto">
+            <div id="role-pane-tamu" class="role-pane hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-6xl mx-auto">
+                <div class="p-5 rounded-3xl glass-card border border-amber-400/40 text-center hover:border-amber-400 hover:shadow-xl transition-all duration-300">
+                    <span class="text-3xl block mb-2">🔔</span>
+                    <h4 class="font-heading font-bold text-slate-900 dark:text-white text-base mb-1">Bel Sekolah Digital</h4>
+                    <p class="text-xs text-slate-500 mb-4 leading-relaxed">Jadwal bel otomatis, audio chime, lagu wajib, dan murottal 114 surah tanpa harus login.</p>
+                    <a href="{{ route('school_bell.index') }}" target="_blank" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold transition shadow-md shadow-amber-500/20">
+                        <span>Buka Bel Sekolah</span>
+                        <span>↗</span>
+                    </a>
+                </div>
                 <div class="p-5 rounded-3xl glass-card border border-slate-200 dark:border-slate-800 text-center hover:border-indigo-500/50 hover:shadow-xl transition-all duration-300">
                     <span class="text-3xl block mb-2">📺</span>
                     <h4 class="font-heading font-bold text-slate-900 dark:text-white text-base mb-1">Display Informasi Kios TV</h4>

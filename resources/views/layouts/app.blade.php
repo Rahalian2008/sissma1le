@@ -145,7 +145,7 @@
                 </div>
 
                 <div class="flex items-center justify-between gap-1.5">
-                    @if(Auth::user()->role === 'super_admin' || session('switched_from_super_admin'))
+                    @if(Auth::check() && (Auth::user()->role === 'super_admin' || session('switched_from_super_admin')))
                         <form action="{{ route('quick.switch') }}" method="POST" class="w-full">
                             @csrf
                             <select name="role" onchange="this.form.submit()" title="Ganti Role (Khusus Super Admin)" class="w-full text-xs bg-slate-800 border border-slate-700 text-slate-200 rounded-lg px-2 py-1.5 outline-none focus:border-indigo-500 cursor-pointer hover:bg-slate-700 transition">
@@ -182,7 +182,7 @@
                                 <option value="orang_tua" {{ Auth::user()->role === 'orang_tua' ? 'selected' : '' }}>Orang Tua</option>
                             </select>
                         </form>
-                    @elseif(count($activeRoles) > 1)
+                    @elseif($currUser && count($activeRoles) > 1)
                         <form action="{{ route('user.switch_active_role') }}" method="POST" class="w-full">
                             @csrf
                             <label class="block text-[10px] text-indigo-300 font-semibold mb-1">Beralih Mode Tampilan:</label>
@@ -486,7 +486,7 @@
                 @endif
 
                 <!-- Bel Sekolah (Posisi di Bawah Kelola Konten Web) -->
-                @if($canNav('school_bell'))
+                @if(!Auth::check() || $canNav('school_bell') || in_array('guest', $roles))
                 <a href="{{ route('school_bell.index') }}" data-tooltip="Bel Sekolah" class="flex items-center justify-between px-3 py-2.5 rounded-xl text-[13.5px] font-semibold leading-snug transition {{ request()->routeIs('school_bell.*') ? 'bg-amber-600 text-white shadow-xs shadow-amber-600/30' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
                     <div class="flex items-center gap-2.5 min-w-0">
                         <svg class="w-4.5 h-4.5 shrink-0 text-amber-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -507,6 +507,7 @@
             </nav>
 
             <!-- User Footer with Logout -->
+            @auth
             <div class="p-3.5 border-t border-slate-800 flex items-center justify-between bg-slate-950/40">
                 <a href="{{ route('profile') }}" data-tooltip="Profil Akun" class="flex items-center gap-3 truncate hover:opacity-85 transition">
                     <div class="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-md">
@@ -526,6 +527,14 @@
                     </button>
                 </form>
             </div>
+            @else
+            <div class="p-3.5 border-t border-slate-800 flex items-center justify-between bg-slate-950/40">
+                <a href="{{ route('login') }}" class="w-full py-2 px-3 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-2 transition shadow-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
+                    <span class="sidebar-label">Masuk Akun</span>
+                </a>
+            </div>
+            @endauth
         </aside>
 
         <!-- Content Area (Refined, Smooth & Atmospheric) -->
@@ -704,6 +713,7 @@
                     @endif
 
                     <!-- Notification Bell with Interactive Dropdown -->
+                    @auth
                     <div class="relative" id="notification-bell-container">
                         <button type="button" onclick="toggleNotificationDropdown(event)" aria-label="Notifikasi" class="touch-target relative text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition cursor-pointer p-2 flex items-center justify-center active:scale-95">
                             <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -773,6 +783,12 @@
                             <span class="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider leading-tight truncate max-w-[140px]" title="{{ Auth::user()->getRoleTitleFor(Auth::user()->active_role) }}">{{ Auth::user()->getRoleTitleFor(Auth::user()->active_role) }}</span>
                         </div>
                     </a>
+                    @else
+                    <a href="{{ route('login') }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-xs transition active:scale-95">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
+                        <span>Masuk</span>
+                    </a>
+                    @endauth
                 </div>
             </header>
 
@@ -909,7 +925,7 @@
                         {{ $currentActiveTitle }}
                     </div>
                 </div>
-                @if(count($activeRoles) > 1)
+                @if($currUser && count($activeRoles) > 1)
                     <div class="flex flex-wrap gap-1 mt-1.5">
                         <a href="{{ route('user.switch_role_get', 'all_roles') }}" class="px-2 py-0.5 text-[9.5px] font-bold rounded-md {{ $currentActiveSlug === 'all_roles' ? 'bg-amber-500 text-slate-950 font-black' : 'bg-slate-800 text-amber-300 hover:bg-slate-700' }} border border-amber-500/40">
                             ⚡ Semua Akses
@@ -925,7 +941,7 @@
                 @endif
             </div>
 
-            @if(Auth::user()->role === 'super_admin' || session('switched_from_super_admin'))
+            @if(Auth::check() && (Auth::user()->role === 'super_admin' || session('switched_from_super_admin')))
                 <form action="{{ route('quick.switch') }}" method="POST" class="mt-2">
                     @csrf
                     <select name="role" onchange="this.form.submit()" class="w-full text-xs bg-slate-800 border border-slate-700 text-slate-200 rounded-xl px-3 py-1.5 outline-none focus:border-indigo-500 cursor-pointer">
@@ -1210,7 +1226,7 @@
             @endif
 
             <!-- Bel Sekolah (Mobile - Di Bawah Kelola Konten Web) -->
-            @if($canNav('school_bell'))
+            @if(!Auth::check() || $canNav('school_bell') || in_array('guest', $roles))
             <a href="{{ route('school_bell.index') }}" class="flex items-center justify-between px-3 py-2.5 rounded-xl text-[13.5px] font-semibold leading-snug transition {{ request()->routeIs('school_bell.*') ? 'bg-amber-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
                 <div class="flex items-center gap-2.5 min-w-0">
                     <svg class="w-4.5 h-4.5 shrink-0 text-amber-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1232,6 +1248,7 @@
 
         <!-- Drawer Footer -->
         <div class="p-4 border-t border-slate-800 bg-slate-950/40">
+            @auth
             <form action="{{ route('logout') }}" method="POST">
                 @csrf
                 <button type="submit" class="w-full flex items-center justify-center gap-2 py-2.5 px-3 bg-rose-600/20 hover:bg-rose-600/30 text-rose-300 border border-rose-600/30 rounded-xl text-sm font-semibold transition cursor-pointer">
@@ -1239,6 +1256,12 @@
                     Keluar Akun
                 </button>
             </form>
+            @else
+            <a href="{{ route('login') }}" class="w-full flex items-center justify-center gap-2 py-2.5 px-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-sm font-semibold transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
+                Masuk Akun
+            </a>
+            @endauth
         </div>
     </aside>
 
@@ -1417,8 +1440,43 @@
                 </svg>
                 <span class="truncate max-w-[62px] xs:max-w-none font-bold">Tatib</span>
             </a>
+        @elseif(!Auth::check())
+            <!-- Guest Mode (Tanpa Login: Bel Sekolah, Display Kiosk & Akses Publik) -->
+            <!-- 1. Web Sekolah -->
+            <a href="{{ route('website.home') }}" class="flex-1 min-w-0 flex flex-col items-center justify-center gap-0.5 py-1 px-1 touch-target text-[11px] xs:text-[12px] font-semibold tracking-tight transition active:scale-95 text-slate-500 dark:text-slate-400 hover:text-indigo-500">
+                <svg class="w-5 h-5 shrink-0 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/>
+                </svg>
+                <span class="truncate max-w-[56px] xs:max-w-none">Web</span>
+            </a>
+
+            <!-- 2. Kios TV -->
+            <a href="{{ route('kiosk.index') }}" target="_blank" class="flex-1 min-w-0 flex flex-col items-center justify-center gap-0.5 py-1 px-1 touch-target text-[11px] xs:text-[12px] font-semibold tracking-tight transition active:scale-95 text-slate-500 dark:text-slate-400 hover:text-indigo-500">
+                <svg class="w-5 h-5 text-sky-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                </svg>
+                <span class="truncate max-w-[56px] xs:max-w-none">Kios TV</span>
+            </a>
+
+            <!-- CENTER FAB: Bel Sekolah Terpadu (Akses Langsung Tanpa Login) -->
+            <a href="{{ route('school_bell.index') }}" class="flex-1 min-w-0 flex flex-col items-center justify-center -mt-5 group" title="Bel Sekolah Digital">
+                <div class="nav-fab-btn w-12 h-12 rounded-full bg-gradient-to-tr from-amber-500 to-amber-400 text-slate-950 flex items-center justify-center shadow-lg shadow-amber-500/35 border-3 border-white dark:border-slate-900 group-hover:scale-105 transition-transform">
+                    <svg class="w-5.5 h-5.5 text-slate-950" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                    </svg>
+                </div>
+                <span class="text-[11px] font-extrabold text-amber-600 dark:text-amber-400 -mt-1 truncate">Bel Sekolah</span>
+            </a>
+
+            <!-- 4. Masuk Akun -->
+            <a href="{{ route('login') }}" class="flex-1 min-w-0 flex flex-col items-center justify-center gap-0.5 py-1 px-1 touch-target text-[11px] xs:text-[12px] font-semibold tracking-tight transition active:scale-95 text-slate-500 dark:text-slate-400 hover:text-indigo-500">
+                <svg class="w-5 h-5 text-indigo-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
+                </svg>
+                <span class="truncate max-w-[56px] xs:max-w-none">Masuk</span>
+            </a>
         @else
-            <!-- Default / Fallback Role (Orang Tua / Guest): Riwayat Presensi -->
+            <!-- Default / Fallback Role (Orang Tua / Wali): Riwayat Presensi -->
             <a href="{{ route('attendance.history') }}" class="flex-1 min-w-0 flex flex-col items-center justify-center gap-0.5 py-1 px-1 touch-target text-[11px] xs:text-[12px] font-semibold tracking-tight transition active:scale-95 {{ request()->routeIs('attendance.history*') ? 'text-indigo-600 dark:text-indigo-400 font-extrabold bg-indigo-50/80 dark:bg-indigo-950/60 rounded-xl' : 'text-slate-500 dark:text-slate-400 hover:text-indigo-500' }}">
                 <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>

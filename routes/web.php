@@ -91,6 +91,28 @@ Route::get('/spmb/bukti/{registrationNumber}/cetak', [SpmbController::class, 'pu
 Route::get('/daftar-spmb', fn () => redirect()->route('spmb.public.register'));
 Route::get('/ppdb/daftar', fn () => redirect()->route('spmb.public.register'));
 
+// Aplikasi Bel Sekolah Terpadu & Murottal Al-Qur'an 114 Surah (Akses Publik: Tampil & Bisa Digunakan Tanpa Harus Login)
+Route::prefix('school-bell')->name('school_bell.')->group(function () {
+    Route::get('/', [SchoolBellController::class, 'index'])->name('index');
+    Route::get('/kiosk', [SchoolBellController::class, 'kiosk'])->name('kiosk');
+    Route::post('/', [SchoolBellController::class, 'store'])->name('store');
+    Route::post('/reset-defaults', [SchoolBellController::class, 'resetDefaults'])->name('reset_defaults');
+    Route::post('/clear-all', [SchoolBellController::class, 'clearAll'])->name('clear_all');
+    Route::put('/{schoolBell}', [SchoolBellController::class, 'update'])->name('update');
+    Route::post('/{schoolBell}/toggle', [SchoolBellController::class, 'toggle'])->name('toggle');
+    Route::delete('/{schoolBell}', [SchoolBellController::class, 'destroy'])->name('destroy');
+    Route::get('/api/schedules', [SchoolBellController::class, 'schedulesJson'])->name('api.schedules');
+    Route::get('/api/surahs', [SchoolBellController::class, 'surahsJson'])->name('api.surahs');
+});
+
+// Alias URL Ramah Bahasa Indonesia (Bisa Diakses Langsung Tanpa Login)
+Route::prefix('bel-sekolah')->group(function () {
+    Route::get('/', [SchoolBellController::class, 'index']);
+    Route::get('/kiosk', [SchoolBellController::class, 'kiosk']);
+    Route::get('/api/schedules', [SchoolBellController::class, 'schedulesJson']);
+    Route::get('/api/surahs', [SchoolBellController::class, 'surahsJson']);
+});
+
 // Guest Routes
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -963,20 +985,6 @@ Route::middleware('auth')->group(function () {
         Route::post('/settings', [RaporKurnasController::class, 'updateSettings'])->name('settings.update');
         Route::post('/settings/toggle-lock', [RaporKurnasController::class, 'toggleLock'])->name('toggle_lock');
         Route::post('/settings/groups', [RaporKurnasController::class, 'updateSubjectGroups'])->name('settings.update_groups');
-    });
-
-    // Aplikasi Bel Sekolah Terpadu & Murottal Al-Qur'an 114 Surah (Akses: Admin, Kepsek, Para Wakasek, Piket TU & Piket Guru)
-    Route::prefix('school-bell')->name('school_bell.')->middleware('role:admin,super_admin,kepala_sekolah,wakasek_kesiswaan,kesiswaan,wakasek_kurikulum,kurikulum,wakasek_humas,humas,wakasek_sarpras,sarpras,tu_piket,guru_piket,petugas_piket')->group(function () {
-        Route::get('/', [SchoolBellController::class, 'index'])->name('index');
-        Route::get('/kiosk', [SchoolBellController::class, 'kiosk'])->name('kiosk');
-        Route::post('/', [SchoolBellController::class, 'store'])->name('store');
-        Route::post('/reset-defaults', [SchoolBellController::class, 'resetDefaults'])->name('reset_defaults');
-        Route::post('/clear-all', [SchoolBellController::class, 'clearAll'])->name('clear_all');
-        Route::put('/{schoolBell}', [SchoolBellController::class, 'update'])->name('update');
-        Route::post('/{schoolBell}/toggle', [SchoolBellController::class, 'toggle'])->name('toggle');
-        Route::delete('/{schoolBell}', [SchoolBellController::class, 'destroy'])->name('destroy');
-        Route::get('/api/schedules', [SchoolBellController::class, 'schedulesJson'])->name('api.schedules');
-        Route::get('/api/surahs', [SchoolBellController::class, 'surahsJson'])->name('api.surahs');
     });
 });
 

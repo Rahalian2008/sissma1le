@@ -138,10 +138,34 @@
             </div>
         </div>
 
-        <!-- 3 Secondary Public Fast-Access Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
+        <!-- 4 Secondary Public Fast-Access Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             
-            <!-- Quick Link 1: Portal Orang Tua (Tanpa Login) -->
+            <!-- Quick Link 1: Bel Sekolah Terpadu (Tanpa Login) -->
+            <a href="{{ route('school_bell.index') }}" target="_blank" class="group p-5 rounded-2xl bg-slate-900/80 hover:bg-slate-900 border border-amber-500/30 hover:border-amber-400/60 backdrop-blur-md transition-all duration-300 hover:-translate-y-0.5 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-xl">
+                            🔔
+                        </span>
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                            Tanpa Login
+                        </span>
+                    </div>
+                    <h4 class="font-extrabold text-sm sm:text-base text-white group-hover:text-amber-300 transition-colors">
+                        Bel Sekolah & Audio
+                    </h4>
+                    <p class="text-xs text-slate-400 mt-1.5 leading-relaxed">
+                        Bel otomatis, 12 audio chime, 10 lagu nasional, dan murottal 114 surah siap putar tanpa login.
+                    </p>
+                </div>
+                <div class="mt-4 pt-3 border-t border-slate-800 text-xs font-bold text-amber-400 flex items-center justify-between">
+                    <span>Buka Bel Sekolah</span>
+                    <span>↗</span>
+                </div>
+            </a>
+
+            <!-- Quick Link 2: Portal Orang Tua (Tanpa Login) -->
             <a href="{{ route('parent.portal') }}" class="group p-5 rounded-2xl bg-slate-900/80 hover:bg-slate-900 border border-emerald-500/30 hover:border-emerald-400/60 backdrop-blur-md transition-all duration-300 hover:-translate-y-0.5 flex flex-col justify-between">
                 <div>
                     <div class="flex items-center justify-between mb-3">
@@ -165,7 +189,7 @@
                 </div>
             </a>
 
-            <!-- Quick Link 2: Buku Tamu Perpustakaan Kiosk -->
+            <!-- Quick Link 3: Buku Tamu Perpustakaan Kiosk -->
             <a href="{{ route('library.guest_book.index') }}" class="group p-5 rounded-2xl bg-slate-900/80 hover:bg-slate-900 border border-amber-500/30 hover:border-amber-400/60 backdrop-blur-md transition-all duration-300 hover:-translate-y-0.5 flex flex-col justify-between">
                 <div>
                     <div class="flex items-center justify-between mb-3">
@@ -189,7 +213,7 @@
                 </div>
             </a>
 
-            <!-- Quick Link 3: Layar Display TV Kiosk -->
+            <!-- Quick Link 4: Layar Display TV Kiosk -->
             <a href="{{ route('kiosk.index') }}" target="_blank" class="group p-5 rounded-2xl bg-slate-900/80 hover:bg-slate-900 border border-sky-500/30 hover:border-sky-400/60 backdrop-blur-md transition-all duration-300 hover:-translate-y-0.5 flex flex-col justify-between">
                 <div>
                     <div class="flex items-center justify-between mb-3">

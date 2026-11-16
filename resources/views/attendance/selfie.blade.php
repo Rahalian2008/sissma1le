@@ -3,7 +3,7 @@
 @section('title', 'Presensi Selfie (Kamera Langsung & GPS)')
 
 @section('content')
-<div class="w-full max-w-3xl min-w-0 mx-auto space-y-4 sm:space-y-6">
+<div class="w-full max-w-3xl min-w-0 mx-auto space-y-4 sm:space-y-6 px-1 xs:px-2 sm:px-0">
     @include('attendance.partials.nav')
     <!-- Header Notice: Strict Business Rule -->
     <div class="w-full min-w-0 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-2xl sm:rounded-3xl p-4 sm:p-6 text-white shadow-xl border border-slate-800">
@@ -172,7 +172,7 @@
         </div>
 
         <!-- Video Stream Container with Face Overlay Guide -->
-        <div class="relative w-full max-w-sm sm:max-w-md mx-auto aspect-4/3 bg-slate-950 rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl border-2 sm:border-4 border-slate-900 flex items-center justify-center">
+        <div class="relative w-full max-w-sm sm:max-w-md mx-auto aspect-4/3 bg-slate-950 rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl border-2 sm:border-4 border-slate-900 flex items-center justify-center" style="aspect-ratio: 4/3;">
             <!-- Video Element (WebRTC Live Stream) -->
             <video id="webcam-video" autoplay playsinline muted class="w-full h-full object-cover transform -scale-x-100"></video>
             
