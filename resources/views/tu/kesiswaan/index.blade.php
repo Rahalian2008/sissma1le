@@ -45,6 +45,10 @@
                         </button>
                     </form>
                 @endif
+                <a href="{{ route('tu.kesiswaan.rekap_presensi.index') }}" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-500 hover:bg-indigo-400 text-white font-black text-xs shadow-lg shadow-black/10 transition-all">
+                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    <span>📊 Rekap Presensi Siswa</span>
+                </a>
                 <a href="{{ route('tu.kesiswaan.absen_manual.index') }}" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-black text-xs shadow-lg shadow-black/10 transition-all">
                     <svg class="w-4 h-4 text-slate-950" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
                     <span>Cetak Absen Manual</span>
@@ -230,6 +234,13 @@
                 </div>
                 <span class="text-xs font-black text-emerald-900 dark:text-emerald-200">Cetak Absen Manual</span>
                 <span class="text-[10px] text-emerald-700 dark:text-emerald-400 mt-0.5 font-semibold">Model SIKATAS</span>
+            </a>
+            <a href="{{ route('tu.kesiswaan.rekap_presensi.index') }}" class="group p-3.5 bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-indigo-950/30 dark:to-blue-950/20 rounded-2xl border-2 border-indigo-400 dark:border-indigo-600/70 hover:border-indigo-500 hover:shadow-md transition-all text-center flex flex-col items-center">
+                <div class="w-10 h-10 rounded-xl bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform font-black">
+                    📊
+                </div>
+                <span class="text-xs font-black text-indigo-900 dark:text-indigo-200">Rekap Presensi Siswa</span>
+                <span class="text-[10px] text-indigo-700 dark:text-indigo-400 mt-0.5 font-semibold">Semua & Per Rombel</span>
             </a>
         </div>
     </div>

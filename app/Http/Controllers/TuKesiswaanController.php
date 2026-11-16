@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Attendance;
 use App\Models\SchoolClass;
 use App\Models\SchoolHoliday;
 use App\Models\SchoolIdentity;
@@ -557,6 +558,411 @@ class TuKesiswaanController extends Controller
             'paper',
             'showKop',
             'signerRole'
+        ));
+    }
+
+    /**
+     * Rekapitulasi Kehadiran Siswa Harian (Semua Rombel & Per Rombel)
+     */
+    public function attendanceRecapIndex(Request $request): View
+    {
+        $this->authorizeKesiswaan();
+
+        $mode = $request->get('mode', 'all_rombels'); // 'all_rombels' or 'per_rombel'
+        $grade = $request->get('grade', 'ALL'); // 'ALL', 'X', 'XI', 'XII'
+        $startDateInput = $request->get('start_date');
+        $endDateInput = $request->get('end_date');
+
+        // Default dates: awal bulan berjalan s.d. hari ini
+        $today = Carbon::today();
+        $startDate = $startDateInput ? Carbon::parse($startDateInput)->startOfDay() : $today->copy()->startOfMonth();
+        $endDate = $endDateInput ? Carbon::parse($endDateInput)->endOfDay() : $today->copy()->endOfDay();
+
+        if ($startDate->gt($endDate)) {
+            $temp = $startDate;
+            $startDate = $endDate->copy()->startOfDay();
+            $endDate = $temp->copy()->endOfDay();
+        }
+
+        $classesQuery = SchoolClass::with(['homeroomTeacher.user'])->orderBy('grade')->orderBy('name');
+        if ($grade !== 'ALL') {
+            $classesQuery->where('grade', $grade);
+        }
+        $classes = $classesQuery->get();
+
+        $selectedClassId = $request->get('class_id');
+        $selectedClass = $classes->firstWhere('id', (int) $selectedClassId) ?? $classes->first();
+        if ($selectedClass && ! $selectedClassId) {
+            $selectedClassId = $selectedClass->id;
+        }
+
+        $school = SchoolIdentity::current();
+        $academicYear = SchoolSetting::get('academic_year') ?? '2026/2027';
+        $semester = SchoolSetting::get('semester') ?? 'Ganjil';
+
+        // 1. Mode Rekapitulasi Semua Rombel (Tanpa Nama Siswa)
+        $rombelsRecap = [];
+        $schoolTotal = [
+            'total_students' => 0,
+            'hadir' => 0,
+            'tepat_waktu' => 0,
+            'terlambat' => 0,
+            'sakit' => 0,
+            'izin' => 0,
+            'alpa' => 0,
+            'total_records' => 0,
+            'percentage' => 0,
+        ];
+
+        if ($mode === 'all_rombels') {
+            foreach ($classes as $c) {
+                $studentIds = Student::where('class_id', $c->id)->where('is_active', true)->pluck('id');
+                $studentCount = $studentIds->count();
+                if ($studentCount === 0) {
+                    $studentIds = Student::where('class_id', $c->id)->pluck('id');
+                    $studentCount = $studentIds->count();
+                }
+
+                $attendances = Attendance::whereBetween('date', [$startDate->toDateString(), $endDate->toDateString()])
+                    ->where(function ($q) use ($c, $studentIds) {
+                        $q->where('class_id', $c->id)
+                            ->orWhereIn('student_id', $studentIds);
+                    })
+                    ->get();
+
+                $hadir = $attendances->whereIn('status', ['HADIR', 'H'])->count();
+                $terlambat = $attendances->whereIn('status', ['TERLAMBAT', 'T'])->count();
+                $totalHadir = $hadir + $terlambat;
+                $sakit = $attendances->whereIn('status', ['SAKIT', 'S'])->count();
+                $izin = $attendances->whereIn('status', ['IZIN', 'I', 'PULANG_CEPAT'])->count();
+                $alpa = $attendances->whereIn('status', ['ALPA', 'A'])->count();
+                $totalRecords = $totalHadir + $sakit + $izin + $alpa;
+                $percentage = $totalRecords > 0 ? round(($totalHadir / $totalRecords) * 100, 1) : 0;
+
+                $rombelsRecap[] = [
+                    'class' => $c,
+                    'student_count' => $studentCount,
+                    'hadir' => $totalHadir,
+                    'tepat_waktu' => $hadir,
+                    'terlambat' => $terlambat,
+                    'sakit' => $sakit,
+                    'izin' => $izin,
+                    'alpa' => $alpa,
+                    'total_records' => $totalRecords,
+                    'percentage' => $percentage,
+                ];
+
+                $schoolTotal['total_students'] += $studentCount;
+                $schoolTotal['hadir'] += $totalHadir;
+                $schoolTotal['tepat_waktu'] += $hadir;
+                $schoolTotal['terlambat'] += $terlambat;
+                $schoolTotal['sakit'] += $sakit;
+                $schoolTotal['izin'] += $izin;
+                $schoolTotal['alpa'] += $alpa;
+                $schoolTotal['total_records'] += $totalRecords;
+            }
+
+            $schoolTotal['percentage'] = $schoolTotal['total_records'] > 0
+                ? round(($schoolTotal['hadir'] / $schoolTotal['total_records']) * 100, 1)
+                : 0;
+        }
+
+        // 2. Mode Rekapitulasi Per Rombel (Detail Siswa)
+        $studentsRecap = [];
+        $rombelSummary = [
+            'total_students' => 0,
+            'hadir' => 0,
+            'tepat_waktu' => 0,
+            'terlambat' => 0,
+            'sakit' => 0,
+            'izin' => 0,
+            'alpa' => 0,
+            'total_records' => 0,
+            'percentage' => 0,
+        ];
+
+        if ($mode === 'per_rombel' && $selectedClass) {
+            $students = Student::where('class_id', $selectedClass->id)
+                ->where('is_active', true)
+                ->orderBy('name')
+                ->get();
+
+            if ($students->isEmpty()) {
+                $students = Student::where('class_id', $selectedClass->id)
+                    ->orderBy('name')
+                    ->get();
+            }
+
+            $attendancesGroup = Attendance::whereBetween('date', [$startDate->toDateString(), $endDate->toDateString()])
+                ->where(function ($q) use ($selectedClass, $students) {
+                    $q->where('class_id', $selectedClass->id)
+                        ->orWhereIn('student_id', $students->pluck('id'));
+                })
+                ->get()
+                ->groupBy('student_id');
+
+            foreach ($students as $stu) {
+                $stuAtts = $attendancesGroup->get($stu->id, collect());
+                $h = $stuAtts->whereIn('status', ['HADIR', 'H'])->count();
+                $t = $stuAtts->whereIn('status', ['TERLAMBAT', 'T'])->count();
+                $totHadir = $h + $t;
+                $s = $stuAtts->whereIn('status', ['SAKIT', 'S'])->count();
+                $i = $stuAtts->whereIn('status', ['IZIN', 'I', 'PULANG_CEPAT'])->count();
+                $a = $stuAtts->whereIn('status', ['ALPA', 'A'])->count();
+                $tot = $totHadir + $s + $i + $a;
+                $pct = $tot > 0 ? round(($totHadir / $tot) * 100, 1) : 0;
+
+                $studentsRecap[] = [
+                    'student' => $stu,
+                    'hadir' => $totHadir,
+                    'tepat_waktu' => $h,
+                    'terlambat' => $t,
+                    'sakit' => $s,
+                    'izin' => $i,
+                    'alpa' => $a,
+                    'total_records' => $tot,
+                    'percentage' => $pct,
+                ];
+
+                $rombelSummary['hadir'] += $totHadir;
+                $rombelSummary['tepat_waktu'] += $h;
+                $rombelSummary['terlambat'] += $t;
+                $rombelSummary['sakit'] += $s;
+                $rombelSummary['izin'] += $i;
+                $rombelSummary['alpa'] += $a;
+                $rombelSummary['total_records'] += $tot;
+            }
+
+            $rombelSummary['total_students'] = $students->count();
+            $rombelSummary['percentage'] = $rombelSummary['total_records'] > 0
+                ? round(($rombelSummary['hadir'] / $rombelSummary['total_records']) * 100, 1)
+                : 0;
+        }
+
+        return view('tu.kesiswaan.rekap_presensi.index', compact(
+            'mode',
+            'grade',
+            'startDate',
+            'endDate',
+            'classes',
+            'selectedClass',
+            'selectedClassId',
+            'rombelsRecap',
+            'schoolTotal',
+            'studentsRecap',
+            'rombelSummary',
+            'school',
+            'academicYear',
+            'semester'
+        ));
+    }
+
+    /**
+     * Cetak Laporan Rekapitulasi Kehadiran Siswa
+     */
+    public function attendanceRecapPrint(Request $request): View
+    {
+        $this->authorizeKesiswaan();
+
+        $mode = $request->get('mode', 'all_rombels');
+        $grade = $request->get('grade', 'ALL');
+        $startDateInput = $request->get('start_date');
+        $endDateInput = $request->get('end_date');
+
+        $today = Carbon::today();
+        $startDate = $startDateInput ? Carbon::parse($startDateInput)->startOfDay() : $today->copy()->startOfMonth();
+        $endDate = $endDateInput ? Carbon::parse($endDateInput)->endOfDay() : $today->copy()->endOfDay();
+
+        if ($startDate->gt($endDate)) {
+            $temp = $startDate;
+            $startDate = $endDate->copy()->startOfDay();
+            $endDate = $temp->copy()->endOfDay();
+        }
+
+        $classesQuery = SchoolClass::with(['homeroomTeacher.user'])->orderBy('grade')->orderBy('name');
+        if ($grade !== 'ALL') {
+            $classesQuery->where('grade', $grade);
+        }
+        $classes = $classesQuery->get();
+
+        $selectedClassId = $request->get('class_id');
+        $selectedClass = $classes->firstWhere('id', (int) $selectedClassId) ?? $classes->first();
+
+        $school = SchoolIdentity::current();
+        $academicYear = SchoolSetting::get('academic_year') ?? '2026/2027';
+        $semester = SchoolSetting::get('semester') ?? 'Ganjil';
+        $headmasterName = SchoolSetting::get('headmaster_name') ?? $school?->headmaster_name ?? 'Pian Sopian, S.Pd., M.M.Pd.';
+        $headmasterNip = SchoolSetting::get('headmaster_nip') ?? $school?->headmaster_nip ?? '197205121998021001';
+
+        $wakasekUser = User::where(function ($q) {
+            $q->where('role', 'wakasek_kesiswaan')
+                ->orWhereJsonContains('roles', 'wakasek_kesiswaan');
+        })->first();
+        $wakasekName = $wakasekUser?->name ?? 'Wakasek Bidang Kesiswaan';
+        $wakasekNip = $wakasekUser?->nip ?: '-';
+
+        $rombelsRecap = [];
+        $schoolTotal = [
+            'total_students' => 0,
+            'hadir' => 0,
+            'tepat_waktu' => 0,
+            'terlambat' => 0,
+            'sakit' => 0,
+            'izin' => 0,
+            'alpa' => 0,
+            'total_records' => 0,
+            'percentage' => 0,
+        ];
+
+        if ($mode === 'all_rombels') {
+            foreach ($classes as $c) {
+                $studentIds = Student::where('class_id', $c->id)->where('is_active', true)->pluck('id');
+                $studentCount = $studentIds->count();
+                if ($studentCount === 0) {
+                    $studentIds = Student::where('class_id', $c->id)->pluck('id');
+                    $studentCount = $studentIds->count();
+                }
+
+                $attendances = Attendance::whereBetween('date', [$startDate->toDateString(), $endDate->toDateString()])
+                    ->where(function ($q) use ($c, $studentIds) {
+                        $q->where('class_id', $c->id)
+                            ->orWhereIn('student_id', $studentIds);
+                    })
+                    ->get();
+
+                $hadir = $attendances->whereIn('status', ['HADIR', 'H'])->count();
+                $terlambat = $attendances->whereIn('status', ['TERLAMBAT', 'T'])->count();
+                $totalHadir = $hadir + $terlambat;
+                $sakit = $attendances->whereIn('status', ['SAKIT', 'S'])->count();
+                $izin = $attendances->whereIn('status', ['IZIN', 'I', 'PULANG_CEPAT'])->count();
+                $alpa = $attendances->whereIn('status', ['ALPA', 'A'])->count();
+                $totalRecords = $totalHadir + $sakit + $izin + $alpa;
+                $percentage = $totalRecords > 0 ? round(($totalHadir / $totalRecords) * 100, 1) : 0;
+
+                $rombelsRecap[] = [
+                    'class' => $c,
+                    'student_count' => $studentCount,
+                    'hadir' => $totalHadir,
+                    'tepat_waktu' => $hadir,
+                    'terlambat' => $terlambat,
+                    'sakit' => $sakit,
+                    'izin' => $izin,
+                    'alpa' => $alpa,
+                    'total_records' => $totalRecords,
+                    'percentage' => $percentage,
+                ];
+
+                $schoolTotal['total_students'] += $studentCount;
+                $schoolTotal['hadir'] += $totalHadir;
+                $schoolTotal['tepat_waktu'] += $hadir;
+                $schoolTotal['terlambat'] += $terlambat;
+                $schoolTotal['sakit'] += $sakit;
+                $schoolTotal['izin'] += $izin;
+                $schoolTotal['alpa'] += $alpa;
+                $schoolTotal['total_records'] += $totalRecords;
+            }
+
+            $schoolTotal['percentage'] = $schoolTotal['total_records'] > 0
+                ? round(($schoolTotal['hadir'] / $schoolTotal['total_records']) * 100, 1)
+                : 0;
+        }
+
+        $studentsRecap = [];
+        $rombelSummary = [
+            'total_students' => 0,
+            'hadir' => 0,
+            'tepat_waktu' => 0,
+            'terlambat' => 0,
+            'sakit' => 0,
+            'izin' => 0,
+            'alpa' => 0,
+            'total_records' => 0,
+            'percentage' => 0,
+        ];
+
+        if ($mode === 'per_rombel' && $selectedClass) {
+            $students = Student::where('class_id', $selectedClass->id)
+                ->where('is_active', true)
+                ->orderBy('name')
+                ->get();
+
+            if ($students->isEmpty()) {
+                $students = Student::where('class_id', $selectedClass->id)
+                    ->orderBy('name')
+                    ->get();
+            }
+
+            $attendancesGroup = Attendance::whereBetween('date', [$startDate->toDateString(), $endDate->toDateString()])
+                ->where(function ($q) use ($selectedClass, $students) {
+                    $q->where('class_id', $selectedClass->id)
+                        ->orWhereIn('student_id', $students->pluck('id'));
+                })
+                ->get()
+                ->groupBy('student_id');
+
+            foreach ($students as $stu) {
+                $stuAtts = $attendancesGroup->get($stu->id, collect());
+                $h = $stuAtts->whereIn('status', ['HADIR', 'H'])->count();
+                $t = $stuAtts->whereIn('status', ['TERLAMBAT', 'T'])->count();
+                $totHadir = $h + $t;
+                $s = $stuAtts->whereIn('status', ['SAKIT', 'S'])->count();
+                $i = $stuAtts->whereIn('status', ['IZIN', 'I', 'PULANG_CEPAT'])->count();
+                $a = $stuAtts->whereIn('status', ['ALPA', 'A'])->count();
+                $tot = $totHadir + $s + $i + $a;
+                $pct = $tot > 0 ? round(($totHadir / $tot) * 100, 1) : 0;
+
+                $studentsRecap[] = [
+                    'student' => $stu,
+                    'hadir' => $totHadir,
+                    'tepat_waktu' => $h,
+                    'terlambat' => $t,
+                    'sakit' => $s,
+                    'izin' => $i,
+                    'alpa' => $a,
+                    'total_records' => $tot,
+                    'percentage' => $pct,
+                ];
+
+                $rombelSummary['hadir'] += $totHadir;
+                $rombelSummary['tepat_waktu'] += $h;
+                $rombelSummary['terlambat'] += $t;
+                $rombelSummary['sakit'] += $s;
+                $rombelSummary['izin'] += $i;
+                $rombelSummary['alpa'] += $a;
+                $rombelSummary['total_records'] += $tot;
+            }
+
+            $rombelSummary['total_students'] = $students->count();
+            $rombelSummary['percentage'] = $rombelSummary['total_records'] > 0
+                ? round(($rombelSummary['hadir'] / $rombelSummary['total_records']) * 100, 1)
+                : 0;
+        }
+
+        $paper = $request->get('paper', 'a4');
+        $orientation = $request->get('orientation', 'landscape');
+        $showKop = $request->get('kop', '1') !== '0';
+
+        return view('tu.kesiswaan.rekap_presensi.print', compact(
+            'mode',
+            'grade',
+            'startDate',
+            'endDate',
+            'classes',
+            'selectedClass',
+            'rombelsRecap',
+            'schoolTotal',
+            'studentsRecap',
+            'rombelSummary',
+            'school',
+            'academicYear',
+            'semester',
+            'headmasterName',
+            'headmasterNip',
+            'wakasekName',
+            'wakasekNip',
+            'paper',
+            'orientation',
+            'showKop'
         ));
     }
 }

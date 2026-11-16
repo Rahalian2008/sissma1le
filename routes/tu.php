@@ -102,6 +102,12 @@ Route::middleware([
         Route::get('/print', [TuKesiswaanController::class, 'manualAttendancePrint'])->name('print');
     });
 
+    // Rekapitulasi Presensi / Kehadiran Siswa Harian
+    Route::prefix('tu/kesiswaan/rekap-presensi')->name('tu.kesiswaan.rekap_presensi.')->group(function () {
+        Route::get('/', [TuKesiswaanController::class, 'attendanceRecapIndex'])->name('index');
+        Route::get('/print', [TuKesiswaanController::class, 'attendanceRecapPrint'])->name('print');
+    });
+
     Route::get('/tu/kepegawaian', [TuKepegawaianController::class, 'index'])->name('tu.kepegawaian.index');
     Route::post('/tu/kepegawaian/pull-from-master', [TuKepegawaianController::class, 'pullFromMaster'])->name('tu.kepegawaian.pull_from_master');
     Route::post('/tu/kepegawaian/clear', [TuKepegawaianController::class, 'clearData'])->name('tu.kepegawaian.clear');

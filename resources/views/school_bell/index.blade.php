@@ -1238,19 +1238,38 @@ function schoolBellApp() {
                 }
             };
 
+            // Tentukan jenis melodi Chime sesuai kategori: Bel Masuk, Pergantian Jam, Istirahat, Pulang
+            let targetChime = 'westminster';
+            const titleLower = (bell.title || '').toLowerCase();
+            const descLower = (bell.description || '').toLowerCase();
+
+            if (bell.sound_type === 'soundboard' && bell.playlist?.[0]?.sound_type) {
+                targetChime = bell.playlist[0].sound_type;
+            } else if (bell.sound_type && ['bel_masuk', 'ganti_jam', 'istirahat', 'pulang', 'twotone', 'threetone', 'siren'].includes(bell.sound_type)) {
+                targetChime = bell.sound_type;
+            } else if (titleLower.includes('pulang') || titleLower.includes('selesai') || descLower.includes('pulang')) {
+                targetChime = 'pulang';
+            } else if (titleLower.includes('istirahat') || descLower.includes('istirahat')) {
+                targetChime = 'istirahat';
+            } else if (titleLower.includes('ganti') || titleLower.includes('pergantian') || descLower.includes('pergantian')) {
+                targetChime = 'ganti_jam';
+            } else if (titleLower.includes('masuk') || descLower.includes('masuk')) {
+                targetChime = 'bel_masuk';
+            }
+
             // 1. Jika Sirine Darurat
-            if (bell.sound_type === 'siren') {
+            if (bell.sound_type === 'siren' || targetChime === 'siren') {
                 this.testChimeSound('siren');
             } 
             // 2. Jika Soundboard Instan
             else if (bell.sound_type === 'soundboard') {
-                const instantType = bell.playlist?.[0]?.sound_type || (bell.audio_url && bell.audio_url.startsWith('soundboard:') ? bell.audio_url.replace('soundboard:', '') : 'westminster');
+                const instantType = bell.playlist?.[0]?.sound_type || (bell.audio_url && bell.audio_url.startsWith('soundboard:') ? bell.audio_url.replace('soundboard:', '') : targetChime);
                 this.playInstantSound(instantType, bell.title, bell.voice_text);
             }
             // 3. Jika Bel memiliki Murottal atau Lagu Wajib Nasional / Audio
-            // Alur: Suara Bel Chime -> Pengumuman Suara -> Jeda Tepat 3 Detik -> Murottal / Lagu Nasional Otomatis Berbunyi
+            // Alur: Suara Bel Chime Khusus -> Pengumuman Suara -> Jeda Tepat 3 Detik -> Murottal / Lagu Nasional Otomatis Berbunyi
             else if (hasAudioContent) {
-                this.testChimeSound('westminster', null, () => {
+                this.testChimeSound(targetChime, null, () => {
                     if (this.enableVoiceAnnouncement && bell.voice_text) {
                         this.testSpeech(bell.voice_text, () => {
                             // Jeda 3 detik setelah pengumuman bel selesai berbicara
@@ -1268,7 +1287,7 @@ function schoolBellApp() {
             }
             // 4. Bel Reguler Standar (Pergantian Jam KBM / Pengumuman Suara Saja)
             else {
-                this.testChimeSound('westminster', null, () => {
+                this.testChimeSound(targetChime, null, () => {
                     if (this.enableVoiceAnnouncement && bell.voice_text) {
                         this.testSpeech(bell.voice_text);
                     }
@@ -1671,9 +1690,40 @@ function schoolBellApp() {
                     osc.start();
                     osc.stop(t);
                 } else {
-                    const notes = type === 'twotone' 
-                        ? [659.25, 523.25] 
-                        : (type === 'threetone' ? [523.25, 659.25, 783.99] : [659.25, 415.30, 739.99, 493.88, 659.25, 739.99, 830.61, 659.25]);
+                    let notes = [];
+                    let stepDur = 0.52;
+                    let decayDur = 1.25;
+
+                    if (type === 'ganti_jam' || type === 'twotone') {
+                        // Bel Pergantian Jam: Ding-Dong Ringkas 2-Nada (E5 -> C5)
+                        notes = [659.25, 523.25];
+                        stepDur = 0.45;
+                        decayDur = 0.95;
+                    } else if (type === 'istirahat') {
+                        // Bel Istirahat: Melodi Marimba Ceria 5-Nada (F4 - A4 - C5 - E5 - C5)
+                        notes = [349.23, 440.00, 523.25, 659.25, 523.25];
+                        stepDur = 0.38;
+                        decayDur = 0.90;
+                    } else if (type === 'bel_masuk') {
+                        // Bel Masuk KBM: Melodi Semangat 4-Nada Menaik (E4 - G4 - C5 - E5)
+                        notes = [329.63, 392.00, 523.25, 659.25];
+                        stepDur = 0.48;
+                        decayDur = 1.30;
+                    } else if (type === 'pulang') {
+                        // Bel Pulang Sekolah: Fanfare Penutup Megah (C5 - G4 - A4 - C5 - D5 - C5)
+                        notes = [523.25, 392.00, 440.00, 523.25, 587.33, 523.25];
+                        stepDur = 0.42;
+                        decayDur = 1.50;
+                    } else if (type === 'threetone') {
+                        notes = [523.25, 659.25, 783.99];
+                        stepDur = 0.45;
+                        decayDur = 1.10;
+                    } else {
+                        // Westminster Chime Standar
+                        notes = [659.25, 415.30, 739.99, 493.88, 659.25, 739.99, 830.61, 659.25];
+                        stepDur = 0.52;
+                        decayDur = 1.25;
+                    }
 
                     let t = ctx.currentTime;
                     notes.forEach((freq) => {
@@ -1686,19 +1736,21 @@ function schoolBellApp() {
                             const hGain = hIdx === 0 ? 0.4 : 0.12;
                             gain.gain.setValueAtTime(0.001, t);
                             gain.gain.exponentialRampToValueAtTime(hGain, t + 0.04);
-                            gain.gain.exponentialRampToValueAtTime(0.0001, t + 1.25);
+                            gain.gain.exponentialRampToValueAtTime(0.0001, t + decayDur);
                             
                             osc.connect(gain);
                             gain.connect(gainMaster);
                             
                             osc.start(t);
-                            osc.stop(t + 1.3);
+                            osc.stop(t + decayDur + 0.1);
                         });
-                        t += 0.52;
+                        t += stepDur;
                     });
                 }
 
-                const chimeDuration = type === 'twotone' ? 1400 : (type === 'threetone' ? 2000 : (type === 'siren' ? 3500 : 4200));
+                const chimeDuration = type === 'ganti_jam' || type === 'twotone' 
+                    ? 1400 
+                    : (type === 'istirahat' ? 2400 : (type === 'bel_masuk' ? 2600 : (type === 'pulang' ? 3200 : (type === 'threetone' ? 2000 : (type === 'siren' ? 3500 : 4400)))));
 
                 setTimeout(() => {
                     if (onChimeEnded) {

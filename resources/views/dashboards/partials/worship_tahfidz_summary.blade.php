@@ -55,8 +55,11 @@
             <a href="{{ route('extracurricular.index') }}" class="px-2.5 py-1.5 bg-purple-50 hover:bg-purple-100 dark:bg-purple-950/60 dark:hover:bg-purple-900/60 text-purple-800 dark:text-purple-300 font-extrabold rounded-xl text-xs transition border border-purple-200 dark:border-purple-800 flex items-center gap-1">
                 <span>🎯 Ekskul</span>
             </a>
+            <a href="{{ route('quran.index') }}" class="px-2.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:hover:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 font-extrabold rounded-xl text-xs transition border border-emerald-200 dark:border-emerald-800 flex items-center gap-1">
+                <span>📖 Qur'an Digital</span>
+            </a>
             <a href="{{ route('tahfidz.index') }}" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold rounded-xl text-xs transition shadow-xs flex items-center gap-1">
-                <span>📖 Tahfidz →</span>
+                <span>📝 Tahfidz →</span>
             </a>
         </div>
     </div>

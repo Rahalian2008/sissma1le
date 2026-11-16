@@ -621,10 +621,29 @@
                         }
                     };
 
+                    // Tentukan jenis melodi Chime: Bel Masuk, Pergantian Jam, Istirahat, Pulang
+                    let chimeType = 'westminster';
+                    const titleLower = (bell.title || '').toLowerCase();
+                    const descLower = (bell.description || '').toLowerCase();
+
+                    if (bell.sound_type === 'soundboard' && bell.playlist?.[0]?.sound_type) {
+                        chimeType = bell.playlist[0].sound_type;
+                    } else if (bell.sound_type && ['bel_masuk', 'ganti_jam', 'istirahat', 'pulang', 'twotone', 'threetone', 'siren'].includes(bell.sound_type)) {
+                        chimeType = bell.sound_type;
+                    } else if (titleLower.includes('pulang') || titleLower.includes('selesai') || descLower.includes('pulang')) {
+                        chimeType = 'pulang';
+                    } else if (titleLower.includes('istirahat') || descLower.includes('istirahat')) {
+                        chimeType = 'istirahat';
+                    } else if (titleLower.includes('ganti') || titleLower.includes('pergantian') || descLower.includes('pergantian')) {
+                        chimeType = 'ganti_jam';
+                    } else if (titleLower.includes('masuk') || descLower.includes('masuk')) {
+                        chimeType = 'bel_masuk';
+                    }
+
                     // 1. Jika bel memiliki konten Murottal / Lagu Nasional / Audio
                     // Alur: Suara Bel Chime -> Pengumuman Suara -> Jeda Tepat 3 Detik -> Murottal / Lagu Nasional
                     if (hasAudioContent) {
-                        this.playChime('westminster', () => {
+                        this.playChime(chimeType, () => {
                             if (bell.voice_text) {
                                 this.speakText(bell.voice_text, () => {
                                     // Jeda 3 detik setelah pengumuman selesai berbicara
@@ -642,17 +661,17 @@
                     }
                     // 2. Jika tipe voice narasi
                     else if (bell.sound_type === 'voice') {
-                        this.playChime('chime', () => {
+                        this.playChime(chimeType, () => {
                             this.speakText(bell.voice_text || bell.title);
                         });
                     }
                     // 3. Jika sirine darurat
-                    else if (bell.sound_type === 'siren') {
+                    else if (bell.sound_type === 'siren' || chimeType === 'siren') {
                         this.playSiren(bell.duration_seconds || 15);
                     }
-                    // 4. Default: Nada Chime bel reguler (Pergantian Jam KBM)
+                    // 4. Default: Nada Chime bel reguler (Pergantian Jam KBM / Masuk / Istirahat / Pulang)
                     else {
-                        this.playChime('westminster', () => {
+                        this.playChime(chimeType, () => {
                             if (bell.voice_text) {
                                 this.speakText(bell.voice_text);
                             }
@@ -741,64 +760,85 @@
                     masterGain.gain.setValueAtTime((this.volumePercent / 100) * 0.4, now);
                     masterGain.connect(ctx.destination);
 
-                    if (type === 'westminster') {
-                        // Pola melodi 4 nada Westminster Chime (E - C - D - G)
-                        const notes = [
-                            { f: 329.63, t: 0.0, d: 0.7 }, // E4
-                            { f: 261.63, t: 0.8, d: 0.7 }, // C4
-                            { f: 293.66, t: 1.6, d: 0.7 }, // D4
-                            { f: 196.00, t: 2.4, d: 1.4 }, // G3
+                    let notes = [];
+                    let totalDurationMs = 2500;
+
+                    if (type === 'ganti_jam' || type === 'twotone') {
+                        // Bel Pergantian Jam: Ding-Dong Ringkas 2-Nada (E5 -> C5)
+                        notes = [
+                            { f: 659.25, t: 0.0, d: 0.45 },
+                            { f: 523.25, t: 0.45, d: 0.90 },
                         ];
-
-                        notes.forEach(n => {
-                            const osc = ctx.createOscillator();
-                            const g = ctx.createGain();
-                            osc.type = 'sine';
-                            osc.frequency.setValueAtTime(n.f, now + n.t);
-
-                            g.gain.setValueAtTime(0.001, now + n.t);
-                            g.gain.exponentialRampToValueAtTime(1.0, now + n.t + 0.05);
-                            g.gain.exponentialRampToValueAtTime(0.0001, now + n.t + n.d);
-
-                            osc.connect(g);
-                            g.connect(masterGain);
-                            osc.start(now + n.t);
-                            osc.stop(now + n.t + n.d + 0.1);
-                        });
-
-                        setTimeout(() => {
-                            this.isPlaying = false;
-                            if (onEndedCallback) onEndedCallback();
-                        }, 4000);
-                    } else {
+                        totalDurationMs = 1500;
+                    } else if (type === 'istirahat') {
+                        // Bel Istirahat: Melodi Marimba Ceria 5-Nada (F4 - A4 - C5 - E5 - C5)
+                        notes = [
+                            { f: 349.23, t: 0.0, d: 0.35 },
+                            { f: 440.00, t: 0.38, d: 0.35 },
+                            { f: 523.25, t: 0.76, d: 0.35 },
+                            { f: 659.25, t: 1.14, d: 0.35 },
+                            { f: 523.25, t: 1.52, d: 0.90 },
+                        ];
+                        totalDurationMs = 2500;
+                    } else if (type === 'bel_masuk') {
+                        // Bel Masuk KBM: Melodi Semangat 4-Nada Menaik (E4 - G4 - C5 - E5)
+                        notes = [
+                            { f: 329.63, t: 0.0, d: 0.50 },
+                            { f: 392.00, t: 0.50, d: 0.50 },
+                            { f: 523.25, t: 1.00, d: 0.50 },
+                            { f: 659.25, t: 1.50, d: 1.20 },
+                        ];
+                        totalDurationMs = 2800;
+                    } else if (type === 'pulang') {
+                        // Bel Pulang Sekolah: Fanfare Penutup Megah (C5 - G4 - A4 - C5 - D5 - C5)
+                        notes = [
+                            { f: 523.25, t: 0.0, d: 0.40 },
+                            { f: 392.00, t: 0.42, d: 0.40 },
+                            { f: 440.00, t: 0.84, d: 0.40 },
+                            { f: 523.25, t: 1.26, d: 0.45 },
+                            { f: 587.33, t: 1.71, d: 0.45 },
+                            { f: 523.25, t: 2.16, d: 1.40 },
+                        ];
+                        totalDurationMs = 3600;
+                    } else if (type === 'threetone') {
                         // Standard 3-Tone chime (Ding - Dang - Dong)
-                        const notes = [
-                            { f: 523.25, t: 0.0, d: 0.5 }, // C5
-                            { f: 659.25, t: 0.5, d: 0.5 }, // E5
-                            { f: 783.99, t: 1.0, d: 0.9 }, // G5
+                        notes = [
+                            { f: 523.25, t: 0.0, d: 0.50 },
+                            { f: 659.25, t: 0.50, d: 0.50 },
+                            { f: 783.99, t: 1.00, d: 0.90 },
                         ];
-
-                        notes.forEach(n => {
-                            const osc = ctx.createOscillator();
-                            const g = ctx.createGain();
-                            osc.type = 'sine';
-                            osc.frequency.setValueAtTime(n.f, now + n.t);
-
-                            g.gain.setValueAtTime(0.001, now + n.t);
-                            g.gain.exponentialRampToValueAtTime(1.0, now + n.t + 0.04);
-                            g.gain.exponentialRampToValueAtTime(0.0001, now + n.t + n.d);
-
-                            osc.connect(g);
-                            g.connect(masterGain);
-                            osc.start(now + n.t);
-                            osc.stop(now + n.t + n.d + 0.1);
-                        });
-
-                        setTimeout(() => {
-                            this.isPlaying = false;
-                            if (onEndedCallback) onEndedCallback();
-                        }, 2200);
+                        totalDurationMs = 2000;
+                    } else {
+                        // Westminster Chime (E - C - D - G)
+                        notes = [
+                            { f: 329.63, t: 0.0, d: 0.70 },
+                            { f: 261.63, t: 0.75, d: 0.70 },
+                            { f: 293.66, t: 1.50, d: 0.70 },
+                            { f: 196.00, t: 2.25, d: 1.40 },
+                        ];
+                        totalDurationMs = 3800;
                     }
+
+                    notes.forEach(n => {
+                        const osc = ctx.createOscillator();
+                        const g = ctx.createGain();
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(n.f, now + n.t);
+
+                        g.gain.setValueAtTime(0.001, now + n.t);
+                        g.gain.exponentialRampToValueAtTime(1.0, now + n.t + 0.04);
+                        g.gain.exponentialRampToValueAtTime(0.0001, now + n.t + n.d);
+
+                        osc.connect(g);
+                        g.connect(masterGain);
+                        osc.start(now + n.t);
+                        osc.stop(now + n.t + n.d + 0.1);
+                    });
+
+                    setTimeout(() => {
+                        this.isPlaying = false;
+                        if (onEndedCallback) onEndedCallback();
+                    }, totalDurationMs);
                 },
 
                 playSiren(durationSeconds = 10) {

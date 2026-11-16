@@ -338,13 +338,19 @@
 
                         <!-- Hafalan Al-Qur'an -->
                         @if($canNav('tahfidz'))
-                        <a href="{{ route('tahfidz.index') }}" data-tooltip="Hafalan Al-Qur'an" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium leading-snug transition {{ (request()->routeIs('tahfidz.*') || request()->routeIs('quran.*')) ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                        <a href="{{ route('tahfidz.index') }}" data-tooltip="Hafalan Al-Qur'an" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium leading-snug transition {{ request()->routeIs('tahfidz.*') ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
                             <svg class="w-4 h-4 shrink-0 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
                             </svg>
                             <span class="sidebar-label">Hafalan Al-Qur'an</span>
                         </a>
                         @endif
+
+                        <!-- Al-Qur'an Digital 30 Juz & Terjemahan (Tampil di Semua Akun/Role Termasuk Siswa) -->
+                        <a href="{{ route('quran.index') }}" data-tooltip="Al-Qur'an Digital 30 Juz" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium leading-snug transition {{ request()->routeIs('quran.*') ? 'bg-emerald-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                            <span class="text-sm shrink-0">📖</span>
+                            <span class="sidebar-label font-bold text-emerald-400">Al-Qur'an Digital</span>
+                        </a>
 
                         <!-- 7 KAIH -->
                         @if($canNav('habits'))
@@ -358,11 +364,11 @@
 
                         <!-- Raport Digital -->
                         @if($canNav('raport_digital'))
-                        <a href="{{ route('raport.index') }}" data-tooltip="Raport Digital" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium leading-snug transition {{ request()->routeIs('raport.*') ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                        <a href="{{ route('raport.index') }}" data-tooltip="Raport Digital (AI)" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium leading-snug transition {{ request()->routeIs('raport.*') ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
                             <svg class="w-4 h-4 shrink-0 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                             </svg>
-                            <span class="sidebar-label">Raport Digital</span>
+                            <span class="sidebar-label">Raport Digital (AI)</span>
                         </a>
                         @endif
 
@@ -797,7 +803,7 @@
 
             <!-- Main Page Scrollable Content (Responsive padding & safe margin) -->
             <main id="main-scroll-area" tabindex="-1" class="flex-1 min-w-0 w-full overflow-y-auto overflow-x-hidden safe-pb-nav pb-32 xs:pb-36 sm:pb-36 lg:pb-12 p-2 sm:p-3 md:p-3.5 lg:p-4 xl:p-5 2xl:p-6 transition-colors relative focus:outline-hidden">
-                <div class="w-full max-w-full min-w-0 mx-auto content-area min-h-[calc(100vh-140px)] flex flex-col">
+                <div class="w-full max-w-full min-w-0 mx-auto content-area min-h-[calc(100vh-140px)] flex flex-col overflow-x-clip">
                     @if(session('switched_from_super_admin'))
                         <div class="mb-4 p-3 rounded-xl bg-amber-500/15 border border-amber-500/40 text-amber-900 dark:text-amber-200 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 shadow-sm">
                             <div class="flex items-center gap-2.5">
@@ -1078,13 +1084,19 @@
 
                     @if($canNav('tahfidz'))
                     <!-- Hafalan Al-Qur'an -->
-                    <a href="{{ route('tahfidz.index') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium leading-snug transition {{ (request()->routeIs('tahfidz.*') || request()->routeIs('quran.*')) ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                    <a href="{{ route('tahfidz.index') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium leading-snug transition {{ request()->routeIs('tahfidz.*') ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
                         <svg class="w-4 h-4 shrink-0 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
                         </svg>
                         <span>Hafalan Al-Qur'an</span>
                     </a>
                     @endif
+
+                    <!-- Al-Qur'an Digital 30 Juz & Terjemahan (Tampil di Semua Akun/Role Termasuk Siswa) -->
+                    <a href="{{ route('quran.index') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium leading-snug transition {{ request()->routeIs('quran.*') ? 'bg-emerald-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                        <span class="text-sm shrink-0">📖</span>
+                        <span class="font-bold text-emerald-400">Al-Qur'an Digital 30 Juz</span>
+                    </a>
 
                     @if($canNav('habits'))
                     <!-- 7 KAIH -->
@@ -1102,7 +1114,7 @@
                         <svg class="w-4 h-4 shrink-0 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                         </svg>
-                        <span>Raport Digital</span>
+                        <span>Raport Digital (AI)</span>
                     </a>
                     @endif
 

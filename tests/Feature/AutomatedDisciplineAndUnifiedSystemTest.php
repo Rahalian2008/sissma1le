@@ -391,6 +391,7 @@ test('depositing less than 20 verses in a single tahfidz sitting does not trigge
 });
 
 test('shared device and geofence configuration is enforced in worship attendance identically to daily attendance', function () {
+    $this->travelTo(Carbon::parse('next friday 11:45:00'));
     $class = SchoolClass::firstOrCreate(['name' => 'X-GEOFENCE'], ['grade' => '10', 'major' => 'Umum']);
     $userStudent = User::factory()->create(['role' => 'siswa', 'roles' => ['siswa']]);
     $student = Student::create([

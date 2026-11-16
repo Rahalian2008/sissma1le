@@ -43,6 +43,20 @@ class RolePermissionMatrix
                 'koordinator_keagamaan', 'guru', 'siswa', 'orang_tua',
             ],
 
+            'quran' => [
+                'super_admin', 'admin', 'kepala_sekolah',
+                'wakasek_kurikulum', 'wakasek_kesiswaan', 'wakasek_humas', 'wakasek_sarpras',
+                'kepala_administrasi', 'koordinator_bk', 'guru_bk', 'bk',
+                'kepala_perpustakaan', 'pengelola_perpustakaan', 'pustakawan',
+                'wali_kelas', 'pembina_ekstra', 'koordinator_keagamaan',
+                'guru_piket', 'tu_piket', 'petugas_piket',
+                'bendahara', 'bendahara_bosp', 'bendahara_bopd', 'bendahara_gaji',
+                'ta_kesiswaan', 'ta_kepegawaian', 'ta_persuratan', 'ta_sarpras',
+                'operator', 'operator_dapodik', 'kepala_laboratorium',
+                'guru', 'staff', 'tu', 'tenaga_administrasi',
+                'siswa', 'sekretaris_kelas', 'sekretaris_ekstra', 'orang_tua', 'adm_web',
+            ],
+
             'attendance' => [
                 'super_admin', 'admin', 'kepala_sekolah',
                 'wakasek_kesiswaan', 'kesiswaan', 'ta_kesiswaan',
