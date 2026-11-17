@@ -59,12 +59,12 @@ use Illuminate\Support\Facades\Route;
 | Public Routes for Buku Tamu Digital & Dokumen Verifikasi
 |--------------------------------------------------------------------------
 */
-Route::get('/buku-tamu', [GuestController::class, 'kiosk'])->name('guests.kiosk');
+Route::get('/buku-tamu', [GuestController::class, 'kiosk']);
 Route::get('/guestbook', [GuestController::class, 'kiosk']);
-Route::post('/buku-tamu', [GuestController::class, 'storeKiosk'])->name('guests.kiosk.store');
-Route::post('/buku-tamu/checkout', [GuestController::class, 'checkout'])->name('guests.kiosk.checkout');
-Route::get('/buku-tamu/{ticket}', [GuestController::class, 'card'])->name('guests.card');
-Route::get('/buku-tamu/{ticket}/print', [GuestController::class, 'printCard'])->name('guests.print-card');
+Route::post('/buku-tamu', [GuestController::class, 'storeKiosk']);
+Route::post('/buku-tamu/checkout', [GuestController::class, 'checkout']);
+Route::get('/buku-tamu/{ticket}', [GuestController::class, 'card']);
+Route::get('/buku-tamu/{ticket}/print', [GuestController::class, 'printCard']);
 Route::get('/verify/{type}/{token}', [PublicVerifyController::class, 'verify'])->name('verify.public');
 
 /*

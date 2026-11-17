@@ -19,6 +19,9 @@ class SyncSlimsLibraryBooks extends Command
      */
     protected $signature = 'library:sync-slims
                             {--database=u432977099_perpustakaan : Nama database SLiMS}
+                            {--username= : Username database SLiMS}
+                            {--password= : Password database SLiMS}
+                            {--host= : Host database SLiMS}
                             {--covers-dir= : Lokasi folder cover buku SLiMS}
                             {--force : Paksa update data buku yang sudah ada}';
 
@@ -37,19 +40,74 @@ class SyncSlimsLibraryBooks extends Command
         $slimsDb = $this->option('database') ?: 'u432977099_perpustakaan';
         $this->info("=== Memulai Sinkronisasi Katalog Perpustakaan dari SLiMS ({$slimsDb}) ===");
 
-        // 1. Konfigurasi koneksi database runtime untuk SLiMS
+        // 1. Deteksi kredensial database SLiMS (dari parameter, file config SLiMS, atau fallback)
         $defaultMysql = config('database.connections.mysql');
-        config(['database.connections.slims' => array_merge($defaultMysql, [
-            'database' => $slimsDb,
-        ])]);
+        $slimsConfig = $this->resolveSlimsDbConfig();
 
-        try {
-            DB::purge('slims');
-            $testCount = DB::connection('slims')->table('biblio')->count();
-            $this->info("✓ Berhasil terhubung ke database SLiMS. Ditemukan {$testCount} judul buku.");
-        } catch (\Throwable $e) {
-            $this->error('Gagal terhubung ke database SLiMS: '.$e->getMessage());
+        $customUser = $this->option('username') ?: env('SLIMS_DB_USERNAME');
+        $customPass = $this->option('password') ?: env('SLIMS_DB_PASSWORD');
+        $customHost = $this->option('host') ?: env('SLIMS_DB_HOST');
+
+        $credentialsToTry = [];
+
+        // Opsi 1: Kredensial khusus dari CLI / ENV
+        if ($customUser) {
+            $credentialsToTry[] = [
+                'user' => $customUser,
+                'pass' => $customPass ?? '',
+                'host' => $customHost ?: ($slimsConfig['host'] ?? '127.0.0.1'),
+            ];
+        }
+
+        // Opsi 2: Kredensial dari file config SLiMS (config/database.php)
+        if (! empty($slimsConfig['username'])) {
+            $credentialsToTry[] = [
+                'user' => $slimsConfig['username'],
+                'pass' => $slimsConfig['password'] ?? '',
+                'host' => $slimsConfig['host'] ?? '127.0.0.1',
+            ];
+        }
+
+        // Opsi 3: Kredensial bawaan default MySQL aplikasi
+        $credentialsToTry[] = [
+            'user' => $defaultMysql['username'],
+            'pass' => $defaultMysql['password'],
+            'host' => $defaultMysql['host'],
+        ];
+
+        // Opsi 4: Kredensial default SLiMS Hostinger
+        $credentialsToTry[] = [
+            'user' => 'u432977099_perpustakaan',
+            'pass' => '=WqNTqqW6Ut',
+            'host' => '127.0.0.1',
+        ];
+
+        $connected = false;
+        $lastError = null;
+
+        foreach ($credentialsToTry as $cred) {
+            config(['database.connections.slims' => array_merge($defaultMysql, [
+                'host' => $cred['host'],
+                'database' => $slimsDb,
+                'username' => $cred['user'],
+                'password' => $cred['pass'],
+            ])]);
+
+            try {
+                DB::purge('slims');
+                $testCount = DB::connection('slims')->table('biblio')->count();
+                $this->info("✓ Berhasil terhubung ke database SLiMS ({$cred['user']}@{$cred['host']}). Ditemukan {$testCount} judul buku.");
+                $connected = true;
+                break;
+            } catch (\Throwable $e) {
+                $lastError = $e->getMessage();
+            }
+        }
+
+        if (! $connected) {
+            $this->error('Gagal terhubung ke database SLiMS: '.$lastError);
             $this->warn("Pastikan database '{$slimsDb}' sudah diimport ke MySQL.");
+            $this->warn('Gunakan: php artisan library:sync-slims --username=... --password=...');
 
             return Command::FAILURE;
         }
@@ -178,11 +236,32 @@ class SyncSlimsLibraryBooks extends Command
 
             $synopsis = ! empty($biblio->notes) ? strip_tags($biblio->notes) : 'Koleksi resmi Perpustakaan SMA Negeri 1 Lengkong.';
 
+            // Cari apakah buku dengan judul sama atau ISBN atau kode sama sudah ada
+            $existing = LibraryBook::where('book_code', $bookCode)
+                ->orWhere(function ($q) use ($biblio) {
+                    if (! empty($biblio->isbn_issn) && strlen(trim($biblio->isbn_issn)) > 5) {
+                        $q->where('isbn', trim($biblio->isbn_issn));
+                    }
+                })
+                ->orWhere('title', trim($biblio->title))
+                ->first();
+
+            // Tentukan slug yang aman dan unik
+            if ($existing && ! empty($existing->slug)) {
+                $slug = $existing->slug;
+            } else {
+                $baseSlug = Str::slug($biblio->title ?: ('buku-'.$biblioId));
+                $slug = $baseSlug.'-'.$biblioId;
+                if (LibraryBook::where('slug', $slug)->exists()) {
+                    $slug = $baseSlug.'-'.$biblioId.'-'.strtolower(Str::random(4));
+                }
+            }
+
             // Simpan / update ke database library_books aplikasi
             $attributes = [
                 'book_code' => $bookCode,
                 'title' => trim($biblio->title),
-                'slug' => Str::slug($biblio->title.'-'.$biblioId),
+                'slug' => $slug,
                 'book_type' => 'PHYSICAL',
                 'author' => $author,
                 'publisher' => $publisher,
@@ -211,16 +290,6 @@ class SyncSlimsLibraryBooks extends Command
                 $attributes['cover_image'] = $coverImagePath;
             }
 
-            // Cari apakah buku dengan judul sama atau ISBN atau kode sama sudah ada
-            $existing = LibraryBook::where('book_code', $bookCode)
-                ->orWhere(function ($q) use ($biblio) {
-                    if (! empty($biblio->isbn_issn) && strlen(trim($biblio->isbn_issn)) > 5) {
-                        $q->where('isbn', trim($biblio->isbn_issn));
-                    }
-                })
-                ->orWhere('title', trim($biblio->title))
-                ->first();
-
             if ($existing) {
                 if ($this->option('force') || empty($existing->cover_image)) {
                     $existing->update($attributes);
@@ -243,6 +312,38 @@ class SyncSlimsLibraryBooks extends Command
         $this->info('Katalog perpustakaan siap digunakan di menu Perpustakaan.');
 
         return Command::SUCCESS;
+    }
+
+    /**
+     * Mencari file config database SLiMS untuk membaca kredensialnya otomatis
+     */
+    protected function resolveSlimsDbConfig(): array
+    {
+        $candidates = [
+            'C:\\laragon\\www\\slims\\config\\database.php',
+            'C:/laragon/www/slims/config/database.php',
+            base_path('../slims/config/database.php'),
+            base_path('slims/config/database.php'),
+            public_path('../slims/config/database.php'),
+            dirname(base_path()).'/slims/config/database.php',
+            '/home/u432977099/domains/sman1lengkong.school/slims/config/database.php',
+            '/home/u432977099/public_html/slims/config/database.php',
+        ];
+
+        foreach ($candidates as $path) {
+            if (File::exists($path)) {
+                try {
+                    $config = include $path;
+                    if (isset($config['nodes']['SLiMS'])) {
+                        return $config['nodes']['SLiMS'];
+                    }
+                } catch (\Throwable $e) {
+                    // Ignore
+                }
+            }
+        }
+
+        return [];
     }
 
     /**
