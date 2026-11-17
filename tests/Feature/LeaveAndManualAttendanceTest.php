@@ -19,6 +19,7 @@ test('siswa can submit leave request before 06:30 with live camera selfie and re
     Carbon::setTestNow(Carbon::today()->setTime(6, 15, 0));
     $studentUser = User::where('role', 'siswa')->first();
     $student = $studentUser->student ?? Student::first();
+    Attendance::where('student_id', $student->id)->whereDate('date', Carbon::today())->delete();
 
     // Dummy base64 1x1 transparent png image
     $fakeBase64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
@@ -77,6 +78,7 @@ test('siswa can submit leave or sick request in advance for future dates at any 
     $studentUser = User::where('role', 'siswa')->first();
     $student = $studentUser->student ?? Student::first();
     $tomorrow = Carbon::tomorrow()->toDateString();
+    Attendance::where('student_id', $student->id)->whereDate('date', $tomorrow)->delete();
 
     $fakeBase64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
 
@@ -107,6 +109,7 @@ test('siswa can submit early leave PULANG_CEPAT during school hours even after 0
     Carbon::setTestNow(Carbon::today()->setTime(10, 15, 0)); // 10:15 AM
     $studentUser = User::where('role', 'siswa')->first();
     $student = $studentUser->student ?? Student::first();
+    Attendance::where('student_id', $student->id)->whereDate('date', Carbon::today())->delete();
 
     $fakeBase64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
 
@@ -126,8 +129,8 @@ test('siswa can submit early leave PULANG_CEPAT during school hours even after 0
 
     $this->assertDatabaseHas('attendances', [
         'student_id' => $student->id,
-        'status' => 'PULANG_CEPAT',
         'is_early_leave' => true,
+        'requested_status' => 'PULANG_CEPAT',
     ]);
 });
 
@@ -301,7 +304,7 @@ test('wali kelas can record manual attendance for student in their homeroom clas
         ->post(route('attendance.manual.store'), [
             'student_id' => $student->id,
             'date' => Carbon::today()->toDateString(),
-            'time' => '07:05',
+            'time' => '06:25',
             'status' => 'HADIR',
             'notes' => 'Presensi manual karena lupa kartu RFID',
         ]);
@@ -428,7 +431,8 @@ test('wali kelas and admin can perform bulk manual attendance per class', functi
         ],
     ]);
 
-    $response->assertRedirect(route('attendance.manual', [
+    $response->assertRedirect(route('attendance.index', [
+        'tab' => 'manual',
         'class_id' => $class->id,
         'date' => $date,
     ]));

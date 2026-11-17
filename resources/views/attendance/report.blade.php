@@ -59,7 +59,7 @@
     @endif
 
     <!-- Real-time Stats Cards -->
-    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+    <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3 sm:gap-4">
         <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
             <div class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Total Siswa</div>
             <div class="text-2xl font-black text-slate-900 dark:text-white mt-1">{{ $stats['total_students'] }}</div>
@@ -76,6 +76,12 @@
             <div class="text-[11px] font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider">Terlambat</div>
             <div class="text-2xl font-black text-amber-600 dark:text-amber-400 mt-1">{{ $stats['terlambat'] }}</div>
             <div class="text-[10px] text-amber-600 dark:text-amber-400 mt-0.5">Masuk &gt; 07:00</div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-indigo-100 dark:border-indigo-900/40 shadow-xs bg-indigo-50/20 dark:bg-indigo-950/20">
+            <div class="text-[11px] font-semibold text-indigo-700 dark:text-indigo-400 uppercase tracking-wider">Pulang Cepat</div>
+            <div class="text-2xl font-black text-indigo-600 dark:text-indigo-400 mt-1">{{ $stats['pulang_cepat'] }}</div>
+            <div class="text-[10px] text-indigo-600 dark:text-indigo-400 mt-0.5">Status: Tetap Hadir</div>
         </div>
 
         <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-blue-100 dark:border-blue-900/40 shadow-xs bg-blue-50/20 dark:bg-blue-950/20">
@@ -284,14 +290,28 @@
                                 @endif
                             </td>
                             <td class="py-3 px-4">
-                                @if($att->status === 'HADIR')
-                                    <span class="px-2.5 py-1 rounded-full text-[10px] font-black bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
-                                        HADIR
-                                    </span>
+                                @if($att->status === 'HADIR' || $att->status === 'PULANG_CEPAT')
+                                    <div class="flex flex-col gap-1 items-start">
+                                        <span class="px-2.5 py-1 rounded-full text-[10px] font-black bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+                                            HADIR
+                                        </span>
+                                        @if($att->is_early_leave || $att->status === 'PULANG_CEPAT' || ($att->requested_status ?? '') === 'PULANG_CEPAT')
+                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
+                                                🏃 Pulang Cepat ({{ $att->time_out ? \Carbon\Carbon::parse($att->time_out)->format('H:i') : ($att->early_leave_time ? \Carbon\Carbon::parse($att->early_leave_time)->format('H:i') : '') }} WIB)
+                                            </span>
+                                        @endif
+                                    </div>
                                 @elseif($att->status === 'TERLAMBAT')
-                                    <span class="px-2.5 py-1 rounded-full text-[10px] font-black bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
-                                        TERLAMBAT
-                                    </span>
+                                    <div class="flex flex-col gap-1 items-start">
+                                        <span class="px-2.5 py-1 rounded-full text-[10px] font-black bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
+                                            TERLAMBAT
+                                        </span>
+                                        @if($att->is_early_leave || ($att->requested_status ?? '') === 'PULANG_CEPAT')
+                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
+                                                🏃 Pulang Cepat ({{ $att->time_out ? \Carbon\Carbon::parse($att->time_out)->format('H:i') : ($att->early_leave_time ? \Carbon\Carbon::parse($att->early_leave_time)->format('H:i') : '') }} WIB)
+                                            </span>
+                                        @endif
+                                    </div>
                                 @elseif($att->status === 'IZIN')
                                     <span class="px-2.5 py-1 rounded-full text-[10px] font-black bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
                                         IZIN

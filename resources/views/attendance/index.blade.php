@@ -243,13 +243,13 @@
         <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-emerald-500/20 dark:border-emerald-500/30 shadow-2xs">
             <span class="text-[11px] font-bold text-emerald-500 uppercase tracking-wider block">Hadir</span>
             <div class="text-xl sm:text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-1">{{ number_format($totalHadir) }}</div>
-            <span class="text-[10px] text-emerald-600/80 dark:text-emerald-400/80 font-medium">Tepat: {{ $totalTepatWaktu }} • Terlambat: {{ $totalTerlambat }}</span>
+            <span class="text-[10px] text-emerald-600/80 dark:text-emerald-400/80 font-medium">Tepat: {{ $totalTepatWaktu }} • Terlambat: {{ $totalTerlambat }}@if($totalPulangCepat > 0) • Pulang: {{ $totalPulangCepat }}@endif</span>
         </div>
 
-        <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-amber-500/20 dark:border-amber-500/30 shadow-2xs">
-            <span class="text-[11px] font-bold text-amber-500 uppercase tracking-wider block">Izin / Sakit / Pulang</span>
-            <div class="text-xl sm:text-2xl font-black text-amber-600 dark:text-amber-400 mt-1">{{ number_format($totalIzinSakit + $totalPulangCepat) }}</div>
-            <span class="text-[10px] text-amber-600/80 dark:text-amber-400/80 font-medium">Izin: {{ $totalIzinSakit }} • Pulang: {{ $totalPulangCepat }}</span>
+        <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-sky-500/20 dark:border-sky-500/30 shadow-2xs">
+            <span class="text-[11px] font-bold text-sky-500 uppercase tracking-wider block">Izin &amp; Sakit</span>
+            <div class="text-xl sm:text-2xl font-black text-sky-600 dark:text-sky-400 mt-1">{{ number_format($totalIzin + $totalSakit) }}</div>
+            <span class="text-[10px] text-sky-600/80 dark:text-sky-400/80 font-medium">Izin: {{ $totalIzin }} • Sakit: {{ $totalSakit }}</span>
         </div>
 
         <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-rose-500/20 dark:border-rose-500/30 shadow-2xs">

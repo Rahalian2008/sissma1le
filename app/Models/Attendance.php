@@ -33,6 +33,7 @@ class Attendance extends Model
         'out_device_info',
         'ip_address',
         'status',
+        'requested_status',
         'is_early_leave',
         'early_leave_time',
         'early_leave_reason',

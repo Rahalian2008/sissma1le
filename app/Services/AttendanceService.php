@@ -17,7 +17,6 @@ use App\Models\User;
 use App\Models\WorshipAttendance;
 use Carbon\Carbon;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -1286,12 +1285,12 @@ class AttendanceService
             $existing = Attendance::where('student_id', $student->id)->where('date', $targetDate)->first();
 
             if ($existing && in_array($existing->status, ['HADIR', 'TERLAMBAT'])) {
-                // Preserve morning arrival check-in data
+                // Pertahankan status kehadiran masuk (HADIR / TERLAMBAT) karena siswa masuk sekolah
                 $attendance = $existing;
                 $attendance->is_early_leave = true;
                 $attendance->early_leave_time = $earlyLeaveTime;
                 $attendance->early_leave_reason = $earlyNotes;
-                $attendance->status = 'PULANG_CEPAT';
+                $attendance->requested_status = 'PULANG_CEPAT';
                 $attendance->verification_status = 'PERLU_VERIFIKASI';
                 $attendance->out_selfie_path = $imagePath;
                 $attendance->out_latitude = $userLat;
@@ -1315,7 +1314,8 @@ class AttendanceService
                         'gps_accuracy' => $gpsAccuracy,
                         'device_info' => $data['device_info'] ?? request()->userAgent(),
                         'ip_address' => request()->ip(),
-                        'status' => 'PULANG_CEPAT',
+                        'status' => 'HADIR', // Siswa hadir, izin pulang cepat
+                        'requested_status' => 'PULANG_CEPAT',
                         'is_early_leave' => true,
                         'early_leave_time' => $earlyLeaveTime,
                         'early_leave_reason' => $earlyNotes,
@@ -1441,20 +1441,19 @@ class AttendanceService
             'rejection_reason' => null,
         ];
 
-        // Ubah status absen ke requested_status (IZIN atau SAKIT sesuai ajuan) saat di-approve
-        if ($attendance->requested_status) {
-            $updateData['status'] = $attendance->requested_status;
-        } elseif ($attendance->status === 'ALPA' && $attendance->method === 'IZIN_SAKIT') {
-            $updateData['status'] = 'IZIN';
-        }
-
-        // Jika ajuan Pulang Cepat, otomatis catat jam kepulangan (time_out) dan metode checkout
+        // 1. Jika ajuan Pulang Cepat, siswa TETAP HADIR (hadir di sekolah lalu pulang lebih cepat resmi)
         if ($attendance->status === 'PULANG_CEPAT' || $attendance->is_early_leave || ($attendance->requested_status ?? '') === 'PULANG_CEPAT') {
+            $updateData['status'] = in_array($attendance->status, ['HADIR', 'TERLAMBAT']) ? $attendance->status : 'HADIR';
+            $updateData['is_early_leave'] = true;
             $updateData['time_out'] = $attendance->early_leave_time ?? now()->format('H:i:s');
             $updateData['out_method'] = 'PULANG_CEPAT';
             if (empty($attendance->out_selfie_path) && $attendance->selfie_path) {
                 $updateData['out_selfie_path'] = $attendance->selfie_path;
             }
+        } elseif ($attendance->requested_status && in_array(strtoupper($attendance->requested_status), ['IZIN', 'SAKIT', 'UDZUR'])) {
+            $updateData['status'] = strtoupper($attendance->requested_status);
+        } elseif ($attendance->method === 'IZIN_SAKIT' || $attendance->status === 'ALPA') {
+            $updateData['status'] = 'IZIN';
         }
 
         $attendance->update($updateData);
@@ -1714,7 +1713,36 @@ class AttendanceService
             return 0;
         }
 
-        // Sinkronkan pengajuan izin/sakit yang BELUM diaprove (PERLU_VERIFIKASI) agar berstatus ALPA
+        // 1. Pulihkan ajuan yang SUDAH DIVERIFIKASI agar statusnya akurat dan tidak pernah tertinggal sebagai ALPA
+        $approvedQuery = Attendance::whereDate('date', $dateStr)
+            ->where('verification_status', 'DIVERIFIKASI');
+
+        if ($classId !== null) {
+            $classIds = is_array($classId) ? $classId : [$classId];
+            $approvedQuery->where(function ($q) use ($classIds) {
+                $q->whereIn('class_id', $classIds)
+                    ->orWhereHas('student', fn ($sq) => $sq->whereIn('class_id', $classIds));
+            });
+        }
+
+        foreach ($approvedQuery->get() as $approvedRecord) {
+            if ($approvedRecord->is_early_leave || ($approvedRecord->requested_status ?? '') === 'PULANG_CEPAT' || $approvedRecord->status === 'PULANG_CEPAT') {
+                if ($approvedRecord->status !== 'HADIR' && $approvedRecord->status !== 'TERLAMBAT') {
+                    $approvedRecord->update(['status' => 'HADIR', 'is_early_leave' => true]);
+                }
+            } elseif ($approvedRecord->status === 'ALPA') {
+                // Pulihkan jika ajuan izin/sakit telah disetujui
+                $restoredStatus = ($approvedRecord->requested_status && in_array(strtoupper($approvedRecord->requested_status), ['IZIN', 'SAKIT', 'UDZUR']))
+                    ? strtoupper($approvedRecord->requested_status)
+                    : (($approvedRecord->method === 'IZIN_SAKIT') ? 'IZIN' : null);
+
+                if ($restoredStatus) {
+                    $approvedRecord->update(['status' => $restoredStatus]);
+                }
+            }
+        }
+
+        // 2. Sinkronkan pengajuan izin/sakit yang BELUM diapprove (PERLU_VERIFIKASI) agar berstatus ALPA sementara
         $leaveQuery = Attendance::whereDate('date', $dateStr)
             ->whereIn('status', ['IZIN', 'SAKIT'])
             ->where('verification_status', 'PERLU_VERIFIKASI');
@@ -1727,10 +1755,12 @@ class AttendanceService
             });
         }
 
-        $leaveQuery->update([
-            'requested_status' => DB::raw('status'),
-            'status' => 'ALPA',
-        ]);
+        foreach ($leaveQuery->get() as $unverifiedLeave) {
+            $unverifiedLeave->update([
+                'requested_status' => $unverifiedLeave->requested_status ?: $unverifiedLeave->status,
+                'status' => 'ALPA',
+            ]);
+        }
 
         // Jika sama sekali belum ada presensi riil (RFID, selfie, barcode, manual, izin/sakit) pada hari ini,
         // jangan generate ALPA massal otomatis (misal saat reset database atau sebelum ada aktivitas presensi)

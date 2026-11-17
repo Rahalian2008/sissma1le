@@ -166,13 +166,15 @@ class AttendanceController extends Controller
         $attendanceByStudentId = $dayAttendances->keyBy('student_id');
 
         // Statistik Presensi Terpadu
-        $totalHadir = $dayAttendances->whereIn('status', ['HADIR', 'TERLAMBAT'])->count();
-        $totalTepatWaktu = $dayAttendances->where('status', 'HADIR')->count();
+        $totalPulangCepat = $dayAttendances->filter(fn ($a) => $a->is_early_leave || $a->status === 'PULANG_CEPAT' || ($a->requested_status ?? '') === 'PULANG_CEPAT')->count();
         $totalTerlambat = $dayAttendances->where('status', 'TERLAMBAT')->count();
-        $totalIzinSakit = $dayAttendances->whereIn('status', ['IZIN', 'SAKIT', 'UDZUR'])->count();
-        $totalPulangCepat = $dayAttendances->where('status', 'PULANG_CEPAT')->count();
+        $totalHadir = $dayAttendances->filter(fn ($a) => in_array($a->status, ['HADIR', 'TERLAMBAT', 'PULANG_CEPAT']) || $a->is_early_leave)->count();
+        $totalTepatWaktu = max(0, $totalHadir - $totalTerlambat);
+        $totalIzin = $dayAttendances->where('status', 'IZIN')->count();
+        $totalSakit = $dayAttendances->where('status', 'SAKIT')->count();
+        $totalIzinSakit = $totalIzin + $totalSakit + $dayAttendances->where('status', 'UDZUR')->count();
         $totalAlpa = $dayAttendances->where('status', 'ALPA')->count();
-        $totalBelum = max(0, $totalTarget - ($totalHadir + $totalIzinSakit + $totalPulangCepat + $totalAlpa));
+        $totalBelum = max(0, $totalTarget - ($totalHadir + $totalIzinSakit + $totalAlpa));
         $percentHadir = $totalTarget > 0 ? round(($totalHadir / $totalTarget) * 100, 1) : 0;
 
         // Data Tab 1: Scanner Hardware & Feed
@@ -311,6 +313,8 @@ class AttendanceController extends Controller
             'totalHadir',
             'totalTepatWaktu',
             'totalTerlambat',
+            'totalIzin',
+            'totalSakit',
             'totalIzinSakit',
             'totalPulangCepat',
             'totalAlpa',
@@ -980,18 +984,29 @@ class AttendanceController extends Controller
             ->when($classId, fn ($q) => $q->where('class_id', $classId))
             ->count();
 
+        $allDayAttendances = (clone $statsQuery)->get();
+        $pulangCepatCount = $allDayAttendances->filter(fn ($a) => $a->is_early_leave || $a->status === 'PULANG_CEPAT' || ($a->requested_status ?? '') === 'PULANG_CEPAT')->count();
+        $terlambatCount = $allDayAttendances->where('status', 'TERLAMBAT')->count();
+        $hadirTotalCount = $allDayAttendances->filter(fn ($a) => in_array($a->status, ['HADIR', 'TERLAMBAT', 'PULANG_CEPAT']) || $a->is_early_leave)->count();
+        $tepatWaktuCount = max(0, $hadirTotalCount - $terlambatCount);
+        $izinCount = $allDayAttendances->where('status', 'IZIN')->count();
+        $sakitCount = $allDayAttendances->where('status', 'SAKIT')->count();
+        $alpaCount = $allDayAttendances->where('status', 'ALPA')->count();
+
         $stats = [
             'date' => $date,
             'total_students' => $totalActiveStudents,
-            'total_recorded' => (clone $statsQuery)->count(),
-            'hadir' => (clone $statsQuery)->where('status', 'HADIR')->count(),
-            'terlambat' => (clone $statsQuery)->where('status', 'TERLAMBAT')->count(),
-            'izin' => (clone $statsQuery)->where('status', 'IZIN')->count(),
-            'sakit' => (clone $statsQuery)->where('status', 'SAKIT')->count(),
-            'alpa' => (clone $statsQuery)->where('status', 'ALPA')->count(),
+            'total_recorded' => $allDayAttendances->count(),
+            'hadir_total' => $hadirTotalCount,
+            'hadir' => $tepatWaktuCount,
+            'terlambat' => $terlambatCount,
+            'pulang_cepat' => $pulangCepatCount,
+            'izin' => $izinCount,
+            'sakit' => $sakitCount,
+            'alpa' => $alpaCount,
         ];
 
-        $totalPresent = $stats['hadir'] + $stats['terlambat'];
+        $totalPresent = $stats['hadir_total'];
         $stats['percentage'] = $stats['total_students'] > 0
             ? round(($totalPresent / $stats['total_students']) * 100, 1)
             : 0;
