@@ -3,7 +3,7 @@
 @section('title', 'Dashboard Wali Kelas')
 
 @section('content')
-<div class="space-y-6 max-w-7xl 2xl:max-w-[1600px] 3xl:max-w-[1880px] mx-auto">
+<div class="w-full max-w-full min-w-0 space-y-4 sm:space-y-6 max-w-7xl 2xl:max-w-[1600px] 3xl:max-w-[1880px] mx-auto px-1 xs:px-2 sm:px-0 overflow-x-hidden">
     <!-- Header Wali Kelas -->
     <div class="bg-gradient-to-r from-slate-900 to-indigo-900 rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 text-white shadow-xl border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>

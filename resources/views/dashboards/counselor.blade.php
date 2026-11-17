@@ -3,7 +3,7 @@
 @section('title', 'Dashboard Bimbingan & Konseling (BK) Terpadu - SISWA SMA1LE')
 
 @section('content')
-<div class="space-y-6 w-full max-w-7xl mx-auto">
+<div class="w-full max-w-full min-w-0 space-y-4 sm:space-y-6 max-w-7xl mx-auto px-1 xs:px-2 sm:px-0 overflow-x-hidden">
     <!-- Header Layanan Bimbingan & Konseling -->
     <div class="bg-gradient-to-r from-slate-950 via-purple-950 to-slate-900 rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 text-white shadow-2xl border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>

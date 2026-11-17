@@ -488,8 +488,8 @@
                     </div>
                 </div>
 
-                <div class="relative rounded-2xl sm:rounded-3xl overflow-hidden bg-slate-950 aspect-4/3 border-2 border-indigo-500/40 shadow-xl flex items-center justify-center">
-                    <video id="selfie-video" autoplay playsinline class="w-full h-full object-cover"></video>
+                <div class="relative w-full max-w-[280px] xs:max-w-xs sm:max-w-sm mx-auto rounded-2xl sm:rounded-3xl overflow-hidden bg-slate-950 aspect-4/3 border-2 border-indigo-500/40 shadow-xl flex items-center justify-center shrink-0">
+                    <video id="selfie-video" autoplay playsinline class="w-full h-full max-w-full max-h-full object-cover min-w-0 block"></video>
                     <canvas id="selfie-canvas" class="hidden"></canvas>
                     <div id="camera-loading" class="absolute inset-0 bg-slate-950/80 flex flex-col items-center justify-center text-white gap-2">
                         <svg class="w-8 h-8 animate-spin text-indigo-400" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
@@ -990,9 +990,9 @@
                             Foto Selfie Langsung Kamera <span class="text-rose-500">* (Dilarang Dari Galeri)</span>
                         </label>
 
-                        <div class="relative w-full max-w-md mx-auto aspect-4/3 bg-slate-950 rounded-3xl overflow-hidden shadow-xl border-4 border-slate-900 flex items-center justify-center">
+                        <div class="relative w-full max-w-[280px] xs:max-w-xs sm:max-w-md mx-auto aspect-4/3 bg-slate-950 rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl border-2 sm:border-4 border-slate-900 flex items-center justify-center shrink-0">
                             <!-- Live Video Element -->
-                            <video id="tab-leave-video" autoplay playsinline muted class="w-full h-full object-cover transform -scale-x-100"></video>
+                            <video id="tab-leave-video" autoplay playsinline muted class="w-full h-full max-w-full max-h-full object-cover transform -scale-x-100 block min-w-0"></video>
                             
                             <!-- Captured Image Preview -->
                             <img id="tab-leave-preview" class="hidden w-full h-full object-cover" alt="Preview Foto Selfie Langsung">

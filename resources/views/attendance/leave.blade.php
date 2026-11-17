@@ -3,7 +3,7 @@
 @section('title', 'Ajuan Izin, Sakit & Pulang Cepat Siswa')
 
 @section('content')
-<div class="w-full max-w-4xl min-w-0 mx-auto space-y-4 sm:space-y-6">
+<div class="w-full max-w-full sm:max-w-4xl min-w-0 mx-auto space-y-4 sm:space-y-6 px-1 xs:px-2 sm:px-0 overflow-x-hidden">
     @include('attendance.partials.nav')
     <!-- Header Notice -->
     <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-3xl p-6 text-white shadow-xl border border-slate-800">
@@ -175,37 +175,37 @@
                     Foto Selfie Langsung Kamera <span class="text-rose-500">* (Dilarang Dari Galeri)</span>
                 </label>
 
-                <div class="relative w-full max-w-md mx-auto aspect-4/3 bg-slate-950 rounded-3xl overflow-hidden shadow-xl border-4 border-slate-900 flex items-center justify-center">
+                <div class="relative w-full max-w-[280px] xs:max-w-xs sm:max-w-md mx-auto aspect-4/3 bg-slate-950 rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl border-2 sm:border-4 border-slate-900 flex items-center justify-center shrink-0">
                     <!-- Live Video Element -->
-                    <video id="camera-feed" autoplay playsinline muted class="w-full h-full object-cover transform -scale-x-100"></video>
+                    <video id="camera-feed" autoplay playsinline muted class="w-full h-full max-w-full max-h-full object-cover transform -scale-x-100 block min-w-0"></video>
                     
                     <!-- Captured Image Preview -->
-                    <img id="selfie-preview" class="hidden w-full h-full object-cover" alt="Preview Foto Selfie Langsung">
+                    <img id="selfie-preview" class="hidden w-full h-full max-w-full max-h-full object-cover" alt="Preview Foto Selfie Langsung">
 
                     <!-- Frame Canvas (hidden) -->
                     <canvas id="camera-canvas" class="hidden"></canvas>
 
                     <!-- Face Oval Guide -->
-                    <div id="face-guide" class="absolute inset-0 pointer-events-none flex flex-col items-center justify-center p-4">
-                        <div class="w-40 h-52 border-2 border-dashed border-emerald-400/80 rounded-full flex items-center justify-center shadow-lg shadow-emerald-500/10">
-                            <span class="text-[10px] font-bold text-emerald-300 bg-slate-950/70 px-2.5 py-1 rounded-full backdrop-blur-xs">
+                    <div id="face-guide" class="absolute inset-0 pointer-events-none flex flex-col items-center justify-center p-3 sm:p-4 max-w-full overflow-hidden">
+                        <div class="w-32 h-44 sm:w-40 sm:h-52 border-2 border-dashed border-emerald-400/80 rounded-full flex items-center justify-center shadow-lg shadow-emerald-500/10">
+                            <span class="text-[9px] sm:text-[10px] font-bold text-emerald-300 bg-slate-950/70 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full backdrop-blur-xs">
                                 Posisikan Wajah Siswa
                             </span>
                         </div>
                     </div>
 
                     <!-- Camera Starter Overlay -->
-                    <div id="camera-prompt" class="absolute inset-0 bg-slate-950/90 backdrop-blur-xs flex flex-col items-center justify-center p-6 text-center text-white">
-                        <div class="w-12 h-12 rounded-2xl bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 flex items-center justify-center mb-3">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div id="camera-prompt" class="absolute inset-0 max-w-full max-h-full overflow-hidden bg-slate-950/90 backdrop-blur-xs flex flex-col items-center justify-center p-4 sm:p-6 text-center text-white">
+                        <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 flex items-center justify-center mb-2 sm:mb-3 shrink-0">
+                            <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
                             </svg>
                         </div>
-                        <h3 class="font-bold text-sm mb-1">Kamera Selfie Langsung</h3>
-                        <p class="text-xs text-slate-400 mb-4 max-w-xs">
+                        <h3 class="font-bold text-xs sm:text-sm mb-1 truncate max-w-full">Kamera Selfie Langsung</h3>
+                        <p class="text-[11px] sm:text-xs text-slate-400 mb-3 sm:mb-4 max-w-xs leading-relaxed">
                             Sistem memerlukan foto wajah terkini sebagai bukti kehadiran/kondisi hari ini.
                         </p>
-                        <button type="button" onclick="startCamera()" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl text-xs shadow-lg transition">
+                        <button type="button" onclick="startCamera()" class="px-4 py-2 sm:px-5 sm:py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl text-xs shadow-lg transition active:scale-95 cursor-pointer shrink-0">
                             Nyalakan Kamera
                         </button>
                     </div>

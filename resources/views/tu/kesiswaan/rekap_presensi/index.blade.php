@@ -3,7 +3,7 @@
 @section('title', 'Rekapitulasi Kehadiran Siswa - Adm. Kesiswaan')
 
 @section('content')
-<div class="space-y-6">
+<div class="w-full max-w-full min-w-0 space-y-4 sm:space-y-6 px-1 xs:px-2 sm:px-0 overflow-x-hidden">
     <!-- Header Hero -->
     <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-indigo-700 via-blue-700 to-sky-700 p-5 sm:p-7 text-white shadow-xl shadow-indigo-600/10">
         <div class="absolute -right-12 -top-12 h-64 w-64 rounded-full bg-white/10 blur-2xl pointer-events-none"></div>

@@ -152,36 +152,36 @@
         @endif
 
         <!-- Geofence & GPS Status Bar -->
-        <div class="mb-4 sm:mb-6 p-3 sm:p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 text-xs w-full min-w-0">
-            <div class="flex items-center gap-2.5 sm:gap-3 min-w-0 w-full sm:w-auto">
+        <div class="mb-4 sm:mb-6 p-3 sm:p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 text-xs w-full min-w-0 max-w-full overflow-hidden">
+            <div class="flex items-center gap-2.5 sm:gap-3 min-w-0 w-full sm:w-auto overflow-hidden">
                 <div id="gps-indicator" class="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full bg-amber-400 animate-pulse shrink-0"></div>
-                <div class="min-w-0 flex-1">
+                <div class="min-w-0 flex-1 overflow-hidden">
                     <span class="font-bold text-slate-700 dark:text-slate-200 text-xs block truncate" id="gps-status-text">Memindai koordinat GPS...</span>
                     <div class="text-[10.5px] sm:text-[11px] text-slate-400 dark:text-slate-500 truncate" id="gps-coords-text">Mencari sinyal lokasi perangkat</div>
                 </div>
             </div>
             @if(empty($settings['is_geofence_enabled']))
-                <div id="distance-badge" class="w-full sm:w-auto px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-xl bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 font-bold text-center border border-emerald-200 dark:border-emerald-800 text-[11px] sm:text-xs shrink-0 truncate">
+                <div id="distance-badge" class="w-full sm:w-auto px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-xl bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 font-bold text-center border border-emerald-200 dark:border-emerald-800 text-[11px] sm:text-xs shrink-0 truncate max-w-full">
                     ✓ Radius Bebas (Fitur Radius Nonaktif)
                 </div>
             @else
-                <div id="distance-badge" class="w-full sm:w-auto px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-center text-[11px] sm:text-xs shrink-0 truncate">
+                <div id="distance-badge" class="w-full sm:w-auto px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-center text-[11px] sm:text-xs shrink-0 truncate max-w-full">
                     Maks. Radius: {{ $settings['radius_meters'] }} meter
                 </div>
             @endif
         </div>
 
         <!-- Video Stream Container with Face Overlay Guide -->
-        <div class="relative w-full max-w-[340px] xs:max-w-sm sm:max-w-md mx-auto aspect-4/3 bg-slate-950 rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl border-2 sm:border-4 border-slate-900 flex items-center justify-center" style="aspect-ratio: 4/3; width: 100%; max-width: 100%;">
+        <div class="relative w-full max-w-[280px] xs:max-w-[320px] sm:max-w-md mx-auto aspect-4/3 bg-slate-950 rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl border-2 sm:border-4 border-slate-900 flex items-center justify-center shrink-0">
             <!-- Video Element (WebRTC Live Stream) -->
-            <video id="webcam-video" autoplay playsinline muted class="w-full h-full object-cover transform -scale-x-100 block"></video>
+            <video id="webcam-video" autoplay playsinline muted class="w-full h-full max-w-full max-h-full object-cover transform -scale-x-100 block min-w-0"></video>
             
             <!-- Hidden Canvas for frame grab -->
             <canvas id="canvas-capture" class="hidden"></canvas>
 
             <!-- Face Oval Guide Overlay -->
-            <div class="absolute inset-0 pointer-events-none flex flex-col items-center justify-center p-4 sm:p-6">
-                <div class="w-32 h-44 xs:w-36 xs:h-48 sm:w-44 sm:h-56 border-2 border-dashed border-emerald-400/80 rounded-full flex items-center justify-center shadow-lg shadow-emerald-500/10">
+            <div class="absolute inset-0 pointer-events-none flex flex-col items-center justify-center p-3 xs:p-4 sm:p-6 max-w-full overflow-hidden">
+                <div class="w-28 h-40 xs:w-36 xs:h-48 sm:w-44 sm:h-56 border-2 border-dashed border-emerald-400/80 rounded-full flex items-center justify-center shadow-lg shadow-emerald-500/10">
                     <span class="text-[9px] xs:text-[9.5px] sm:text-[10px] font-bold text-emerald-300 bg-slate-950/70 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full backdrop-blur-xs">
                         Posisikan Wajah Di Sini
                     </span>
@@ -189,27 +189,27 @@
             </div>
 
             <!-- Permission / Loading Banner -->
-            <div id="camera-prompt" class="absolute inset-0 bg-slate-950/90 backdrop-blur-xs flex flex-col items-center justify-center p-3.5 xs:p-4 sm:p-6 text-center text-white">
-                <div class="w-11 h-11 xs:w-12 xs:h-12 sm:w-14 sm:h-14 rounded-2xl bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 flex items-center justify-center mb-2 xs:mb-2.5 sm:mb-3">
+            <div id="camera-prompt" class="absolute inset-0 max-w-full max-h-full overflow-hidden bg-slate-950/90 backdrop-blur-xs flex flex-col items-center justify-center p-3 xs:p-4 sm:p-6 text-center text-white">
+                <div class="w-10 h-10 xs:w-12 xs:h-12 sm:w-14 sm:h-14 rounded-2xl bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 flex items-center justify-center mb-2 xs:mb-2.5 sm:mb-3 shrink-0">
                     <svg class="w-5 h-5 xs:w-6 xs:h-6 sm:w-7 sm:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
                     </svg>
                 </div>
-                <h3 class="font-extrabold text-xs sm:text-sm mb-1">Izin Kamera Diperlukan</h3>
-                <p class="text-[10.5px] xs:text-[11px] sm:text-xs text-slate-400 mb-3 sm:mb-4 px-2 max-w-xs leading-relaxed">
+                <h3 class="font-extrabold text-xs sm:text-sm mb-1 truncate max-w-full">Izin Kamera Diperlukan</h3>
+                <p class="text-[10.5px] xs:text-[11px] sm:text-xs text-slate-400 mb-2.5 sm:mb-4 px-1 max-w-xs leading-relaxed">
                     Sistem akan mengaktifkan kamera depan perangkat Anda untuk pengambilan selfie realtime.
                 </p>
-                <button type="button" onclick="startCamera()" class="px-4 py-2 sm:px-5 sm:py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl text-xs shadow-lg transition active:scale-95 cursor-pointer">
+                <button type="button" onclick="startCamera()" class="px-3.5 py-2 sm:px-5 sm:py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl text-xs shadow-lg transition active:scale-95 cursor-pointer shrink-0">
                     Aktifkan Kamera Sekarang
                 </button>
             </div>
         </div>
 
         <!-- Action Button: AMBIL SELFIE -->
-        <div class="mt-4 sm:mt-6 text-center w-full min-w-0 flex flex-col items-center">
+        <div class="mt-4 sm:mt-6 text-center w-full min-w-0 max-w-full flex flex-col items-center px-1">
             @if(!$settings['is_enabled'])
                 <button type="button" disabled
-                    class="w-full max-w-md sm:w-auto px-4 sm:px-10 py-3 sm:py-4 bg-slate-100 dark:bg-slate-800 text-slate-400 font-bold rounded-xl sm:rounded-2xl cursor-not-allowed text-xs sm:text-sm tracking-wide flex items-center justify-center gap-2">
+                    class="w-full max-w-xs xs:max-w-sm sm:max-w-md px-4 sm:px-10 py-3 sm:py-4 bg-slate-100 dark:bg-slate-800 text-slate-400 font-bold rounded-xl sm:rounded-2xl cursor-not-allowed text-xs sm:text-sm tracking-wide flex items-center justify-center gap-2">
                     <svg class="w-5 h-5 text-amber-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
                     </svg>
@@ -220,7 +220,7 @@
                 </p>
             @elseif(!$settings['is_active_day'])
                 <button type="button" disabled
-                    class="w-full max-w-md sm:w-auto px-4 sm:px-10 py-3 sm:py-4 bg-slate-100 dark:bg-slate-800 text-slate-400 font-bold rounded-xl sm:rounded-2xl cursor-not-allowed text-xs sm:text-sm tracking-wide flex items-center justify-center gap-2">
+                    class="w-full max-w-xs xs:max-w-sm sm:max-w-md px-4 sm:px-10 py-3 sm:py-4 bg-slate-100 dark:bg-slate-800 text-slate-400 font-bold rounded-xl sm:rounded-2xl cursor-not-allowed text-xs sm:text-sm tracking-wide flex items-center justify-center gap-2">
                     <svg class="w-5 h-5 text-rose-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
@@ -231,7 +231,7 @@
                 </p>
             @elseif($isComplete)
                 <button type="button" disabled
-                    class="w-full max-w-md sm:w-auto px-4 sm:px-10 py-3 sm:py-4 bg-slate-100 dark:bg-slate-800 text-slate-400 font-black rounded-xl sm:rounded-2xl cursor-not-allowed text-xs sm:text-base tracking-wide flex items-center justify-center gap-2">
+                    class="w-full max-w-xs xs:max-w-sm sm:max-w-md px-4 sm:px-10 py-3 sm:py-4 bg-slate-100 dark:bg-slate-800 text-slate-400 font-black rounded-xl sm:rounded-2xl cursor-not-allowed text-xs sm:text-base tracking-wide flex items-center justify-center gap-2">
                     <svg class="w-5 h-5 text-emerald-500 shrink-0" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                     </svg>
@@ -242,7 +242,7 @@
                 </p>
             @elseif($currentSession === 'checkout')
                 <button type="button" id="btn-capture" onclick="takeSelfie('checkout')" disabled
-                    class="w-full max-w-md sm:w-auto px-4 sm:px-10 py-3 sm:py-4 bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-black rounded-xl sm:rounded-2xl shadow-xl shadow-sky-600/25 text-xs sm:text-base tracking-wide transition transform active:scale-95 flex items-center justify-center gap-2 sm:gap-3 cursor-pointer">
+                    class="w-full max-w-xs xs:max-w-sm sm:max-w-md px-4 sm:px-10 py-3 sm:py-4 bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-black rounded-xl sm:rounded-2xl shadow-xl shadow-sky-600/25 text-xs sm:text-base tracking-wide transition transform active:scale-95 flex items-center justify-center gap-2 sm:gap-3 cursor-pointer">
                     <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
                     </svg>
@@ -253,7 +253,7 @@
                 </p>
             @else
                 <button type="button" id="btn-capture" onclick="takeSelfie('checkin')" disabled
-                    class="w-full max-w-md sm:w-auto px-4 sm:px-10 py-3 sm:py-4 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 disabled:opacity-50 disabled:cursor-not-allowed text-slate-950 font-black rounded-xl sm:rounded-2xl shadow-xl shadow-emerald-500/20 text-xs sm:text-base tracking-wide transition transform active:scale-95 flex items-center justify-center gap-2 sm:gap-3 cursor-pointer">
+                    class="w-full max-w-xs xs:max-w-sm sm:max-w-md px-4 sm:px-10 py-3 sm:py-4 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 disabled:opacity-50 disabled:cursor-not-allowed text-slate-950 font-black rounded-xl sm:rounded-2xl shadow-xl shadow-emerald-500/20 text-xs sm:text-base tracking-wide transition transform active:scale-95 flex items-center justify-center gap-2 sm:gap-3 cursor-pointer">
                     <svg class="w-5 h-5 sm:w-6 sm:h-6 text-slate-950 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
                     </svg>
@@ -329,7 +329,7 @@
                     if (gpsIndicator) gpsIndicator.className = "w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full bg-emerald-500 shrink-0";
                     if (gpsStatusText) gpsStatusText.innerText = `Lokasi GPS Terdeteksi (Jarak: ${distance}m • Fitur Radius Nonaktif)`;
                     if (distanceBadge) {
-                        distanceBadge.className = "w-full sm:w-auto px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-xl bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 font-bold text-center text-[11px] sm:text-xs shrink-0 border border-emerald-200 dark:border-emerald-800 truncate";
+                        distanceBadge.className = "w-full sm:w-auto px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-xl bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 font-bold text-center text-[11px] sm:text-xs shrink-0 border border-emerald-200 dark:border-emerald-800 truncate max-w-full";
                         distanceBadge.innerText = `Radius Bebas (${distance}m)`;
                     }
                 } else if (distance <= allowedRadius) {
@@ -337,7 +337,7 @@
                     if (gpsIndicator) gpsIndicator.className = "w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full bg-emerald-500 shrink-0";
                     if (gpsStatusText) gpsStatusText.innerText = `Lokasi Tervalidasi: Berada di area sekolah (Jarak: ${distance}m)`;
                     if (distanceBadge) {
-                        distanceBadge.className = "w-full sm:w-auto px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-xl bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 font-bold text-center text-[11px] sm:text-xs shrink-0 border border-emerald-200 dark:border-emerald-800 truncate";
+                        distanceBadge.className = "w-full sm:w-auto px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-xl bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 font-bold text-center text-[11px] sm:text-xs shrink-0 border border-emerald-200 dark:border-emerald-800 truncate max-w-full";
                         distanceBadge.innerText = `Dalam Radius (${distance}m / ${allowedRadius}m)`;
                     }
                 } else {
@@ -345,7 +345,7 @@
                     if (gpsIndicator) gpsIndicator.className = "w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full bg-rose-500 shrink-0";
                     if (gpsStatusText) gpsStatusText.innerText = `Di Luar Area Sekolah: Jarak Anda ${distance}m dari sekolah`;
                     if (distanceBadge) {
-                        distanceBadge.className = "w-full sm:w-auto px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-xl bg-rose-100 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300 font-bold text-center text-[11px] sm:text-xs shrink-0 border border-rose-200 dark:border-rose-900/60 truncate";
+                        distanceBadge.className = "w-full sm:w-auto px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-xl bg-rose-100 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300 font-bold text-center text-[11px] sm:text-xs shrink-0 border border-rose-200 dark:border-rose-900/60 truncate max-w-full";
                         distanceBadge.innerText = `Di Luar Radius (${distance}m / ${allowedRadius}m)`;
                     }
                 }

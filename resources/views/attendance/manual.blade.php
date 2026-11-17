@@ -32,7 +32,7 @@
 @endpush
 
 @section('content')
-<div class="w-full max-w-5xl min-w-0 mx-auto space-y-4 sm:space-y-6">
+<div class="w-full max-w-full sm:max-w-5xl min-w-0 mx-auto space-y-4 sm:space-y-6 px-1 xs:px-2 sm:px-0 overflow-x-hidden">
     @include('attendance.partials.nav')
     <!-- Header -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -237,28 +237,28 @@
                 <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2.5">
                     STATUS PRESENSI <span class="text-rose-500">*</span>
                 </label>
-                <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
-                    <label class="relative flex items-center justify-center gap-2 py-3.5 px-3 rounded-2xl border-2 cursor-pointer transition has-checked:border-emerald-500 has-checked:bg-emerald-50 dark:has-checked:bg-emerald-950/60 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                <div class="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-5 gap-2 xs:gap-2.5 sm:gap-3">
+                    <label class="relative flex items-center justify-center gap-1.5 xs:gap-2 py-3 px-2 xs:px-3 rounded-2xl border-2 cursor-pointer transition has-checked:border-emerald-500 has-checked:bg-emerald-50 dark:has-checked:bg-emerald-950/60 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/50">
                         <input type="radio" name="status" value="HADIR" class="sr-only" checked>
                         <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0"></span>
                         <span class="text-xs font-black text-slate-800 dark:text-slate-200 tracking-wide">HADIR</span>
                     </label>
-                    <label class="relative flex items-center justify-center gap-2 py-3.5 px-3 rounded-2xl border-2 cursor-pointer transition has-checked:border-amber-500 has-checked:bg-amber-50 dark:has-checked:bg-amber-950/60 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                    <label class="relative flex items-center justify-center gap-1.5 xs:gap-2 py-3 px-2 xs:px-3 rounded-2xl border-2 cursor-pointer transition has-checked:border-amber-500 has-checked:bg-amber-50 dark:has-checked:bg-amber-950/60 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/50">
                         <input type="radio" name="status" value="TERLAMBAT" class="sr-only">
                         <span class="w-2.5 h-2.5 rounded-full bg-amber-500 shrink-0"></span>
                         <span class="text-xs font-black text-slate-800 dark:text-slate-200 tracking-wide">TERLAMBAT</span>
                     </label>
-                    <label class="relative flex items-center justify-center gap-2 py-3.5 px-3 rounded-2xl border-2 cursor-pointer transition has-checked:border-blue-500 has-checked:bg-blue-50 dark:has-checked:bg-blue-950/60 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                    <label class="relative flex items-center justify-center gap-1.5 xs:gap-2 py-3 px-2 xs:px-3 rounded-2xl border-2 cursor-pointer transition has-checked:border-blue-500 has-checked:bg-blue-50 dark:has-checked:bg-blue-950/60 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/50">
                         <input type="radio" name="status" value="IZIN" class="sr-only">
                         <span class="w-2.5 h-2.5 rounded-full bg-blue-500 shrink-0"></span>
                         <span class="text-xs font-black text-slate-800 dark:text-slate-200 tracking-wide">IZIN</span>
                     </label>
-                    <label class="relative flex items-center justify-center gap-2 py-3.5 px-3 rounded-2xl border-2 cursor-pointer transition has-checked:border-purple-500 has-checked:bg-purple-50 dark:has-checked:bg-purple-950/60 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                    <label class="relative flex items-center justify-center gap-1.5 xs:gap-2 py-3 px-2 xs:px-3 rounded-2xl border-2 cursor-pointer transition has-checked:border-purple-500 has-checked:bg-purple-50 dark:has-checked:bg-purple-950/60 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/50">
                         <input type="radio" name="status" value="SAKIT" class="sr-only">
                         <span class="w-2.5 h-2.5 rounded-full bg-purple-500 shrink-0"></span>
                         <span class="text-xs font-black text-slate-800 dark:text-slate-200 tracking-wide">SAKIT</span>
                     </label>
-                    <label class="relative flex items-center justify-center gap-2 py-3.5 px-3 rounded-2xl border-2 cursor-pointer transition has-checked:border-rose-500 has-checked:bg-rose-50 dark:has-checked:bg-rose-950/60 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                    <label class="col-span-2 xs:col-span-1 relative flex items-center justify-center gap-1.5 xs:gap-2 py-3 px-2 xs:px-3 rounded-2xl border-2 cursor-pointer transition has-checked:border-rose-500 has-checked:bg-rose-50 dark:has-checked:bg-rose-950/60 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/50">
                         <input type="radio" name="status" value="ALPA" class="sr-only">
                         <span class="w-2.5 h-2.5 rounded-full bg-rose-500 shrink-0"></span>
                         <span class="text-xs font-black text-slate-800 dark:text-slate-200 tracking-wide">ALPA</span>
@@ -293,12 +293,12 @@
                 </div>
 
                 <!-- Camera / Preview Box -->
-                <div class="relative w-full max-w-sm mx-auto aspect-4/3 bg-slate-950 rounded-2xl overflow-hidden shadow-inner border-2 border-slate-800 flex items-center justify-center">
+                <div class="relative w-full max-w-[280px] xs:max-w-xs sm:max-w-sm mx-auto aspect-4/3 bg-slate-950 rounded-2xl overflow-hidden shadow-inner border-2 border-slate-800 flex items-center justify-center shrink-0">
                     <!-- Live Video Element -->
-                    <video id="manual-camera-feed" autoplay playsinline muted class="w-full h-full object-cover transform -scale-x-100 hidden"></video>
+                    <video id="manual-camera-feed" autoplay playsinline muted class="w-full h-full max-w-full max-h-full object-cover transform -scale-x-100 hidden min-w-0"></video>
                     
                     <!-- Captured Image Preview -->
-                    <img id="manual-selfie-preview" class="hidden w-full h-full object-cover" alt="Preview Foto Selfie">
+                    <img id="manual-selfie-preview" class="hidden w-full h-full max-w-full max-h-full object-cover" alt="Preview Foto Selfie">
 
                     <!-- Hidden Canvas -->
                     <canvas id="manual-camera-canvas" class="hidden"></canvas>
