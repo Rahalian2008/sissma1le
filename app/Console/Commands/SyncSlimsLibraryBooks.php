@@ -113,13 +113,17 @@ class SyncSlimsLibraryBooks extends Command
             return Command::FAILURE;
         }
 
-        // 2. Deteksi lokasi gambar cover SLiMS
-        $coversDir = $this->resolveCoversDirectory($this->option('covers-dir'));
-        if ($coversDir && File::isDirectory($coversDir)) {
-            $coverFileCount = count(File::files($coversDir));
-            $this->info("✓ Direktori cover SLiMS ditemukan: {$coversDir} ({$coverFileCount} file cover).");
+        // 2. Deteksi lokasi gambar cover SLiMS (mendukung folder SLiMS maupun hasil upload di storage/app/public)
+        $coversDirs = $this->resolveCoversDirectories($this->option('covers-dir'));
+        $totalSourceFiles = 0;
+        foreach ($coversDirs as $dir) {
+            $totalSourceFiles += count(File::files($dir));
+        }
+
+        if (! empty($coversDirs)) {
+            $this->info('✓ Direktori sumber cover ditemukan: '.implode(', ', $coversDirs)." ({$totalSourceFiles} berkas cover).");
         } else {
-            $this->warn('! Direktori cover SLiMS tidak ditemukan otomatis. Cover gambar akan dilewati jika file tidak ada.');
+            $this->warn('! Direktori sumber cover SLiMS tidak ditemukan otomatis. File cover akan disinkronkan dari storage/app/public jika tersedia.');
         }
 
         // 3. Siapkan direktori penyimpanan cover di aplikasi
@@ -127,6 +131,12 @@ class SyncSlimsLibraryBooks extends Command
         $publicCoverDir = public_path('storage/library/covers');
         File::ensureDirectoryExists($storageCoverDir);
         File::ensureDirectoryExists($publicCoverDir);
+
+        // Jika public_html terpisah di lingkungan shared hosting / cPanel
+        $altPublicDir = base_path('public_html/storage/library/covers');
+        if (File::isDirectory(base_path('public_html'))) {
+            File::ensureDirectoryExists($altPublicDir);
+        }
 
         // 4. Muat kategori perpustakaan
         $categories = LibraryCategory::all();
@@ -218,22 +228,39 @@ class SyncSlimsLibraryBooks extends Command
             $category = $this->determineCategory($biblio, $categories);
 
             // Pengolahan Cover Gambar
-            $coverImagePath = null;
-            if (! empty($biblio->image) && $coversDir) {
-                $sourceImage = $coversDir.DIRECTORY_SEPARATOR.$biblio->image;
-                if (File::exists($sourceImage)) {
-                    $targetFileName = $biblio->image;
-                    $destStorage = $storageCoverDir.DIRECTORY_SEPARATOR.$targetFileName;
-                    $destPublic = $publicCoverDir.DIRECTORY_SEPARATOR.$targetFileName;
+            // Jika biblio SLiMS memiliki nama file cover, selalu catat path relatifnya di database
+            $coverImagePath = ! empty($biblio->image) ? ('library/covers/'.$biblio->image) : null;
+            if (! empty($biblio->image)) {
+                $targetFileName = $biblio->image;
+                $destStorage = $storageCoverDir.DIRECTORY_SEPARATOR.$targetFileName;
+                $destPublic = $publicCoverDir.DIRECTORY_SEPARATOR.$targetFileName;
+                $destAlt = isset($altPublicDir) ? $altPublicDir.DIRECTORY_SEPARATOR.$targetFileName : null;
 
+                // Cari apakah file fisik gambar ada di salah satu folder sumber
+                $foundSource = null;
+                foreach ($coversDirs as $dir) {
+                    $potential = $dir.DIRECTORY_SEPARATOR.$targetFileName;
+                    if (File::exists($potential)) {
+                        $foundSource = $potential;
+                        break;
+                    }
+                }
+
+                // Jika sudah ada di destStorage tapi belum di destPublic, gunakan destStorage sebagai sumber
+                if (! $foundSource && File::exists($destStorage)) {
+                    $foundSource = $destStorage;
+                }
+
+                if ($foundSource) {
                     if (! File::exists($destStorage) || $this->option('force')) {
-                        File::copy($sourceImage, $destStorage);
+                        @File::copy($foundSource, $destStorage);
                     }
                     if (! File::exists($destPublic) || $this->option('force')) {
-                        File::copy($sourceImage, $destPublic);
+                        @File::copy($foundSource, $destPublic);
                     }
-
-                    $coverImagePath = 'library/covers/'.$targetFileName;
+                    if ($destAlt && (! File::exists($destAlt) || $this->option('force'))) {
+                        @File::copy($foundSource, $destAlt);
+                    }
                     $coverCopiedCount++;
                 }
             }
@@ -289,11 +316,8 @@ class SyncSlimsLibraryBooks extends Command
                 'is_ebook' => false,
                 'is_available' => $totalCopies > 0,
                 'is_active' => true,
+                'cover_image' => $coverImagePath,
             ];
-
-            if ($coverImagePath) {
-                $attributes['cover_image'] = $coverImagePath;
-            }
 
             if ($existing) {
                 $existing->update($attributes);
@@ -308,10 +332,32 @@ class SyncSlimsLibraryBooks extends Command
         $bar->finish();
         $this->newLine(2);
 
+        // Pastikan seluruh file cover yang ada di storage/app/public/library/covers tercermin di public/storage
+        if (File::isDirectory($storageCoverDir)) {
+            $allStorageCovers = File::files($storageCoverDir);
+            foreach ($allStorageCovers as $file) {
+                $targetFile = $publicCoverDir.DIRECTORY_SEPARATOR.$file->getFilename();
+                if (! File::exists($targetFile)) {
+                    @File::copy($file->getPathname(), $targetFile);
+                }
+                if (isset($altPublicDir) && ! File::exists($altPublicDir.DIRECTORY_SEPARATOR.$file->getFilename())) {
+                    @File::copy($file->getPathname(), $altPublicDir.DIRECTORY_SEPARATOR.$file->getFilename());
+                }
+            }
+        }
+
+        // Pastikan symlink storage:link dibuat jika belum ada
+        try {
+            $this->callSilent('storage:link');
+        } catch (\Throwable $e) {
+            // Abaikan jika tidak diizinkan di sistem
+        }
+
         $this->info('================ SINKRONISASI SELESAI ================');
         $this->info("✓ Total judul buku berhasil diproses : {$syncedCount}");
         $this->info("✓ Total eksemplar fisik tercatat     : {$totalItemsCount}");
         $this->info("✓ Total cover buku berhasil disalin  : {$coverCopiedCount}");
+        $this->info('✓ Direktori public storage cover siap disajikan oleh web server.');
         $this->info('Katalog perpustakaan siap digunakan di menu Perpustakaan.');
 
         return Command::SUCCESS;
@@ -350,15 +396,27 @@ class SyncSlimsLibraryBooks extends Command
     }
 
     /**
-     * Cari folder cover gambar SLiMS di berbagai path yang umum
+     * Cari seluruh folder sumber cover gambar SLiMS (termasuk folder uploads di storage/app/public)
+     *
+     * @return array<int, string>
      */
-    protected function resolveCoversDirectory(?string $customPath): ?string
+    protected function resolveCoversDirectories(?string $customPath): array
     {
+        $dirs = [];
         if ($customPath && File::isDirectory($customPath)) {
-            return realpath($customPath);
+            $dirs[] = realpath($customPath);
         }
 
         $candidates = [
+            storage_path('app/public/library/covers'),
+            public_path('storage/library/covers'),
+            base_path('storage/app/public/library/covers'),
+            base_path('public/storage/library/covers'),
+            base_path('public_html/storage/app/public/library/covers'),
+            base_path('public_html/storage/library/covers'),
+            '/home/u432977099/domains/sman1lengkong.school/public_html/storage/app/public/library/covers',
+            '/home/u432977099/domains/sman1lengkong.school/public_html/public/storage/library/covers',
+            '/home/u432977099/domains/sman1lengkong.school/public_html/storage/library/covers',
             'C:\\laragon\\www\\slims\\images\\docs',
             'C:/laragon/www/slims/images/docs',
             base_path('../slims/images/docs'),
@@ -372,11 +430,14 @@ class SyncSlimsLibraryBooks extends Command
 
         foreach ($candidates as $cand) {
             if (! empty($cand) && File::isDirectory($cand)) {
-                return realpath($cand);
+                $real = realpath($cand);
+                if ($real && ! in_array($real, $dirs, true)) {
+                    $dirs[] = $real;
+                }
             }
         }
 
-        return null;
+        return $dirs;
     }
 
     /**

@@ -68,3 +68,21 @@ test('slims library sync command executes correctly', function () {
 
     expect(LibraryBook::count())->toBeGreaterThan(0);
 });
+
+test('library sync-covers command runs successfully and cover url resolves properly', function () {
+    $book = LibraryBook::create([
+        'title' => 'Test Buku Cover',
+        'book_code' => 'TEST-001',
+        'author' => 'Penulis Test',
+        'publisher' => 'Penerbit Test',
+        'publish_year' => 2026,
+        'category_name' => 'Umum',
+        'collection_type' => 'physical',
+        'cover_image' => 'library/covers/test_cover.jpg',
+    ]);
+
+    $this->artisan('library:sync-covers')
+        ->assertSuccessful();
+
+    expect($book->cover_url)->toBe(asset('storage/library/covers/test_cover.jpg'));
+});

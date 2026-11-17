@@ -50,7 +50,7 @@
             <!-- Cover Image Preview -->
             <div class="w-full md:w-64 shrink-0 flex flex-col items-center">
                 <div class="w-full max-w-[240px] aspect-[2/3] rounded-2xl overflow-hidden shadow-xl border-2 border-slate-700/60 relative group bg-slate-800">
-                    <img src="{{ $book->cover_url }}" alt="{{ $book->title }}" class="w-full h-full object-cover">
+                    <img src="{{ $book->cover_url }}" alt="{{ $book->title }}" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='{{ asset('images/default-book-cover.svg') }}';">
                     
                     @if($book->is_digital_flip || $book->book_type === 'digital')
                         <a href="{{ route('library.books.flipbook', $book) }}" class="absolute inset-0 bg-slate-950/70 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2 text-white font-bold text-xs p-4 text-center">

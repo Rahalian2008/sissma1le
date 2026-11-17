@@ -125,11 +125,11 @@ class LibraryBook extends Model
 
     public function getCoverUrlAttribute(): string
     {
-        if ($this->cover_image && (Storage::disk('public')->exists($this->cover_image) || file_exists(public_path('storage/'.$this->cover_image)))) {
-            return asset('storage/'.$this->cover_image);
+        if (empty($this->cover_image)) {
+            return asset('images/default-book-cover.svg');
         }
 
-        return asset('images/default-book-cover.svg');
+        return asset('storage/'.$this->cover_image);
     }
 
     public function getDigitalFileUrlAttribute(): ?string

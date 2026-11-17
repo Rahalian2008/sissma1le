@@ -112,8 +112,8 @@
                     <div class="group bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-xs hover:shadow-lg hover:border-indigo-500/50 transition-all duration-300 flex flex-col justify-between">
                         <!-- Top Cover Banner / Thumbnail -->
                         <div class="relative h-44 bg-slate-800 overflow-hidden flex items-center justify-center">
-                            @if($b->cover_image && (Illuminate\Support\Facades\Storage::disk('public')->exists($b->cover_image) || file_exists(public_path('storage/' . $b->cover_image))))
-                                <img src="{{ asset('storage/' . $b->cover_image) }}" alt="{{ $b->title }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                            @if(!empty($b->cover_image))
+                                <img src="{{ asset('storage/' . $b->cover_image) }}" alt="{{ $b->title }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy" onerror="this.onerror=null;this.src='{{ asset('images/default-book-cover.svg') }}';">
                             @else
                                 <img src="{{ asset('images/default-book-cover.svg') }}" alt="Default Cover" class="w-full h-full object-cover">
                             @endif

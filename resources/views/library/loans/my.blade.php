@@ -102,7 +102,7 @@
                             <div class="flex gap-3.5">
                                 <div class="w-16 h-22 rounded-xl overflow-hidden shrink-0 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center">
                                     @if($book && $book->cover_image)
-                                        <img src="{{ $book->cover_url }}" alt="{{ $book->title }}" class="w-full h-full object-cover">
+                                        <img src="{{ $book->cover_url }}" alt="{{ $book->title }}" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='{{ asset('images/default-book-cover.svg') }}';">
                                     @else
                                         <div class="text-2xl">📚</div>
                                     @endif
