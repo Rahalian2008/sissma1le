@@ -8,6 +8,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
 class SyncSlimsLibraryBooks extends Command
@@ -173,6 +174,17 @@ class SyncSlimsLibraryBooks extends Command
             ->get()
             ->groupBy('biblio_id');
 
+        if ($this->option('force')) {
+            $this->info('Membersihkan data buku dummy/lama agar 100% sinkron murni dari SLiMS...');
+            Schema::disableForeignKeyConstraints();
+            foreach (['library_loans', 'library_bookmarks', 'library_reading_logs', 'library_reviews', 'library_books'] as $table) {
+                if (Schema::hasTable($table)) {
+                    DB::table($table)->truncate();
+                }
+            }
+            Schema::enableForeignKeyConstraints();
+        }
+
         $bar = $this->output->createProgressBar($biblios->count());
         $bar->start();
 
@@ -181,7 +193,7 @@ class SyncSlimsLibraryBooks extends Command
         $totalItemsCount = 0;
 
         foreach ($biblios as $biblio) {
-            $biblioId = $biblio->biblio_id;
+            $biblioId = (int) $biblio->biblio_id;
             $items = $itemsRaw->get($biblioId, collect());
             $authorList = $authorsRaw->get($biblioId, collect())->pluck('author_name')->filter()->values();
 
@@ -190,14 +202,12 @@ class SyncSlimsLibraryBooks extends Command
                 : (! empty($biblio->sor) ? $biblio->sor : 'Penulis SLiMS / Anonim');
 
             $publisher = ! empty($biblio->publisher_name) ? $biblio->publisher_name : 'Penerbit Perpustakaan';
-            $totalCopies = max(1, $items->count());
+            $totalCopies = $items->count();
             $totalItemsCount += $items->count();
 
-            // Kode buku / barcode
+            // Kode buku unik 1-to-1 dengan ID Biblio SLiMS
+            $bookCode = 'SLIMS-'.str_pad((string) $biblioId, 5, '0', STR_PAD_LEFT);
             $firstItem = $items->first();
-            $bookCode = ($firstItem && ! empty($firstItem->item_code))
-                ? $firstItem->item_code
-                : ('SLIMS-'.str_pad($biblioId, 5, '0', STR_PAD_LEFT));
 
             // Call number
             $callNumber = ! empty($biblio->biblio_call_number)
@@ -236,15 +246,8 @@ class SyncSlimsLibraryBooks extends Command
 
             $synopsis = ! empty($biblio->notes) ? strip_tags($biblio->notes) : 'Koleksi resmi Perpustakaan SMA Negeri 1 Lengkong.';
 
-            // Cari apakah buku dengan judul sama atau ISBN atau kode sama sudah ada
-            $existing = LibraryBook::where('book_code', $bookCode)
-                ->orWhere(function ($q) use ($biblio) {
-                    if (! empty($biblio->isbn_issn) && strlen(trim($biblio->isbn_issn)) > 5) {
-                        $q->where('isbn', trim($biblio->isbn_issn));
-                    }
-                })
-                ->orWhere('title', trim($biblio->title))
-                ->first();
+            // Cari apakah buku dengan kode unik ini sudah ada
+            $existing = LibraryBook::where('book_code', $bookCode)->first();
 
             // Tentukan slug yang aman dan unik
             if ($existing && ! empty($existing->slug)) {
@@ -259,6 +262,7 @@ class SyncSlimsLibraryBooks extends Command
 
             // Simpan / update ke database library_books aplikasi
             $attributes = [
+                'id' => $biblioId,
                 'book_code' => $bookCode,
                 'title' => trim($biblio->title),
                 'slug' => $slug,
@@ -281,8 +285,9 @@ class SyncSlimsLibraryBooks extends Command
                 'page_count' => $pagesCount,
                 'pages_count' => $pagesCount,
                 'language' => 'Bahasa Indonesia',
+                'source' => 'SLIMS',
                 'is_ebook' => false,
-                'is_available' => true,
+                'is_available' => $totalCopies > 0,
                 'is_active' => true,
             ];
 
@@ -291,9 +296,7 @@ class SyncSlimsLibraryBooks extends Command
             }
 
             if ($existing) {
-                if ($this->option('force') || empty($existing->cover_image)) {
-                    $existing->update($attributes);
-                }
+                $existing->update($attributes);
             } else {
                 LibraryBook::create($attributes);
             }
