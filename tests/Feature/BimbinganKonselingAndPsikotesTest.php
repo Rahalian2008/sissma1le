@@ -213,8 +213,31 @@ test('student can take psychological test and view result and print document', f
     $resultPage = $this->actingAs($this->studentUser)->get(route('bk.psychological.result', $result));
     $resultPage->assertStatus(200);
     $resultPage->assertSee($result->profile_label);
+    $resultPage->assertSee('Matriks Rencana Tindak Lanjut (RTL) Layanan BK', false);
+    $resultPage->assertSee('Scientific References', false);
 
     $printPage = $this->actingAs($this->studentUser)->get(route('bk.psychological.print', $result));
     $printPage->assertStatus(200);
     $printPage->assertSee('LAPORAN HASIL ASESMEN PSIKOLOGIS PESERTA DIDIK', false);
+    $printPage->assertSee('Matriks Rencana Tindak Lanjut (RTL)', false);
+    $printPage->assertSee('Dasar Teori Psikometris', false);
+});
+
+test('counselor can generate ai assessment demo and trigger ai re-analysis with valid scientific sources', function () {
+    $demoRes = $this->actingAs($this->counselor)->post(route('bk.psychological.demo-seed'), [
+        'slug' => 'vak',
+    ]);
+    $demoRes->assertRedirect();
+
+    $latestResult = BkPsychologicalTestResult::latest('id')->first();
+    expect($latestResult)->not->toBeNull();
+    expect($latestResult->action_plan)->toBeArray();
+    expect($latestResult->action_plan)->toHaveKeys(['bidang_pribadi', 'bidang_belajar', 'bidang_karier', 'kolaborasi_guru_mapel', 'peran_orang_tua', 'indikator_evaluasi']);
+    expect($latestResult->scientific_sources)->toBeArray();
+    expect($latestResult->scientific_sources)->toHaveKeys(['theory_name', 'pioneers', 'primary_literature', 'regulatory_framework']);
+    expect($latestResult->item_analysis)->toBeArray();
+    expect($latestResult->item_analysis)->toHaveKeys(['top_strengths', 'growth_areas', 'total_items_answered']);
+
+    $reAnalysisRes = $this->actingAs($this->counselor)->post(route('bk.psychological.generate-ai', $latestResult));
+    $reAnalysisRes->assertRedirect(route('bk.psychological.result', $latestResult));
 });

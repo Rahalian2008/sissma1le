@@ -153,9 +153,177 @@
         </div>
     @endif
 
+    <!-- Diagnostik Butir Soal Terperinci (Item Diagnostics) -->
+    @if(!empty($result->item_analysis))
+        <div class="section-box">
+            <h5>IV. Diagnostik Butir Soal Terperinci (Item-Level Diagnostic)</h5>
+            @if(!empty($result->item_analysis['top_strengths']))
+                <p style="margin: 3px 0 5px 0; font-size: 10pt; font-weight: bold;">A. Indikator Perilaku & Kekuatan Dominan (Skor Tertinggi):</p>
+                <table class="data-table" style="margin-top: 3px; margin-bottom: 6px;">
+                    <thead>
+                        <tr>
+                            <th style="width: 20%;">Dimensi</th>
+                            <th style="width: 50%;">Pernyataan Butir Soal</th>
+                            <th style="width: 10%;">Skor</th>
+                            <th style="width: 20%;">Interpretasi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($result->item_analysis['top_strengths'] as $item)
+                            <tr>
+                                <td style="text-align: center; font-weight: bold;">{{ $item['dimension'] ?? '-' }}</td>
+                                <td>"{{ $item['statement'] }}"</td>
+                                <td style="text-align: center; font-weight: bold;">{{ $item['score'] }}/4</td>
+                                <td style="font-size: 9pt;">{{ $item['interpretation'] }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            @endif
+
+            @if(!empty($result->item_analysis['growth_areas']))
+                <p style="margin: 6px 0 5px 0; font-size: 10pt; font-weight: bold;">B. Indikator Area Pertumbuhan & Preferensi Rendah:</p>
+                <table class="data-table" style="margin-top: 3px; margin-bottom: 0;">
+                    <thead>
+                        <tr>
+                            <th style="width: 20%;">Dimensi</th>
+                            <th style="width: 50%;">Pernyataan Butir Soal</th>
+                            <th style="width: 10%;">Skor</th>
+                            <th style="width: 20%;">Rekomendasi Intervensi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($result->item_analysis['growth_areas'] as $item)
+                            <tr>
+                                <td style="text-align: center; font-weight: bold;">{{ $item['dimension'] ?? '-' }}</td>
+                                <td>"{{ $item['statement'] }}"</td>
+                                <td style="text-align: center; font-weight: bold;">{{ $item['score'] }}/4</td>
+                                <td style="font-size: 9pt;">{{ $item['recommendation'] }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            @endif
+        </div>
+    @endif
+
+    <!-- Matriks Rencana Tindak Lanjut (RTL) Layanan Bimbingan Konseling (POP-BK) -->
+    @if(!empty($result->action_plan))
+        <div class="section-box" style="page-break-inside: avoid;">
+            <h5>V. Matriks Rencana Tindak Lanjut (RTL) Layanan Bimbingan Konseling (POP-BK)</h5>
+            <table class="data-table" style="margin-top: 5px; margin-bottom: 0;">
+                <thead>
+                    <tr>
+                        <th style="width: 25%;">Bidang Layanan / Sektor</th>
+                        <th style="width: 35%;">Tujuan Operasional & Sasaran</th>
+                        <th style="width: 40%;">Rencana Tindakan & Strategi Implementasi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if(isset($result->action_plan['bidang_pribadi']))
+                        <tr>
+                            <td><strong>1. Bimbingan Pribadi & Sosial</strong></td>
+                            <td>{{ $result->action_plan['bidang_pribadi']['tujuan'] ?? '-' }}</td>
+                            <td>
+                                <div>{{ $result->action_plan['bidang_pribadi']['strategi_layanan'] ?? ($result->action_plan['bidang_pribadi']['layanan'] ?? '-') }}</div>
+                                @if(isset($result->action_plan['bidang_pribadi']['format_layanan']))
+                                    <div style="font-size: 9pt; color: #444; margin-top: 3px;"><i>Format:</i> {{ $result->action_plan['bidang_pribadi']['format_layanan'] }}</div>
+                                @endif
+                            </td>
+                        </tr>
+                    @endif
+
+                    @if(isset($result->action_plan['bidang_belajar']))
+                        <tr>
+                            <td><strong>2. Bimbingan Belajar & Diferensiasi</strong></td>
+                            <td>{{ $result->action_plan['bidang_belajar']['tujuan'] ?? '-' }}</td>
+                            <td>
+                                <div>{{ $result->action_plan['bidang_belajar']['strategi_layanan'] ?? ($result->action_plan['bidang_belajar']['layanan'] ?? '-') }}</div>
+                                @if(isset($result->action_plan['bidang_belajar']['diferensiasi_pembelajaran']))
+                                    <div style="font-size: 9pt; color: #444; margin-top: 3px;"><i>Diferensiasi:</i> {{ $result->action_plan['bidang_belajar']['diferensiasi_pembelajaran'] }}</div>
+                                @endif
+                            </td>
+                        </tr>
+                    @endif
+
+                    @if(isset($result->action_plan['bidang_karier']))
+                        <tr>
+                            <td><strong>3. Bimbingan Karier & Peminatan PTN</strong></td>
+                            <td>{{ $result->action_plan['bidang_karier']['tujuan'] ?? '-' }}</td>
+                            <td>
+                                <div>{{ $result->action_plan['bidang_karier']['strategi_layanan'] ?? ($result->action_plan['bidang_karier']['layanan'] ?? '-') }}</div>
+                                @if(isset($result->action_plan['bidang_karier']['fokus_studi_lanjut']))
+                                    <div style="font-size: 9pt; color: #444; margin-top: 3px;"><i>Fokus:</i> {{ $result->action_plan['bidang_karier']['fokus_studi_lanjut'] }}</div>
+                                @endif
+                            </td>
+                        </tr>
+                    @endif
+
+                    @if(isset($result->action_plan['kolaborasi_guru_mapel']))
+                        <tr>
+                            <td><strong>4. Kolaborasi Guru Mapel & Wali Kelas</strong></td>
+                            <td>{{ $result->action_plan['kolaborasi_guru_mapel']['tujuan'] ?? '-' }}</td>
+                            <td>
+                                <div>{{ $result->action_plan['kolaborasi_guru_mapel']['rekomendasi_instruksional'] ?? ($result->action_plan['kolaborasi_guru_mapel']['rekomendasi'] ?? '-') }}</div>
+                                @if(isset($result->action_plan['kolaborasi_guru_mapel']['strategi_asesmen']))
+                                    <div style="font-size: 9pt; color: #444; margin-top: 3px;"><i>Asesmen:</i> {{ $result->action_plan['kolaborasi_guru_mapel']['strategi_asesmen'] }}</div>
+                                @endif
+                            </td>
+                        </tr>
+                    @endif
+
+                    @if(isset($result->action_plan['peran_orang_tua']))
+                        <tr>
+                            <td><strong>5. Panduan Orang Tua di Rumah</strong></td>
+                            <td>{{ $result->action_plan['peran_orang_tua']['tujuan'] ?? '-' }}</td>
+                            <td>
+                                <div>{{ $result->action_plan['peran_orang_tua']['rekomendasi_di_rumah'] ?? ($result->action_plan['peran_orang_tua']['rekomendasi'] ?? '-') }}</div>
+                                @if(isset($result->action_plan['peran_orang_tua']['larangan_dan_hindari']))
+                                    <div style="font-size: 9pt; color: #b91c1c; margin-top: 3px;"><i>Hindari:</i> {{ $result->action_plan['peran_orang_tua']['larangan_dan_hindari'] }}</div>
+                                @endif
+                            </td>
+                        </tr>
+                    @endif
+
+                    @if(isset($result->action_plan['indikator_evaluasi']))
+                        <tr>
+                            <td><strong>6. Evaluasi & Jadwal Monitoring</strong></td>
+                            <td>{{ $result->action_plan['indikator_evaluasi']['indikator'] ?? '-' }}</td>
+                            <td><i>Jadwal:</i> {{ $result->action_plan['indikator_evaluasi']['waktu_evaluasi'] ?? '-' }}</td>
+                        </tr>
+                    @endif
+                </tbody>
+            </table>
+        </div>
+    @endif
+
+    <!-- Dasar Teori & Sumber Rujukan Ilmiah Resmi -->
+    @if(!empty($result->scientific_sources))
+        <div class="section-box" style="page-break-inside: avoid; background-color: #fafafa;">
+            <h5>VI. Dasar Teori Psikometris & Landasan Regulasi Resmi (Scientific References)</h5>
+            <p style="margin: 3px 0; font-size: 9.5pt;"><strong>Teori & Pionir:</strong> {{ $result->scientific_sources['theory_name'] ?? '-' }} &bull; {{ $result->scientific_sources['pioneers'] ?? '-' }}</p>
+            @if(!empty($result->scientific_sources['primary_literature']))
+                <p style="margin: 4px 0 2px 0; font-size: 9pt; font-weight: bold;">Literatur Primer & Referensi Akademik Terindeks:</p>
+                <ul style="margin: 2px 0 4px 0; padding-left: 18px; font-size: 8.5pt;">
+                    @foreach($result->scientific_sources['primary_literature'] as $lit)
+                        <li>{{ $lit }}</li>
+                    @endforeach
+                </ul>
+            @endif
+            @if(!empty($result->scientific_sources['regulatory_framework']))
+                <p style="margin: 4px 0 2px 0; font-size: 9pt; font-weight: bold;">Landasan Regulasi & Standar Profesi Resmi:</p>
+                <ul style="margin: 2px 0 0 0; padding-left: 18px; font-size: 8.5pt;">
+                    @foreach($result->scientific_sources['regulatory_framework'] as $reg)
+                        <li>{{ $reg }}</li>
+                    @endforeach
+                </ul>
+            @endif
+        </div>
+    @endif
+
     <!-- Catatan Khusus Guru BK -->
-    <div class="section-box" style="margin-top: 10px;">
-        <h5>IV. Catatan Verifikasi Guru Bimbingan dan Konseling</h5>
+    <div class="section-box" style="margin-top: 10px; page-break-inside: avoid;">
+        <h5>VII. Catatan Verifikasi Guru Bimbingan dan Konseling</h5>
         <p style="margin: 0; font-size: 10pt;">
             {{ $result->counselor_notes ?: 'Peserta didik telah menyelesaikan asesmen psikologis terstandar secara mandiri dan hasilnya telah tercatat dalam Rekam Jejak Perkembangan Siswa SISSMA1LE sebagai dasar tindak lanjut bimbingan konseling individual dan perencanaan studi lanjut.' }}
         </p>

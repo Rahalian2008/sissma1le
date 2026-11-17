@@ -285,6 +285,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/psikotes/ambil/{slug}', [BkPsychologicalTestController::class, 'takeTest'])->name('psychological.take');
         Route::post('/psikotes/ambil/{slug}', [BkPsychologicalTestController::class, 'submitTest'])->name('psychological.submit');
         Route::get('/psikotes/hasil/{result}', [BkPsychologicalTestController::class, 'result'])->name('psychological.result');
+        Route::get('/psikotes/hasil/{result}/print', [BkPsychologicalTestController::class, 'printResult'])->name('psychological.print');
+        Route::post('/psikotes/hasil/{result}/ai-analysis', [BkPsychologicalTestController::class, 'generateAi'])->name('psychological.generate-ai');
+        Route::post('/psikotes/demo-seed', [BkPsychologicalTestController::class, 'demoSeed'])->name('psychological.demo-seed');
         Route::get('/akpd', [BkAkpdController::class, 'index'])->name('akpd.index');
         Route::get('/akpd/{akpd}', [BkAkpdController::class, 'show'])->name('akpd.show');
         Route::get('/akpd/{akpd}/ambil', [BkAkpdController::class, 'take'])->name('akpd.take');
@@ -331,7 +334,6 @@ Route::middleware('auth')->group(function () {
 
             // Psikotes & Profil Kelas
             Route::get('/psikotes/rekap-kelas', [BkPsychologicalTestController::class, 'classReport'])->name('psychological.class-report');
-            Route::get('/psikotes/hasil/{result}/print', [BkPsychologicalTestController::class, 'printResult'])->name('psychological.print');
 
             // AKPD Analisis
             Route::get('/akpd/{akpd}/cetak-analisis', [BkAkpdController::class, 'printAnalysis'])->name('akpd.print-analysis');

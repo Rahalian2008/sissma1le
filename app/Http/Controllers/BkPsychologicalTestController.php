@@ -148,13 +148,62 @@ class BkPsychologicalTestController extends Controller
     }
 
     /**
-     * Tampilkan laporan hasil psikotes siswa lengkap.
+     * Tampilkan laporan hasil psikotes siswa lengkap dengan Analisis AI & Rencana Tindak Lanjut (RTL).
      */
     public function result(BkPsychologicalTestResult $result): View
     {
         $result->load(['student.schoolClass', 'test']);
 
+        // Jika belum ada analisis AI dan action plan, generate otomatis
+        if (empty($result->action_plan) || empty($result->scientific_sources)) {
+            $this->testService->generateAiAnalysisForResult($result);
+            $result->refresh();
+        }
+
         return view('bk.psychological.result', compact('result'));
+    }
+
+    /**
+     * Generate ulang analisis AI psikometri & rencana tindak lanjut (RTL) BK terstandar.
+     */
+    public function generateAi(BkPsychologicalTestResult $result): RedirectResponse
+    {
+        $this->testService->generateAiAnalysisForResult($result);
+
+        return redirect()->route('bk.psychological.result', $result)
+            ->with('success', 'Analisis Psikometri & Rencana Tindak Lanjut (RTL) AI terstandar POP-BK berhasil digenerate!');
+    }
+
+    /**
+     * Generate data simulasi/sampel hasil psikotes untuk pengujian Guru BK/Admin.
+     */
+    public function demoSeed(Request $request): RedirectResponse
+    {
+        self::ensureDefaultTests();
+        $student = Student::where('is_active', true)->first();
+        if (! $student) {
+            return redirect()->back()->with('error', 'Tidak ditemukan data siswa aktif untuk simulasi asesmen.');
+        }
+
+        $slug = $request->input('slug', 'vak');
+        $test = BkPsychologicalTest::with('questions')->where('slug', $slug)->first();
+        if (! $test) {
+            $test = BkPsychologicalTest::with('questions')->first();
+        }
+
+        if (! $test || $test->questions->isEmpty()) {
+            return redirect()->back()->with('error', 'Instrumen tes atau butir soal belum tersedia.');
+        }
+
+        $simulatedAnswers = [];
+        foreach ($test->questions as $index => $q) {
+            $simulatedAnswers[$q->id] = ($index % 3 === 0) ? 4 : (($index % 2 === 0) ? 3 : 2);
+        }
+
+        $result = $this->testService->evaluateTest($test, $student, $simulatedAnswers);
+
+        return redirect()->route('bk.psychological.result', $result)
+            ->with('success', "Simulasi asesmen [{$test->name}] untuk {$student->name} berhasil dibuat lengkap dengan analisis AI & RTL!");
     }
 
     /**
@@ -162,7 +211,18 @@ class BkPsychologicalTestController extends Controller
      */
     public function printResult(BkPsychologicalTestResult $result): View
     {
+        $user = Auth::user();
+        if ($user && $user->isStudent() && $user->student && (int) $user->student->id !== (int) $result->student_id) {
+            abort(403, 'Anda tidak berhak mengakses atau mencetak hasil asesmen siswa lain.');
+        }
+
         $result->load(['student.schoolClass', 'test']);
+
+        if (empty($result->action_plan) || empty($result->scientific_sources)) {
+            $this->testService->generateAiAnalysisForResult($result);
+            $result->refresh();
+        }
+
         $school = SchoolIdentity::first();
         $headmaster = Teacher::getHeadmaster();
 

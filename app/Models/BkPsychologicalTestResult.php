@@ -24,10 +24,14 @@ class BkPsychologicalTestResult extends Model
         'holland_code',
         'profile_label',
         'analysis_summary',
+        'item_analysis',
         'career_recommendations',
         'study_recommendations',
+        'action_plan',
+        'scientific_sources',
         'counselor_notes',
         'status',
+        'ai_analyzed_at',
         'verified_by',
         'verified_at',
     ];
@@ -35,9 +39,13 @@ class BkPsychologicalTestResult extends Model
     protected $casts = [
         'taken_at' => 'datetime',
         'verified_at' => 'datetime',
+        'ai_analyzed_at' => 'datetime',
         'answers' => 'array',
         'dimension_scores' => 'array',
+        'item_analysis' => 'array',
         'career_recommendations' => 'array',
+        'action_plan' => 'array',
+        'scientific_sources' => 'array',
     ];
 
     public function test(): BelongsTo
