@@ -376,38 +376,49 @@
 
                 <!-- Input Box Bar (WhatsApp Web Style) -->
                 <form id="chat-input-form" action="{{ route('bk.curhat.message', $activeConsultation) }}" method="POST" enctype="multipart/form-data" 
-                      class="p-2 sm:p-3 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex items-end gap-1.5 sm:gap-2 shrink-0">
+                      class="relative z-20 p-2 sm:p-3 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex items-end gap-1.5 sm:gap-2 shrink-0">
                     @csrf
+
+                    <!-- Single Hidden File Input (Mencegah duplikasi field & bug upload) -->
+                    <input type="file" name="attachment" id="chat-file-input" class="hidden" onchange="handleChatFileSelected(this)">
                     
-                    <!-- Tombol Lampiran (+) -->
-                    <div class="relative shrink-0">
-                        <button type="button" id="btn-toggle-attach" onclick="toggleAttachMenu()" 
-                                class="w-10 h-10 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-emerald-950 hover:text-emerald-600 flex items-center justify-center transition cursor-pointer shadow-xs">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                    <!-- Tombol Lampiran (+) WhatsApp Style -->
+                    <div class="relative shrink-0" id="attach-menu-wrapper">
+                        <button type="button" id="btn-toggle-attach" onclick="toggleAttachMenu(event)" 
+                                class="w-10 h-10 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-emerald-950 hover:text-emerald-600 flex items-center justify-center transition-all duration-200 cursor-pointer shadow-xs" title="Lampirkan File / Media">
+                            <svg id="attach-icon-plus" class="w-5 h-5 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
                         </button>
 
-                        <!-- Menu Pilihan Lampiran Popup -->
-                        <div id="attach-menu" class="hidden absolute bottom-12 left-0 w-48 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 p-2 space-y-1 z-30 animate-fade-in">
-                            <label class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-emerald-50 dark:hover:bg-slate-700/60 cursor-pointer text-xs font-bold text-slate-700 dark:text-slate-200 transition">
-                                <span class="p-1.5 bg-blue-500/15 text-blue-500 rounded-lg">📷</span>
-                                <span>Foto / Gambar</span>
-                                <input type="file" name="attachment" id="input-attachment-image" accept="image/*" class="hidden" onchange="handleFileSelected(this, 'IMAGE')">
-                            </label>
-                            <label class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-emerald-50 dark:hover:bg-slate-700/60 cursor-pointer text-xs font-bold text-slate-700 dark:text-slate-200 transition">
-                                <span class="p-1.5 bg-amber-500/15 text-amber-500 rounded-lg">🎵</span>
-                                <span>File Rekaman / Audio</span>
-                                <input type="file" name="attachment" id="input-attachment-audio" accept="audio/*,.mp3,.wav,.m4a,.aac,.ogg,.webm" class="hidden" onchange="handleFileSelected(this, 'AUDIO')">
-                            </label>
-                            <label class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-emerald-50 dark:hover:bg-slate-700/60 cursor-pointer text-xs font-bold text-slate-700 dark:text-slate-200 transition">
-                                <span class="p-1.5 bg-rose-500/15 text-rose-500 rounded-lg">🎥</span>
-                                <span>Video Singkat</span>
-                                <input type="file" name="attachment" id="input-attachment-video" accept="video/*" class="hidden" onchange="handleFileSelected(this, 'VIDEO')">
-                            </label>
-                            <label class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-emerald-50 dark:hover:bg-slate-700/60 cursor-pointer text-xs font-bold text-slate-700 dark:text-slate-200 transition">
-                                <span class="p-1.5 bg-purple-500/15 text-purple-500 rounded-lg">📄</span>
-                                <span>Dokumen / File</span>
-                                <input type="file" name="attachment" id="input-attachment-doc" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip" class="hidden" onchange="handleFileSelected(this, 'DOCUMENT')">
-                            </label>
+                        <!-- Menu Pilihan Lampiran Popup WhatsApp Style -->
+                        <div id="attach-menu" class="hidden absolute bottom-14 left-0 w-56 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 p-2 space-y-1 z-50 animate-scale-up">
+                            <button type="button" onclick="selectAttachment('image/*')" class="w-full flex items-center gap-3 p-2 rounded-xl hover:bg-emerald-50 dark:hover:bg-slate-700/60 transition cursor-pointer text-left group">
+                                <span class="w-9 h-9 rounded-xl bg-blue-500/15 text-blue-500 flex items-center justify-center text-lg shrink-0 group-hover:scale-105 transition">📷</span>
+                                <div class="min-w-0">
+                                    <p class="text-xs font-bold text-slate-800 dark:text-white">Foto &amp; Gambar</p>
+                                    <p class="text-[10px] text-slate-400">JPG, PNG, WebP, GIF</p>
+                                </div>
+                            </button>
+                            <button type="button" onclick="selectAttachment('audio/*,.mp3,.wav,.m4a,.aac,.ogg,.webm')" class="w-full flex items-center gap-3 p-2 rounded-xl hover:bg-emerald-50 dark:hover:bg-slate-700/60 transition cursor-pointer text-left group">
+                                <span class="w-9 h-9 rounded-xl bg-amber-500/15 text-amber-500 flex items-center justify-center text-lg shrink-0 group-hover:scale-105 transition">🎵</span>
+                                <div class="min-w-0">
+                                    <p class="text-xs font-bold text-slate-800 dark:text-white">Audio &amp; Musik</p>
+                                    <p class="text-[10px] text-slate-400">MP3, WAV, M4A, OGG</p>
+                                </div>
+                            </button>
+                            <button type="button" onclick="selectAttachment('video/*,.mp4,.webm,.mov')" class="w-full flex items-center gap-3 p-2 rounded-xl hover:bg-emerald-50 dark:hover:bg-slate-700/60 transition cursor-pointer text-left group">
+                                <span class="w-9 h-9 rounded-xl bg-rose-500/15 text-rose-500 flex items-center justify-center text-lg shrink-0 group-hover:scale-105 transition">🎥</span>
+                                <div class="min-w-0">
+                                    <p class="text-xs font-bold text-slate-800 dark:text-white">Video Singkat</p>
+                                    <p class="text-[10px] text-slate-400">MP4, WebM, MOV</p>
+                                </div>
+                            </button>
+                            <button type="button" onclick="selectAttachment('.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip')" class="w-full flex items-center gap-3 p-2 rounded-xl hover:bg-emerald-50 dark:hover:bg-slate-700/60 transition cursor-pointer text-left group">
+                                <span class="w-9 h-9 rounded-xl bg-purple-500/15 text-purple-500 flex items-center justify-center text-lg shrink-0 group-hover:scale-105 transition">📄</span>
+                                <div class="min-w-0">
+                                    <p class="text-xs font-bold text-slate-800 dark:text-white">Dokumen &amp; Berkas</p>
+                                    <p class="text-[10px] text-slate-400">PDF, Word, Excel, ZIP</p>
+                                </div>
+                            </button>
                         </div>
                     </div>
 
@@ -668,6 +679,32 @@
         if (chatForm) {
             chatForm.addEventListener('submit', handleFormSubmit);
         }
+
+        // Dukungan Paste Gambar dari Clipboard (Ctrl+V)
+        const messageInput = document.getElementById('message-input');
+        if (messageInput) {
+            messageInput.addEventListener('paste', (e) => {
+                const clipboardData = e.clipboardData || window.clipboardData;
+                if (!clipboardData || !clipboardData.items) return;
+                for (let i = 0; i < clipboardData.items.length; i++) {
+                    const item = clipboardData.items[i];
+                    if (item.kind === 'file') {
+                        const blob = item.getAsFile();
+                        if (blob) {
+                            const ext = blob.type.split('/')[1] || 'png';
+                            const file = new File([blob], `clipboard_${Date.now()}.${ext}`, { type: blob.type });
+                            const fileInput = document.getElementById('chat-file-input');
+                            if (fileInput) {
+                                const dt = new DataTransfer();
+                                dt.items.add(file);
+                                fileInput.files = dt.files;
+                                handleChatFileSelected(fileInput);
+                            }
+                        }
+                    }
+                }
+            });
+        }
     });
 
     // Auto scroll ke bawah
@@ -682,19 +719,65 @@
         }
     }
 
-    // Toggle Menu Lampiran
-    function toggleAttachMenu() {
+    // Toggle & Close Menu Lampiran (+) WhatsApp Style
+    function toggleAttachMenu(event) {
+        if (event) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
         const menu = document.getElementById('attach-menu');
-        if (menu) {
-            menu.classList.toggle('hidden');
+        const icon = document.getElementById('attach-icon-plus');
+        if (!menu) return;
+
+        const isHidden = menu.classList.contains('hidden');
+        if (isHidden) {
+            menu.classList.remove('hidden');
+            if (icon) {
+                icon.classList.add('rotate-45', 'text-rose-500');
+            }
+        } else {
+            closeAttachMenu();
         }
     }
 
-    // Handle File Dipilih
-    function handleFileSelected(input, type) {
+    function closeAttachMenu() {
+        const menu = document.getElementById('attach-menu');
+        const icon = document.getElementById('attach-icon-plus');
+        if (menu) menu.classList.add('hidden');
+        if (icon) {
+            icon.classList.remove('rotate-45', 'text-rose-500');
+        }
+    }
+
+    // Tutup menu lampiran saat klik di luar area
+    document.addEventListener('click', (e) => {
+        const wrapper = document.getElementById('attach-menu-wrapper');
+        if (wrapper && !wrapper.contains(e.target)) {
+            closeAttachMenu();
+        }
+    });
+
+    // Buka dialog pemilih file browser untuk tipe tertentu
+    function selectAttachment(acceptTypes) {
+        closeAttachMenu();
+        const input = document.getElementById('chat-file-input');
+        if (!input) return;
+        input.accept = acceptTypes;
+        input.click();
+    }
+
+    // Handle File Dipilih dari Input Tunggal
+    function handleChatFileSelected(input) {
         if (!input.files || !input.files[0]) return;
         const file = input.files[0];
-        
+
+        // Validasi ukuran max 25 MB
+        if (file.size > 26214400) {
+            alert('Ukuran file maksimal adalah 25 MB.');
+            input.value = '';
+            return;
+        }
+
         const previewBar = document.getElementById('attachment-preview-bar');
         const filenameElem = document.getElementById('preview-filename');
         const filesizeElem = document.getElementById('preview-filesize');
@@ -702,28 +785,31 @@
 
         if (filenameElem) filenameElem.textContent = file.name;
         if (filesizeElem) filesizeElem.textContent = formatBytes(file.size);
+
         if (iconElem) {
-            if (type === 'IMAGE') iconElem.textContent = '🖼️';
-            else if (type === 'VIDEO') iconElem.textContent = '🎥';
-            else if (type === 'AUDIO') iconElem.textContent = '🎵';
-            else iconElem.textContent = '📄';
+            const mime = file.type || '';
+            const name = file.name.toLowerCase();
+            if (mime.startsWith('image/') || /\.(jpg|jpeg|png|gif|webp|svg)$/.test(name)) {
+                iconElem.textContent = '🖼️';
+            } else if (mime.startsWith('video/') || /\.(mp4|webm|mov|mkv)$/.test(name)) {
+                iconElem.textContent = '🎥';
+            } else if (mime.startsWith('audio/') || /\.(mp3|wav|m4a|aac|ogg|opus)$/.test(name)) {
+                iconElem.textContent = '🎵';
+            } else {
+                iconElem.textContent = '📄';
+            }
         }
 
         if (previewBar) previewBar.classList.remove('hidden');
-        toggleAttachMenu();
+
+        const messageInput = document.getElementById('message-input');
+        if (messageInput) messageInput.focus();
     }
 
-    // Bersihkan Lampiran
+    // Bersihkan Lampiran Terpilih
     function clearAttachment() {
-        const inputs = [
-            document.getElementById('input-attachment-image'),
-            document.getElementById('input-attachment-audio'),
-            document.getElementById('input-attachment-video'),
-            document.getElementById('input-attachment-doc'),
-        ];
-        inputs.forEach(input => {
-            if (input) input.value = '';
-        });
+        const input = document.getElementById('chat-file-input');
+        if (input) input.value = '';
 
         const previewBar = document.getElementById('attachment-preview-bar');
         if (previewBar) previewBar.classList.add('hidden');
