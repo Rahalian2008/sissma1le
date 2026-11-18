@@ -98,8 +98,11 @@
         <div class="ttd-box">
             <p>Lengkong, {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}<br>Guru Bimbingan Konseling,</p>
             <br><br><br>
-            <p><strong><u>{{ Auth::user()?->name ?? 'Guru BK' }}</u></strong><br>
-            NIP. {{ Auth::user()?->nip ?? '-' }}</p>
+            @php
+                $bkSign = \App\Models\Teacher::getBkCoordinator();
+            @endphp
+            <p><strong><u>{{ $bkSign['name'] ?? 'Ida Marttin Maolidah SE, SP.,M.Pd.' }}</u></strong><br>
+            NIP. {{ $bkSign['nip'] ?? '197803102008012006' }}</p>
         </div>
     </div>
 </body>

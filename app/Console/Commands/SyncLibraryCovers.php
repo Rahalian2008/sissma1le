@@ -47,12 +47,19 @@ class SyncLibraryCovers extends Command
         $this->info('✓ Jumlah berkas cover di storage/app/public/library/covers : '.count($storageFiles));
 
         // 2. Salin seluruh file cover ke public/storage/library/covers
+        $rootStorageCoverDir = base_path('storage/library/covers');
+        File::ensureDirectoryExists($rootStorageCoverDir);
+
         $copiedCount = 0;
         foreach ($storageFiles as $file) {
             $dest = $publicCoverDir.DIRECTORY_SEPARATOR.$file->getFilename();
             if (! File::exists($dest) || $this->option('force')) {
                 @File::copy($file->getPathname(), $dest);
                 $copiedCount++;
+            }
+            $rootDest = $rootStorageCoverDir.DIRECTORY_SEPARATOR.$file->getFilename();
+            if (! File::exists($rootDest) || $this->option('force')) {
+                @File::copy($file->getPathname(), $rootDest);
             }
             if (File::isDirectory(base_path('public_html'))) {
                 $altDest = $altPublicDir.DIRECTORY_SEPARATOR.$file->getFilename();
@@ -75,10 +82,27 @@ class SyncLibraryCovers extends Command
         $slimsDb = $this->option('database') ?: 'u432977099_perpustakaan';
         $updatedBooksCount = 0;
 
+        // Coba muat peta cover dari arsip JSON bawaan terlebih dahulu
+        $jsonCatalogPath = database_path('data/slims_library_catalog.json');
+        $catalogMapById = collect();
+        $catalogMapByCode = collect();
+        $catalogMapByTitle = collect();
+
+        if (File::exists($jsonCatalogPath)) {
+            $catalogData = json_decode(file_get_contents($jsonCatalogPath), true) ?: [];
+            foreach ($catalogData as $bData) {
+                if (! empty($bData['cover_image'])) {
+                    $catalogMapById->put($bData['id'], $bData['cover_image']);
+                    $catalogMapByCode->put($bData['book_code'], $bData['cover_image']);
+                    $catalogMapByTitle->put(strtoupper(trim($bData['title'])), $bData['cover_image']);
+                }
+            }
+            $this->info('✓ Peta cover dari arsip JSON slims_library_catalog.json dimuat: '.$catalogMapById->count().' cover.');
+        }
+
         // Coba baca dari SLiMS jika koneksi tersedia
         $slimsBiblios = collect();
         try {
-            // Gunakan konfigurasi koneksi yang mungkin sudah ada atau coba konek
             $defaultMysql = config('database.connections.mysql');
             $credentials = [
                 ['user' => 'u432977099_perpustakaan', 'pass' => '=WqNTqqW6Ut', 'host' => '127.0.0.1'],
@@ -115,21 +139,29 @@ class SyncLibraryCovers extends Command
         foreach ($allBooks as $book) {
             $expectedCover = null;
 
-            // Jika buku berasal dari SLiMS dan ID-nya ada di SLiMS
+            // Prioritas 1: Dari database SLiMS langsung jika online
             if ($slimsBiblios->has($book->id)) {
-                $biblio = $slimsBiblios->get($book->id);
-                $expectedCover = 'library/covers/'.$biblio->image;
-            } elseif (preg_match('/SLIMS-(\d+)/', (string) $book->book_code, $m)) {
-                $slimsId = (int) $m[1];
-                if ($slimsBiblios->has($slimsId)) {
-                    $expectedCover = 'library/covers/'.$slimsBiblios->get($slimsId)->image;
-                }
+                $expectedCover = 'library/covers/'.$slimsBiblios->get($book->id)->image;
+            } elseif (preg_match('/SLIMS-(\d+)/', (string) $book->book_code, $m) && $slimsBiblios->has((int) $m[1])) {
+                $expectedCover = 'library/covers/'.$slimsBiblios->get((int) $m[1])->image;
             }
 
-            // Jika cover_image masih kosong atau berbeda dan expectedCover ditemukan
-            if ($expectedCover && $book->cover_image !== $expectedCover) {
-                $book->update(['cover_image' => $expectedCover]);
-                $updatedBooksCount++;
+            // Prioritas 2: Dari arsip JSON katalog bawaan
+            if (! $expectedCover) {
+                $expectedCover = $catalogMapById->get($book->id)
+                    ?? $catalogMapByCode->get($book->book_code)
+                    ?? $catalogMapByTitle->get(strtoupper(trim($book->title)));
+            }
+
+            // Normalisasi prefix
+            if ($expectedCover) {
+                $filename = basename($expectedCover);
+                $expectedCover = 'library/covers/'.$filename;
+
+                if ($book->cover_image !== $expectedCover) {
+                    $book->update(['cover_image' => $expectedCover]);
+                    $updatedBooksCount++;
+                }
             }
         }
 

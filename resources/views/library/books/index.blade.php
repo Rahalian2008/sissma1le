@@ -113,7 +113,7 @@
                         <!-- Top Cover Banner / Thumbnail -->
                         <div class="relative h-44 bg-slate-800 overflow-hidden flex items-center justify-center">
                             @if(!empty($b->cover_image))
-                                <img src="{{ asset('storage/' . $b->cover_image) }}" alt="{{ $b->title }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy" onerror="this.onerror=null;this.src='{{ asset('images/default-book-cover.svg') }}';">
+                                <img src="{{ $b->cover_url }}" alt="{{ $b->title }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy" onerror="this.onerror=null;this.src='{{ asset('images/default-book-cover.svg') }}';">
                             @else
                                 <img src="{{ asset('images/default-book-cover.svg') }}" alt="Default Cover" class="w-full h-full object-cover">
                             @endif

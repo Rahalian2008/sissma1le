@@ -133,8 +133,11 @@
             <td style="text-align: right;">
                 Lengkong, {{ \Carbon\Carbon::parse($sociometry->date)->translatedFormat('d F Y') }}<br>
                 Guru Bimbingan dan Konseling,<br><br><br><br><br>
-                <strong><u>{{ $sociometry->counselor?->name ?: Auth::user()->name }}</u></strong><br>
-                NIP. {{ $sociometry->counselor?->nip ?: '-' }}
+                @php
+                    $bkSign = \App\Models\Teacher::getBkCoordinator();
+                @endphp
+                <strong><u>{{ $sociometry->counselor?->name ?: ($bkSign['name'] ?? Auth::user()->name) }}</u></strong><br>
+                NIP. {{ $sociometry->counselor?->nip ?: ($bkSign['nip'] ?? '-') }}
             </td>
         </tr>
     </table>

@@ -287,6 +287,13 @@
                                                     <span class="text-xs font-bold leading-none">⚡</span>
                                                 </button>
                                             </form>
+                                            <form action="{{ route('bk.psychological.destroy', $res) }}" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data hasil asesmen {{ addslashes($res->student->name ?? 'siswa ini') }}? Data yang dihapus tidak dapat dipulihkan.');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="p-1.5 rounded-lg bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900/60 transition cursor-pointer" title="Hapus Data Asesmen">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                                </button>
+                                            </form>
                                         @endif
                                     </div>
                                 </td>

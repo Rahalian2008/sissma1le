@@ -129,7 +129,17 @@ class LibraryBook extends Model
             return asset('images/default-book-cover.svg');
         }
 
-        return asset('storage/'.$this->cover_image);
+        $path = $this->cover_image;
+        if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
+            return $path;
+        }
+
+        $path = ltrim(preg_replace('/^(public\/|storage\/)+/', '', $path), '/');
+        if (! str_starts_with($path, 'library/covers/')) {
+            $path = 'library/covers/'.$path;
+        }
+
+        return asset('storage/'.$path);
     }
 
     public function getDigitalFileUrlAttribute(): ?string

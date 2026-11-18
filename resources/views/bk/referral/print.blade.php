@@ -102,8 +102,11 @@
         <div class="ttd-box" style="text-align: right;">
             <p>Lengkong, {{ $referral->referral_date?->translatedFormat('d F Y') }}<br>Guru Bimbingan Konseling,</p>
             <br><br><br>
-            <p><strong><u>{{ $referral->counselor?->name ?? 'Guru BK' }}</u></strong><br>
-            NIP. {{ $referral->counselor?->nip ?? '-' }}</p>
+            @php
+                $bkSign = \App\Models\Teacher::getBkCoordinator();
+            @endphp
+            <p><strong><u>{{ $referral->counselor?->name ?: ($bkSign['name'] ?? 'Ida Marttin Maolidah SE, SP.,M.Pd.') }}</u></strong><br>
+            NIP. {{ $referral->counselor?->nip ?: ($bkSign['nip'] ?? '-') }}</p>
         </div>
     </div>
 </body>

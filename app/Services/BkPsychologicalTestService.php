@@ -295,7 +295,13 @@ class BkPsychologicalTestService
             default => $secondary ?: '-',
         };
 
-        $summary = "Berdasarkan pemrosesan instrumen Asesmen Modalitas Belajar VAK, peserta didik ananda **{$student->name}** menunjukkan profil modalitas sensorik primer **{$dominantName}** dengan skor **{$percentages[$dominant]}%**, didukung oleh modalitas sekunder **{$secondaryName}** (".($percentages[$secondary] ?? 0).'%) dan modalitas tertier ('.($percentages[array_diff(['VISUAL', 'AUDITORI', 'KINESTETIK'], [$dominant, $secondary])[0] ?? 'KINESTETIK'] ?? 0)."%).\n\n";
+        $dominantScore = $percentages[$dominant] ?? match ($dominant) {
+            'VISUAL' => $vPct,
+            'AUDITORI' => $aPct,
+            'KINESTETIK' => $kPct,
+            default => 0,
+        };
+        $summary = "Berdasarkan pemrosesan instrumen Asesmen Modalitas Belajar VAK, peserta didik ananda **{$student->name}** menunjukkan profil modalitas sensorik primer **{$dominantName}** dengan skor **{$dominantScore}%**, didukung oleh modalitas sekunder **{$secondaryName}** (".($percentages[$secondary] ?? 0).'%) dan modalitas tertier ('.($percentages[array_diff(['VISUAL', 'AUDITORI', 'KINESTETIK'], [$dominant, $secondary])[0] ?? 'KINESTETIK'] ?? 0)."%).\n\n";
 
         if ($dominant === 'VISUAL') {
             $summary .= "Siswa memproses informasi paling optimal melalui stimulasi indra penglihatan. Siswa memiliki daya rekam spasial yang tajam terhadap bagan, pola grafik, warna stabilo, dan demonstrasi visual. Namun, konsentrasi siswa rentan terdistraksi oleh 'polusi visual' seperti ruangan/meja belajar yang berantakan atau materi yang disajikan berupa ceramah suara panjang tanpa bantuan proyektor/gambar.";

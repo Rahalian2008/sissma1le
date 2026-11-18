@@ -341,8 +341,13 @@
             <td style="text-align: right;">
                 Lengkong, {{ now()->translatedFormat('d F Y') }}<br>
                 Guru Bimbingan dan Konseling (BK)<br><br><br><br>
-                <strong><u>{{ auth()->user()->name }}</u></strong><br>
-                NIP/NUPTK: {{ auth()->user()->nip ?? auth()->user()->teacher?->nip ?? '-' }}
+                @php
+                    $bkSign = $counselor ?? \App\Models\Teacher::getBkCoordinator();
+                    $signerName = is_array($bkSign) ? ($bkSign['name'] ?? 'Ida Marttin Maolidah SE, SP.,M.Pd.') : ($bkSign?->name ?? 'Ida Marttin Maolidah SE, SP.,M.Pd.');
+                    $signerNip = is_array($bkSign) ? ($bkSign['nip'] ?? '197803102008012006') : ($bkSign?->nip ?? '197803102008012006');
+                @endphp
+                <strong><u>{{ $signerName }}</u></strong><br>
+                NIP/NUPTK: {{ $signerNip ?: '-' }}
             </td>
         </tr>
     </table>

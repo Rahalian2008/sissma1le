@@ -92,8 +92,11 @@
         <div class="ttd-box">
             <p>Lengkong, {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}<br>Guru Bimbingan Konseling,</p>
             <br><br><br>
-            <p><strong><u>{{ $rpl->counselor?->name ?? 'Guru BK' }}</u></strong><br>
-            NIP. {{ $rpl->counselor?->nip ?? '-' }}</p>
+            @php
+                $bkSign = \App\Models\Teacher::getBkCoordinator();
+            @endphp
+            <p><strong><u>{{ $rpl->counselor?->name ?: ($bkSign['name'] ?? 'Ida Marttin Maolidah SE, SP.,M.Pd.') }}</u></strong><br>
+            NIP. {{ $rpl->counselor?->nip ?: ($bkSign['nip'] ?? '-') }}</p>
         </div>
     </div>
 </body>

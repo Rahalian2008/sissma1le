@@ -287,6 +287,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/psikotes/hasil/{result}', [BkPsychologicalTestController::class, 'result'])->name('psychological.result');
         Route::get('/psikotes/hasil/{result}/print', [BkPsychologicalTestController::class, 'printResult'])->name('psychological.print');
         Route::post('/psikotes/hasil/{result}/ai-analysis', [BkPsychologicalTestController::class, 'generateAi'])->name('psychological.generate-ai');
+        Route::delete('/psikotes/hasil/{result}', [BkPsychologicalTestController::class, 'destroyResult'])->name('psychological.destroy');
         Route::post('/psikotes/demo-seed', [BkPsychologicalTestController::class, 'demoSeed'])->name('psychological.demo-seed');
         Route::get('/akpd', [BkAkpdController::class, 'index'])->name('akpd.index');
         Route::get('/akpd/{akpd}', [BkAkpdController::class, 'show'])->name('akpd.show');
@@ -988,6 +989,49 @@ Route::middleware('auth')->group(function () {
         Route::post('/settings/toggle-lock', [RaporKurnasController::class, 'toggleLock'])->name('toggle_lock');
         Route::post('/settings/groups', [RaporKurnasController::class, 'updateSubjectGroups'])->name('settings.update_groups');
     });
+});
+
+// Direct high-reliability route for Library Book Covers (works seamlessly across LiteSpeed & Apache)
+Route::get('/storage/library/covers/{filename}', function (string $filename) {
+    $cleanFilename = basename($filename);
+    $candidates = [
+        storage_path('app/public/library/covers/'.$cleanFilename),
+        public_path('storage/library/covers/'.$cleanFilename),
+        base_path('storage/app/public/library/covers/'.$cleanFilename),
+        base_path('storage/library/covers/'.$cleanFilename),
+        base_path('public/storage/library/covers/'.$cleanFilename),
+        base_path('public_html/storage/app/public/library/covers/'.$cleanFilename),
+        base_path('public_html/storage/library/covers/'.$cleanFilename),
+        base_path('public_html/public/storage/library/covers/'.$cleanFilename),
+    ];
+
+    foreach ($candidates as $cand) {
+        if (file_exists($cand) && is_file($cand)) {
+            $ext = strtolower(pathinfo($cand, PATHINFO_EXTENSION));
+            $mime = match ($ext) {
+                'png' => 'image/png',
+                'webp' => 'image/webp',
+                'gif' => 'image/gif',
+                default => 'image/jpeg',
+            };
+
+            return response(file_get_contents($cand), 200, [
+                'Content-Type' => $mime,
+                'Content-Length' => (string) filesize($cand),
+                'Cache-Control' => 'public, max-age=31536000, immutable',
+                'Content-Disposition' => 'inline',
+            ]);
+        }
+    }
+
+    return response()->file(public_path('images/default-book-cover.svg'), [
+        'Content-Type' => 'image/svg+xml; charset=utf-8',
+        'Cache-Control' => 'public, max-age=86400',
+    ]);
+})->name('library.covers.direct');
+
+Route::get('/public/storage/library/covers/{filename}', function (string $filename) {
+    return redirect()->to(asset('storage/library/covers/'.$filename));
 });
 
 // Storage fallback route (ensures photos & files are served reliably in all server environments)

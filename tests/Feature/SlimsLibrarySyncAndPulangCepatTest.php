@@ -86,3 +86,8 @@ test('library sync-covers command runs successfully and cover url resolves prope
 
     expect($book->cover_url)->toBe(asset('storage/library/covers/test_cover.jpg'));
 });
+
+test('storage fallback route serves book covers properly', function () {
+    $response = $this->get('/storage/library/covers/cover_5-cm-20250427224803.jpg');
+    $response->assertStatus(200);
+});

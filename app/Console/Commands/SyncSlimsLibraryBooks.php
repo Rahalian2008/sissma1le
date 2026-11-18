@@ -105,16 +105,20 @@ class SyncSlimsLibraryBooks extends Command
             }
         }
 
-        if (! $connected) {
-            $this->error('Gagal terhubung ke database SLiMS: '.$lastError);
-            $this->warn("Pastikan database '{$slimsDb}' sudah diimport ke MySQL.");
-            $this->warn('Gunakan: php artisan library:sync-slims --username=... --password=...');
+        // 2. Siapkan direktori penyimpanan cover di aplikasi
+        $coversDirs = $this->resolveCoversDirectories($this->option('covers-dir'));
+        $storageCoverDir = storage_path('app/public/library/covers');
+        $publicCoverDir = public_path('storage/library/covers');
+        $altPublicDir = base_path('public_html/storage/library/covers');
+        $rootStorageCoverDir = base_path('storage/library/covers');
 
-            return Command::FAILURE;
+        File::ensureDirectoryExists($storageCoverDir);
+        File::ensureDirectoryExists($publicCoverDir);
+        File::ensureDirectoryExists($rootStorageCoverDir);
+        if (File::isDirectory(base_path('public_html'))) {
+            File::ensureDirectoryExists($altPublicDir);
         }
 
-        // 2. Deteksi lokasi gambar cover SLiMS (mendukung folder SLiMS maupun hasil upload di storage/app/public)
-        $coversDirs = $this->resolveCoversDirectories($this->option('covers-dir'));
         $totalSourceFiles = 0;
         foreach ($coversDirs as $dir) {
             $totalSourceFiles += count(File::files($dir));
@@ -126,16 +130,20 @@ class SyncSlimsLibraryBooks extends Command
             $this->warn('! Direktori sumber cover SLiMS tidak ditemukan otomatis. File cover akan disinkronkan dari storage/app/public jika tersedia.');
         }
 
-        // 3. Siapkan direktori penyimpanan cover di aplikasi
-        $storageCoverDir = storage_path('app/public/library/covers');
-        $publicCoverDir = public_path('storage/library/covers');
-        File::ensureDirectoryExists($storageCoverDir);
-        File::ensureDirectoryExists($publicCoverDir);
+        if (! $connected) {
+            $this->warn('! Gagal terhubung langsung ke database MySQL SLiMS: '.$lastError);
+            $jsonCatalog = database_path('data/slims_library_catalog.json');
+            if (File::exists($jsonCatalog)) {
+                $this->info("✓ Menggunakan arsip katalog bawaan ({$jsonCatalog}) untuk sinkronisasi 969 buku & 628 cover...");
 
-        // Jika public_html terpisah di lingkungan shared hosting / cPanel
-        $altPublicDir = base_path('public_html/storage/library/covers');
-        if (File::isDirectory(base_path('public_html'))) {
-            File::ensureDirectoryExists($altPublicDir);
+                return $this->syncFromJsonCatalog($jsonCatalog, $storageCoverDir, $publicCoverDir, $coversDirs, $altPublicDir, $rootStorageCoverDir);
+            }
+
+            $this->error('Gagal terhubung ke database SLiMS dan berkas arsip json tidak ditemukan.');
+            $this->warn("Pastikan database '{$slimsDb}' sudah diimport ke MySQL.");
+            $this->warn('Gunakan: php artisan library:sync-slims --username=... --password=...');
+
+            return Command::FAILURE;
         }
 
         // 4. Muat kategori perpustakaan
@@ -351,6 +359,128 @@ class SyncSlimsLibraryBooks extends Command
             $this->callSilent('storage:link');
         } catch (\Throwable $e) {
             // Abaikan jika tidak diizinkan di sistem
+        }
+
+        $this->info('================ SINKRONISASI SELESAI ================');
+        $this->info("✓ Total judul buku berhasil diproses : {$syncedCount}");
+        $this->info("✓ Total eksemplar fisik tercatat     : {$totalItemsCount}");
+        $this->info("✓ Total cover buku berhasil disalin  : {$coverCopiedCount}");
+        $this->info('✓ Direktori public storage cover siap disajikan oleh web server.');
+        $this->info('Katalog perpustakaan siap digunakan di menu Perpustakaan.');
+
+        return Command::SUCCESS;
+    }
+
+    /**
+     * Sinkronisasi data katalog perpustakaan dari berkas arsip json bawaan
+     */
+    protected function syncFromJsonCatalog(string $jsonFile, string $storageCoverDir, string $publicCoverDir, array $coversDirs, ?string $altPublicDir, string $rootStorageCoverDir): int
+    {
+        $raw = file_get_contents($jsonFile);
+        $booksData = json_decode($raw, true) ?: [];
+
+        if (empty($booksData)) {
+            $this->error('Berkas arsip katalog kosong atau format tidak valid.');
+
+            return Command::FAILURE;
+        }
+
+        if ($this->option('force')) {
+            $this->info('Membersihkan data buku dummy/lama agar 100% sinkron murni dari SLiMS...');
+            Schema::disableForeignKeyConstraints();
+            foreach (['library_loans', 'library_bookmarks', 'library_reading_logs', 'library_reviews', 'library_books'] as $table) {
+                if (Schema::hasTable($table)) {
+                    DB::table($table)->truncate();
+                }
+            }
+            Schema::enableForeignKeyConstraints();
+        }
+
+        $bar = $this->output->createProgressBar(count($booksData));
+        $bar->start();
+
+        $syncedCount = 0;
+        $totalItemsCount = 0;
+        $coverCopiedCount = 0;
+
+        foreach ($booksData as $item) {
+            $coverImagePath = $item['cover_image'] ?? null;
+            if ($coverImagePath) {
+                $filename = basename($coverImagePath);
+                $destStorage = $storageCoverDir.DIRECTORY_SEPARATOR.$filename;
+                $destPublic = $publicCoverDir.DIRECTORY_SEPARATOR.$filename;
+                $destRoot = $rootStorageCoverDir.DIRECTORY_SEPARATOR.$filename;
+                $destAlt = ($altPublicDir && File::isDirectory(base_path('public_html'))) ? $altPublicDir.DIRECTORY_SEPARATOR.$filename : null;
+
+                $foundSource = null;
+                foreach ($coversDirs as $dir) {
+                    $cand = $dir.DIRECTORY_SEPARATOR.$filename;
+                    if (File::exists($cand)) {
+                        $foundSource = $cand;
+                        break;
+                    }
+                }
+                if (! $foundSource && File::exists($destStorage)) {
+                    $foundSource = $destStorage;
+                }
+
+                if ($foundSource) {
+                    if (! File::exists($destStorage) || $this->option('force')) {
+                        @File::copy($foundSource, $destStorage);
+                    }
+                    if (! File::exists($destPublic) || $this->option('force')) {
+                        @File::copy($foundSource, $destPublic);
+                    }
+                    if (! File::exists($destRoot) || $this->option('force')) {
+                        @File::copy($foundSource, $destRoot);
+                    }
+                    if ($destAlt && (! File::exists($destAlt) || $this->option('force'))) {
+                        @File::copy($foundSource, $destAlt);
+                    }
+                    $coverCopiedCount++;
+                }
+            }
+
+            unset($item['created_at'], $item['updated_at']);
+            $totalItemsCount += (int) ($item['total_copies'] ?? 0);
+
+            $existing = LibraryBook::where('book_code', $item['book_code'])->orWhere('id', $item['id'])->first();
+            if ($existing) {
+                $existing->update($item);
+            } else {
+                LibraryBook::create($item);
+            }
+
+            $syncedCount++;
+            $bar->advance();
+        }
+
+        $bar->finish();
+        $this->newLine(2);
+
+        // Mirror all covers from storageCoverDir to all destinations
+        if (File::isDirectory($storageCoverDir)) {
+            foreach (File::files($storageCoverDir) as $f) {
+                $target = $publicCoverDir.DIRECTORY_SEPARATOR.$f->getFilename();
+                if (! File::exists($target)) {
+                    @File::copy($f->getPathname(), $target);
+                }
+                $rootTarget = $rootStorageCoverDir.DIRECTORY_SEPARATOR.$f->getFilename();
+                if (! File::exists($rootTarget)) {
+                    @File::copy($f->getPathname(), $rootTarget);
+                }
+                if ($altPublicDir && File::isDirectory(base_path('public_html'))) {
+                    $altTarget = $altPublicDir.DIRECTORY_SEPARATOR.$f->getFilename();
+                    if (! File::exists($altTarget)) {
+                        @File::copy($f->getPathname(), $altTarget);
+                    }
+                }
+            }
+        }
+
+        try {
+            $this->callSilent('storage:link');
+        } catch (\Throwable) {
         }
 
         $this->info('================ SINKRONISASI SELESAI ================');

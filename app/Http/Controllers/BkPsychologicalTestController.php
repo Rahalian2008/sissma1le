@@ -225,8 +225,28 @@ class BkPsychologicalTestController extends Controller
 
         $school = SchoolIdentity::first();
         $headmaster = Teacher::getHeadmaster();
+        $counselor = Teacher::getBkCoordinator();
 
-        return view('bk.psychological.print', compact('result', 'school', 'headmaster'));
+        return view('bk.psychological.print', compact('result', 'school', 'headmaster', 'counselor'));
+    }
+
+    /**
+     * Hapus data hasil asesmen siswa dari Bank Data
+     */
+    public function destroyResult(BkPsychologicalTestResult $result): RedirectResponse
+    {
+        $user = Auth::user();
+        if (! $user->isCounselor() && ! $user->hasRole('admin') && ! $user->hasRole('super_admin')) {
+            abort(403, 'Hanya Guru BK atau Administrator yang berhak menghapus data hasil asesmen psikotes.');
+        }
+
+        $studentName = $result->student?->name ?? 'Siswa';
+        $testName = $result->test?->name ?? 'Asesmen Psikotes';
+
+        $result->delete();
+
+        return redirect()->route('bk.psychological.index')
+            ->with('success', "Data hasil asesmen {$testName} untuk {$studentName} berhasil dihapus dari bank data.");
     }
 
     /**
