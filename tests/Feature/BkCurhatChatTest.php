@@ -155,3 +155,87 @@ test('counselor can view consultations and reply with attachments', function () 
     $consultation->refresh();
     expect($consultation->status)->toBe('RESOLVED');
 });
+
+test('student can choose a specific counselor and send voice note audio recording', function () {
+    Storage::fake('public');
+
+    $rand = Str::lower(Str::random(6));
+
+    // Buat Koordinator BK User
+    $counselorUser = User::create([
+        'name' => 'Ida Marttin Maolidah SE, SP.,M.Pd.',
+        'email' => "koordinator_bk_{$rand}@sman1lengkong.sch.id",
+        'username' => "koor_{$rand}",
+        'nip' => '197803102008012006',
+        'role' => 'koordinator_bk',
+        'roles' => ['koordinator_bk', 'guru_bk', 'bk'],
+        'password' => bcrypt('password'),
+    ]);
+
+    // Buat Siswa User
+    $studentUser = User::create([
+        'name' => 'Siswa Audio Test',
+        'email' => "siswa_audio_{$rand}@sman1lengkong.sch.id",
+        'username' => "nisn_audio_{$rand}",
+        'nip' => null,
+        'role' => 'siswa',
+        'roles' => ['siswa'],
+        'password' => bcrypt('password'),
+    ]);
+
+    $class = SchoolClass::first() ?? SchoolClass::create([
+        'name' => 'XII-Merdeka-1',
+        'grade' => 'XII',
+        'major' => 'Umum',
+    ]);
+
+    $student = Student::create([
+        'user_id' => $studentUser->id,
+        'nis' => '88'.rand(1000, 9999),
+        'nisn' => "nisn_audio_{$rand}",
+        'name' => 'Siswa Audio Test',
+        'class_id' => $class->id,
+        'gender' => 'P',
+        'is_active' => true,
+    ]);
+
+    // Siswa membuat konsultasi memilih Koordinator BK secara spesifik
+    $storeResponse = $this->actingAs($studentUser)->post(route('bk.curhat.store'), [
+        'category' => 'PRIBADI',
+        'topic' => 'Curhat Masalah Pribadi dengan Koordinator BK',
+        'message' => 'Halo Bu Ida, saya ingin bercerita secara langsung.',
+        'assigned_counselor_id' => $counselorUser->id,
+        'is_anonymous' => 0,
+    ]);
+
+    $consultation = BkConsultation::where('student_id', $student->id)->latest('id')->first();
+    expect($consultation)->not->toBeNull();
+    expect($consultation->assigned_counselor_id)->toBe($counselorUser->id);
+    expect($consultation->assignedCounselor->name)->toBe('Ida Marttin Maolidah SE, SP.,M.Pd.');
+
+    // Siswa mengirim voice note (audio file .webm) via AJAX
+    $voiceNote = UploadedFile::fake()->create('voicenote_123456789.webm', 250, 'audio/webm');
+
+    $voiceResponse = $this->actingAs($studentUser)->postJson(route('bk.curhat.message', $consultation), [
+        'message' => '🎙️ Pesan Suara',
+        'attachment' => $voiceNote,
+    ]);
+
+    $voiceResponse->assertStatus(200);
+    $voiceResponse->assertJson(['success' => true]);
+    $voiceData = $voiceResponse->json('data');
+    expect($voiceData['is_audio'])->toBeTrue();
+
+    // Verifikasi pesan tersimpan sebagai audio
+    $audioMessage = $consultation->messages()->latest('id')->first();
+    expect($audioMessage)->not->toBeNull();
+    expect($audioMessage->is_audio)->toBeTrue();
+    expect($audioMessage->is_document)->toBeFalse();
+    expect($audioMessage->attachment_type)->toBe('AUDIO');
+    Storage::disk('public')->assertExists($audioMessage->attachment_path);
+
+    // Halaman index juga menampilkan konselor terpilih
+    $pageResponse = $this->actingAs($studentUser)->get(route('bk.curhat.index', ['c' => $consultation->id]));
+    $pageResponse->assertStatus(200);
+    $pageResponse->assertSee('Ida Marttin Maolidah SE, SP.,M.Pd.');
+});

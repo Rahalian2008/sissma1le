@@ -27,6 +27,7 @@ class BkCurhatController extends Controller
         $isCounselor = $this->isCounselor($user);
         $school = SchoolIdentity::first();
         $bkCoordinator = Teacher::getBkCoordinator();
+        $bkCounselors = Teacher::getBkCounselors();
 
         if (! $isCounselor) {
             // Mode Siswa: Dapatkan profil siswa
@@ -57,7 +58,7 @@ class BkCurhatController extends Controller
             }
 
             if ($activeConsultation) {
-                $activeConsultation->load(['messages.sender']);
+                $activeConsultation->load(['messages.sender', 'assignedCounselor']);
                 $activeConsultation->markAsReadFor($user, false);
             }
 
@@ -68,6 +69,7 @@ class BkCurhatController extends Controller
                 'activeConsultation' => $activeConsultation,
                 'school' => $school,
                 'bkCoordinator' => $bkCoordinator,
+                'bkCounselors' => $bkCounselors,
                 'isCounselor' => false,
             ]);
         }
@@ -133,6 +135,7 @@ class BkCurhatController extends Controller
             'activeConsultation' => $activeConsultation,
             'school' => $school,
             'bkCoordinator' => $bkCoordinator,
+            'bkCounselors' => $bkCounselors,
             'unreadTotal' => $unreadTotal,
             'isCounselor' => true,
         ]);
@@ -152,17 +155,19 @@ class BkCurhatController extends Controller
                 'student_id' => ['required', 'exists:students,id'],
                 'topic' => ['required', 'string', 'max:150'],
                 'category' => ['required', 'in:PRIBADI,BELAJAR,SOSIAL,KARIER,LAINNYA'],
+                'assigned_counselor_id' => ['nullable', 'exists:users,id'],
                 'message' => ['nullable', 'string', 'max:5000'],
-                'attachment' => ['nullable', 'file', 'max:25600', 'mimes:jpg,jpeg,png,webp,gif,mp4,webm,mov,m4v,pdf,doc,docx,xls,xlsx,ppt,pptx,txt,zip'],
+                'attachment' => ['nullable', 'file', 'max:25600', 'mimes:jpg,jpeg,png,webp,gif,mp4,webm,weba,mov,m4v,mp3,wav,m4a,aac,ogg,oga,opus,flac,pdf,doc,docx,xls,xlsx,ppt,pptx,txt,zip'],
             ]);
             $student = Student::findOrFail($request->student_id);
         } else {
             $request->validate([
                 'topic' => ['required', 'string', 'max:150'],
                 'category' => ['required', 'in:PRIBADI,BELAJAR,SOSIAL,KARIER,LAINNYA'],
+                'assigned_counselor_id' => ['nullable', 'exists:users,id'],
                 'message' => ['nullable', 'string', 'max:5000'],
                 'is_anonymous' => ['nullable', 'boolean'],
-                'attachment' => ['nullable', 'file', 'max:25600', 'mimes:jpg,jpeg,png,webp,gif,mp4,webm,mov,m4v,pdf,doc,docx,xls,xlsx,ppt,pptx,txt,zip'],
+                'attachment' => ['nullable', 'file', 'max:25600', 'mimes:jpg,jpeg,png,webp,gif,mp4,webm,weba,mov,m4v,mp3,wav,m4a,aac,ogg,oga,opus,flac,pdf,doc,docx,xls,xlsx,ppt,pptx,txt,zip'],
             ]);
 
             $student = $user->student ?? Student::where('user_id', $user->id)->first();
@@ -185,11 +190,13 @@ class BkCurhatController extends Controller
             $code = 'CRH-'.date('Ym').'-'.strtoupper(Str::random(5));
         }
 
+        $assignedCounselorId = $isCounselor ? $user->id : ($request->assigned_counselor_id ?: null);
+
         $consultation = BkConsultation::create([
             'consultation_code' => $code,
             'student_id' => $student->id,
             'user_id' => $user->id,
-            'assigned_counselor_id' => $isCounselor ? $user->id : null,
+            'assigned_counselor_id' => $assignedCounselorId,
             'topic' => $request->topic,
             'category' => $request->category,
             'status' => 'OPEN',
@@ -229,7 +236,7 @@ class BkCurhatController extends Controller
 
         $request->validate([
             'message' => ['nullable', 'string', 'max:5000'],
-            'attachment' => ['nullable', 'file', 'max:25600', 'mimes:jpg,jpeg,png,webp,gif,mp4,webm,mov,m4v,pdf,doc,docx,xls,xlsx,ppt,pptx,txt,zip'],
+            'attachment' => ['nullable', 'file', 'max:25600', 'mimes:jpg,jpeg,png,webp,gif,mp4,webm,weba,mov,m4v,mp3,wav,m4a,aac,ogg,oga,opus,flac,pdf,doc,docx,xls,xlsx,ppt,pptx,txt,zip'],
         ]);
 
         if (empty($request->message) && ! $request->hasFile('attachment')) {
@@ -283,6 +290,7 @@ class BkCurhatController extends Controller
                     'formatted_size' => $message->formatted_size,
                     'is_image' => $message->is_image,
                     'is_video' => $message->is_video,
+                    'is_audio' => $message->is_audio,
                     'is_document' => $message->is_document,
                 ],
             ]);
@@ -340,6 +348,7 @@ class BkCurhatController extends Controller
                 'formatted_size' => $msg->formatted_size,
                 'is_image' => $msg->is_image,
                 'is_video' => $msg->is_video,
+                'is_audio' => $msg->is_audio,
                 'is_document' => $msg->is_document,
             ];
         });
@@ -405,6 +414,8 @@ class BkCurhatController extends Controller
                 $attachmentType = 'IMAGE';
             } elseif (str_starts_with($attachmentMime, 'video/')) {
                 $attachmentType = 'VIDEO';
+            } elseif (str_starts_with($attachmentMime, 'audio/') || in_array(strtolower($attachmentFile->getClientOriginalExtension()), ['mp3', 'wav', 'm4a', 'aac', 'ogg', 'oga', 'webm'], true) || str_starts_with($attachmentName, 'voicenote_')) {
+                $attachmentType = 'AUDIO';
             } else {
                 $attachmentType = 'DOCUMENT';
             }

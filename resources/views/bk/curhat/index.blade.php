@@ -177,11 +177,19 @@
                                 @if($activeConsultation->is_anonymous)
                                     <span class="px-1.5 py-0.2 rounded text-[9px] font-bold bg-amber-500/20 text-amber-500 border border-amber-500/30">Anonim</span>
                                 @endif
+                                @if($activeConsultation->assignedCounselor)
+                                    <span class="hidden sm:inline-flex items-center gap-1 px-2 py-0.2 rounded-full text-[9.5px] font-bold bg-teal-500/15 text-teal-700 dark:text-teal-300 border border-teal-500/30">
+                                        <span>🎯 {{ $activeConsultation->assignedCounselor->name }}</span>
+                                    </span>
+                                @endif
                             </div>
                             <p class="text-[10px] text-slate-500 dark:text-slate-400 flex items-center gap-1 truncate">
                                 <span class="font-bold text-emerald-600 dark:text-emerald-400">{{ $activeConsultation->topic }}</span>
                                 <span>&bull;</span>
                                 <span>Kode: {{ $activeConsultation->consultation_code }}</span>
+                                @if($activeConsultation->assignedCounselor)
+                                    <span class="sm:hidden text-teal-600 dark:text-teal-400">&bull; {{ $activeConsultation->assignedCounselor->name }}</span>
+                                @endif
                             </p>
                         </div>
                     </div>
@@ -256,6 +264,25 @@
                                             <source src="{{ $msg->attachment_url }}" type="{{ $msg->attachment_mime ?: 'video/mp4' }}">
                                             Browser Anda tidak mendukung pemutar video.
                                         </video>
+                                    </div>
+                                @endif
+
+                                <!-- Media: Audio / Voice Note (Pesan Suara) -->
+                                @if($msg->is_audio && $msg->attachment_url)
+                                    <div class="mb-2 p-2.5 rounded-2xl bg-black/10 dark:bg-white/10 flex flex-col gap-1.5 min-w-[220px] sm:min-w-[280px]">
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-sm shrink-0">
+                                                🎙️
+                                            </div>
+                                            <div class="flex-1 min-w-0">
+                                                <p class="text-xs font-bold truncate">{{ $msg->attachment_name ?: 'Pesan Suara (Voice Note)' }}</p>
+                                                <span class="text-[9.5px] opacity-75">{{ $msg->formatted_size ?: 'Audio Rekaman' }}</span>
+                                            </div>
+                                        </div>
+                                        <audio controls class="w-full h-8 rounded-lg outline-none" preload="metadata">
+                                            <source src="{{ $msg->attachment_url }}" type="{{ $msg->attachment_mime ?: 'audio/webm' }}">
+                                            Browser Anda tidak mendukung pemutar audio.
+                                        </audio>
                                     </div>
                                 @endif
 
@@ -346,6 +373,11 @@
                                 <input type="file" name="attachment" id="input-attachment-image" accept="image/*" class="hidden" onchange="handleFileSelected(this, 'IMAGE')">
                             </label>
                             <label class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-emerald-50 dark:hover:bg-slate-700/60 cursor-pointer text-xs font-bold text-slate-700 dark:text-slate-200 transition">
+                                <span class="p-1.5 bg-amber-500/15 text-amber-500 rounded-lg">🎵</span>
+                                <span>File Rekaman / Audio</span>
+                                <input type="file" name="attachment" id="input-attachment-audio" accept="audio/*,.mp3,.wav,.m4a,.aac,.ogg,.webm" class="hidden" onchange="handleFileSelected(this, 'AUDIO')">
+                            </label>
+                            <label class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-emerald-50 dark:hover:bg-slate-700/60 cursor-pointer text-xs font-bold text-slate-700 dark:text-slate-200 transition">
                                 <span class="p-1.5 bg-rose-500/15 text-rose-500 rounded-lg">🎥</span>
                                 <span>Video Singkat</span>
                                 <input type="file" name="attachment" id="input-attachment-video" accept="video/*" class="hidden" onchange="handleFileSelected(this, 'VIDEO')">
@@ -358,12 +390,37 @@
                         </div>
                     </div>
 
+                    <!-- Voice Recording Bar (Muncul saat merekam suara langsung) -->
+                    <div id="voice-recording-bar" class="hidden flex-1 bg-rose-50 dark:bg-rose-950/40 border border-rose-300 dark:border-rose-800 rounded-2xl px-3 py-2 flex items-center justify-between gap-2 animate-pulse-subtle">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <span class="w-3 h-3 rounded-full bg-rose-500 animate-ping"></span>
+                            <span class="w-2.5 h-2.5 rounded-full bg-rose-600"></span>
+                            <span class="text-xs font-black text-rose-700 dark:text-rose-300">Merekam Suara...</span>
+                            <span id="voice-record-timer" class="px-2 py-0.5 rounded-lg bg-rose-200/80 dark:bg-rose-900/60 text-rose-900 dark:text-rose-200 font-mono text-xs font-black">00:00</span>
+                        </div>
+                        <div class="flex items-center gap-1.5 shrink-0">
+                            <button type="button" onclick="cancelVoiceRecording()" class="px-2.5 py-1 rounded-xl text-xs font-bold bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-rose-200 hover:text-rose-800 transition">
+                                ✕ Batal
+                            </button>
+                            <button type="button" onclick="stopAndSendVoiceRecording()" class="px-3 py-1 rounded-xl text-xs font-black bg-rose-600 hover:bg-rose-500 text-white shadow-md transition flex items-center gap-1 cursor-pointer">
+                                <span>Kirim Suara</span>
+                                <svg class="w-3.5 h-3.5 rotate-45" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+                            </button>
+                        </div>
+                    </div>
+
                     <!-- Input Pesan Textarea (Auto-expand) -->
-                    <div class="flex-1 bg-slate-100 dark:bg-slate-800 rounded-2xl p-2 focus-within:bg-white dark:focus-within:bg-slate-950 border border-transparent focus-within:border-emerald-500 transition shadow-inner">
+                    <div id="text-input-container" class="flex-1 bg-slate-100 dark:bg-slate-800 rounded-2xl p-2 focus-within:bg-white dark:focus-within:bg-slate-950 border border-transparent focus-within:border-emerald-500 transition shadow-inner">
                         <textarea id="message-input" name="message" rows="1" placeholder="Ketik curhatan atau pesan di sini... (Enter untuk kirim, Shift+Enter untuk baris baru)" 
                                   class="w-full bg-transparent text-slate-800 dark:text-white text-xs sm:text-sm outline-none resize-none max-h-32 scrollbar-thin"
                                   onkeydown="handleTextareaKeydown(event)"></textarea>
                     </div>
+
+                    <!-- Tombol Rekam Suara Langsung (Mic Voice Note) -->
+                    <button type="button" id="btn-mic-record" onclick="toggleVoiceRecording()" title="Rekam Suara (Voice Note)"
+                            class="w-10 h-10 rounded-2xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-600 dark:text-amber-400 border border-amber-500/30 flex items-center justify-center transition shadow-xs shrink-0 cursor-pointer">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/></svg>
+                    </button>
 
                     <!-- Tombol Kirim Pesan (WhatsApp Style) -->
                     <button type="submit" id="btn-send-message" 
@@ -421,6 +478,55 @@
                         @endforeach
                     </select>
                 </div>
+            @else
+                <!-- Pilihan Konselor / Guru BK Yang Dituju -->
+                <div>
+                    <div class="flex items-center justify-between mb-1.5">
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300">
+                            Pilih Guru BK / Konselor yang Dituju <span class="text-rose-500">*</span>
+                        </label>
+                        <span class="text-[10.5px] text-emerald-600 dark:text-emerald-400 font-semibold">Master Data Guru &amp; PTK</span>
+                    </div>
+                    
+                    <div class="space-y-1.5 max-h-52 overflow-y-auto pr-1">
+                        <!-- Pilihan 1: Semua Tim BK -->
+                        <label class="p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center justify-between cursor-pointer hover:border-emerald-500 transition has-checked:border-emerald-500 has-checked:bg-emerald-50/70 dark:has-checked:bg-emerald-950/40">
+                            <div class="flex items-center gap-2.5">
+                                <input type="radio" name="assigned_counselor_id" value="" checked class="rounded-full text-emerald-600 focus:ring-emerald-500">
+                                <div>
+                                    <div class="flex items-center gap-1.5">
+                                        <p class="text-xs font-bold text-slate-800 dark:text-white">🌟 Semua Tim BK</p>
+                                        <span class="px-1.5 py-0.2 rounded text-[8.5px] font-black bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">Fleksibel</span>
+                                    </div>
+                                    <p class="text-[10px] text-slate-500 dark:text-slate-400">Siapa saja yang aktif dapat langsung merespons dan mendampingi curhatmu.</p>
+                                </div>
+                            </div>
+                        </label>
+
+                        <!-- Pilihan Konselor dari Master Data Guru & PTK -->
+                        @foreach($bkCounselors as $counselor)
+                            <label class="p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center justify-between cursor-pointer hover:border-emerald-500 transition has-checked:border-emerald-500 has-checked:bg-emerald-50/70 dark:has-checked:bg-emerald-950/40">
+                                <div class="flex items-center gap-2.5">
+                                    <input type="radio" name="assigned_counselor_id" value="{{ $counselor['user_id'] }}" class="rounded-full text-emerald-600 focus:ring-emerald-500">
+                                    <div class="w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs">
+                                        {{ substr($counselor['name'], 0, 1) }}
+                                    </div>
+                                    <div>
+                                        <div class="flex items-center gap-1.5 flex-wrap">
+                                            <p class="text-xs font-bold text-slate-800 dark:text-white">{{ $counselor['name'] }}</p>
+                                            @if($counselor['is_coordinator'])
+                                                <span class="px-1.5 py-0.2 rounded text-[8.5px] font-black bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30">Koordinator BK</span>
+                                            @else
+                                                <span class="px-1.5 py-0.2 rounded text-[8.5px] font-bold bg-teal-500/20 text-teal-700 dark:text-teal-300 border border-teal-500/30">Guru BK</span>
+                                            @endif
+                                        </div>
+                                        <p class="text-[10px] text-slate-500 dark:text-slate-400">NIP: {{ $counselor['nip'] ?: '-' }}</p>
+                                    </div>
+                                </div>
+                            </label>
+                        @endforeach
+                    </div>
+                </div>
             @endif
 
             <!-- Kategori / Bidang Bimbingan -->
@@ -466,8 +572,8 @@
 
             <!-- Opsi Lampiran -->
             <div>
-                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Lampirkan Foto/Dokumen (Opsional)</label>
-                <input type="file" name="attachment" accept="image/*,video/*,.pdf,.doc,.docx" 
+                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Lampirkan Foto/Dokumen/Audio (Opsional)</label>
+                <input type="file" name="attachment" accept="image/*,video/*,audio/*,.mp3,.wav,.m4a,.aac,.ogg,.webm,.pdf,.doc,.docx" 
                        class="w-full text-xs text-slate-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 dark:file:bg-slate-800 dark:file:text-emerald-400">
             </div>
 
@@ -583,6 +689,7 @@
         if (iconElem) {
             if (type === 'IMAGE') iconElem.textContent = '🖼️';
             else if (type === 'VIDEO') iconElem.textContent = '🎥';
+            else if (type === 'AUDIO') iconElem.textContent = '🎵';
             else iconElem.textContent = '📄';
         }
 
@@ -594,6 +701,7 @@
     function clearAttachment() {
         const inputs = [
             document.getElementById('input-attachment-image'),
+            document.getElementById('input-attachment-audio'),
             document.getElementById('input-attachment-video'),
             document.getElementById('input-attachment-doc'),
         ];
@@ -745,6 +853,22 @@
                     </video>
                 </div>
             `;
+        } else if (msg.is_audio && msg.attachment_url) {
+            mediaHtml += `
+                <div class="mb-2 p-2.5 rounded-2xl bg-black/10 dark:bg-white/10 flex flex-col gap-1.5 min-w-[220px] sm:min-w-[280px]">
+                    <div class="flex items-center gap-2">
+                        <div class="w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-sm shrink-0">🎙️</div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-xs font-bold truncate">${msg.attachment_name || 'Pesan Suara (Voice Note)'}</p>
+                            <span class="text-[9.5px] opacity-75">${msg.formatted_size || 'Audio Rekaman'}</span>
+                        </div>
+                    </div>
+                    <audio controls class="w-full h-8 rounded-lg outline-none" preload="metadata">
+                        <source src="${msg.attachment_url}" type="${msg.attachment_mime || 'audio/webm'}">
+                        Browser Anda tidak mendukung pemutar audio.
+                    </audio>
+                </div>
+            `;
         } else if (msg.is_document && msg.attachment_url) {
             mediaHtml += `
                 <a href="${msg.attachment_url}" target="_blank" download="${msg.attachment_name || 'file'}" 
@@ -818,6 +942,197 @@
         }
     }
 
+    // ================= FITUR KIRIM SUARA (VOICE NOTE RECORDING) =================
+    let mediaRecorder = null;
+    let audioChunks = [];
+    let recordTimerInterval = null;
+    let recordStartTime = null;
+
+    async function toggleVoiceRecording() {
+        if (mediaRecorder && mediaRecorder.state === 'recording') {
+            stopAndSendVoiceRecording();
+            return;
+        }
+        startVoiceRecording();
+    }
+
+    async function startVoiceRecording() {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            alert('Browser Anda tidak mendukung perekaman mikrofon audio.');
+            return;
+        }
+
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            
+            // Pilih mime type audio yang didukung browser
+            let options = {};
+            if (window.MediaRecorder) {
+                if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
+                    options = { mimeType: 'audio/webm;codecs=opus' };
+                } else if (MediaRecorder.isTypeSupported('audio/ogg;codecs=opus')) {
+                    options = { mimeType: 'audio/ogg;codecs=opus' };
+                } else if (MediaRecorder.isTypeSupported('audio/mp4')) {
+                    options = { mimeType: 'audio/mp4' };
+                }
+            }
+
+            mediaRecorder = new MediaRecorder(stream, options);
+            audioChunks = [];
+
+            mediaRecorder.ondataavailable = (event) => {
+                if (event.data && event.data.size > 0) {
+                    audioChunks.push(event.data);
+                }
+            };
+
+            mediaRecorder.onstop = () => {
+                try {
+                    stream.getTracks().forEach(track => track.stop());
+                } catch (e) {}
+            };
+
+            mediaRecorder.start(250); // potong per 250ms
+            recordStartTime = Date.now();
+
+            // Ubah UI: sembunyikan text input dan mic button, tampilkan recording bar
+            const recordingBar = document.getElementById('voice-recording-bar');
+            const textContainer = document.getElementById('text-input-container');
+            const micBtn = document.getElementById('btn-mic-record');
+            const sendBtn = document.getElementById('btn-send-message');
+
+            if (recordingBar) recordingBar.classList.remove('hidden');
+            if (textContainer) textContainer.classList.add('hidden');
+            if (micBtn) micBtn.classList.add('hidden');
+            if (sendBtn) sendBtn.classList.add('hidden');
+
+            // Jalankan timer
+            updateRecordTimer();
+            if (recordTimerInterval) clearInterval(recordTimerInterval);
+            recordTimerInterval = setInterval(updateRecordTimer, 1000);
+
+        } catch (err) {
+            console.error('Microphone access error:', err);
+            alert('Izin akses mikrofon ditolak atau mikrofon tidak tersedia. Mohon izinkan mikrofon di browser untuk merekam suara.');
+        }
+    }
+
+    function updateRecordTimer() {
+        if (!recordStartTime) return;
+        const diffSec = Math.floor((Date.now() - recordStartTime) / 1000);
+        const mins = String(Math.floor(diffSec / 60)).padStart(2, '0');
+        const secs = String(diffSec % 60).padStart(2, '0');
+        const timerElem = document.getElementById('voice-record-timer');
+        if (timerElem) {
+            timerElem.textContent = `${mins}:${secs}`;
+        }
+    }
+
+    function resetVoiceRecordingUI() {
+        if (recordTimerInterval) clearInterval(recordTimerInterval);
+        recordTimerInterval = null;
+        recordStartTime = null;
+
+        const recordingBar = document.getElementById('voice-recording-bar');
+        const textContainer = document.getElementById('text-input-container');
+        const micBtn = document.getElementById('btn-mic-record');
+        const sendBtn = document.getElementById('btn-send-message');
+        const timerElem = document.getElementById('voice-record-timer');
+
+        if (timerElem) timerElem.textContent = '00:00';
+        if (recordingBar) recordingBar.classList.add('hidden');
+        if (textContainer) textContainer.classList.remove('hidden');
+        if (micBtn) micBtn.classList.remove('hidden');
+        if (sendBtn) sendBtn.classList.remove('hidden');
+    }
+
+    function cancelVoiceRecording() {
+        if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+            try { mediaRecorder.stop(); } catch (e) {}
+        }
+        audioChunks = [];
+        resetVoiceRecordingUI();
+    }
+
+    function stopAndSendVoiceRecording() {
+        if (!mediaRecorder || mediaRecorder.state === 'inactive') {
+            resetVoiceRecordingUI();
+            return;
+        }
+
+        const mime = mediaRecorder.mimeType || 'audio/webm';
+
+        mediaRecorder.onstop = async () => {
+            if (mediaRecorder.stream) {
+                try { mediaRecorder.stream.getTracks().forEach(track => track.stop()); } catch (e) {}
+            }
+
+            if (audioChunks.length === 0) {
+                resetVoiceRecordingUI();
+                return;
+            }
+
+            const audioBlob = new Blob(audioChunks, { type: mime });
+            audioChunks = [];
+            resetVoiceRecordingUI();
+
+            if (audioBlob.size < 200) {
+                alert('Durasi rekaman suara terlalu pendek.');
+                return;
+            }
+
+            // Tentukan ekstensi file
+            let ext = 'webm';
+            if (mime.includes('ogg')) ext = 'ogg';
+            else if (mime.includes('mp4')) ext = 'mp4';
+
+            const audioFile = new File([audioBlob], `voicenote_${Date.now()}.${ext}`, { type: mime });
+
+            // Kirim langsung via AJAX
+            await sendAudioMessage(audioFile);
+        };
+
+        try {
+            mediaRecorder.stop();
+        } catch (e) {
+            resetVoiceRecordingUI();
+        }
+    }
+
+    async function sendAudioMessage(file) {
+        const form = document.getElementById('chat-input-form');
+        if (!form) return;
+
+        const formData = new FormData();
+        const tokenInput = form.querySelector('input[name="_token"]');
+        if (tokenInput) formData.append('_token', tokenInput.value);
+        formData.append('attachment', file);
+        formData.append('message', '🎙️ Pesan Suara');
+
+        try {
+            const response = await fetch(form.action, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                },
+                body: formData,
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                appendMessage(result.data, true);
+                lastMessageId = Math.max(lastMessageId, result.data.id);
+                scrollToBottom(true);
+            } else {
+                alert(result.message || 'Gagal mengirim rekaman suara.');
+            }
+        } catch (error) {
+            console.error('Send audio error:', error);
+            alert('Terjadi kesalahan saat mengunggah rekaman suara.');
+        }
+    }
+
     // Modal Mulai Curhat Baru
     function openNewChatModal() {
         const modal = document.getElementById('modal-new-chat');
@@ -861,6 +1176,13 @@
     }
     .animate-scale-up {
         animation: scaleUp 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes pulseSubtle {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.85; }
+    }
+    .animate-pulse-subtle {
+        animation: pulseSubtle 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
     }
 </style>
 @endsection

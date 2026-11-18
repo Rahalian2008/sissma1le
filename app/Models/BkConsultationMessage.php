@@ -84,9 +84,16 @@ class BkConsultationMessage extends Model
         );
     }
 
+    public function getIsAudioAttribute(): bool
+    {
+        return $this->attachment_type === 'AUDIO' || (
+            $this->attachment_mime && str_starts_with($this->attachment_mime, 'audio/')
+        );
+    }
+
     public function getIsDocumentAttribute(): bool
     {
-        return $this->attachment_type === 'DOCUMENT' || (! $this->is_image && ! $this->is_video && ! empty($this->attachment_path));
+        return $this->attachment_type === 'DOCUMENT' || (! $this->is_image && ! $this->is_video && ! $this->is_audio && ! empty($this->attachment_path));
     }
 
     public function getRenderedMessageHtmlAttribute(): string

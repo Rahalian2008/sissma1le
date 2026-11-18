@@ -201,6 +201,50 @@ class Teacher extends Model
     }
 
     /**
+     * Dapatkan daftar seluruh Koordinator BK dan Guru BK resmi dari Master Data Guru & PTK
+     *
+     * @return Collection<int, array{teacher_id: int, user_id: ?int, name: string, nip: string, is_coordinator: bool, role_label: string, user: ?User}>
+     */
+    public static function getBkCounselors(): Collection
+    {
+        $teachers = self::with('user')->where('is_active', true)->get();
+
+        $counselors = collect();
+
+        foreach ($teachers as $teacher) {
+            $user = $teacher->user;
+            $roles = $user?->roles ?? [];
+            if (! is_array($roles)) {
+                $roles = [];
+            }
+
+            $isCoordinator = in_array('koordinator_bk', $roles, true) || ($user && $user->role === 'koordinator_bk');
+            $isBk = $isCoordinator
+                || in_array('guru_bk', $roles, true)
+                || in_array('bk', $roles, true)
+                || ($user && in_array($user->role, ['guru_bk', 'bk'], true))
+                || stripos((string) $teacher->teaching_subject, 'bk') !== false
+                || stripos((string) $teacher->teaching_subject, 'bimbingan') !== false
+                || stripos((string) $teacher->title, 'bk') !== false
+                || stripos((string) $teacher->position, 'bk') !== false;
+
+            if ($isBk) {
+                $counselors->push([
+                    'teacher_id' => $teacher->id,
+                    'user_id' => $teacher->user_id,
+                    'name' => $teacher->formatted_name ?: $teacher->name,
+                    'nip' => $teacher->nip ?: '-',
+                    'is_coordinator' => $isCoordinator,
+                    'role_label' => $isCoordinator ? 'Koordinator BK' : 'Guru BK / Konselor',
+                    'user' => $user,
+                ]);
+            }
+        }
+
+        return $counselors->sortByDesc('is_coordinator')->values();
+    }
+
+    /**
      * @return array{name: string, nip: string, user: ?User, teacher: ?self}
      */
     public static function getBkCoordinator(): array
