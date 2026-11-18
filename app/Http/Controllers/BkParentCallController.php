@@ -129,12 +129,13 @@ class BkParentCallController extends Controller
 
     public function printLetter(BkParentCall $parentCall): View
     {
-        $parentCall->load(['student.schoolClass', 'counselor']);
+        $parentCall->load(['student.schoolClass.homeroomTeacher', 'counselor']);
         $school = SchoolIdentity::first();
         $headmaster = Teacher::getHeadmaster();
-        $wakasekKesiswaan = Teacher::getWakasekKesiswaan();
+        $bkCoordinator = Teacher::getBkCoordinator();
+        $homeroomTeacher = $parentCall->student?->schoolClass?->homeroomTeacher;
 
-        return view('bk.parent_call.print_letter', compact('parentCall', 'school', 'headmaster', 'wakasekKesiswaan'));
+        return view('bk.parent_call.print_letter', compact('parentCall', 'school', 'headmaster', 'bkCoordinator', 'homeroomTeacher'));
     }
 
     public function printBeritaAcara(BkParentCall $parentCall): View
