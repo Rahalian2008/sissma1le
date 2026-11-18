@@ -243,31 +243,40 @@ class AttendanceService
         $outStartStr = substr($schedule['out_start'], 0, 5);
         $outEndStr = substr($schedule['out_end'], 0, 5);
 
-        if ($existingAttendance && in_array($existingAttendance->status, ['HADIR', 'TERLAMBAT']) && empty($existingAttendance->time_out) && $sessionType !== 'checkin') {
-            if (! $bypassTime && $timeShort < $outStartStr) {
+        // Menentukan apakah request ini ditujukan untuk sesi Pulang (Checkout)
+        $isAttemptingCheckout = ($sessionType === 'checkout') ||
+            ($existingAttendance && ! empty($existingAttendance->time) && empty($existingAttendance->time_out) && $sessionType !== 'checkin');
+
+        if ($isAttemptingCheckout) {
+            if (! $existingAttendance || empty($existingAttendance->time)) {
                 return [
                     'success' => false,
-                    'message' => "Presensi pulang belum dibuka. Sesi presensi pulang hari {$schedule['day_name']} baru dibuka pukul {$outStartStr} WIB.",
-                    'error_code' => 'CHECKOUT_TOO_EARLY',
-                    'attendance' => $existingAttendance,
+                    'message' => 'Anda belum melakukan presensi masuk hari ini. Silakan lakukan presensi masuk terlebih dahulu.',
+                    'error_code' => 'CHECKIN_REQUIRED',
                 ];
             }
 
-            if (! $bypassTime && $timeShort > $outEndStr) {
-                return [
-                    'success' => false,
-                    'message' => "Sesi presensi pulang untuk hari ini telah berakhir pada pukul {$outEndStr} WIB (Batas Akhir).",
-                    'error_code' => 'CHECKOUT_CLOSED',
-                    'attendance' => $existingAttendance,
-                ];
+            if (! $bypassTime) {
+                if ($timeShort < $outStartStr) {
+                    return [
+                        'success' => false,
+                        'message' => "Presensi pulang belum dibuka. Sesi presensi pulang hari {$schedule['day_name']} baru dibuka pukul {$outStartStr} s.d. {$outEndStr} WIB.",
+                        'error_code' => 'CHECKOUT_TOO_EARLY',
+                        'attendance' => $existingAttendance,
+                    ];
+                }
+
+                if ($timeShort > $outEndStr) {
+                    return [
+                        'success' => false,
+                        'message' => "Sesi presensi pulang untuk hari ini telah berakhir pada pukul {$outEndStr} WIB (Batas Akhir).",
+                        'error_code' => 'CHECKOUT_CLOSED',
+                        'attendance' => $existingAttendance,
+                    ];
+                }
             }
-        }
 
-        $isCheckout = ($sessionType === 'checkout') ||
-            ($sessionType !== 'checkin' && $existingAttendance && in_array($existingAttendance->status, ['HADIR', 'TERLAMBAT']) && empty($existingAttendance->time_out) && ($bypassTime || ($timeShort >= $outStartStr && $timeShort <= $outEndStr)));
-
-        // PROSES SESI PULANG
-        if ($isCheckout && $existingAttendance && ! empty($existingAttendance->time)) {
+            // PROSES SESI PULANG
             $imagePath = $this->saveBase64Image($selfieImage, 'selfies');
 
             $existingAttendance->time_out = $currentTime;
@@ -298,12 +307,21 @@ class AttendanceService
         }
 
         // PROSES SESI MASUK
+        if ($existingAttendance && ! empty($existingAttendance->time)) {
+            return [
+                'success' => false,
+                'message' => 'Anda telah melakukan presensi masuk hari ini pada pukul '.substr($existingAttendance->time, 0, 5).' WIB.',
+                'error_code' => 'ALREADY_ATTENDED',
+                'attendance' => $existingAttendance,
+            ];
+        }
+
         $startTime = substr($schedule['in_start'], 0, 5);
         $checkinTime = substr($schedule['in_on_time'], 0, 5);
         $lateCutoffTime = substr($schedule['in_late_cutoff'], 0, 5);
 
         if (! $bypassTime) {
-            if ($timeShort < $startTime && $sessionType !== 'checkin') {
+            if ($timeShort < $startTime) {
                 return [
                     'success' => false,
                     'message' => "Presensi masuk belum dibuka. Jam presensi dimulai pukul {$startTime} WIB.",
@@ -311,7 +329,7 @@ class AttendanceService
                 ];
             }
 
-            if ($timeShort > $lateCutoffTime && $sessionType !== 'checkin') {
+            if ($timeShort > $lateCutoffTime) {
                 return [
                     'success' => false,
                     'message' => "Batas akhir presensi masuk untuk sesi hari ini telah berakhir pada pukul {$lateCutoffTime} WIB. Siswa yang belum presensi masuk tercatat Alpa.",
@@ -640,7 +658,18 @@ class AttendanceService
         $bypassTime = ! empty($meta['bypass_time']);
 
         // Sesi Presensi Pulang jika sudah presensi masuk
-        if ($existingAttendance && in_array($existingAttendance->status, ['HADIR', 'TERLAMBAT']) && empty($existingAttendance->time_out) && $sessionType !== 'checkin') {
+        $isAttemptingCheckout = ($sessionType === 'checkout') ||
+            ($existingAttendance && in_array($existingAttendance->status, ['HADIR', 'TERLAMBAT']) && empty($existingAttendance->time_out) && $sessionType !== 'checkin');
+
+        if ($isAttemptingCheckout) {
+            if (! $existingAttendance || empty($existingAttendance->time)) {
+                return [
+                    'success' => false,
+                    'message' => "Siswa {$student->name} belum melakukan presensi masuk hari ini. Silakan presensi masuk terlebih dahulu.",
+                    'error_code' => 'CHECKIN_REQUIRED',
+                ];
+            }
+
             if (! $bypassTime && $currentTime < $schedule['out_start']) {
                 return [
                     'success' => false,
@@ -715,7 +744,7 @@ class AttendanceService
         }
 
         if (! $bypassTime) {
-            if ($currentTime < $schedule['in_start'] && $sessionType !== 'checkin') {
+            if ($currentTime < $schedule['in_start']) {
                 return [
                     'success' => false,
                     'message' => "Presensi masuk belum dibuka. Jam presensi dimulai pukul {$schedule['in_start']} WIB.",
@@ -723,7 +752,7 @@ class AttendanceService
                 ];
             }
 
-            if ($currentTime > $schedule['in_late_cutoff'] && $sessionType !== 'checkin') {
+            if ($currentTime > $schedule['in_late_cutoff']) {
                 return [
                     'success' => false,
                     'message' => 'Batas akhir presensi masuk untuk sesi hari ini telah berakhir pada pukul '.substr($schedule['in_late_cutoff'], 0, 5).' WIB. Siswa yang belum presensi masuk tercatat Alpa.',
@@ -837,7 +866,18 @@ class AttendanceService
         $sessionType = $meta['session_type'] ?? null;
         $bypassTime = ! empty($meta['bypass_time']);
 
-        if ($existingAttendance && in_array($existingAttendance->status, ['HADIR', 'TERLAMBAT']) && empty($existingAttendance->time_out) && $sessionType !== 'checkin') {
+        $isAttemptingCheckout = ($sessionType === 'checkout') ||
+            ($existingAttendance && in_array($existingAttendance->status, ['HADIR', 'TERLAMBAT']) && empty($existingAttendance->time_out) && $sessionType !== 'checkin');
+
+        if ($isAttemptingCheckout) {
+            if (! $existingAttendance || empty($existingAttendance->time)) {
+                return [
+                    'success' => false,
+                    'message' => "Siswa {$student->name} belum melakukan presensi masuk hari ini. Silakan presensi masuk terlebih dahulu.",
+                    'error_code' => 'CHECKIN_REQUIRED',
+                ];
+            }
+
             if (! $bypassTime && $currentTime < $schedule['out_start']) {
                 return [
                     'success' => false,
@@ -894,7 +934,7 @@ class AttendanceService
         }
 
         if (! $bypassTime) {
-            if ($currentTime < $schedule['in_start'] && $sessionType !== 'checkin') {
+            if ($currentTime < $schedule['in_start']) {
                 return [
                     'success' => false,
                     'message' => "Presensi masuk belum dibuka. Jam presensi dimulai pukul {$schedule['in_start']} WIB.",
@@ -902,7 +942,7 @@ class AttendanceService
                 ];
             }
 
-            if ($currentTime > $schedule['in_late_cutoff'] && $sessionType !== 'checkin') {
+            if ($currentTime > $schedule['in_late_cutoff']) {
                 return [
                     'success' => false,
                     'message' => 'Batas akhir presensi masuk untuk sesi hari ini telah berakhir pada pukul '.substr($schedule['in_late_cutoff'], 0, 5).' WIB. Siswa yang belum presensi masuk tercatat Alpa.',
@@ -1049,8 +1089,19 @@ class AttendanceService
         $sessionType = $meta['session_type'] ?? null;
         $bypassTime = ! empty($meta['bypass_time']);
 
+        $isAttemptingCheckout = ($sessionType === 'checkout') ||
+            ($existingAttendance && in_array($existingAttendance->status, ['HADIR', 'TERLAMBAT']) && empty($existingAttendance->time_out) && $sessionType !== 'checkin');
+
         // Sesi Presensi Pulang
-        if ($existingAttendance && in_array($existingAttendance->status, ['HADIR', 'TERLAMBAT']) && empty($existingAttendance->time_out) && $sessionType !== 'checkin') {
+        if ($isAttemptingCheckout) {
+            if (! $existingAttendance || empty($existingAttendance->time)) {
+                return [
+                    'success' => false,
+                    'message' => "Siswa {$student->name} belum melakukan presensi masuk hari ini. Silakan presensi masuk terlebih dahulu.",
+                    'error_code' => 'CHECKIN_REQUIRED',
+                ];
+            }
+
             if (! $bypassTime && $currentTime < $schedule['out_start']) {
                 return [
                     'success' => false,
@@ -1124,7 +1175,7 @@ class AttendanceService
         }
 
         if (! $bypassTime) {
-            if ($currentTime < $schedule['in_start'] && $sessionType !== 'checkin') {
+            if ($currentTime < $schedule['in_start']) {
                 return [
                     'success' => false,
                     'message' => "Presensi masuk belum dibuka. Jam presensi dimulai pukul {$schedule['in_start']} WIB.",
@@ -1132,7 +1183,7 @@ class AttendanceService
                 ];
             }
 
-            if ($currentTime > $schedule['in_late_cutoff'] && $sessionType !== 'checkin') {
+            if ($currentTime > $schedule['in_late_cutoff']) {
                 return [
                     'success' => false,
                     'message' => 'Batas akhir presensi masuk untuk sesi hari ini telah berakhir pada pukul '.substr($schedule['in_late_cutoff'], 0, 5).' WIB. Siswa yang belum presensi masuk tercatat Alpa.',

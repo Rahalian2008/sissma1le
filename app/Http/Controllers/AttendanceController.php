@@ -407,6 +407,8 @@ class AttendanceController extends Controller
 
         $isGeofenceEnabled = SchoolSetting::get('enable_geofence_radius', '1') === '1';
 
+        $isPrivileged = Auth::check() && Auth::user()->hasAnyRole(['admin', 'super_admin']);
+
         $validated = $request->validate([
             'selfie_image' => ['required', 'string'], // base64 stream from live canvas
             'latitude' => [$isGeofenceEnabled ? 'required' : 'nullable', 'numeric'],
@@ -418,9 +420,7 @@ class AttendanceController extends Controller
             'bypass_time' => ['nullable', 'boolean'],
         ]);
 
-        if ($request->boolean('bypass_time')) {
-            $validated['bypass_time'] = true;
-        }
+        $validated['bypass_time'] = $isPrivileged && $request->boolean('bypass_time');
 
         $result = $this->attendanceService->processSelfieAttendance($student, $validated);
 
@@ -708,10 +708,11 @@ class AttendanceController extends Controller
             ]);
         }
 
+        $isPrivileged = Auth::check() && Auth::user()->hasAnyRole(['admin', 'super_admin']);
         $meta = [
             'device_code' => $deviceCode,
             'session_type' => $validated['session_type'] ?? null,
-            'bypass_time' => $request->boolean('bypass_time'),
+            'bypass_time' => $isPrivileged && $request->boolean('bypass_time'),
         ];
 
         $result = $this->attendanceService->processRfidAttendance($cleanUid, $deviceCode, $meta);
@@ -765,10 +766,11 @@ class AttendanceController extends Controller
             'bypass_time' => ['nullable', 'boolean'],
         ]);
 
+        $isPrivileged = Auth::check() && Auth::user()->hasAnyRole(['admin', 'super_admin']);
         $meta = [
             'device_code' => $validated['device_code'] ?? 'BARCODE-SCAN-01',
             'session_type' => $validated['session_type'] ?? null,
-            'bypass_time' => $request->boolean('bypass_time'),
+            'bypass_time' => $isPrivileged && $request->boolean('bypass_time'),
         ];
 
         $result = $this->attendanceService->processBarcodeAttendance($validated['barcode'], $meta['device_code'], $meta);
@@ -796,10 +798,11 @@ class AttendanceController extends Controller
             'bypass_time' => ['nullable', 'boolean'],
         ]);
 
+        $isPrivileged = Auth::check() && Auth::user()->hasAnyRole(['admin', 'super_admin']);
         $meta = [
             'device_code' => $validated['device_code'] ?? 'FACE-CAM-01',
             'session_type' => $validated['session_type'] ?? null,
-            'bypass_time' => $request->boolean('bypass_time'),
+            'bypass_time' => $isPrivileged && $request->boolean('bypass_time'),
         ];
 
         $result = $this->attendanceService->processFaceRecognitionAttendance($validated['identifier'], $meta['device_code'], $meta);

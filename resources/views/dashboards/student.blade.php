@@ -46,6 +46,14 @@
                             </div>
                         </div>
                     @else
+                        @php
+                            $nowJakarta = \Carbon\Carbon::now('Asia/Jakarta');
+                            $timeNowStr = $nowJakarta->format('H:i');
+                            $outStartStr = substr($schedule['out_start'] ?? '15:00', 0, 5);
+                            $outEndStr = substr($schedule['out_end'] ?? '17:30', 0, 5);
+                            $isCheckoutOpen = $timeNowStr >= $outStartStr && $timeNowStr <= $outEndStr;
+                            $isBeforeCheckout = $timeNowStr < $outStartStr;
+                        @endphp
                         <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
                             <div class="px-3.5 py-2 rounded-xl bg-white/10 backdrop-blur-md border border-white/15 text-center sm:text-right">
                                 <div class="text-[10px] font-semibold text-slate-300 uppercase tracking-wider">Masuk: {{ substr($todayAttendance->time, 0, 5) }} WIB</div>
@@ -53,19 +61,47 @@
                                     {{ $todayAttendance->status }}
                                 </div>
                             </div>
-                            <a href="{{ route('attendance.selfie') }}" class="w-full sm:w-auto px-4 py-2.5 bg-gradient-to-r from-sky-500 to-blue-500 hover:from-sky-400 hover:to-blue-400 text-white font-black rounded-xl shadow-lg shadow-sky-500/30 transition flex items-center justify-center gap-2 text-xs">
-                                <span>PRESENSI PULANG</span>
-                            </a>
+                            @if($isCheckoutOpen)
+                                <a href="{{ route('attendance.selfie') }}" class="w-full sm:w-auto px-4 py-2.5 bg-gradient-to-r from-sky-500 to-blue-500 hover:from-sky-400 hover:to-blue-400 text-white font-black rounded-xl shadow-lg shadow-sky-500/30 transition flex items-center justify-center gap-2 text-xs">
+                                    <span>PRESENSI PULANG</span>
+                                </a>
+                            @elseif($isBeforeCheckout)
+                                <div class="px-3.5 py-2 rounded-xl bg-sky-950/40 border border-sky-800/60 text-center sm:text-right text-xs">
+                                    <div class="text-[10px] font-semibold text-sky-300 uppercase tracking-wider">Sesi Pulang</div>
+                                    <div class="text-xs font-bold text-slate-200 flex items-center justify-center sm:justify-end gap-1">
+                                        <span>🔒 Buka {{ $outStartStr }} WIB</span>
+                                    </div>
+                                </div>
+                            @else
+                                <div class="px-3.5 py-2 rounded-xl bg-slate-800/40 border border-slate-700 text-center sm:text-right text-xs">
+                                    <div class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Sesi Pulang</div>
+                                    <div class="text-xs font-bold text-slate-400">Tutup ({{ $outEndStr }} WIB)</div>
+                                </div>
+                            @endif
                         </div>
                     @endif
                 @else
-                    <a href="{{ route('attendance.selfie') }}" class="w-full sm:w-auto px-5 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black rounded-2xl shadow-lg shadow-emerald-500/30 transition flex items-center justify-center gap-2 text-xs sm:text-sm tracking-wide">
-                        <svg class="w-4 h-4 text-slate-950 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
-                        </svg>
-                        <span>PRESENSI MASUK SEKARANG</span>
-                    </a>
+                    @php
+                        $nowJakarta = $nowJakarta ?? \Carbon\Carbon::now('Asia/Jakarta');
+                        $timeNowStr = $nowJakarta->format('H:i');
+                        $inStartStr = substr($schedule['in_start'] ?? '06:00', 0, 5);
+                    @endphp
+                    @if($timeNowStr < $inStartStr)
+                        <div class="px-4 py-2.5 rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 text-center md:text-right">
+                            <div class="text-[10px] font-semibold text-slate-300 uppercase tracking-wider">Sesi Presensi Masuk</div>
+                            <div class="text-xs font-bold text-emerald-300 mt-0.5">
+                                🔒 Buka Pukul {{ $inStartStr }} WIB
+                            </div>
+                        </div>
+                    @else
+                        <a href="{{ route('attendance.selfie') }}" class="w-full sm:w-auto px-5 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black rounded-2xl shadow-lg shadow-emerald-500/30 transition flex items-center justify-center gap-2 text-xs sm:text-sm tracking-wide">
+                            <svg class="w-4 h-4 text-slate-950 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                            <span>PRESENSI MASUK SEKARANG</span>
+                        </a>
+                    @endif
                 @endif
             </div>
         </div>
