@@ -4,8 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Achievement;
 use App\Models\Attendance;
+use App\Models\EarlyLeaveRequest;
 use App\Models\ExtracurricularAttendance;
+use App\Models\Habit;
+use App\Models\HabitDailyLog;
+use App\Models\PicketSchedule;
 use App\Models\QuranTahfidzRecord;
+use App\Models\SchoolExitPermit;
+use App\Models\SchoolIdentity;
 use App\Models\SchoolSetting;
 use App\Models\Student;
 use App\Models\WorshipAttendance;
@@ -22,10 +28,11 @@ class KioskController extends Controller
      */
     public function index(Request $request): View
     {
+        $schoolIdentity = SchoolIdentity::first();
         $school = [
-            'name' => SchoolSetting::get('school_name', 'SMA NEGERI 1 LENGKONG'),
-            'address' => SchoolSetting::get('school_address', 'Jl. Raya Lengkong No. 01, Nganjuk, Jawa Timur'),
-            'logo' => SchoolSetting::get('school_logo'),
+            'name' => SchoolSetting::get('school_name', $schoolIdentity?->name ?? 'SMA Negeri 1 Lengkong'),
+            'address' => SchoolSetting::get('school_address', $schoolIdentity?->address ?? 'Jalan Raya Tegalega, Kecamatan Lengkong, Kabupaten Sukabumi, Provinsi Jawa Barat'),
+            'logo' => SchoolSetting::get('school_logo', $schoolIdentity?->logo_path),
             'kop_image' => SchoolSetting::get('school_kop') ?: (SchoolSetting::get('kop_surat_image') ?: SchoolSetting::get('kop_image')),
         ];
 
@@ -287,22 +294,115 @@ class KioskController extends Controller
             ],
         ];
 
+        // 9. Petugas Piket Hari Ini
+        $todayPickets = PicketSchedule::getTodayPickets($now)->map(function ($p) {
+            return [
+                'name' => $p->person_name ?: ($p->teacher?->name ?? ($p->user?->name ?? 'Petugas Piket')),
+                'nip' => $p->nip ?: '-',
+                'role_type' => $p->role_type === 'GURU_PIKET' ? 'Guru Piket' : ($p->role_type === 'TU_PIKET' ? 'Staf TU Piket' : $p->role_type),
+                'location' => $p->location ?: 'Pos Piket Utama',
+                'time' => substr($p->start_time ?? '06:30', 0, 5).' - '.substr($p->end_time ?? '15:30', 0, 5).' WIB',
+            ];
+        });
+
+        // 10. Monitoring Pos Satpam & Perizinan Siswa Terpadu
+        $todayEarlyLeaves = EarlyLeaveRequest::with('student.schoolClass')
+            ->whereDate('date', $today)
+            ->where('status', 'APPROVED')
+            ->latest('id')
+            ->get();
+
+        $todayExitPermits = SchoolExitPermit::with('students.schoolClass')
+            ->whereDate('date', $today)
+            ->whereIn('status', ['APPROVED', 'RETURNED'])
+            ->latest('id')
+            ->get();
+
+        $currentlyOutsideCount = $todayExitPermits->where('status', 'APPROVED')->count();
+        $returnedCount = $todayExitPermits->where('status', 'RETURNED')->count();
+        $earlyLeavesCount = $todayEarlyLeaves->count();
+
+        $recentPermits = collect();
+        foreach ($todayExitPermits->take(6) as $ep) {
+            $studentNames = $ep->students->map(fn ($s) => $s->name.' ('.($s->schoolClass?->name ?? '-').')')->implode(', ');
+            $recentPermits->push([
+                'type' => 'IZIN KELUAR',
+                'students' => $studentNames ?: ($ep->student_names ?? 'Siswa'),
+                'time' => substr($ep->out_time ?? '', 0, 5).($ep->expected_return_time ? ' - '.substr($ep->expected_return_time, 0, 5) : '').' WIB',
+                'purpose' => $ep->purpose ?: ($ep->reason ?: 'Izin Keluar Sementara'),
+                'status' => $ep->status === 'RETURNED' ? 'SUDAH KEMBALI' : 'DI LUAR SEKOLAH',
+                'is_returned' => $ep->status === 'RETURNED',
+            ]);
+        }
+        foreach ($todayEarlyLeaves->take(6) as $el) {
+            $recentPermits->push([
+                'type' => 'PULANG CEPAT',
+                'students' => ($el->student?->name ?? 'Siswa').' ('.($el->student?->schoolClass?->name ?? '-').')',
+                'time' => substr($el->leave_time ?? '', 0, 5).' WIB',
+                'purpose' => ($el->reason_category ?? 'Izin Pulang').($el->reason ? ': '.$el->reason : ''),
+                'status' => 'DISETUJUI',
+                'is_returned' => true,
+            ]);
+        }
+
+        // 11. Karakter 7 Kebiasaan Anak Indonesia Hebat (7 KAIH)
+        $habitsTotal = Habit::count();
+        $habitsLogsToday = HabitDailyLog::whereDate('date', $today)->where('is_completed', true)->count();
+        $habitsList = Habit::orderBy('order_number')->get()->map(function ($h) use ($today) {
+            $completed = HabitDailyLog::where('habit_id', $h->id)
+                ->whereDate('date', $today)
+                ->where('is_completed', true)
+                ->count();
+
+            return [
+                'order' => $h->order_number,
+                'name' => $h->name,
+                'tagline' => $h->tagline,
+                'completed' => $completed,
+                'icon' => match ($h->order_number) {
+                    1 => '🌅',
+                    2 => '🤲',
+                    3 => '🏃',
+                    4 => '🥗',
+                    5 => '📚',
+                    6 => '🌙',
+                    default => '🤝',
+                },
+            ];
+        });
+
+        // 12. Profil Identitas Sekolah Resmi
+        $schoolIdentity = SchoolIdentity::first();
+        $schoolProfile = [
+            'name' => SchoolSetting::get('school_name', $schoolIdentity?->name ?? 'SMA Negeri 1 Lengkong'),
+            'npsn' => SchoolSetting::get('school_npsn', $schoolIdentity?->npsn ?? '20202265'),
+            'accreditation' => SchoolSetting::get('school_accreditation', $schoolIdentity?->accreditation ?? 'A (Unggul)'),
+            'address' => SchoolSetting::get('school_address', $schoolIdentity?->address ?? 'Jalan Raya Tegalega, Kecamatan Lengkong, Kabupaten Sukabumi, Provinsi Jawa Barat'),
+            'principal_name' => SchoolSetting::get('headmaster_name', $schoolIdentity?->headmaster_name ?? 'Pian Sopian, S.Pd., M.M.Pd'),
+            'principal_nip' => SchoolSetting::get('headmaster_nip', $schoolIdentity?->headmaster_nip ?? '198009132008011005'),
+            'motto' => SchoolSetting::get('school_motto', 'Cerdas, Berkarakter, Unggul dalam Prestasi dan Berdaya Saing Global'),
+            'vision' => SchoolSetting::get('school_vision', 'Terwujudnya Peserta Didik yang Berakhlak Mulia, Cerdas, Berkarakter, dan Berdaya Saing Global.'),
+        ];
+
         // Running Text Ticker Quotes
         $tickers = [
-            'Selamat Datang di Layar Monitor KIOSK TV SMAN 1 Lengkong.',
+            "Selamat Datang di Monitor KIOSK TV {$schoolProfile['name']}.",
             "Batas Masuk Presensi Utama: {$todaySchedule['in_on_time']} WIB (Siswa yang belum absen otomatis tercatat Alpa).",
+            'Petugas Piket Hari Ini: '.($todayPickets->isNotEmpty() ? $todayPickets->pluck('name')->implode(', ') : 'Guru & Staf Piket Terjadwal').'.',
+            "Monitoring Keamanan: {$currentlyOutsideCount} Siswa di Luar Kampus, {$returnedCount} Siswa Kembali, {$earlyLeavesCount} Siswa Pulang Cepat.",
             "Waktu Shalat Dhuha: {$dhuhaCfg['days_label']} ({$dhuhaCfg['start_time']} - {$dhuhaCfg['end_time']} WIB).",
             "Shalat Dzuhur/Jum'at Berjamaah: {$dzuhurCfg['days_label']} ({$dzuhurCfg['start_time']} - {$dzuhurCfg['end_time']} WIB).",
-            "Kegiatan Keputrian: Khusus Siswi Perempuan ({$keputrianCfg['days_label']} {$keputrianCfg['start_time']} - {$keputrianCfg['end_time']} WIB).",
-            "Presensi Ekstrakurikuler: {$extraDaysLabel} ({$extraStart} - {$extraEnd} WIB) untuk seluruh cabang kegiatan minat bakat.",
+            "Keputrian Siswi: {$keputrianCfg['days_label']} ({$keputrianCfg['start_time']} - {$keputrianCfg['end_time']} WIB).",
+            "Presensi Ekstrakurikuler: {$extraDaysLabel} ({$extraStart} - {$extraEnd} WIB) untuk seluruh peminat cabang minat & bakat.",
+            '7 Kebiasaan Anak Indonesia Hebat (7 KAIH): Laksanakan pembiasaan karakter setiap hari!',
             "Tingkatkan Hafalan Al-Qur'an Juz 30 dan Raih Poin Prestasi Positif Sekolah!",
         ];
 
         return [
             'school' => [
-                'name' => SchoolSetting::get('school_name', 'SMA NEGERI 1 LENGKONG'),
-                'address' => SchoolSetting::get('school_address', 'Jl. Raya Lengkong No. 01, Nganjuk, Jawa Timur'),
-                'logo' => SchoolSetting::get('school_logo'),
+                'name' => $schoolProfile['name'],
+                'address' => $schoolProfile['address'],
+                'logo' => SchoolSetting::get('school_logo', $schoolIdentity?->logo_path),
                 'kop_image' => SchoolSetting::get('school_kop') ?: (SchoolSetting::get('kop_surat_image') ?: SchoolSetting::get('kop_image')),
             ],
             'timestamp' => [
@@ -354,6 +454,24 @@ class KioskController extends Controller
                 'rankings' => $tahfidzRankings,
             ],
             'ranking' => $ranking,
+            'picket' => [
+                'officers' => $todayPickets,
+                'total' => $todayPickets->count(),
+                'day_name' => $now->translatedFormat('l'),
+            ],
+            'security' => [
+                'early_leaves_count' => $earlyLeavesCount,
+                'exit_permits_count' => $todayExitPermits->count(),
+                'currently_outside' => $currentlyOutsideCount,
+                'returned' => $returnedCount,
+                'recent' => $recentPermits,
+            ],
+            'habits' => [
+                'total' => $habitsTotal,
+                'completed_today' => $habitsLogsToday,
+                'list' => $habitsList,
+            ],
+            'profile' => $schoolProfile,
             'schedules' => $schedules,
             'ticker' => implode('  •  ', $tickers),
         ];

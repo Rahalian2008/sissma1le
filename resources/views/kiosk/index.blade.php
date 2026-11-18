@@ -1,10 +1,15 @@
 <!DOCTYPE html>
-<html lang="id" class="dark">
+<html lang="id" class="dark h-full">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Display KIOSK & Respons Layar - {{ $school['name'] }}</title>
-    <!-- Tailwind CSS (via Vite or CDN Fallback) -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Kios TV Display Layar &bull; {{ $data['profile']['name'] ?? ($school['name'] ?? 'SMAN 1 Lengkong') }}</title>
+    
+    <!-- Fonts & Tailwind CSS -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+    
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -13,1077 +18,1203 @@
             theme: {
                 extend: {
                     colors: {
-                        darkbg: '#090d16',
-                        cardbg: '#0f172a',
-                        bordercolor: '#1e293b',
+                        darkbg: '#040711',
+                        cardbg: '#0c1222',
+                        bordercolor: 'rgba(255, 255, 255, 0.08)',
                     }
                 }
             }
         }
     </script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body {
+        html, body {
+            height: 100vh;
+            max-height: 100vh;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+            background-color: #040711;
             font-family: 'Outfit', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-            background-color: #060913;
             color: #f1f5f9;
-            overflow-x: hidden;
+        }
+        .font-mono {
+            font-family: 'JetBrains Mono', monospace;
         }
         .glass-panel {
-            background: rgba(15, 23, 42, 0.75);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
+            background: rgba(12, 18, 34, 0.82);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.08);
         }
-        .glow-teal {
-            box-shadow: 0 0 25px -5px rgba(20, 184, 166, 0.3);
+        .glass-card {
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
         }
-        .glow-amber {
-            box-shadow: 0 0 25px -5px rgba(245, 158, 11, 0.3);
-        }
-        .glow-indigo {
-            box-shadow: 0 0 25px -5px rgba(99, 102, 241, 0.3);
-        }
-        .glow-rose {
-            box-shadow: 0 0 25px -5px rgba(244, 63, 94, 0.3);
-        }
-        .glow-emerald {
-            box-shadow: 0 0 25px -5px rgba(16, 185, 129, 0.3);
-        }
-        /* Custom Scrollbar for live lists */
-        .kiosk-scroll::-webkit-scrollbar {
-            width: 4px;
-        }
-        .kiosk-scroll::-webkit-scrollbar-track {
-            background: rgba(15, 23, 42, 0.4);
-        }
-        .kiosk-scroll::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 9999px;
-        }
-        /* Marquee / Ticker Animation */
-        @keyframes tickerAnimation {
+        .glow-teal { box-shadow: 0 0 30px -5px rgba(20, 184, 166, 0.25); }
+        .glow-indigo { box-shadow: 0 0 30px -5px rgba(99, 102, 241, 0.25); }
+        .glow-emerald { box-shadow: 0 0 30px -5px rgba(16, 185, 129, 0.25); }
+        .glow-amber { box-shadow: 0 0 30px -5px rgba(245, 158, 11, 0.25); }
+        .glow-gold { box-shadow: 0 0 35px -3px rgba(234, 179, 8, 0.35); }
+
+        /* Slim Scrollbar for Internal Feeds */
+        .kiosk-scroll::-webkit-scrollbar { width: 4px; }
+        .kiosk-scroll::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.4); }
+        .kiosk-scroll::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 9999px; }
+
+        /* Smooth Marquee Ticker */
+        @keyframes tickerMove {
             0% { transform: translateX(100%); }
             100% { transform: translateX(-100%); }
         }
-        .animate-ticker {
+        .animate-ticker-marquee {
             display: inline-block;
             white-space: nowrap;
-            animation: tickerAnimation 40s linear infinite;
+            animation: tickerMove 45s linear infinite;
         }
-        .animate-ticker:hover {
+        .animate-ticker-marquee:hover {
             animation-play-state: paused;
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between text-slate-100 antialiased selection:bg-teal-500 selection:text-white">
+<body class="h-screen max-h-screen overflow-hidden flex flex-col justify-between text-slate-100 antialiased selection:bg-teal-500 selection:text-white">
 
-    <!-- TOP HEADER BAR (Logo, School Name, Mode Switcher, Digital Clock) -->
-    <header class="sticky top-0 z-50 glass-panel border-b border-white/10 px-4 sm:px-8 py-3.5 flex flex-wrap items-center justify-between gap-4 shadow-2xl">
-        <div class="flex items-center gap-3.5">
-            <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-teal-500 via-indigo-500 to-sky-400 p-0.5 shadow-lg shadow-teal-500/20 shrink-0">
+    <!-- AMBIENT BACKGROUND GLOW LIGHTS -->
+    <div class="fixed top-0 left-1/4 w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none z-0"></div>
+    <div class="fixed bottom-0 right-1/4 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl pointer-events-none z-0"></div>
+
+    <!-- 1. TOP HEADER BAR (Compact ~56px) -->
+    <header class="relative z-30 h-14 sm:h-16 shrink-0 glass-panel border-b border-white/10 px-4 sm:px-6 flex items-center justify-between gap-3 shadow-2xl">
+        <!-- Brand Identity -->
+        <div class="flex items-center gap-3 min-w-0">
+            <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-gradient-to-tr from-teal-500 via-indigo-500 to-sky-400 p-0.5 shadow-lg shadow-teal-500/20 shrink-0">
                 <div id="kioskLogoContainer" class="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center overflow-hidden">
-                    @if(!empty($school['logo']))
-                        <img src="{{ asset('storage/' . $school['logo']) }}" alt="Logo" class="w-8 h-8 object-contain">
+                    @if(!empty($data['school']['logo']))
+                        <img src="{{ asset('storage/' . $data['school']['logo']) }}" alt="Logo" class="w-7 h-7 sm:w-8 sm:h-8 object-contain">
                     @else
-                        <span class="text-lg font-black text-transparent bg-clip-text bg-gradient-to-r from-teal-300 to-sky-300">S1L</span>
+                        <span class="text-base sm:text-lg font-black text-transparent bg-clip-text bg-gradient-to-r from-teal-300 to-sky-300">S1L</span>
                     @endif
                 </div>
             </div>
-            <div>
+            <div class="min-w-0">
                 <div class="flex items-center gap-2">
-                    <h1 id="kioskSchoolName" class="text-base sm:text-lg font-black tracking-tight text-white uppercase">{{ $school['name'] }}</h1>
-                    <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 animate-pulse">
+                    <h1 id="kioskSchoolName" class="text-sm sm:text-base font-black tracking-tight text-white uppercase truncate">
+                        {{ $data['profile']['name'] ?? ($school['name'] ?? 'SMA NEGERI 1 LENGKONG') }}
+                    </h1>
+                    <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 shrink-0 animate-pulse">
                         <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> LIVE KIOSK
                     </span>
                 </div>
-                <p class="text-[11px] text-slate-400 font-medium hidden sm:block">Monitor Display Presensi, Ibadah Berjamaah, Tahfidz & Leaderboard Prestasi</p>
+                <p class="text-[10px] sm:text-[11px] text-slate-400 font-medium truncate">
+                    Sistem Slide Informasi Terpadu &bull; Presensi, Ibadah, Tahfidz Juz 30, Piket &amp; Prestasi
+                </p>
             </div>
         </div>
 
-        <!-- Mode Buttons & Action Controls -->
-        <div class="flex items-center gap-2.5">
-            <!-- Kiosk Ecosystem Switcher -->
-            <div class="hidden lg:flex items-center gap-1.5 bg-slate-900/90 border border-white/10 rounded-xl p-1 text-xs">
-                <a href="{{ route('kiosk.index') }}" class="px-2.5 py-1.5 rounded-lg font-bold bg-teal-500/20 text-teal-300 border border-teal-500/30 flex items-center gap-1">
-                    <span>📺 Kios TV</span>
-                </a>
-                <a href="{{ route('library.guest_book.index') }}" target="_blank" class="px-2.5 py-1.5 rounded-lg font-bold text-slate-400 hover:text-white hover:bg-white/5 transition flex items-center gap-1">
-                    <span>📚 Kios Perpus</span>
-                </a>
-                <a href="{{ route('guests.kiosk') }}" target="_blank" class="px-2.5 py-1.5 rounded-lg font-bold text-slate-400 hover:text-white hover:bg-white/5 transition flex items-center gap-1">
-                    <span>👥 Kios Tamu</span>
-                </a>
+        <!-- Slide Switcher Pills (Desktop & Tablet) -->
+        <div class="hidden md:flex items-center gap-1 bg-slate-950/80 border border-white/10 rounded-xl p-1 text-xs shrink-0">
+            <button type="button" onclick="goToSlide(0)" id="pill-slide-0" class="slide-nav-pill px-2.5 py-1 rounded-lg font-bold transition flex items-center gap-1 bg-teal-500 text-slate-950 shadow-sm">
+                <span>1. Presensi</span>
+            </button>
+            <button type="button" onclick="goToSlide(1)" id="pill-slide-1" class="slide-nav-pill px-2.5 py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1">
+                <span>2. Ibadah &amp; 7 KAIH</span>
+            </button>
+            <button type="button" onclick="goToSlide(2)" id="pill-slide-2" class="slide-nav-pill px-2.5 py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1">
+                <span>3. Tahfidz Juz 30</span>
+            </button>
+            <button type="button" onclick="goToSlide(3)" id="pill-slide-3" class="slide-nav-pill px-2.5 py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1">
+                <span>4. Top Prestasi</span>
+            </button>
+            <button type="button" onclick="goToSlide(4)" id="pill-slide-4" class="slide-nav-pill px-2.5 py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1">
+                <span>5. Piket &amp; Perizinan</span>
+            </button>
+            <button type="button" onclick="goToSlide(5)" id="pill-slide-5" class="slide-nav-pill px-2.5 py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1">
+                <span>6. Ekskul &amp; Profil</span>
+            </button>
+        </div>
+
+        <!-- Controls: Play/Pause, Prev/Next, Fullscreen, Clock -->
+        <div class="flex items-center gap-2 shrink-0">
+            <!-- Slide Control Buttons -->
+            <div class="flex items-center bg-slate-950/80 border border-white/10 rounded-xl p-1 text-xs">
+                <button type="button" onclick="prevSlide()" class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition" title="Slide Sebelumnya (Panah Kiri)">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
+                </button>
+                <button type="button" id="btnPlayPause" onclick="togglePlayPause()" class="px-2 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-white/10 font-bold transition flex items-center gap-1" title="Jeda / Lanjutkan Auto Slide">
+                    <span id="playPauseIcon">⏸️</span>
+                    <span id="slideCountdownLabel" class="font-mono text-[11px] text-teal-300">15s</span>
+                </button>
+                <button type="button" onclick="nextSlide()" class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition" title="Slide Berikutnya (Panah Kanan)">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+                </button>
             </div>
 
-            <!-- Mode Switcher -->
-            <div class="bg-slate-900/90 border border-white/10 rounded-xl p-1 flex items-center gap-1 text-xs">
-                <button type="button" id="btnModeGrid" onclick="setKioskMode('grid')" class="px-3 py-1.5 rounded-lg font-bold transition flex items-center gap-1.5 bg-indigo-600 text-white shadow-sm">
-                    <span>🔲 Grid</span>
-                </button>
-                <button type="button" id="btnModeCarousel" onclick="setKioskMode('carousel')" class="px-3 py-1.5 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1.5">
-                    <span>🔄 Carousel (<span id="carouselTimer">12s</span>)</span>
-                </button>
-            </div>
-
-            <!-- Fullscreen Toggle -->
-            <button type="button" onclick="toggleFullscreen()" title="Layar Penuh (F11)" class="p-2 rounded-xl bg-slate-900/90 border border-white/10 hover:border-teal-500/50 text-slate-300 hover:text-white transition">
+            <!-- Fullscreen Button -->
+            <button type="button" onclick="toggleFullscreen()" class="p-2 rounded-xl bg-slate-900/90 border border-white/10 hover:border-teal-500/50 text-slate-300 hover:text-white transition" title="Layar Penuh (F11)">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/>
                 </svg>
             </button>
 
-            <!-- Back to App Link -->
-            @auth
-            <a href="{{ route('dashboard') }}" class="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white border border-white/10 text-xs font-semibold transition hidden md:inline-flex items-center gap-1">
-                <span>← Dashboard</span>
-            </a>
-            @else
-            <a href="{{ route('login') }}" class="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white border border-white/10 text-xs font-semibold transition hidden md:inline-flex items-center gap-1">
-                <span>Masuk Petugas</span>
-            </a>
-            @endauth
-
             <!-- Live Digital Clock -->
-            <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-indigo-950/80 border border-indigo-500/30 rounded-2xl px-4 py-1.5 text-right shadow-inner">
-                <div id="liveClock" class="text-base sm:text-lg font-mono font-black text-teal-300 tracking-wider">--:--:-- WIB</div>
-                <div id="liveDate" class="text-[10px] text-slate-400 font-semibold tracking-wide capitalize">--</div>
+            <div class="bg-gradient-to-r from-slate-950 via-slate-900 to-indigo-950/90 border border-indigo-500/30 rounded-xl px-3 py-1 text-right shadow-inner">
+                <div id="liveClock" class="text-xs sm:text-sm font-mono font-black text-teal-300 tracking-wider">--:--:-- WIB</div>
+                <div id="liveDate" class="text-[9px] text-slate-400 font-semibold tracking-wide capitalize truncate max-w-[130px] sm:max-w-none">--</div>
             </div>
         </div>
     </header>
 
-    <!-- CAROUSEL INDICATOR BAR (Active in Carousel Mode) -->
-    <div id="carouselProgressBarContainer" class="hidden w-full bg-slate-900/60 h-1 overflow-hidden">
-        <div id="carouselProgressBar" class="bg-gradient-to-r from-teal-400 via-indigo-500 to-rose-500 h-full w-0 transition-all duration-300 ease-linear"></div>
+    <!-- 2. TOP COUNTDOWN PROGRESS BAR (15 seconds slide duration) -->
+    <div class="relative z-20 w-full bg-slate-950 h-1 shrink-0 overflow-hidden">
+        <div id="slideProgressBar" class="h-full bg-gradient-to-r from-teal-400 via-indigo-500 to-emerald-400 transition-all duration-200 ease-linear" style="width: 0%;"></div>
     </div>
 
-    <!-- CAROUSEL TAB CONTROLS (Quick Jump to Panel) -->
-    <nav class="bg-slate-950/70 border-b border-white/5 px-4 sm:px-8 py-2 overflow-x-auto no-scrollbar flex items-center justify-between gap-2 text-xs">
-        <div class="flex items-center gap-2 shrink-0">
-            <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mr-1 hidden sm:inline">Pintas Layar:</span>
-            <button onclick="focusWidget(0)" class="tab-btn px-3 py-1 rounded-lg font-bold transition bg-white/10 text-teal-300 hover:bg-white/15" data-idx="0">
-                📅 1. Presensi Utama
-            </button>
-            <button onclick="focusWidget(1)" class="tab-btn px-3 py-1 rounded-lg font-bold transition text-slate-400 hover:text-white hover:bg-white/5" data-idx="1">
-                🕌 2. Shalat Dhuha
-            </button>
-            <button onclick="focusWidget(2)" class="tab-btn px-3 py-1 rounded-lg font-bold transition text-slate-400 hover:text-white hover:bg-white/5" data-idx="2">
-                🕌 3. Shalat Dzuhur
-            </button>
-            <button onclick="focusWidget(3)" class="tab-btn px-3 py-1 rounded-lg font-bold transition text-slate-400 hover:text-white hover:bg-white/5" data-idx="3">
-                ✨ 4. Keputrian
-            </button>
-            <button onclick="focusWidget(4)" class="tab-btn px-3 py-1 rounded-lg font-bold transition text-slate-400 hover:text-white hover:bg-white/5" data-idx="4">
-                🎯 5. Ekstrakurikuler
-            </button>
-            <button onclick="focusWidget(5)" class="tab-btn px-3 py-1 rounded-lg font-bold transition text-slate-400 hover:text-white hover:bg-white/5" data-idx="5">
-                📖 6. Tahfidz Juz 30 (X,XI,XII)
-            </button>
-            <button onclick="focusWidget(6)" class="tab-btn px-3 py-1 rounded-lg font-bold transition text-slate-400 hover:text-white hover:bg-white/5" data-idx="6">
-                🏆 7. Top 10 Prestasi
-            </button>
-            <button onclick="focusWidget(7)" class="tab-btn px-3 py-1 rounded-lg font-bold transition text-slate-400 hover:text-white hover:bg-white/5" data-idx="7">
-                ⏱️ 8. Jadwal Aktivitas
-            </button>
-        </div>
+    <!-- 3. MAIN SLIDE DECK VIEWPORT (Strictly fits 1 screen, flex-1 min-h-0) -->
+    <main class="relative z-10 flex-1 min-h-0 w-full overflow-hidden p-2.5 sm:p-4 lg:p-5">
 
-        <div class="shrink-0 text-[11px] text-slate-400 font-mono flex items-center gap-1.5">
-            <span class="w-2 h-2 rounded-full bg-teal-400 animate-ping"></span>
-            <span>Update data: <strong id="lastUpdatedTime">Auto 15s</strong></span>
-        </div>
-    </nav>
-
-    <!-- MAIN DASHBOARD CONTENT AREA -->
-    <main class="flex-1 p-3 sm:p-6 lg:p-8 max-w-[1920px] w-full mx-auto">
-        <!-- 6 WIDGET PANELS GRID -->
-        <div id="widgetsGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 lg:gap-6">
-
-            <!-- WIDGET 1: PRESENSI HARIAN -->
-            <section id="widget-0" class="kiosk-widget glass-panel rounded-3xl p-5 sm:p-6 flex flex-col justify-between border-t-4 border-t-teal-500 glow-teal transition-all duration-300">
-                <div>
-                    <!-- Header -->
-                    <div class="flex items-start justify-between gap-3 mb-4 pb-3 border-b border-white/10 min-w-0">
-                        <div class="flex items-center gap-3 min-w-0 flex-1">
-                            <div class="w-10 h-10 rounded-2xl bg-teal-500/20 text-teal-300 flex items-center justify-center text-xl font-bold border border-teal-500/30 shrink-0">
-                                📅
-                            </div>
-                            <div class="min-w-0 flex-1">
-                                <h2 class="text-base sm:text-lg font-black text-white tracking-tight truncate">Presensi Kehadiran Harian</h2>
-                                <p class="text-xs text-slate-400 truncate">Total Siswa Terdaftar: <strong id="dailyTotalStudents" class="text-teal-300">{{ $data['daily']['total_students'] }}</strong></p>
-                            </div>
-                        </div>
-                        <div class="text-right shrink-0 whitespace-nowrap">
-                            <span id="dailyPercentage" class="text-xl sm:text-2xl font-black text-teal-400">{{ $data['daily']['percentage'] }}%</span>
-                            <div class="text-[10px] text-slate-400 font-semibold uppercase">Tingkat Hadir</div>
-                        </div>
-                    </div>
-
-                    <!-- Progress Bar -->
-                    <div class="w-full bg-slate-800 rounded-full h-2 mb-4 overflow-hidden">
-                        <div id="dailyProgressBar" class="bg-gradient-to-r from-teal-500 to-emerald-400 h-2 rounded-full transition-all duration-500" style="width: {{ $data['daily']['percentage'] }}%;"></div>
-                    </div>
-
-                    <!-- Stat Metric Badges -->
-                    <div class="grid grid-cols-5 gap-2 text-center mb-4">
-                        <div class="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-2">
-                            <div class="text-[10px] font-bold text-emerald-400 uppercase">Hadir</div>
-                            <div id="dailyHadir" class="text-lg font-black text-emerald-300">{{ $data['daily']['hadir'] }}</div>
-                        </div>
-                        <div class="bg-amber-500/10 border border-amber-500/20 rounded-xl p-2">
-                            <div class="text-[10px] font-bold text-amber-400 uppercase">Telat</div>
-                            <div id="dailyTerlambat" class="text-lg font-black text-amber-300">{{ $data['daily']['terlambat'] }}</div>
-                        </div>
-                        <div class="bg-sky-500/10 border border-sky-500/20 rounded-xl p-2">
-                            <div class="text-[10px] font-bold text-sky-400 uppercase">Izin</div>
-                            <div id="dailyIzin" class="text-lg font-black text-sky-300">{{ $data['daily']['izin'] }}</div>
-                        </div>
-                        <div class="bg-indigo-500/10 border border-indigo-500/20 rounded-xl p-2">
-                            <div class="text-[10px] font-bold text-indigo-400 uppercase">Sakit</div>
-                            <div id="dailySakit" class="text-lg font-black text-indigo-300">{{ $data['daily']['sakit'] }}</div>
-                        </div>
-                        <div class="bg-rose-500/10 border border-rose-500/20 rounded-xl p-2">
-                            <div class="text-[10px] font-bold text-rose-400 uppercase">Alpa</div>
-                            <div id="dailyAlpa" class="text-lg font-black text-rose-300">{{ $data['daily']['alpa'] }}</div>
-                        </div>
-                    </div>
-
-                    <!-- Recent Check-ins List -->
+        <!-- ========================================================================= -->
+        <!-- SLIDE 0: PRESENSI KEHADIRAN SISWA TERPADU & JADWAL HARI INI              -->
+        <!-- ========================================================================= -->
+        <section id="slide-0" class="kiosk-slide h-full w-full flex flex-col justify-between overflow-hidden gap-3">
+            <!-- Slide Title Header -->
+            <div class="flex items-center justify-between shrink-0 pb-1 border-b border-white/5">
+                <div class="flex items-center gap-2">
+                    <div class="w-7 h-7 rounded-lg bg-teal-500/20 text-teal-300 flex items-center justify-center font-black text-sm">01</div>
                     <div>
-                        <div class="flex items-center justify-between text-xs font-bold text-slate-400 mb-2">
-                            <span>⏱️ Log Presensi Terakhir</span>
-                            <span class="text-[10px] bg-slate-800 px-2 py-0.5 rounded text-teal-300">Live Update</span>
-                        </div>
-                        <div id="dailyRecentLogs" class="space-y-1.5 max-h-56 overflow-y-auto kiosk-scroll pr-1 text-xs">
-                            @forelse($data['daily']['recent'] as $log)
-                                <div class="bg-slate-900/60 border border-white/5 rounded-xl px-3 py-2 flex items-center justify-between">
-                                    <div class="truncate mr-2">
-                                        <div class="font-bold text-white truncate">{{ $log['name'] }}</div>
-                                        <div class="text-[10px] text-slate-400">{{ $log['class'] }} • {{ $log['method'] }}</div>
-                                    </div>
-                                    <div class="flex items-center gap-2 shrink-0">
-                                        <span class="px-2 py-0.5 rounded text-[10px] font-black {{ $log['status'] === 'HADIR' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-amber-500/20 text-amber-300' }}">
-                                            {{ $log['status'] }}
-                                        </span>
-                                        <span class="text-[11px] font-mono text-slate-400">{{ $log['time'] }}</span>
-                                    </div>
-                                </div>
-                            @empty
-                                <div class="text-center py-6 text-slate-500 text-xs italic">Belum ada log presensi masuk hari ini.</div>
-                            @endforelse
-                        </div>
+                        <h2 class="text-sm sm:text-base font-extrabold text-white flex items-center gap-2">
+                            <span>Presensi Kehadiran Harian &amp; Jadwal Sekolah</span>
+                        </h2>
+                        <p class="text-[11px] text-slate-400">Ringkasan kehadiran siswa real-time dan jadwal bel masuk-pulang hari ini</p>
                     </div>
                 </div>
-            </section>
+                <div class="text-[11px] text-slate-400 font-mono hidden sm:flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-teal-400 animate-ping"></span>
+                    <span>Sinkronisasi Otomatis 15s</span>
+                </div>
+            </div>
 
-            <!-- WIDGET 2: SHALAT DHUHA BERSAMA -->
-            <section id="widget-1" class="kiosk-widget glass-panel rounded-3xl p-5 sm:p-6 flex flex-col justify-between border-t-4 border-t-amber-500 glow-amber transition-all duration-300">
-                <div>
-                    <!-- Header -->
-                    <div class="flex items-start justify-between gap-3 mb-4 pb-3 border-b border-white/10 min-w-0">
-                        <div class="flex items-center gap-3 min-w-0 flex-1">
-                            <div class="w-10 h-10 rounded-2xl bg-amber-500/20 text-amber-300 flex items-center justify-center text-xl font-bold border border-amber-500/30 shrink-0">
-                                🕌
+            <!-- Slide Main Grid: Left Statistics & Schedule, Right Live Tap Feed -->
+            <div class="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-3 lg:gap-4 overflow-hidden">
+                <!-- Left Column: KPI Gauge & Status Breakdown & Bell Schedule (7 Cols) -->
+                <div class="lg:col-span-7 flex flex-col justify-between gap-3 min-h-0 overflow-hidden">
+                    <!-- Top Metric Cards Grid -->
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 shrink-0">
+                        <!-- Percentage Big Card -->
+                        <div class="col-span-2 sm:col-span-1 p-3 rounded-2xl glass-card border border-teal-500/30 flex flex-col justify-between glow-teal">
+                            <span class="text-[10px] font-bold text-teal-400 uppercase tracking-wider">Persentase Kehadiran</span>
+                            <div class="my-1 flex items-baseline gap-2">
+                                <span id="dailyPercentage" class="text-3xl sm:text-4xl font-black text-white font-mono">{{ $data['daily']['percentage'] }}%</span>
                             </div>
-                            <div class="min-w-0 flex-1">
-                                <h2 class="text-base sm:text-lg font-black text-white tracking-tight truncate">Shalat Dhuha Bersama</h2>
-                                <p class="text-xs text-slate-400 truncate">{{ $data['dhuha']['schedule'] }}</p>
+                            <div class="w-full bg-slate-900/80 rounded-full h-2 overflow-hidden border border-white/5">
+                                <div id="dailyPercentageBar" class="bg-gradient-to-r from-teal-400 to-emerald-400 h-full rounded-full transition-all duration-500" style="width: {{ $data['daily']['percentage'] }}%"></div>
+                            </div>
+                            <span class="text-[10px] text-slate-400 mt-1">Total <strong id="dailyTotalStudents" class="text-white">{{ $data['daily']['total_students'] }}</strong> Siswa Aktif</span>
+                        </div>
+
+                        <!-- Hadir & Terlambat -->
+                        <div class="p-3 rounded-2xl glass-card border border-emerald-500/20 flex flex-col justify-between">
+                            <div class="flex items-center justify-between">
+                                <span class="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">Hadir Tepat</span>
+                                <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                            </div>
+                            <div class="my-1">
+                                <span id="countHadir" class="text-2xl sm:text-3xl font-black text-white font-mono">{{ $data['daily']['hadir'] }}</span>
+                                <span class="text-xs text-slate-400 font-sans">Siswa</span>
+                            </div>
+                            <span class="text-[10px] text-emerald-300/80 font-medium">Tepat Waktu</span>
+                        </div>
+
+                        <div class="p-3 rounded-2xl glass-card border border-amber-500/20 flex flex-col justify-between">
+                            <div class="flex items-center justify-between">
+                                <span class="text-[10px] font-bold text-amber-400 uppercase tracking-wider">Terlambat</span>
+                                <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+                            </div>
+                            <div class="my-1">
+                                <span id="countTerlambat" class="text-2xl sm:text-3xl font-black text-amber-300 font-mono">{{ $data['daily']['terlambat'] }}</span>
+                                <span class="text-xs text-slate-400 font-sans">Siswa</span>
+                            </div>
+                            <span class="text-[10px] text-amber-300/80 font-medium">Dalam Batas Toleransi</span>
+                        </div>
+
+                        <!-- Izin, Sakit, Alpa -->
+                        <div class="p-2.5 rounded-xl glass-card border border-sky-500/20 flex items-center justify-between">
+                            <div>
+                                <span class="text-[10px] font-bold text-sky-400 uppercase block">Izin</span>
+                                <span id="countIzin" class="text-lg font-black text-white font-mono">{{ $data['daily']['izin'] }}</span>
+                            </div>
+                            <span class="text-lg">📄</span>
+                        </div>
+
+                        <div class="p-2.5 rounded-xl glass-card border border-indigo-500/20 flex items-center justify-between">
+                            <div>
+                                <span class="text-[10px] font-bold text-indigo-400 uppercase block">Sakit</span>
+                                <span id="countSakit" class="text-lg font-black text-white font-mono">{{ $data['daily']['sakit'] }}</span>
+                            </div>
+                            <span class="text-lg">💊</span>
+                        </div>
+
+                        <div class="p-2.5 rounded-xl glass-card border border-rose-500/20 flex items-center justify-between">
+                            <div>
+                                <span class="text-[10px] font-bold text-rose-400 uppercase block">Tanpa Keterangan (Alpa)</span>
+                                <span id="countAlpa" class="text-lg font-black text-rose-400 font-mono">{{ $data['daily']['alpa'] }}</span>
+                            </div>
+                            <span class="text-lg">⚠️</span>
+                        </div>
+                    </div>
+
+                    <!-- Bottom Schedule Information Card -->
+                    <div class="flex-1 min-h-0 p-3 sm:p-4 rounded-2xl glass-card border border-white/10 flex flex-col justify-between">
+                        <div class="flex items-center justify-between mb-2 pb-1.5 border-b border-white/5">
+                            <div class="flex items-center gap-2">
+                                <span class="text-base">⏰</span>
+                                <span class="text-xs font-bold text-white uppercase tracking-wider">Jadwal Presensi &amp; Jam Bel Hari Ini</span>
+                            </div>
+                            <span class="px-2 py-0.5 rounded-md text-[10px] font-bold {{ ($data['schedules']['presensi_utama']['is_holiday'] ?? false) ? 'bg-rose-500/20 text-rose-300' : 'bg-emerald-500/20 text-emerald-300' }}">
+                                {{ ($data['schedules']['presensi_utama']['is_holiday'] ?? false) ? 'HARI LIBUR' : 'HARI AKTIF SEKOLAH' }}
+                            </span>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs">
+                            <div class="p-2 rounded-xl bg-slate-900/60 border border-white/5">
+                                <span class="text-[10px] text-slate-400 block font-bold">WAKTU MASUK</span>
+                                <span class="font-mono font-bold text-teal-300 text-sm">s.d. 06:30 WIB</span>
+                                <span class="text-[9px] text-slate-500 block mt-0.5">Tepat waktu</span>
+                            </div>
+                            <div class="p-2 rounded-xl bg-slate-900/60 border border-white/5">
+                                <span class="text-[10px] text-slate-400 block font-bold">BATAS TERLAMBAT</span>
+                                <span class="font-mono font-bold text-amber-300 text-sm">11:00 WIB</span>
+                                <span class="text-[9px] text-slate-500 block mt-0.5">Melewati batas = Alpa</span>
+                            </div>
+                            <div class="p-2 rounded-xl bg-slate-900/60 border border-white/5">
+                                <span class="text-[10px] text-slate-400 block font-bold">WAKTU PULANG</span>
+                                <span class="font-mono font-bold text-indigo-300 text-sm">15:00 - 21:00 WIB</span>
+                                <span class="text-[9px] text-slate-500 block mt-0.5">Presensi kepulangan siswa</span>
                             </div>
                         </div>
-                        <div class="text-right shrink-0 whitespace-nowrap">
-                            <span id="dhuhaStatusBadge" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-black {{ $data['dhuha']['is_open'] ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 animate-pulse' : 'bg-slate-800 text-slate-400 border border-white/10' }}">
-                                <span class="w-2 h-2 rounded-full {{ $data['dhuha']['is_open'] ? 'bg-emerald-400' : 'bg-slate-500' }}"></span>
-                                {{ $data['dhuha']['is_open'] ? 'SESI BUKA' : 'SESI TUTUP' }}
+
+                        <div class="mt-2 p-2 rounded-xl bg-teal-500/10 border border-teal-500/20 flex items-center justify-between text-[11px] text-teal-200">
+                            <span class="flex items-center gap-1.5 font-medium">
+                                <span>💡 Siswa belum tap presensi hingga batas waktu otomatis tersinkronisasi sebagai Alpa.</span>
                             </span>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Highlight Total Card -->
-                    <div class="bg-gradient-to-r from-amber-950/40 via-slate-900 to-slate-900 border border-amber-500/20 rounded-2xl p-4 mb-4 flex items-center justify-between">
-                        <div>
-                            <div class="text-xs text-amber-300/80 font-bold uppercase">Jamaah Dhuha Hari Ini</div>
-                            <div class="text-xs text-slate-400 mt-0.5">Seluruh Siswa (Putra & Putri)</div>
+                <!-- Right Column: Live Tap Feed (5 Cols) -->
+                <div class="lg:col-span-5 flex flex-col h-full min-h-0 rounded-2xl glass-panel border border-white/10 p-3 sm:p-4 overflow-hidden shadow-xl">
+                    <div class="flex items-center justify-between pb-2 mb-2 border-b border-white/10 shrink-0">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                            <span class="text-xs font-black text-white uppercase tracking-wider">Aktivitas Presensi Terkini</span>
                         </div>
+                        <span class="text-[10px] text-slate-400 font-mono">Live Tap Log</span>
+                    </div>
+
+                    <div id="dailyRecentLogs" class="flex-1 min-h-0 overflow-y-auto kiosk-scroll space-y-2 pr-1">
+                        @forelse($data['daily']['recent'] as $rec)
+                            <div class="bg-slate-900/70 border border-white/5 rounded-xl px-3 py-2 flex items-center justify-between hover:border-teal-500/30 transition">
+                                <div class="flex items-center gap-2.5 truncate mr-2">
+                                    <div class="w-7 h-7 rounded-lg bg-teal-500/20 text-teal-300 flex items-center justify-center font-bold text-xs shrink-0">
+                                        {{ substr($rec['name'], 0, 1) }}
+                                    </div>
+                                    <div class="truncate">
+                                        <div class="font-bold text-xs text-white truncate">{{ $rec['name'] }}</div>
+                                        <div class="text-[10px] text-slate-400 truncate">{{ $rec['class'] }} &bull; {{ $rec['method'] }}</div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-2 shrink-0">
+                                    <span class="px-2 py-0.5 rounded text-[10px] font-black {{ $rec['status'] === 'HADIR' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-amber-500/20 text-amber-300 border border-amber-500/30' }}">
+                                        {{ $rec['status'] }}
+                                    </span>
+                                    <span class="text-[11px] font-mono font-bold text-slate-300">{{ $rec['time'] }}</span>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="h-full flex items-center justify-center text-slate-500 text-xs italic">
+                                Belum ada aktivitas presensi masuk hari ini.
+                            </div>
+                        @endforelse
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================================================= -->
+        <!-- SLIDE 1: PRESENSI IBADAH BERJAMAAH & KARAKTER 7 KAIH                       -->
+        <!-- ========================================================================= -->
+        <section id="slide-1" class="kiosk-slide hidden h-full w-full flex flex-col justify-between overflow-hidden gap-3">
+            <!-- Slide Title Header -->
+            <div class="flex items-center justify-between shrink-0 pb-1 border-b border-white/5">
+                <div class="flex items-center gap-2">
+                    <div class="w-7 h-7 rounded-lg bg-indigo-500/20 text-indigo-300 flex items-center justify-center font-black text-sm">02</div>
+                    <div>
+                        <h2 class="text-sm sm:text-base font-extrabold text-white flex items-center gap-2">
+                            <span>Presensi Ibadah Berjamaah &amp; 7 Kebiasaan Anak Indonesia Hebat</span>
+                        </h2>
+                        <p class="text-[11px] text-slate-400">Monitoring Shalat Dhuha, Shalat Dzuhur, Presensi Keputrian, dan pembiasaan karakter 7 KAIH</p>
+                    </div>
+                </div>
+                <div class="text-[11px] text-slate-400 font-mono hidden sm:flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-indigo-400 animate-ping"></span>
+                    <span>Sesi Ibadah Terjadwal</span>
+                </div>
+            </div>
+
+            <!-- Top Grid: 3 Worship Panels (Dhuha, Dzuhur, Keputrian) -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 shrink-0">
+                <!-- Card 1: Shalat Dhuha Bersama -->
+                <div class="p-3 sm:p-3.5 rounded-2xl glass-card border border-teal-500/30 flex flex-col justify-between">
+                    <div class="flex items-center justify-between mb-1.5">
+                        <div class="flex items-center gap-2">
+                            <span class="text-base">🕌</span>
+                            <h3 class="text-xs font-bold text-white uppercase tracking-wider">Shalat Dhuha Bersama</h3>
+                        </div>
+                        <span id="dhuhaStatusBadge" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black {{ $data['dhuha']['is_open'] ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 animate-pulse' : 'bg-slate-800 text-slate-400 border border-white/10' }}">
+                            {{ $data['dhuha']['is_open'] ? 'SESI BUKA' : 'SESI TUTUP' }}
+                        </span>
+                    </div>
+                    <div class="flex items-baseline justify-between my-1">
+                        <span class="text-[10px] text-slate-400">{{ $data['dhuha']['schedule'] }}</span>
                         <div class="text-right">
-                            <span id="dhuhaTotalToday" class="text-3xl font-black text-amber-400 font-mono">{{ $data['dhuha']['total_today'] }}</span>
-                            <span class="text-xs text-slate-400 ml-1">Siswa</span>
+                            <span id="dhuhaTotalToday" class="text-xl sm:text-2xl font-black text-teal-300 font-mono">{{ $data['dhuha']['total_today'] }}</span>
+                            <span class="text-[10px] text-slate-400">Jamaah</span>
                         </div>
                     </div>
-
-                    <!-- Recent Check-ins List -->
-                    <div>
-                        <div class="flex items-center justify-between text-xs font-bold text-slate-400 mb-2">
-                            <span>⏱️ Log Presensi Dhuha</span>
-                            <span class="text-[10px] bg-slate-800 px-2 py-0.5 rounded text-amber-300">Siswa & Siswi</span>
-                        </div>
-                        <div id="dhuhaRecentLogs" class="space-y-1.5 max-h-56 overflow-y-auto kiosk-scroll pr-1 text-xs">
-                            @forelse($data['dhuha']['recent'] as $log)
-                                <div class="bg-slate-900/60 border border-white/5 rounded-xl px-3 py-2 flex items-center justify-between">
-                                    <div class="truncate mr-2">
-                                        <div class="font-bold text-white truncate">{{ $log['name'] }}</div>
-                                        <div class="text-[10px] text-slate-400">{{ $log['class'] }} • {{ $log['method'] }}</div>
-                                    </div>
-                                    <div class="flex items-center gap-2 shrink-0">
-                                        <span class="px-2 py-0.5 rounded text-[10px] font-black bg-amber-500/20 text-amber-300">
-                                            HADIR
-                                        </span>
-                                        <span class="text-[11px] font-mono text-slate-400">{{ $log['time'] }}</span>
-                                    </div>
-                                </div>
-                            @empty
-                                <div class="text-center py-6 text-slate-500 text-xs italic">Belum ada jamaah dhuha yang tercatat hari ini.</div>
-                            @endforelse
-                        </div>
+                    <div id="dhuhaRecentLogs" class="max-h-24 overflow-y-auto kiosk-scroll space-y-1.5 mt-1 border-t border-white/5 pt-1.5">
+                        @forelse(collect($data['dhuha']['recent'])->take(3) as $dw)
+                            <div class="text-[11px] flex items-center justify-between text-slate-300 bg-slate-900/50 px-2 py-1 rounded-lg">
+                                <span class="truncate mr-2 font-medium">{{ $dw['name'] }} <span class="text-slate-500">({{ $dw['class'] }})</span></span>
+                                <span class="font-mono text-teal-400 shrink-0">{{ $dw['time'] }}</span>
+                            </div>
+                        @empty
+                            <div class="text-slate-500 text-[10px] italic py-1">Belum ada jamaah dhuha yang tercatat.</div>
+                        @endforelse
                     </div>
                 </div>
-            </section>
 
-            <!-- WIDGET 3: SHALAT DZUHUR / JUM'AT BERJAMAAH -->
-            <section id="widget-2" class="kiosk-widget glass-panel rounded-3xl p-5 sm:p-6 flex flex-col justify-between border-t-4 border-t-indigo-500 glow-indigo transition-all duration-300">
-                <div>
-                    <!-- Header -->
-                    <div class="flex items-start justify-between gap-3 mb-4 pb-3 border-b border-white/10 min-w-0">
-                        <div class="flex items-center gap-3 min-w-0 flex-1">
-                            <div class="w-10 h-10 rounded-2xl bg-indigo-500/20 text-indigo-300 flex items-center justify-center text-xl font-bold border border-indigo-500/30 shrink-0">
-                                🕌
-                            </div>
-                            <div class="min-w-0 flex-1">
-                                <h2 class="text-base sm:text-lg font-black text-white tracking-tight truncate">Shalat Dzuhur / Jum'at</h2>
-                                <p class="text-xs text-slate-400 truncate">{{ $data['dzuhur']['schedule'] }}</p>
-                            </div>
+                <!-- Card 2: Shalat Dzuhur / Jum'at Berjamaah -->
+                <div class="p-3 sm:p-3.5 rounded-2xl glass-card border border-indigo-500/30 flex flex-col justify-between">
+                    <div class="flex items-center justify-between mb-1.5">
+                        <div class="flex items-center gap-2">
+                            <span class="text-base">🕌</span>
+                            <h3 class="text-xs font-bold text-white uppercase tracking-wider">Shalat Dzuhur / Jum'at</h3>
                         </div>
-                        <div class="text-right shrink-0 whitespace-nowrap">
-                            <span id="dzuhurStatusBadge" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-black {{ $data['dzuhur']['is_open'] ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 animate-pulse' : 'bg-slate-800 text-slate-400 border border-white/10' }}">
-                                <span class="w-2 h-2 rounded-full {{ $data['dzuhur']['is_open'] ? 'bg-emerald-400' : 'bg-slate-500' }}"></span>
-                                {{ $data['dzuhur']['is_open'] ? 'SESI BUKA' : 'SESI TUTUP' }}
-                            </span>
-                        </div>
+                        <span id="dzuhurStatusBadge" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black {{ $data['dzuhur']['is_open'] ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 animate-pulse' : 'bg-slate-800 text-slate-400 border border-white/10' }}">
+                            {{ $data['dzuhur']['is_open'] ? 'SESI BUKA' : 'SESI TUTUP' }}
+                        </span>
                     </div>
-
-                    <!-- Highlight Total Card -->
-                    <div class="bg-gradient-to-r from-indigo-950/40 via-slate-900 to-slate-900 border border-indigo-500/20 rounded-2xl p-4 mb-4 flex items-center justify-between">
-                        <div>
-                            <div class="text-xs text-indigo-300/80 font-bold uppercase">Jamaah Dzuhur/Jum'at</div>
-                            <div class="text-xs text-slate-400 mt-0.5">Senin–Kamis (Putra & Putri), Jum'at (Putra)</div>
-                        </div>
+                    <div class="flex items-baseline justify-between my-1">
+                        <span class="text-[10px] text-slate-400">{{ $data['dzuhur']['schedule'] }}</span>
                         <div class="text-right">
-                            <span id="dzuhurTotalToday" class="text-3xl font-black text-indigo-400 font-mono">{{ $data['dzuhur']['total_today'] }}</span>
-                            <span class="text-xs text-slate-400 ml-1">Siswa</span>
+                            <span id="dzuhurTotalToday" class="text-xl sm:text-2xl font-black text-indigo-300 font-mono">{{ $data['dzuhur']['total_today'] }}</span>
+                            <span class="text-[10px] text-slate-400">Jamaah</span>
                         </div>
                     </div>
-
-                    <!-- Recent Check-ins List -->
-                    <div>
-                        <div class="flex items-center justify-between text-xs font-bold text-slate-400 mb-2">
-                            <span>⏱️ Log Presensi Dzuhur/Jum'at</span>
-                            <span class="text-[10px] bg-slate-800 px-2 py-0.5 rounded text-indigo-300">{{ Carbon\Carbon::today('Asia/Jakarta')->dayOfWeek === 5 ? 'Khusus Putra (Jum\'at)' : 'Putra & Putri' }}</span>
-                        </div>
-                        <div id="dzuhurRecentLogs" class="space-y-1.5 max-h-56 overflow-y-auto kiosk-scroll pr-1 text-xs">
-                            @forelse($data['dzuhur']['recent'] as $log)
-                                <div class="bg-slate-900/60 border border-white/5 rounded-xl px-3 py-2 flex items-center justify-between">
-                                    <div class="truncate mr-2">
-                                        <div class="font-bold text-white truncate">{{ $log['name'] }}</div>
-                                        <div class="text-[10px] text-slate-400">{{ $log['class'] }} • {{ $log['method'] }}</div>
-                                    </div>
-                                    <div class="flex items-center gap-2 shrink-0">
-                                        <span class="px-2 py-0.5 rounded text-[10px] font-black bg-indigo-500/20 text-indigo-300">
-                                            HADIR
-                                        </span>
-                                        <span class="text-[11px] font-mono text-slate-400">{{ $log['time'] }}</span>
-                                    </div>
-                                </div>
-                            @empty
-                                <div class="text-center py-6 text-slate-500 text-xs italic">Belum ada jamaah shalat yang tercatat hari ini.</div>
-                            @endforelse
-                        </div>
+                    <div id="dzuhurRecentLogs" class="max-h-24 overflow-y-auto kiosk-scroll space-y-1.5 mt-1 border-t border-white/5 pt-1.5">
+                        @forelse(collect($data['dzuhur']['recent'])->take(3) as $dz)
+                            <div class="text-[11px] flex items-center justify-between text-slate-300 bg-slate-900/50 px-2 py-1 rounded-lg">
+                                <span class="truncate mr-2 font-medium">{{ $dz['name'] }} <span class="text-slate-500">({{ $dz['class'] }})</span></span>
+                                <span class="font-mono text-indigo-400 shrink-0">{{ $dz['time'] }}</span>
+                            </div>
+                        @empty
+                            <div class="text-slate-500 text-[10px] italic py-1">Belum ada jamaah dzuhur yang tercatat.</div>
+                        @endforelse
                     </div>
                 </div>
-            </section>
 
-            <!-- WIDGET 4: PRESENSI KEGIATAN KEPUTRIAN -->
-            <section id="widget-3" class="kiosk-widget glass-panel rounded-3xl p-5 sm:p-6 flex flex-col justify-between border-t-4 border-t-rose-500 glow-rose transition-all duration-300">
-                <div>
-                    <!-- Header -->
-                    <div class="flex items-start justify-between gap-3 mb-4 pb-3 border-b border-white/10 min-w-0">
-                        <div class="flex items-center gap-3 min-w-0 flex-1">
-                            <div class="w-10 h-10 rounded-2xl bg-rose-500/20 text-rose-300 flex items-center justify-center text-xl font-bold border border-rose-500/30 shrink-0">
-                                ✨
-                            </div>
-                            <div class="min-w-0 flex-1">
-                                <h2 class="text-base sm:text-lg font-black text-white tracking-tight truncate">Presensi Keputrian</h2>
-                                <p class="text-xs text-slate-400 truncate">{{ $data['keputrian']['schedule'] }}</p>
-                            </div>
+                <!-- Card 3: Presensi Keputrian -->
+                <div class="p-3 sm:p-3.5 rounded-2xl glass-card border border-rose-500/30 flex flex-col justify-between">
+                    <div class="flex items-center justify-between mb-1.5">
+                        <div class="flex items-center gap-2">
+                            <span class="text-base">✨</span>
+                            <h3 class="text-xs font-bold text-white uppercase tracking-wider">Presensi Keputrian</h3>
                         </div>
-                        <div class="text-right shrink-0 whitespace-nowrap">
-                            <span id="keputrianStatusBadge" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-black {{ $data['keputrian']['is_open'] ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 animate-pulse' : 'bg-slate-800 text-slate-400 border border-white/10' }}">
-                                <span class="w-2 h-2 rounded-full {{ $data['keputrian']['is_open'] ? 'bg-emerald-400' : 'bg-slate-500' }}"></span>
-                                {{ $data['keputrian']['is_open'] ? 'SESI BUKA' : 'SESI TUTUP' }}
-                            </span>
-                        </div>
+                        <span id="keputrianStatusBadge" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black {{ $data['keputrian']['is_open'] ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 animate-pulse' : 'bg-slate-800 text-slate-400 border border-white/10' }}">
+                            {{ $data['keputrian']['is_open'] ? 'SESI BUKA' : 'SESI TUTUP' }}
+                        </span>
                     </div>
-
-                    <!-- Highlight Total Card -->
-                    <div class="bg-gradient-to-r from-rose-950/40 via-slate-900 to-slate-900 border border-rose-500/20 rounded-2xl p-4 mb-4 flex items-center justify-between">
-                        <div>
-                            <div class="text-xs text-rose-300/80 font-bold uppercase">Peserta Keputrian Hari Ini</div>
-                            <div class="text-xs text-slate-400 mt-0.5">Khusus Siswi Perempuan (Putri)</div>
-                        </div>
+                    <div class="flex items-baseline justify-between my-1">
+                        <span class="text-[10px] text-slate-400">{{ $data['keputrian']['schedule'] }}</span>
                         <div class="text-right">
-                            <span id="keputrianTotalToday" class="text-3xl font-black text-rose-400 font-mono">{{ $data['keputrian']['total_today'] }}</span>
-                            <span class="text-xs text-slate-400 ml-1">Siswi</span>
+                            <span id="keputrianTotalToday" class="text-xl sm:text-2xl font-black text-rose-300 font-mono">{{ $data['keputrian']['total_today'] }}</span>
+                            <span class="text-[10px] text-slate-400">Siswi</span>
                         </div>
                     </div>
-
-                    <!-- Recent Check-ins List -->
-                    <div>
-                        <div class="flex items-center justify-between text-xs font-bold text-slate-400 mb-2">
-                            <span>⏱️ Log Presensi Keputrian</span>
-                            <span class="text-[10px] bg-slate-800 px-2 py-0.5 rounded text-rose-300">Khusus Putri</span>
-                        </div>
-                        <div id="keputrianRecentLogs" class="space-y-1.5 max-h-56 overflow-y-auto kiosk-scroll pr-1 text-xs">
-                            @forelse($data['keputrian']['recent'] as $log)
-                                <div class="bg-slate-900/60 border border-white/5 rounded-xl px-3 py-2 flex items-center justify-between">
-                                    <div class="truncate mr-2">
-                                        <div class="font-bold text-white truncate">{{ $log['name'] }}</div>
-                                        <div class="text-[10px] text-slate-400">{{ $log['class'] }} • {{ $log['method'] }}</div>
-                                    </div>
-                                    <div class="flex items-center gap-2 shrink-0">
-                                        <span class="px-2 py-0.5 rounded text-[10px] font-black bg-rose-500/20 text-rose-300">
-                                            HADIR
-                                        </span>
-                                        <span class="text-[11px] font-mono text-slate-400">{{ $log['time'] }}</span>
-                                    </div>
-                                </div>
-                            @empty
-                                <div class="text-center py-6 text-slate-500 text-xs italic">Belum ada siswi keputrian yang tercatat hari ini.</div>
-                            @endforelse
-                        </div>
+                    <div id="keputrianRecentLogs" class="max-h-24 overflow-y-auto kiosk-scroll space-y-1.5 mt-1 border-t border-white/5 pt-1.5">
+                        @forelse(collect($data['keputrian']['recent'])->take(3) as $kp)
+                            <div class="text-[11px] flex items-center justify-between text-slate-300 bg-slate-900/50 px-2 py-1 rounded-lg">
+                                <span class="truncate mr-2 font-medium">{{ $kp['name'] }} <span class="text-slate-500">({{ $kp['class'] }})</span></span>
+                                <span class="font-mono text-rose-400 shrink-0">{{ $kp['time'] }}</span>
+                            </div>
+                        @empty
+                            <div class="text-slate-500 text-[10px] italic py-1">Belum ada kehadiran keputrian yang tercatat.</div>
+                        @endforelse
                     </div>
                 </div>
-            </section>
+            </div>
 
-            <!-- WIDGET 5: PRESENSI EKSTRAKURIKULER -->
-            <section id="widget-4" class="kiosk-widget glass-panel rounded-3xl p-5 sm:p-6 flex flex-col justify-between border-t-4 border-t-purple-500 glow-indigo transition-all duration-300">
-                <div>
-                    <!-- Header -->
-                    <div class="flex items-start justify-between gap-3 mb-4 pb-3 border-b border-white/10 min-w-0">
-                        <div class="flex items-center gap-3 min-w-0 flex-1">
-                            <div class="w-10 h-10 rounded-2xl bg-purple-500/20 text-purple-300 flex items-center justify-center text-xl font-bold border border-purple-500/30 shrink-0">
-                                🎯
-                            </div>
-                            <div class="min-w-0 flex-1">
-                                <h2 class="text-base sm:text-lg font-black text-white tracking-tight truncate">Presensi Ekstrakurikuler</h2>
-                                <p class="text-xs text-slate-400 truncate">{{ $data['extracurricular']['schedule'] ?? 'Sore Hari (15:00 - 17:30 WIB)' }}</p>
-                            </div>
-                        </div>
-                        <div class="text-right shrink-0 whitespace-nowrap">
-                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-black bg-purple-500/20 text-purple-300 border border-purple-500/30">
-                                <span class="w-2 h-2 rounded-full bg-purple-400 animate-pulse"></span>
-                                AKTIF
-                            </span>
-                        </div>
-                    </div>
-
-                    <!-- Highlight Total Card -->
-                    <div class="bg-gradient-to-r from-purple-950/40 via-slate-900 to-slate-900 border border-purple-500/20 rounded-2xl p-4 mb-4 flex items-center justify-between">
+            <!-- Bottom Panel: 7 Kebiasaan Anak Indonesia Hebat (7 KAIH) -->
+            <div class="flex-1 min-h-0 rounded-2xl glass-panel border border-white/10 p-3 sm:p-4 flex flex-col justify-between overflow-hidden shadow-xl">
+                <div class="flex items-center justify-between pb-2 mb-2 border-b border-white/10 shrink-0">
+                    <div class="flex items-center gap-2">
+                        <span class="text-lg">🌟</span>
                         <div>
-                            <div class="text-xs text-purple-300/80 font-bold uppercase">Hadir Ekstrakurikuler Hari Ini</div>
-                            <div class="text-xs text-slate-400 mt-0.5">Seluruh Unit Minat & Bakat</div>
-                        </div>
-                        <div class="text-right">
-                            <span id="extraTotalToday" class="text-3xl font-black text-purple-400 font-mono">{{ $data['extracurricular']['total_today'] ?? 0 }}</span>
-                            <span class="text-xs text-slate-400 ml-1">Siswa</span>
+                            <h3 class="text-xs sm:text-sm font-extrabold text-white uppercase tracking-wider">
+                                Pembiasaan Karakter &bull; 7 Kebiasaan Anak Indonesia Hebat (7 KAIH)
+                            </h3>
+                            <p class="text-[10px] text-slate-400">Pencatatan pembiasaan harian siswa untuk membangun profil pelajar berintegritas</p>
                         </div>
                     </div>
-
-                    <!-- Recent Check-ins List -->
-                    <div>
-                        <div class="flex items-center justify-between text-xs font-bold text-slate-400 mb-2">
-                            <span>⏱️ Log Presensi Ekskul</span>
-                            <span class="text-[10px] bg-slate-800 px-2 py-0.5 rounded text-purple-300">Live Update</span>
-                        </div>
-                        <div id="extraRecentLogs" class="space-y-1.5 max-h-56 overflow-y-auto kiosk-scroll pr-1 text-xs">
-                            @forelse($data['extracurricular']['recent'] ?? [] as $log)
-                                <div class="bg-slate-900/60 border border-white/5 rounded-xl px-3 py-2 flex items-center justify-between">
-                                    <div class="truncate mr-2">
-                                        <div class="font-bold text-white truncate">{{ $log['name'] }} <span class="text-slate-400 font-normal">({{ $log['class'] }})</span></div>
-                                        <div class="text-[10px] text-purple-300 font-semibold truncate">{{ $log['extracurricular'] }}</div>
-                                    </div>
-                                    <div class="flex items-center gap-2 shrink-0">
-                                        <span class="px-2 py-0.5 rounded text-[10px] font-black {{ $log['status'] === 'HADIR' ? 'bg-purple-500/20 text-purple-300' : 'bg-amber-500/20 text-amber-300' }}">
-                                            {{ $log['status'] }}
-                                        </span>
-                                        <span class="text-[11px] font-mono text-slate-400">{{ $log['time'] }}</span>
-                                    </div>
-                                </div>
-                            @empty
-                                <div class="text-center py-6 text-slate-500 text-xs italic">Belum ada kegiatan presensi ekstrakurikuler hari ini.</div>
-                            @endforelse
-                        </div>
+                    <div class="text-right">
+                        <span id="habitsCompletedToday" class="text-sm font-black text-emerald-400 font-mono">{{ $data['habits']['completed_today'] ?? 0 }}</span>
+                        <span class="text-[10px] text-slate-400 block">Aktivitas Terisi Hari Ini</span>
                     </div>
                 </div>
-            </section>
 
-            <!-- WIDGET 6: SETOR HAFALAN & RANKING TAHFIDZ JUZ 30 PER KELAS -->
-            <section id="widget-5" class="kiosk-widget glass-panel rounded-3xl p-5 sm:p-6 flex flex-col justify-between border-t-4 border-t-emerald-500 glow-emerald transition-all duration-300">
-                <div>
-                    <!-- Header -->
-                    <div class="flex items-start justify-between gap-3 mb-3 pb-3 border-b border-white/10 min-w-0">
-                        <div class="flex items-center gap-3 min-w-0 flex-1">
-                            <div class="w-10 h-10 rounded-2xl bg-emerald-500/20 text-emerald-300 flex items-center justify-center text-xl font-bold border border-emerald-500/30 shrink-0">
-                                📖
+                <!-- 7 Habits Horizontal Cards Grid -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2.5 flex-1 min-h-0 overflow-y-auto kiosk-scroll">
+                    @foreach($data['habits']['list'] as $hb)
+                        <div class="p-2.5 rounded-xl bg-slate-900/70 border border-white/5 flex flex-col justify-between hover:border-teal-500/40 transition">
+                            <div class="flex items-center justify-between">
+                                <span class="text-lg">{{ $hb['icon'] }}</span>
+                                <span class="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-white/5 text-slate-400">#{{ $hb['order'] }}</span>
                             </div>
-                            <div class="min-w-0 flex-1">
-                                <h2 class="text-base sm:text-lg font-black text-white tracking-tight truncate">Setor Hafalan Juz 30 & Peringkat</h2>
-                                <p class="text-xs text-slate-400 truncate">Target Mutu Kelas X (25), XI (7), XII (5 Surat)</p>
+                            <div class="my-1">
+                                <h4 class="text-xs font-bold text-white truncate">{{ $hb['name'] }}</h4>
+                                <p class="text-[9px] text-slate-400 line-clamp-1">{{ $hb['tagline'] }}</p>
                             </div>
-                        </div>
-                        <div class="text-right shrink-0 whitespace-nowrap">
-                            <span class="text-xs bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2.5 py-1 rounded-full font-bold">
-                                Tahfidz Digital
-                            </span>
-                        </div>
-                    </div>
-
-                    <!-- Highlight Total Card -->
-                    <div class="grid grid-cols-2 gap-2 mb-3">
-                        <div class="bg-gradient-to-r from-emerald-950/40 to-slate-900 border border-emerald-500/20 rounded-2xl p-2.5">
-                            <div class="text-[10px] text-emerald-300 font-bold uppercase">Setoran Hari Ini</div>
-                            <div id="tahfidzTotalToday" class="text-xl font-black text-emerald-400 font-mono mt-0.5">{{ $data['tahfidz']['total_today'] }}</div>
-                        </div>
-                        <div class="bg-gradient-to-r from-teal-950/40 to-slate-900 border border-teal-500/20 rounded-2xl p-2.5">
-                            <div class="text-[10px] text-teal-300 font-bold uppercase">Lulus Verifikasi</div>
-                            <div id="tahfidzPassedToday" class="text-xl font-black text-teal-400 font-mono mt-0.5">{{ $data['tahfidz']['passed_today'] }}</div>
-                        </div>
-                    </div>
-
-                    <!-- Sub-Navigation Tabs for Tahfidz Widget -->
-                    <div class="flex items-center gap-1 bg-slate-900/80 p-1 rounded-xl mb-3 border border-white/5 text-[11px]">
-                        <button type="button" onclick="switchTahfidzView('live')" id="btnTahfidzLive" class="flex-1 py-1 px-2 rounded-lg font-bold bg-emerald-600 text-white transition text-center">
-                            ⏱️ Log Terkini
-                        </button>
-                        <button type="button" onclick="switchTahfidzView('X')" id="btnTahfidzX" class="flex-1 py-1 px-2 rounded-lg font-semibold text-slate-400 hover:text-white transition text-center">
-                            👑 Kelas X
-                        </button>
-                        <button type="button" onclick="switchTahfidzView('XI')" id="btnTahfidzXI" class="flex-1 py-1 px-2 rounded-lg font-semibold text-slate-400 hover:text-white transition text-center">
-                            ⭐ Kelas XI
-                        </button>
-                        <button type="button" onclick="switchTahfidzView('XII')" id="btnTahfidzXII" class="flex-1 py-1 px-2 rounded-lg font-semibold text-slate-400 hover:text-white transition text-center">
-                            ✨ Kelas XII
-                        </button>
-                    </div>
-
-                    <!-- Tab Content: Live Recent Deposits -->
-                    <div id="tahfidzTabLive">
-                        <div id="tahfidzRecentLogs" class="space-y-1.5 max-h-48 overflow-y-auto kiosk-scroll pr-1 text-xs">
-                            @forelse($data['tahfidz']['recent'] as $log)
-                                <div class="bg-slate-900/60 border border-white/5 rounded-xl px-3 py-2 flex items-center justify-between">
-                                    <div class="truncate mr-2">
-                                        <div class="font-bold text-white truncate">{{ $log['name'] }} <span class="text-slate-400 font-normal">({{ $log['class'] }})</span></div>
-                                        <div class="text-[10px] text-emerald-300 font-semibold">{{ $log['surah'] }}</div>
-                                    </div>
-                                    <div class="text-right shrink-0">
-                                        <span class="px-2 py-0.5 rounded text-[10px] font-black {{ $log['grade'] === 'Lulus' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-amber-500/20 text-amber-300' }}">
-                                            {{ $log['grade'] }}
-                                        </span>
-                                        <div class="text-[10px] text-slate-400 mt-0.5">{{ $log['date'] }} • {{ $log['time'] }}</div>
-                                    </div>
-                                </div>
-                            @empty
-                                <div class="text-center py-6 text-slate-500 text-xs italic">Belum ada riwayat setoran tahfidz yang dicatat.</div>
-                            @endforelse
-                        </div>
-                    </div>
-
-                    <!-- Tab Content: Rankings per Class X, XI, XII -->
-                    @foreach(['X', 'XI', 'XII'] as $grd)
-                        <div id="tahfidzTab{{ $grd }}" class="hidden">
-                            <div class="flex items-center justify-between text-[11px] text-slate-400 mb-2 font-semibold">
-                                <span>Peringkat Terbanyak Lulus Target Kelas {{ $grd }} ({{ $data['tahfidz']['rankings'][$grd]['total_target'] ?? '-' }} Surat):</span>
-                            </div>
-                            <div id="tahfidzRankList{{ $grd }}" class="space-y-1.5 max-h-48 overflow-y-auto kiosk-scroll pr-1 text-xs">
-                                @forelse($data['tahfidz']['rankings'][$grd]['students'] ?? [] as $st)
-                                    <div class="rounded-xl px-3 py-2 flex items-center justify-between border {{ $st['rank'] === 1 ? 'bg-emerald-500/10 border-emerald-500/40 text-emerald-200' : 'bg-slate-900/60 border-white/5 text-slate-200' }}">
-                                        <div class="flex items-center gap-2 truncate mr-2">
-                                            <span class="w-6 h-6 rounded-lg flex items-center justify-center text-[10px] font-black {{ $st['rank'] === 1 ? 'bg-emerald-500 text-white' : 'bg-slate-800 text-slate-400' }}">
-                                                {{ $st['rank'] }}
-                                            </span>
-                                            <div class="truncate">
-                                                <div class="font-bold text-white truncate">{{ $st['name'] }}</div>
-                                                <div class="text-[10px] text-slate-400">{{ $st['class'] }} • {{ $st['badge'] }}</div>
-                                            </div>
-                                        </div>
-                                        <div class="text-right shrink-0">
-                                            <span class="text-sm font-black text-emerald-300 font-mono">{{ $st['lulus_count'] }} <span class="text-[10px] font-sans text-slate-400">/ {{ $st['total_target'] }}</span></span>
-                                            <div class="text-[10px] text-emerald-400 font-bold">{{ $st['pct'] }}%</div>
-                                        </div>
-                                    </div>
-                                @empty
-                                    <div class="text-center py-6 text-slate-500 text-xs italic">Belum ada siswa kelas {{ $grd }} yang menyetorkan surat target.</div>
-                                @endforelse
+                            <div class="pt-1.5 border-t border-white/5 flex items-center justify-between text-[10px]">
+                                <span class="text-slate-500">Hari ini:</span>
+                                <span class="font-bold text-emerald-400 font-mono">+{{ $hb['completed'] }}</span>
                             </div>
                         </div>
                     @endforeach
                 </div>
-            </section>
+            </div>
+        </section>
 
-            <!-- WIDGET 7: RANKING POIN PRESTASI SISWA (LEADERBOARD TOP 10) -->
-            <section id="widget-6" class="kiosk-widget glass-panel rounded-3xl p-5 sm:p-6 flex flex-col justify-between border-t-4 border-t-yellow-500 glow-amber transition-all duration-300">
-                <div>
-                    <!-- Header -->
-                    <div class="flex items-start justify-between gap-3 mb-4 pb-3 border-b border-white/10 min-w-0">
-                        <div class="flex items-center gap-3 min-w-0 flex-1">
-                            <div class="w-10 h-10 rounded-2xl bg-yellow-500/20 text-yellow-300 flex items-center justify-center text-xl font-bold border border-yellow-500/30 shrink-0">
-                                🏆
+        <!-- ========================================================================= -->
+        <!-- SLIDE 2: BUKU KONTROL DIGITAL TAHFIDZ AL-QUR'AN JUZ 30                    -->
+        <!-- ========================================================================= -->
+        <section id="slide-2" class="kiosk-slide hidden h-full w-full flex flex-col justify-between overflow-hidden gap-3">
+            <!-- Slide Title Header -->
+            <div class="flex items-center justify-between shrink-0 pb-1 border-b border-white/5">
+                <div class="flex items-center gap-2">
+                    <div class="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-300 flex items-center justify-center font-black text-sm">03</div>
+                    <div>
+                        <h2 class="text-sm sm:text-base font-extrabold text-white flex items-center gap-2">
+                            <span>Buku Kontrol Digital: Setor Hafalan Juz 30 Al-Qur'an</span>
+                        </h2>
+                        <p class="text-[11px] text-slate-400">Target kelulusan surat per jenjang kelas X, XI, XII dan santri dengan capaian terbaik</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3 text-xs font-mono">
+                    <span class="px-2.5 py-1 rounded-lg bg-slate-900 border border-white/10 text-slate-300">
+                        Setoran Hari Ini: <strong id="tahfidzTotalToday" class="text-emerald-400">{{ $data['tahfidz']['total_today'] }}</strong>
+                    </span>
+                    <span class="px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-300">
+                        Lulus Hari Ini: <strong id="tahfidzPassedToday" class="text-white">{{ $data['tahfidz']['passed_today'] }}</strong>
+                    </span>
+                </div>
+            </div>
+
+            <!-- Main Content: Left 3 Grade Target & Top Students Columns, Right Recent Feed -->
+            <div class="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-3 lg:gap-4 overflow-hidden">
+                <!-- Left 3 Grade Cards (8 Cols) -->
+                <div class="lg:col-span-8 grid grid-cols-1 md:grid-cols-3 gap-3 min-h-0 overflow-hidden">
+                    @foreach(['X' => ['target' => 'An-Nas s.d At-Takatsur (13 Surat)', 'color' => 'teal'], 'XI' => ['target' => 'Al-Qari\'ah s.d An-Nazi\'at (23 Surat)', 'color' => 'indigo'], 'XII' => ['target' => 'Surat An-Naba\' (Target Utama)', 'color' => 'emerald']] as $grd => $gcfg)
+                        <div class="rounded-2xl glass-panel border border-{{ $gcfg['color'] }}-500/30 p-3 sm:p-3.5 flex flex-col justify-between overflow-hidden shadow-lg">
+                            <div class="pb-2 border-b border-white/10 shrink-0">
+                                <div class="flex items-center justify-between">
+                                    <span class="px-2 py-0.5 rounded-md text-[10px] font-black bg-{{ $gcfg['color'] }}-500/20 text-{{ $gcfg['color'] }}-300 border border-{{ $gcfg['color'] }}-500/40">
+                                        KELAS {{ $grd }}
+                                    </span>
+                                    <span class="text-[10px] text-slate-400 font-mono">Target {{ $data['tahfidz']['rankings'][$grd]['total_target'] ?? 0 }} Surat</span>
+                                </div>
+                                <div class="text-[11px] text-slate-300 font-semibold mt-1 truncate">{{ $gcfg['target'] }}</div>
                             </div>
-                            <div class="min-w-0 flex-1">
-                                <h2 class="text-base sm:text-lg font-black text-white tracking-tight truncate">Ranking Poin Prestasi</h2>
-                                <p class="text-xs text-slate-400 truncate">Top Siswa Berprestasi (Kategori R1 - R10)</p>
+
+                            <!-- Top Students List per Grade -->
+                            <div id="tahfidzRankList{{ $grd }}" class="flex-1 min-h-0 overflow-y-auto kiosk-scroll space-y-2 my-2 pr-1">
+                                @forelse($data['tahfidz']['rankings'][$grd]['students'] ?? [] as $st)
+                                    <div class="rounded-xl px-2.5 py-2 flex items-center justify-between border {{ $st['rank'] === 1 ? 'bg-emerald-500/10 border-emerald-500/40 text-emerald-200' : 'bg-slate-900/60 border-white/5 text-slate-200' }}">
+                                        <div class="flex items-center gap-2 truncate mr-2">
+                                            <span class="w-5 h-5 rounded-md flex items-center justify-center text-[10px] font-black {{ $st['rank'] === 1 ? 'bg-emerald-500 text-slate-950' : 'bg-slate-800 text-slate-400' }}">
+                                                {{ $st['rank'] }}
+                                            </span>
+                                            <div class="truncate">
+                                                <div class="font-bold text-xs text-white truncate">{{ $st['name'] }}</div>
+                                                <div class="text-[9px] text-slate-400 truncate">{{ $st['class'] }} &bull; {{ $st['badge'] }}</div>
+                                            </div>
+                                        </div>
+                                        <div class="text-right shrink-0">
+                                            <span class="text-xs font-black text-emerald-300 font-mono">{{ $st['lulus_count'] }} <span class="text-[9px] font-sans text-slate-400">/ {{ $st['total_target'] }}</span></span>
+                                            <div class="text-[9px] text-emerald-400 font-bold">{{ $st['pct'] }}%</div>
+                                        </div>
+                                    </div>
+                                @empty
+                                    <div class="h-full flex items-center justify-center text-center text-slate-500 text-xs italic py-4">
+                                        Belum ada data capaian hafalan kelas {{ $grd }}.
+                                    </div>
+                                @endforelse
+                            </div>
+
+                            <div class="text-[10px] text-slate-400 text-center pt-1 border-t border-white/5 shrink-0">
+                                Evaluasi Tajwid, Makhraj &amp; Kelancaran
                             </div>
                         </div>
-                        <div class="text-right shrink-0 whitespace-nowrap">
-                            <span class="text-xs bg-yellow-500/20 text-yellow-300 border border-yellow-500/30 px-2.5 py-1 rounded-full font-bold">
-                                TOP 10 SEKOLAH
-                            </span>
+                    @endforeach
+                </div>
+
+                <!-- Right Recent Setoran Tahfidz Feed (4 Cols) -->
+                <div class="lg:col-span-4 rounded-2xl glass-panel border border-white/10 p-3 sm:p-4 flex flex-col justify-between overflow-hidden shadow-xl">
+                    <div class="flex items-center justify-between pb-2 mb-2 border-b border-white/10 shrink-0">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                            <span class="text-xs font-black text-white uppercase tracking-wider">Setoran Hafalan Terkini</span>
                         </div>
+                        <span class="text-[10px] text-slate-400 font-mono">Buku Kontrol</span>
                     </div>
 
-                    <!-- Leaderboard Top 10 List -->
-                    <div id="rankingList" class="space-y-1.5 max-h-[330px] overflow-y-auto kiosk-scroll pr-1 text-xs">
-                        @forelse($data['ranking'] as $item)
-                            <div class="rounded-xl px-3 py-2 flex items-center justify-between border {{ $item['rank'] === 1 ? 'bg-yellow-500/10 border-yellow-500/40 text-yellow-200' : ($item['rank'] === 2 ? 'bg-slate-300/10 border-slate-300/30 text-slate-200' : ($item['rank'] === 3 ? 'bg-amber-600/10 border-amber-600/30 text-amber-200' : 'bg-slate-900/60 border-white/5 text-slate-200')) }}">
-                                <div class="flex items-center gap-2.5 truncate mr-2">
-                                    <span class="w-6 h-6 rounded-lg flex items-center justify-center text-[11px] font-black {{ $item['rank'] <= 3 ? 'bg-white/20 text-white' : 'bg-slate-800 text-slate-400' }}">
-                                        {{ $item['rank'] }}
-                                    </span>
-                                    <div class="truncate">
-                                        <div class="font-bold text-white truncate">{{ $item['name'] }}</div>
-                                        <div class="text-[10px] text-slate-400">{{ $item['class'] }} • {{ $item['achievements_count'] }} Prestasi</div>
-                                    </div>
+                    <div id="tahfidzRecentLogs" class="flex-1 min-h-0 overflow-y-auto kiosk-scroll space-y-2 pr-1">
+                        @forelse($data['tahfidz']['recent'] as $rec)
+                            <div class="bg-slate-900/70 border border-white/5 rounded-xl px-3 py-2 flex items-center justify-between hover:border-emerald-500/30 transition">
+                                <div class="truncate mr-2">
+                                    <div class="font-bold text-xs text-white truncate">{{ $rec['name'] }} <span class="text-slate-400 font-normal">({{ $rec['class'] }})</span></div>
+                                    <div class="text-[10px] text-emerald-300 font-semibold">{{ $rec['surah'] }}</div>
+                                    <div class="text-[9px] text-slate-400">Tajwid: {{ $rec['tajwid'] }} &bull; Kelancaran: {{ $rec['kelancaran'] }}</div>
                                 </div>
                                 <div class="text-right shrink-0">
-                                    <div class="text-base font-black text-yellow-400 font-mono">+{{ $item['points'] }} <span class="text-[10px] font-sans text-slate-400 font-normal">Poin</span></div>
-                                    <div class="text-[9px] text-slate-400">{{ $item['badge'] }}</div>
+                                    <span class="px-2 py-0.5 rounded text-[10px] font-black {{ $rec['grade'] === 'Lulus' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-amber-500/20 text-amber-300 border border-amber-500/30' }}">
+                                        {{ $rec['grade'] }}
+                                    </span>
+                                    <div class="text-[10px] text-slate-400 mt-1 font-mono">{{ $rec['time'] }}</div>
                                 </div>
                             </div>
                         @empty
-                            <div class="text-center py-8 text-slate-500 text-xs italic">Belum ada catatan prestasi yang diverifikasi.</div>
+                            <div class="h-full flex items-center justify-center text-slate-500 text-xs italic">
+                                Belum ada riwayat setoran hafalan hari ini.
+                            </div>
                         @endforelse
                     </div>
                 </div>
-            </section>
+            </div>
+        </section>
 
-            <!-- WIDGET 8: JADWAL AKTIVITAS & MASTER AGENDA SEKOLAH -->
-            <section id="widget-7" class="kiosk-widget glass-panel rounded-3xl p-5 sm:p-6 flex flex-col justify-between border-t-4 border-t-sky-500 glow-indigo transition-all duration-300">
-                <div>
-                    <!-- Header -->
-                    <div class="flex items-start justify-between gap-3 mb-4 pb-3 border-b border-white/10 min-w-0">
-                        <div class="flex items-center gap-3 min-w-0 flex-1">
-                            <div class="w-10 h-10 rounded-2xl bg-sky-500/20 text-sky-300 flex items-center justify-center text-xl font-bold border border-sky-500/30 shrink-0">
-                                ⏱️
-                            </div>
-                            <div class="min-w-0 flex-1">
-                                <h2 class="text-base sm:text-lg font-black text-white tracking-tight truncate">Jadwal Agenda Sekolah</h2>
-                                <p class="text-xs text-slate-400 truncate">Pengaturan Jam Presensi & Ibadah Master</p>
-                            </div>
-                        </div>
-                        <div class="text-right shrink-0 whitespace-nowrap">
-                            <span class="text-xs bg-sky-500/20 text-sky-300 border border-sky-500/30 px-2.5 py-1 rounded-full font-bold">
-                                MASTER JADWAL
-                            </span>
-                        </div>
-                    </div>
-
-                    <!-- Master Schedule Cards List -->
-                    <div id="schedulesList" class="space-y-2 max-h-[330px] overflow-y-auto kiosk-scroll pr-1 text-xs">
-                        @foreach($data['schedules'] ?? [] as $key => $sch)
-                            <div class="bg-slate-900/60 border border-white/5 rounded-2xl p-3 flex flex-col justify-between">
-                                <div class="flex items-center justify-between mb-1">
-                                    <span class="font-bold text-white text-xs">{{ $sch['name'] }}</span>
-                                    <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-sky-500/20 text-sky-300 border border-sky-500/30">
-                                        {{ $sch['time'] }}
-                                    </span>
-                                </div>
-                                <div class="flex items-center justify-between text-[10px] text-slate-400 mt-0.5">
-                                    <span>📅 {{ $sch['days'] }}</span>
-                                    <span class="text-teal-400 font-semibold">{{ $sch['target'] }}</span>
-                                </div>
-                                @if(!empty($sch['cutoff']))
-                                    <div class="mt-1 text-[10px] text-amber-400/90 font-semibold flex items-center gap-1">
-                                        <span>⚠️</span> <span>{{ $sch['cutoff'] }}</span>
-                                    </div>
-                                @endif
-                            </div>
-                        @endforeach
+        <!-- ========================================================================= -->
+        <!-- SLIDE 3: HALL OF FAME — TOP 10 RANKING POIN PRESTASI POSITIF SISWA       -->
+        <!-- ========================================================================= -->
+        <section id="slide-3" class="kiosk-slide hidden h-full w-full flex flex-col justify-between overflow-hidden gap-3">
+            <!-- Slide Title Header -->
+            <div class="flex items-center justify-between shrink-0 pb-1 border-b border-white/5">
+                <div class="flex items-center gap-2">
+                    <div class="w-7 h-7 rounded-lg bg-yellow-500/20 text-yellow-300 flex items-center justify-center font-black text-sm">04</div>
+                    <div>
+                        <h2 class="text-sm sm:text-base font-extrabold text-white flex items-center gap-2">
+                            <span>Hall of Fame: Ranking Poin Prestasi Positif Siswa</span>
+                        </h2>
+                        <p class="text-[11px] text-slate-400">Papan apresiasi dan kehormatan siswa dengan akumulasi poin prestasi tertinggi</p>
                     </div>
                 </div>
-            </section>
+                <div class="text-[11px] text-yellow-300 font-mono hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-yellow-500/10 border border-yellow-500/30">
+                    <span>🏆 Reward &amp; Prestasi Terverifikasi</span>
+                </div>
+            </div>
 
-        </div>
+            <!-- Main Podium & Leaderboard View -->
+            <div class="flex-1 min-h-0 flex flex-col justify-between gap-3 overflow-hidden">
+                <!-- Top 3 Grand Stage Podium -->
+                <div class="grid grid-cols-3 gap-3 sm:gap-4 shrink-0">
+                    @php
+                        $top1 = $data['ranking'][0] ?? null;
+                        $top2 = $data['ranking'][1] ?? null;
+                        $top3 = $data['ranking'][2] ?? null;
+                    @endphp
+
+                    <!-- Rank 2 (Silver) -->
+                    <div class="p-3 sm:p-4 rounded-2xl glass-card border border-slate-300/30 flex flex-col items-center text-center justify-between order-1 shadow-lg">
+                        <div class="w-7 h-7 rounded-full bg-slate-300 text-slate-950 font-black text-xs flex items-center justify-center shadow-md">2</div>
+                        <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-tr from-slate-400 to-slate-200 p-0.5 my-1.5 shadow-md">
+                            <div class="w-full h-full bg-slate-900 rounded-[14px] flex items-center justify-center font-black text-lg text-slate-200">
+                                {{ $top2 ? substr($top2['name'], 0, 2) : '--' }}
+                            </div>
+                        </div>
+                        <h4 class="text-xs sm:text-sm font-bold text-white truncate max-w-full">{{ $top2['name'] ?? 'Belum Ada' }}</h4>
+                        <span class="text-[10px] text-slate-400">{{ $top2['class'] ?? '-' }}</span>
+                        <div class="mt-1 px-3 py-0.5 rounded-full bg-slate-300/20 text-slate-200 font-mono font-black text-xs sm:text-sm">
+                            +{{ $top2['points'] ?? 0 }} Poin
+                        </div>
+                    </div>
+
+                    <!-- Rank 1 (Gold) - Higher & Glowing -->
+                    <div class="p-3 sm:p-4 rounded-2xl glass-panel border border-yellow-500/60 flex flex-col items-center text-center justify-between order-2 glow-gold scale-102">
+                        <span class="text-xl sm:text-2xl animate-bounce">👑</span>
+                        <div class="w-14 h-14 sm:w-18 sm:h-18 rounded-2xl bg-gradient-to-tr from-yellow-400 via-amber-300 to-yellow-500 p-1 my-1 shadow-xl shadow-yellow-500/30">
+                            <div class="w-full h-full bg-slate-900 rounded-[14px] flex items-center justify-center font-black text-xl sm:text-2xl text-yellow-300">
+                                {{ $top1 ? substr($top1['name'], 0, 2) : '--' }}
+                            </div>
+                        </div>
+                        <h4 class="text-sm sm:text-base font-black text-white truncate max-w-full">{{ $top1['name'] ?? 'Belum Ada' }}</h4>
+                        <span class="text-[10px] sm:text-xs text-yellow-200/90 font-semibold">{{ $top1['class'] ?? '-' }} &bull; {{ $top1['achievements_count'] ?? 0 }} Prestasi</span>
+                        <div class="mt-1 px-4 py-1 rounded-full bg-gradient-to-r from-yellow-500 to-amber-500 text-slate-950 font-mono font-black text-sm sm:text-base shadow-lg">
+                            +{{ $top1['points'] ?? 0 }} POIN
+                        </div>
+                    </div>
+
+                    <!-- Rank 3 (Bronze) -->
+                    <div class="p-3 sm:p-4 rounded-2xl glass-card border border-amber-600/30 flex flex-col items-center text-center justify-between order-3 shadow-lg">
+                        <div class="w-7 h-7 rounded-full bg-amber-600 text-white font-black text-xs flex items-center justify-center shadow-md">3</div>
+                        <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-tr from-amber-600 to-amber-400 p-0.5 my-1.5 shadow-md">
+                            <div class="w-full h-full bg-slate-900 rounded-[14px] flex items-center justify-center font-black text-lg text-amber-300">
+                                {{ $top3 ? substr($top3['name'], 0, 2) : '--' }}
+                            </div>
+                        </div>
+                        <h4 class="text-xs sm:text-sm font-bold text-white truncate max-w-full">{{ $top3['name'] ?? 'Belum Ada' }}</h4>
+                        <span class="text-[10px] text-slate-400">{{ $top3['class'] ?? '-' }}</span>
+                        <div class="mt-1 px-3 py-0.5 rounded-full bg-amber-600/20 text-amber-300 font-mono font-black text-xs sm:text-sm">
+                            +{{ $top3['points'] ?? 0 }} Poin
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ranks 4 to 10 Horizontal Grid -->
+                <div class="flex-1 min-h-0 rounded-2xl glass-card border border-white/10 p-3 flex flex-col justify-between overflow-hidden">
+                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 block shrink-0">Peringkat 4 s.d. 10 Poin Prestasi Sekolah</span>
+                    <div id="rankingList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 flex-1 min-h-0 overflow-y-auto kiosk-scroll pr-1">
+                        @forelse(collect($data['ranking'])->slice(3, 8) as $rk)
+                            <div class="rounded-xl px-3 py-2 bg-slate-900/60 border border-white/5 flex items-center justify-between">
+                                <div class="flex items-center gap-2 truncate mr-2">
+                                    <span class="w-5 h-5 rounded-md bg-slate-800 text-slate-400 flex items-center justify-center text-[10px] font-bold">
+                                        {{ $rk['rank'] }}
+                                    </span>
+                                    <div class="truncate">
+                                        <div class="font-bold text-xs text-white truncate">{{ $rk['name'] }}</div>
+                                        <div class="text-[9px] text-slate-400 truncate">{{ $rk['class'] }}</div>
+                                    </div>
+                                </div>
+                                <span class="font-mono font-black text-xs text-yellow-400 shrink-0">+{{ $rk['points'] }}</span>
+                            </div>
+                        @empty
+                            <div class="col-span-full text-center text-slate-500 text-xs italic py-2">
+                                Belum ada data prestasi lainnya.
+                            </div>
+                        @endforelse
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================================================= -->
+        <!-- SLIDE 4: KETERTIBAN SEKOLAH, PETUGAS PIKET & MONITORING POS SATPAM       -->
+        <!-- ========================================================================= -->
+        <section id="slide-4" class="kiosk-slide hidden h-full w-full flex flex-col justify-between overflow-hidden gap-3">
+            <!-- Slide Title Header -->
+            <div class="flex items-center justify-between shrink-0 pb-1 border-b border-white/5">
+                <div class="flex items-center gap-2">
+                    <div class="w-7 h-7 rounded-lg bg-sky-500/20 text-sky-300 flex items-center justify-center font-black text-sm">05</div>
+                    <div>
+                        <h2 class="text-sm sm:text-base font-extrabold text-white flex items-center gap-2">
+                            <span>Ketertiban Sekolah, Petugas Piket &amp; Monitoring Pos Satpam</span>
+                        </h2>
+                        <p class="text-[11px] text-slate-400">Jadwal guru/staf piket hari ini dan monitoring perizinan siswa di pos gerbang sekolah</p>
+                    </div>
+                </div>
+                <div class="text-[11px] text-sky-300 font-mono hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-sky-500/10 border border-sky-500/30">
+                    <span>🛡️ Keamanan &amp; Ketertiban Terpadu</span>
+                </div>
+            </div>
+
+            <!-- Main Grid: Left Duty Pickets, Right Security & Exit Permits -->
+            <div class="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-3 lg:gap-4 overflow-hidden">
+                <!-- Left Column: Picket Schedule (6 Cols) -->
+                <div class="lg:col-span-6 rounded-2xl glass-panel border border-white/10 p-3 sm:p-4 flex flex-col justify-between overflow-hidden shadow-xl">
+                    <div class="flex items-center justify-between pb-2 mb-2 border-b border-white/10 shrink-0">
+                        <div class="flex items-center gap-2">
+                            <span class="text-base">📋</span>
+                            <h3 class="text-xs sm:text-sm font-extrabold text-white uppercase tracking-wider">
+                                Petugas Piket Hari Ini ({{ $data['picket']['day_name'] ?? 'Aktif' }})
+                            </h3>
+                        </div>
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-teal-500/20 text-teal-300">
+                            {{ $data['picket']['total'] ?? 0 }} Petugas Bertugas
+                        </span>
+                    </div>
+
+                    <div id="picketOfficersList" class="flex-1 min-h-0 overflow-y-auto kiosk-scroll space-y-2 pr-1">
+                        @forelse($data['picket']['officers'] as $pk)
+                            <div class="p-2.5 rounded-xl bg-slate-900/70 border border-white/5 flex items-center justify-between hover:border-teal-500/30 transition">
+                                <div class="flex items-center gap-2.5 truncate mr-2">
+                                    <div class="w-8 h-8 rounded-xl bg-teal-500/20 text-teal-300 flex items-center justify-center font-bold text-xs shrink-0">
+                                        {{ substr($pk['name'], 0, 2) }}
+                                    </div>
+                                    <div class="truncate">
+                                        <div class="font-bold text-xs text-white truncate">{{ $pk['name'] }}</div>
+                                        <div class="text-[10px] text-slate-400 truncate">NIP: {{ $pk['nip'] }} &bull; {{ $pk['location'] }}</div>
+                                    </div>
+                                </div>
+                                <div class="text-right shrink-0">
+                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-800 text-teal-300 border border-teal-500/20">
+                                        {{ $pk['role_type'] }}
+                                    </span>
+                                    <div class="text-[9px] text-slate-400 mt-1 font-mono">{{ $pk['time'] }}</div>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="h-full flex items-center justify-center text-slate-500 text-xs italic py-6">
+                                Belum ada petugas piket yang terjadwal untuk hari ini.
+                            </div>
+                        @endforelse
+                    </div>
+
+                    <div class="mt-2 pt-2 border-t border-white/5 text-[10px] text-slate-400 flex items-center justify-between shrink-0">
+                        <span>Standby di Pos Piket Lobi Utama &amp; Pos Gerbang</span>
+                        <span class="font-mono text-teal-400">SMAN 1 Lengkong</span>
+                    </div>
+                </div>
+
+                <!-- Right Column: Security Gate & Permits Monitoring (6 Cols) -->
+                <div class="lg:col-span-6 rounded-2xl glass-panel border border-white/10 p-3 sm:p-4 flex flex-col justify-between overflow-hidden shadow-xl">
+                    <div class="flex items-center justify-between pb-2 mb-2 border-b border-white/10 shrink-0">
+                        <div class="flex items-center gap-2">
+                            <span class="text-base">🛡️</span>
+                            <h3 class="text-xs sm:text-sm font-extrabold text-white uppercase tracking-wider">
+                                Monitoring Pos Satpam &amp; Perizinan Siswa
+                            </h3>
+                        </div>
+                        <span class="text-[10px] text-slate-400 font-mono">Gerbang Sekolah</span>
+                    </div>
+
+                    <!-- 3 Security Metric Badges -->
+                    <div class="grid grid-cols-3 gap-2 shrink-0 mb-2">
+                        <div class="p-2 rounded-xl bg-amber-500/10 border border-amber-500/20 text-center">
+                            <span class="text-[9px] text-amber-300 font-bold block uppercase">Di Luar Kampus</span>
+                            <span id="securityOutsideCount" class="text-lg font-black text-white font-mono">{{ $data['security']['currently_outside'] ?? 0 }}</span>
+                            <span class="text-[9px] text-slate-400 block">Siswa</span>
+                        </div>
+                        <div class="p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-center">
+                            <span class="text-[9px] text-emerald-300 font-bold block uppercase">Sudah Kembali</span>
+                            <span id="securityReturnedCount" class="text-lg font-black text-white font-mono">{{ $data['security']['returned'] ?? 0 }}</span>
+                            <span class="text-[9px] text-slate-400 block">Siswa</span>
+                        </div>
+                        <div class="p-2 rounded-xl bg-sky-500/10 border border-sky-500/20 text-center">
+                            <span class="text-[9px] text-sky-300 font-bold block uppercase">Pulang Cepat</span>
+                            <span id="securityEarlyLeavesCount" class="text-lg font-black text-white font-mono">{{ $data['security']['early_leaves_count'] ?? 0 }}</span>
+                            <span class="text-[9px] text-slate-400 block">Disetujui</span>
+                        </div>
+                    </div>
+
+                    <!-- Recent Permits Feed -->
+                    <div id="securityRecentPermits" class="flex-1 min-h-0 overflow-y-auto kiosk-scroll space-y-2 pr-1">
+                        @forelse($data['security']['recent'] as $pm)
+                            <div class="p-2 rounded-xl bg-slate-900/70 border border-white/5 flex items-center justify-between text-xs">
+                                <div class="truncate mr-2">
+                                    <div class="font-bold text-white truncate">{{ $pm['students'] }}</div>
+                                    <div class="text-[10px] text-slate-400 truncate">{{ $pm['purpose'] }}</div>
+                                </div>
+                                <div class="text-right shrink-0">
+                                    <span class="px-2 py-0.5 rounded text-[9px] font-black {{ $pm['status'] === 'SUDAH KEMBALI' ? 'bg-emerald-500/20 text-emerald-300' : ($pm['status'] === 'DI LUAR SEKOLAH' ? 'bg-amber-500/20 text-amber-300' : 'bg-sky-500/20 text-sky-300') }}">
+                                        {{ $pm['status'] }}
+                                    </span>
+                                    <div class="text-[9px] text-slate-400 mt-0.5 font-mono">{{ $pm['time'] }}</div>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="h-full flex items-center justify-center text-slate-500 text-xs italic py-4">
+                                Tidak ada siswa berizin keluar atau pulang cepat hari ini.
+                            </div>
+                        @endforelse
+                    </div>
+
+                    <div class="mt-2 pt-2 border-t border-white/5 text-[10px] text-slate-400 flex items-center justify-between shrink-0">
+                        <span>Pemeriksaan ketat surat izin bermaterai/QR oleh satpam</span>
+                        <a href="{{ route('attendance.kiosk-satpam') }}" target="_blank" class="text-teal-400 hover:underline">Buka Kios Satpam &rarr;</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================================================= -->
+        <!-- SLIDE 5: EKSTRAKURIKULER, PROFIL & VISI MISI SMAN 1 LENGKONG             -->
+        <!-- ========================================================================= -->
+        <section id="slide-5" class="kiosk-slide hidden h-full w-full flex flex-col justify-between overflow-hidden gap-3">
+            <!-- Slide Title Header -->
+            <div class="flex items-center justify-between shrink-0 pb-1 border-b border-white/5">
+                <div class="flex items-center gap-2">
+                    <div class="w-7 h-7 rounded-lg bg-purple-500/20 text-purple-300 flex items-center justify-center font-black text-sm">06</div>
+                    <div>
+                        <h2 class="text-sm sm:text-base font-extrabold text-white flex items-center gap-2">
+                            <span>Presensi Ekstrakurikuler &amp; Profil SMA Negeri 1 Lengkong</span>
+                        </h2>
+                        <p class="text-[11px] text-slate-400">Pengembangan bakat minat siswa, identitas resmi, serta visi-misi sekolah</p>
+                    </div>
+                </div>
+                <div class="text-[11px] text-purple-300 font-mono hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-purple-500/10 border border-purple-500/30">
+                    <span>🎯 Minat &amp; Bakat Siswa</span>
+                </div>
+            </div>
+
+            <!-- Main Grid: Left Extracurricular Feed, Right School Profile & Vision -->
+            <div class="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-3 lg:gap-4 overflow-hidden">
+                <!-- Left Column: Ekstrakurikuler (5 Cols) -->
+                <div class="lg:col-span-5 rounded-2xl glass-panel border border-white/10 p-3 sm:p-4 flex flex-col justify-between overflow-hidden shadow-xl">
+                    <div class="flex items-center justify-between pb-2 mb-2 border-b border-white/10 shrink-0">
+                        <div class="flex items-center gap-2">
+                            <span class="text-base">🎯</span>
+                            <h3 class="text-xs sm:text-sm font-extrabold text-white uppercase tracking-wider">
+                                Presensi Ekstrakurikuler
+                            </h3>
+                        </div>
+                        <div class="text-right">
+                            <span id="extraTotalToday" class="text-base font-black text-purple-300 font-mono">{{ $data['extracurricular']['total_today'] }}</span>
+                            <span class="text-[10px] text-slate-400">Hadir</span>
+                        </div>
+                    </div>
+
+                    <div class="text-[10px] text-slate-400 mb-2 shrink-0">
+                        Jadwal Latihan: <strong class="text-slate-300">{{ $data['extracurricular']['schedule'] ?? '-' }}</strong>
+                    </div>
+
+                    <div id="extraRecentLogs" class="flex-1 min-h-0 overflow-y-auto kiosk-scroll space-y-2 pr-1">
+                        @forelse($data['extracurricular']['recent'] as $ex)
+                            <div class="p-2 rounded-xl bg-slate-900/70 border border-white/5 flex items-center justify-between text-xs">
+                                <div class="truncate mr-2">
+                                    <div class="font-bold text-white truncate">{{ $ex['name'] }} <span class="text-slate-400 font-normal">({{ $ex['class'] }})</span></div>
+                                    <div class="text-[10px] text-purple-300 font-semibold truncate">{{ $ex['extracurricular'] }}</div>
+                                </div>
+                                <div class="flex items-center gap-2 shrink-0">
+                                    <span class="px-2 py-0.5 rounded text-[9px] font-black bg-purple-500/20 text-purple-300">
+                                        {{ $ex['status'] }}
+                                    </span>
+                                    <span class="font-mono text-slate-400 text-[10px]">{{ $ex['time'] }}</span>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="h-full flex items-center justify-center text-slate-500 text-xs italic py-6">
+                                Belum ada presensi ekstrakurikuler tercatat hari ini.
+                            </div>
+                        @endforelse
+                    </div>
+
+                    <div class="mt-2 pt-2 border-t border-white/5 text-[10px] text-slate-400 shrink-0">
+                        Pramuka, Paskibra, PMR, Rohis, Seni Tari, Olahraga Prestasi &bull; S1L
+                    </div>
+                </div>
+
+                <!-- Right Column: Profil Resmi & Visi Misi Sekolah (7 Cols) -->
+                <div class="lg:col-span-7 rounded-2xl glass-panel border border-white/10 p-3 sm:p-5 flex flex-col justify-between overflow-hidden shadow-xl">
+                    <!-- School Header Profile -->
+                    <div class="flex items-center justify-between pb-3 border-b border-white/10 shrink-0">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-teal-500 to-indigo-600 p-0.5 shadow-lg">
+                                <div class="w-full h-full bg-slate-900 rounded-[14px] flex items-center justify-center font-black text-white text-lg">
+                                    1LE
+                                </div>
+                            </div>
+                            <div>
+                                <h3 class="text-base sm:text-lg font-black text-white">{{ $data['profile']['name'] }}</h3>
+                                <div class="flex items-center gap-2 text-xs text-slate-400 mt-0.5">
+                                    <span>NPSN: <strong class="text-white font-mono">{{ $data['profile']['npsn'] }}</strong></span>
+                                    <span>&bull;</span>
+                                    <span>Akreditasi: <strong class="text-teal-300">{{ $data['profile']['accreditation'] }}</strong></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-right hidden sm:block">
+                            <div class="text-xs font-bold text-white">{{ $data['profile']['principal_name'] }}</div>
+                            <div class="text-[10px] text-slate-400">Kepala Sekolah &bull; NIP {{ $data['profile']['principal_nip'] }}</div>
+                        </div>
+                    </div>
+
+                    <!-- Vision & Motto -->
+                    <div class="my-3 space-y-2.5">
+                        <div class="p-3 rounded-xl bg-slate-900/80 border border-white/5">
+                            <span class="text-[10px] font-bold text-teal-400 uppercase tracking-wider block mb-1">VISI SEKOLAH</span>
+                            <p class="text-xs sm:text-sm text-slate-200 italic font-medium">
+                                "{{ $data['profile']['vision'] }}"
+                            </p>
+                        </div>
+
+                        <div class="p-3 rounded-xl bg-slate-900/80 border border-white/5">
+                            <span class="text-[10px] font-bold text-indigo-400 uppercase tracking-wider block mb-1">MOTTO &amp; KARAKTER SEKOLAH</span>
+                            <p class="text-xs sm:text-sm text-slate-200 font-semibold">
+                                &bull; {{ $data['profile']['motto'] }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- School Address & Location Footer -->
+                    <div class="p-2.5 rounded-xl bg-teal-500/10 border border-teal-500/20 flex flex-col sm:flex-row sm:items-center justify-between text-xs text-slate-300 shrink-0 gap-1">
+                        <span class="truncate">📍 {{ $data['profile']['address'] }}</span>
+                        <span class="font-mono text-teal-300 shrink-0">sman1lengkong.school</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
     </main>
 
-    <!-- FOOTER RUNNING TICKER (School Updates & Worship Reminders) -->
-    <footer class="glass-panel border-t border-white/10 px-4 py-2.5 flex items-center gap-3 overflow-hidden shadow-2xl">
-        <div class="flex items-center gap-1.5 shrink-0 px-2.5 py-1 bg-teal-500/20 text-teal-300 border border-teal-500/30 rounded-lg text-xs font-bold uppercase tracking-wider">
-            <span class="w-2 h-2 rounded-full bg-teal-400 animate-pulse"></span>
-            <span>INFORMASI</span>
+    <!-- 4. BOTTOM TICKER FOOTER BAR (Compact ~34px) -->
+    <footer class="relative z-30 h-8 sm:h-9 shrink-0 bg-slate-950/95 border-t border-white/10 px-3 sm:px-4 flex items-center justify-between gap-3 overflow-hidden shadow-2xl">
+        <div class="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-teal-500/20 text-teal-300 border border-teal-500/40 text-[10px] font-black uppercase tracking-wider shrink-0">
+            <span>📢 PENGUMUMAN</span>
         </div>
-        <div class="flex-1 overflow-hidden whitespace-nowrap text-xs text-slate-300 font-medium">
-            <span id="kioskTicker" class="animate-ticker">
+        <div class="flex-1 min-w-0 overflow-hidden relative">
+            <div id="kioskTicker" class="animate-ticker-marquee text-xs font-semibold text-slate-300 tracking-wide">
                 {{ $data['ticker'] }}
-            </span>
+            </div>
         </div>
-        <div class="shrink-0 text-[11px] text-slate-500 hidden sm:block font-mono">
-            SMAN 1 LENGKONG • TAHUN PELAJARAN 2026/2027
+        <div class="text-[10px] text-slate-500 font-mono shrink-0 hidden sm:block">
+            SIS-SMA1LE &bull; TV KIOSK
         </div>
     </footer>
 
-    <!-- REAL-TIME CLOCK, POLLING & CAROUSEL SCRIPTS -->
+    <!-- JAVASCRIPT SLIDE CONTROLLER & BACKGROUND REALTIME POLLER -->
     <script>
-        // State
-        let currentMode = 'grid'; // 'grid' or 'carousel'
-        let currentWidgetIdx = 0;
-        let carouselInterval = null;
-        let carouselCountdown = 12;
-        let countdownTimer = null;
-        const totalWidgets = 8;
+        // Slide Deck State
+        const TOTAL_SLIDES = 6;
+        const SLIDE_DURATION = 15; // 15 seconds per slide
+        let currentSlideIdx = 0;
+        let slideRemainingTime = SLIDE_DURATION;
+        let isPaused = false;
+        let slideTimerInterval = null;
 
-        // Switch Tahfidz Sub-views (Live vs Grade Rankings)
-        function switchTahfidzView(view) {
-            const tabs = ['live', 'X', 'XI', 'XII'];
-            tabs.forEach(t => {
-                const btn = document.getElementById(`btnTahfidz${t === 'live' ? 'Live' : t}`);
-                const panel = document.getElementById(`tahfidzTab${t === 'live' ? 'Live' : t}`);
-                if (btn && panel) {
-                    if (t === view) {
-                        btn.className = 'flex-1 py-1 px-2 rounded-lg font-bold bg-emerald-600 text-white transition text-center shadow-sm';
-                        panel.classList.remove('hidden');
+        // Initialize Slide Engine
+        function initSlideDeck() {
+            showSlide(currentSlideIdx);
+            startSlideTimer();
+            updateLiveClock();
+            setInterval(updateLiveClock, 1000);
+        }
+
+        // Show Slide Function
+        function showSlide(index) {
+            currentSlideIdx = (index + TOTAL_SLIDES) % TOTAL_SLIDES;
+
+            // Update slide visibility
+            for (let i = 0; i < TOTAL_SLIDES; i++) {
+                const slideEl = document.getElementById(`slide-${i}`);
+                const pillEl = document.getElementById(`pill-slide-${i}`);
+
+                if (slideEl) {
+                    if (i === currentSlideIdx) {
+                        slideEl.classList.remove('hidden');
+                        slideEl.classList.add('flex');
                     } else {
-                        btn.className = 'flex-1 py-1 px-2 rounded-lg font-semibold text-slate-400 hover:text-white transition text-center';
-                        panel.classList.add('hidden');
+                        slideEl.classList.add('hidden');
+                        slideEl.classList.remove('flex');
                     }
                 }
-            });
+
+                if (pillEl) {
+                    if (i === currentSlideIdx) {
+                        pillEl.className = 'slide-nav-pill px-2.5 py-1 rounded-lg font-bold transition flex items-center gap-1 bg-teal-500 text-slate-950 shadow-sm';
+                    } else {
+                        pillEl.className = 'slide-nav-pill px-2.5 py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1';
+                    }
+                }
+            }
+
+            // Reset countdown for this slide
+            slideRemainingTime = SLIDE_DURATION;
+            updateProgressBar();
         }
 
-        // 1. Digital Clock (Updated every second)
-        function updateLiveClock() {
-            const now = new Date();
-            const hours = String(now.getHours()).padStart(2, '0');
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            const seconds = String(now.getSeconds()).padStart(2, '0');
-            document.getElementById('liveClock').textContent = `${hours}:${minutes}:${seconds} WIB`;
-
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            document.getElementById('liveDate').textContent = now.toLocaleDateString('id-ID', options);
+        function nextSlide() {
+            showSlide(currentSlideIdx + 1);
         }
-        setInterval(updateLiveClock, 1000);
-        updateLiveClock();
 
-        // 2. Fullscreen Toggle
+        function prevSlide() {
+            showSlide(currentSlideIdx - 1);
+        }
+
+        function goToSlide(idx) {
+            showSlide(idx);
+        }
+
+        // Auto Advance Timer & Progress Bar
+        function startSlideTimer() {
+            if (slideTimerInterval) clearInterval(slideTimerInterval);
+
+            slideTimerInterval = setInterval(() => {
+                if (!isPaused) {
+                    slideRemainingTime--;
+                    updateProgressBar();
+
+                    if (slideRemainingTime <= 0) {
+                        nextSlide();
+                    }
+                }
+            }, 1000);
+        }
+
+        function updateProgressBar() {
+            const bar = document.getElementById('slideProgressBar');
+            const countdownEl = document.getElementById('slideCountdownLabel');
+
+            if (bar) {
+                const pct = ((SLIDE_DURATION - slideRemainingTime) / SLIDE_DURATION) * 100;
+                bar.style.width = `${pct}%`;
+            }
+
+            if (countdownEl) {
+                countdownEl.textContent = `${slideRemainingTime}s`;
+            }
+        }
+
+        function togglePlayPause() {
+            isPaused = !isPaused;
+            const icon = document.getElementById('playPauseIcon');
+            if (icon) {
+                icon.textContent = isPaused ? '▶️' : '⏸️';
+            }
+        }
+
+        // Fullscreen Toggle
         function toggleFullscreen() {
             if (!document.fullscreenElement) {
                 document.documentElement.requestFullscreen().catch(() => {});
             } else {
                 if (document.exitFullscreen) {
-                    document.exitFullscreen();
+                    document.exitFullscreen().catch(() => {});
                 }
             }
         }
 
-        // 3. Mode Toggle (Grid vs Carousel)
-        function setKioskMode(mode) {
-            currentMode = mode;
-            const btnGrid = document.getElementById('btnModeGrid');
-            const btnCarousel = document.getElementById('btnModeCarousel');
-            const progContainer = document.getElementById('carouselProgressBarContainer');
+        // Keyboard Navigation (ArrowLeft, ArrowRight, Space)
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') {
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                prevSlide();
+            } else if (e.key === ' ' || e.code === 'Space') {
+                togglePlayPause();
+            }
+        });
 
-            if (mode === 'grid') {
-                btnGrid.className = 'px-3 py-1.5 rounded-lg font-bold transition flex items-center gap-1.5 bg-indigo-600 text-white shadow-sm';
-                btnCarousel.className = 'px-3 py-1.5 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1.5';
-                progContainer.classList.add('hidden');
-                clearInterval(carouselInterval);
-                clearInterval(countdownTimer);
+        // Realtime Clock Updater
+        function updateLiveClock() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
 
-                // Show all widgets
-                for (let i = 0; i < totalWidgets; i++) {
-                    const el = document.getElementById(`widget-${i}`);
-                    if (el) {
-                        el.classList.remove('hidden', 'col-span-full', 'scale-100');
-                    }
-                }
-            } else {
-                btnCarousel.className = 'px-3 py-1.5 rounded-lg font-bold transition flex items-center gap-1.5 bg-indigo-600 text-white shadow-sm';
-                btnGrid.className = 'px-3 py-1.5 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1.5';
-                progContainer.classList.remove('hidden');
+            const clockEl = document.getElementById('liveClock');
+            if (clockEl) {
+                clockEl.textContent = `${hours}:${minutes}:${seconds} WIB`;
+            }
 
-                startCarousel();
+            const dateEl = document.getElementById('liveDate');
+            if (dateEl) {
+                const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+                const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+                dateEl.textContent = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
             }
         }
 
-        // 4. Focus Specific Widget (In Carousel Mode or On Demand)
-        function focusWidget(idx) {
-            currentWidgetIdx = idx;
-            // Update tab button styles
-            document.querySelectorAll('.tab-btn').forEach((btn, i) => {
-                if (i === idx) {
-                    btn.className = 'tab-btn px-3 py-1 rounded-lg font-bold transition bg-white/10 text-teal-300 hover:bg-white/15';
-                } else {
-                    btn.className = 'tab-btn px-3 py-1 rounded-lg font-bold transition text-slate-400 hover:text-white hover:bg-white/5';
-                }
-            });
-
-            if (currentMode === 'carousel') {
-                for (let i = 0; i < totalWidgets; i++) {
-                    const el = document.getElementById(`widget-${i}`);
-                    if (el) {
-                        if (i === idx) {
-                            el.classList.remove('hidden');
-                            el.classList.add('col-span-full');
-                        } else {
-                            el.classList.add('hidden');
-                            el.classList.remove('col-span-full');
-                        }
-                    }
-                }
-                resetCarouselTimer();
-            } else {
-                // In grid mode, smoothly scroll to that widget
-                const el = document.getElementById(`widget-${idx}`);
-                if (el) {
-                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    el.classList.add('ring-2', 'ring-teal-400');
-                    setTimeout(() => el.classList.remove('ring-2', 'ring-teal-400'), 1500);
-                }
-            }
-        }
-
-        function resetCarouselTimer() {
-            carouselCountdown = 12;
-            const bar = document.getElementById('carouselProgressBar');
-            bar.style.width = '0%';
-        }
-
-        function startCarousel() {
-            focusWidget(currentWidgetIdx);
-            clearInterval(carouselInterval);
-            clearInterval(countdownTimer);
-
-            carouselCountdown = 12;
-            const bar = document.getElementById('carouselProgressBar');
-            
-            countdownTimer = setInterval(() => {
-                carouselCountdown--;
-                if (carouselCountdown < 0) {
-                    carouselCountdown = 12;
-                    currentWidgetIdx = (currentWidgetIdx + 1) % totalWidgets;
-                    focusWidget(currentWidgetIdx);
-                }
-                document.getElementById('carouselTimer').textContent = `${carouselCountdown}s`;
-                const pct = ((12 - carouselCountdown) / 12) * 100;
-                bar.style.width = `${pct}%`;
-            }, 1000);
-        }
-
-        // 5. AJAX Polling (Fetch fresh data every 15 seconds)
+        // Background Realtime Data Poller (Runs silently every 15s without interrupting user)
         async function fetchKioskData() {
             try {
-                const res = await fetch('{{ route("kiosk.data") }}', {
-                    headers: { 'Accept': 'application/json' }
-                });
+                const res = await fetch("{{ route('kiosk.data') }}");
                 if (!res.ok) return;
                 const d = await res.json();
-                
-                // Update School Data & Ticker
-                if (d.school) {
-                    document.getElementById('kioskSchoolName').textContent = d.school.name;
-                    const logoContainer = document.getElementById('kioskLogoContainer');
-                    if (d.school.logo) {
-                        logoContainer.innerHTML = `<img src="/storage/${d.school.logo}" alt="Logo" class="w-8 h-8 object-contain">`;
-                    } else {
-                        logoContainer.innerHTML = `<span class="text-lg font-black text-transparent bg-clip-text bg-gradient-to-r from-teal-300 to-sky-300">S1L</span>`;
-                    }
-                }
-                
-                if (d.ticker) {
-                    document.getElementById('kioskTicker').textContent = d.ticker;
-                }
 
-                // Update Presensi Harian
-                document.getElementById('dailyTotalStudents').textContent = d.daily.total_students;
-                document.getElementById('dailyPercentage').textContent = d.daily.percentage + '%';
-                document.getElementById('dailyProgressBar').style.width = d.daily.percentage + '%';
-                document.getElementById('dailyHadir').textContent = d.daily.hadir;
-                document.getElementById('dailyTerlambat').textContent = d.daily.terlambat;
-                document.getElementById('dailyIzin').textContent = d.daily.izin;
-                document.getElementById('dailySakit').textContent = d.daily.sakit;
-                document.getElementById('dailyAlpa').textContent = d.daily.alpa;
+                // 1. Update Daily Attendance
+                if (d.daily) {
+                    const pctEl = document.getElementById('dailyPercentage');
+                    const barEl = document.getElementById('dailyPercentageBar');
+                    const totEl = document.getElementById('dailyTotalStudents');
+                    if (pctEl) pctEl.textContent = `${d.daily.percentage}%`;
+                    if (barEl) barEl.style.width = `${d.daily.percentage}%`;
+                    if (totEl) totEl.textContent = d.daily.total_students;
 
-                renderList('dailyRecentLogs', d.daily.recent, item => `
-                    <div class="bg-slate-900/60 border border-white/5 rounded-xl px-3 py-2 flex items-center justify-between">
-                        <div class="truncate mr-2">
-                            <div class="font-bold text-white truncate">${item.name}</div>
-                            <div class="text-[10px] text-slate-400">${item.class} • ${item.method}</div>
-                        </div>
-                        <div class="flex items-center gap-2 shrink-0">
-                            <span class="px-2 py-0.5 rounded text-[10px] font-black ${item.status === 'HADIR' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-amber-500/20 text-amber-300'}">
-                                ${item.status}
-                            </span>
-                            <span class="text-[11px] font-mono text-slate-400">${item.time}</span>
-                        </div>
-                    </div>
-                `, 'Belum ada log presensi masuk hari ini.');
+                    const countMap = {
+                        countHadir: d.daily.hadir,
+                        countTerlambat: d.daily.terlambat,
+                        countIzin: d.daily.izin,
+                        countSakit: d.daily.sakit,
+                        countAlpa: d.daily.alpa,
+                    };
+                    Object.keys(countMap).forEach(id => {
+                        const el = document.getElementById(id);
+                        if (el) el.textContent = countMap[id];
+                    });
 
-                // Update Dhuha
-                document.getElementById('dhuhaTotalToday').textContent = d.dhuha.total_today;
-                updateStatusBadge('dhuhaStatusBadge', d.dhuha.is_open);
-                renderList('dhuhaRecentLogs', d.dhuha.recent, item => `
-                    <div class="bg-slate-900/60 border border-white/5 rounded-xl px-3 py-2 flex items-center justify-between">
-                        <div class="truncate mr-2">
-                            <div class="font-bold text-white truncate">${item.name}</div>
-                            <div class="text-[10px] text-slate-400">${item.class} • ${item.method}</div>
-                        </div>
-                        <div class="flex items-center gap-2 shrink-0">
-                            <span class="px-2 py-0.5 rounded text-[10px] font-black bg-amber-500/20 text-amber-300">HADIR</span>
-                            <span class="text-[11px] font-mono text-slate-400">${item.time}</span>
-                        </div>
-                    </div>
-                `, 'Belum ada jamaah dhuha yang tercatat hari ini.');
-
-                // Update Dzuhur
-                document.getElementById('dzuhurTotalToday').textContent = d.dzuhur.total_today;
-                updateStatusBadge('dzuhurStatusBadge', d.dzuhur.is_open);
-                renderList('dzuhurRecentLogs', d.dzuhur.recent, item => `
-                    <div class="bg-slate-900/60 border border-white/5 rounded-xl px-3 py-2 flex items-center justify-between">
-                        <div class="truncate mr-2">
-                            <div class="font-bold text-white truncate">${item.name}</div>
-                            <div class="text-[10px] text-slate-400">${item.class} • ${item.method}</div>
-                        </div>
-                        <div class="flex items-center gap-2 shrink-0">
-                            <span class="px-2 py-0.5 rounded text-[10px] font-black bg-indigo-500/20 text-indigo-300">HADIR</span>
-                            <span class="text-[11px] font-mono text-slate-400">${item.time}</span>
-                        </div>
-                    </div>
-                `, 'Belum ada jamaah shalat yang tercatat hari ini.');
-
-                // Update Keputrian
-                document.getElementById('keputrianTotalToday').textContent = d.keputrian.total_today;
-                updateStatusBadge('keputrianStatusBadge', d.keputrian.is_open);
-                renderList('keputrianRecentLogs', d.keputrian.recent, item => `
-                    <div class="bg-slate-900/60 border border-white/5 rounded-xl px-3 py-2 flex items-center justify-between">
-                        <div class="truncate mr-2">
-                            <div class="font-bold text-white truncate">${item.name}</div>
-                            <div class="text-[10px] text-slate-400">${item.class} • ${item.method}</div>
-                        </div>
-                        <div class="flex items-center gap-2 shrink-0">
-                            <span class="px-2 py-0.5 rounded text-[10px] font-black bg-rose-500/20 text-rose-300">HADIR</span>
-                            <span class="text-[11px] font-mono text-slate-400">${item.time}</span>
-                        </div>
-                    </div>
-                `, 'Belum ada siswi keputrian yang tercatat hari ini.');
-
-                // Update Ekstrakurikuler
-                if (d.extracurricular) {
-                    const extraTotalEl = document.getElementById('extraTotalToday');
-                    if (extraTotalEl) extraTotalEl.textContent = d.extracurricular.total_today || 0;
-                    renderList('extraRecentLogs', d.extracurricular.recent, item => `
-                        <div class="bg-slate-900/60 border border-white/5 rounded-xl px-3 py-2 flex items-center justify-between">
-                            <div class="truncate mr-2">
-                                <div class="font-bold text-white truncate">${item.name} <span class="text-slate-400 font-normal">(${item.class})</span></div>
-                                <div class="text-[10px] text-purple-300 font-semibold truncate">${item.extracurricular}</div>
+                    renderList('dailyRecentLogs', d.daily.recent, item => `
+                        <div class="bg-slate-900/70 border border-white/5 rounded-xl px-3 py-2 flex items-center justify-between hover:border-teal-500/30 transition">
+                            <div class="flex items-center gap-2.5 truncate mr-2">
+                                <div class="w-7 h-7 rounded-lg bg-teal-500/20 text-teal-300 flex items-center justify-center font-bold text-xs shrink-0">
+                                    ${item.name.charAt(0)}
+                                </div>
+                                <div class="truncate">
+                                    <div class="font-bold text-xs text-white truncate">${item.name}</div>
+                                    <div class="text-[10px] text-slate-400 truncate">${item.class} &bull; ${item.method}</div>
+                                </div>
                             </div>
                             <div class="flex items-center gap-2 shrink-0">
-                                <span class="px-2 py-0.5 rounded text-[10px] font-black ${item.status === 'HADIR' ? 'bg-purple-500/20 text-purple-300' : 'bg-amber-500/20 text-amber-300'}">
+                                <span class="px-2 py-0.5 rounded text-[10px] font-black ${item.status === 'HADIR' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'}">
                                     ${item.status}
                                 </span>
-                                <span class="text-[11px] font-mono text-slate-400">${item.time}</span>
+                                <span class="text-[11px] font-mono font-bold text-slate-300">${item.time}</span>
                             </div>
                         </div>
-                    `, 'Belum ada kegiatan presensi ekstrakurikuler hari ini.');
+                    `, 'Belum ada aktivitas presensi masuk hari ini.');
                 }
 
-                // Update Tahfidz
-                document.getElementById('tahfidzTotalToday').textContent = d.tahfidz.total_today;
-                document.getElementById('tahfidzPassedToday').textContent = d.tahfidz.passed_today;
-                renderList('tahfidzRecentLogs', d.tahfidz.recent, item => `
-                    <div class="bg-slate-900/60 border border-white/5 rounded-xl px-3 py-2 flex items-center justify-between">
-                        <div class="truncate mr-2">
-                            <div class="font-bold text-white truncate">${item.name} <span class="text-slate-400 font-normal">(${item.class})</span></div>
-                            <div class="text-[10px] text-emerald-300 font-semibold">${item.surah}</div>
-                        </div>
-                        <div class="text-right shrink-0">
-                            <span class="px-2 py-0.5 rounded text-[10px] font-black ${item.grade === 'Lulus' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-amber-500/20 text-amber-300'}">
-                                ${item.grade}
-                            </span>
-                            <div class="text-[10px] text-slate-400 mt-0.5">${item.date} • ${item.time}</div>
-                        </div>
-                    </div>
-                `, 'Belum ada riwayat setoran tahfidz yang dicatat.');
-
-                // Update Tahfidz Class Rankings
-                if (d.tahfidz && d.tahfidz.rankings) {
-                    ['X', 'XI', 'XII'].forEach(grd => {
-                        if (d.tahfidz.rankings[grd]) {
-                            const rData = d.tahfidz.rankings[grd];
-                            renderList(`tahfidzRankList${grd}`, rData.students, st => `
-                                <div class="rounded-xl px-3 py-2 flex items-center justify-between border ${st.rank === 1 ? 'bg-emerald-500/10 border-emerald-500/40 text-emerald-200' : 'bg-slate-900/60 border-white/5 text-slate-200'}">
-                                    <div class="flex items-center gap-2 truncate mr-2">
-                                        <span class="w-6 h-6 rounded-lg flex items-center justify-center text-[10px] font-black ${st.rank === 1 ? 'bg-emerald-500 text-white' : 'bg-slate-800 text-slate-400'}">
-                                            ${st.rank}
-                                        </span>
-                                        <div class="truncate">
-                                            <div class="font-bold text-white truncate">${st.name}</div>
-                                            <div class="text-[10px] text-slate-400">${st.class} • ${st.badge}</div>
-                                        </div>
-                                    </div>
-                                    <div class="text-right shrink-0">
-                                        <span class="text-sm font-black text-emerald-300 font-mono">${st.lulus_count} <span class="text-[10px] font-sans text-slate-400">/ ${st.total_target}</span></span>
-                                        <div class="text-[10px] text-emerald-400 font-bold">${st.pct}%</div>
-                                    </div>
-                                </div>
-                            `, `Belum ada siswa kelas ${grd} yang menyetorkan surat target.`);
-                        }
-                    });
+                // 2. Update Worship Stats
+                if (d.dhuha) {
+                    const dhTot = document.getElementById('dhuhaTotalToday');
+                    if (dhTot) dhTot.textContent = d.dhuha.total_today;
+                    updateStatusBadge('dhuhaStatusBadge', d.dhuha.is_open);
+                }
+                if (d.dzuhur) {
+                    const dzTot = document.getElementById('dzuhurTotalToday');
+                    if (dzTot) dzTot.textContent = d.dzuhur.total_today;
+                    updateStatusBadge('dzuhurStatusBadge', d.dzuhur.is_open);
+                }
+                if (d.keputrian) {
+                    const kpTot = document.getElementById('keputrianTotalToday');
+                    if (kpTot) kpTot.textContent = d.keputrian.total_today;
+                    updateStatusBadge('keputrianStatusBadge', d.keputrian.is_open);
                 }
 
-                // Update Ranking
-                renderList('rankingList', d.ranking, item => {
-                    const isTop1 = item.rank === 1;
-                    const isTop2 = item.rank === 2;
-                    const isTop3 = item.rank === 3;
-                    const bgClass = isTop1 ? 'bg-yellow-500/10 border-yellow-500/40 text-yellow-200' : (isTop2 ? 'bg-slate-300/10 border-slate-300/30 text-slate-200' : (isTop3 ? 'bg-amber-600/10 border-amber-600/30 text-amber-200' : 'bg-slate-900/60 border-white/5 text-slate-200'));
-                    const badgeClass = item.rank <= 3 ? 'bg-white/20 text-white' : 'bg-slate-800 text-slate-400';
-                    return `
-                        <div class="rounded-xl px-3 py-2 flex items-center justify-between border ${bgClass}">
-                            <div class="flex items-center gap-2.5 truncate mr-2">
-                                <span class="w-6 h-6 rounded-lg flex items-center justify-center text-[11px] font-black ${badgeClass}">
-                                    ${item.rank}
-                                </span>
-                                <div class="truncate">
-                                    <div class="font-bold text-white truncate">${item.name}</div>
-                                    <div class="text-[10px] text-slate-400">${item.class} • ${item.achievements_count} Prestasi</div>
-                                </div>
-                            </div>
-                            <div class="text-right shrink-0">
-                                <div class="text-base font-black text-yellow-400 font-mono">+${item.points} <span class="text-[10px] font-sans text-slate-400 font-normal">Poin</span></div>
-                                <div class="text-[9px] text-slate-400">${item.badge}</div>
-                            </div>
-                        </div>
-                    `;
-                }, 'Belum ada catatan prestasi yang diverifikasi.');
+                // 3. Update 7 KAIH Habits
+                if (d.habits) {
+                    const hbTot = document.getElementById('habitsCompletedToday');
+                    if (hbTot) hbTot.textContent = d.habits.completed_today;
+                }
 
-                // Update Ticker
+                // 4. Update Tahfidz Juz 30
+                if (d.tahfidz) {
+                    const thTot = document.getElementById('tahfidzTotalToday');
+                    const thPass = document.getElementById('tahfidzPassedToday');
+                    if (thTot) thTot.textContent = d.tahfidz.total_today;
+                    if (thPass) thPass.textContent = d.tahfidz.passed_today;
+                }
+
+                // 5. Update Security & Picket
+                if (d.security) {
+                    const outEl = document.getElementById('securityOutsideCount');
+                    const retEl = document.getElementById('securityReturnedCount');
+                    const elvEl = document.getElementById('securityEarlyLeavesCount');
+                    if (outEl) outEl.textContent = d.security.currently_outside;
+                    if (retEl) retEl.textContent = d.security.returned;
+                    if (elvEl) elvEl.textContent = d.security.early_leaves_count;
+                }
+
+                // 6. Update Ekstrakurikuler
+                if (d.extracurricular) {
+                    const exTot = document.getElementById('extraTotalToday');
+                    if (exTot) exTot.textContent = d.extracurricular.total_today;
+                }
+
+                // 7. Update Ticker Text
                 if (d.ticker) {
-                    document.getElementById('kioskTicker').textContent = d.ticker;
+                    const tickerEl = document.getElementById('kioskTicker');
+                    if (tickerEl) tickerEl.textContent = d.ticker;
                 }
 
-                // Update Last Refreshed
-                const n = new Date();
-                const timeStr = `${String(n.getHours()).padStart(2, '0')}:${String(n.getMinutes()).padStart(2, '0')}:${String(n.getSeconds()).padStart(2, '0')}`;
-                document.getElementById('lastUpdatedTime').textContent = timeStr;
-            } catch (err) {
-                console.error("Kiosk polling error:", err);
+            } catch (e) {
+                console.error("Kiosk background poller error:", e);
             }
         }
 
@@ -1091,29 +1222,29 @@
             const el = document.getElementById(id);
             if (!el) return;
             if (isOpen) {
-                el.className = 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-black bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 animate-pulse';
-                el.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-400"></span> SESI BUKA';
+                el.className = 'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 animate-pulse';
+                el.textContent = 'SESI BUKA';
             } else {
-                el.className = 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-black bg-slate-800 text-slate-400 border border-white/10';
-                el.innerHTML = '<span class="w-2 h-2 rounded-full bg-slate-500"></span> SESI TUTUP';
+                el.className = 'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black bg-slate-800 text-slate-400 border border-white/10';
+                el.textContent = 'SESI TUTUP';
             }
         }
 
-        function renderList(targetId, items, templateFn, emptyText) {
-            const container = document.getElementById(targetId);
-            if (!container) return;
+        function renderList(containerId, items, templateFn, emptyMsg) {
+            const el = document.getElementById(containerId);
+            if (!el) return;
             if (!items || items.length === 0) {
-                container.innerHTML = `<div class="text-center py-6 text-slate-500 text-xs italic">${emptyText}</div>`;
+                el.innerHTML = `<div class="h-full flex items-center justify-center text-slate-500 text-xs italic py-4">${emptyMsg}</div>`;
                 return;
             }
-            container.innerHTML = items.map(templateFn).join('');
+            el.innerHTML = items.map(templateFn).join('');
         }
 
-        // Auto poll every 15 seconds
+        // Auto Poll every 15s
         setInterval(fetchKioskData, 15000);
 
-        // Auto reload page entirely every 15 minutes to reflect application setting or layout changes
-        setTimeout(() => window.location.reload(), 15 * 60 * 1000);
+        // Run on load
+        document.addEventListener('DOMContentLoaded', initSlideDeck);
     </script>
 </body>
 </html>
