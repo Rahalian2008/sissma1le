@@ -1442,6 +1442,12 @@
                         </span>
                     </button>
                 </div>
+                <a href="{{ route('attendance.kiosk-satpam') }}" target="_blank"
+                    class="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 dark:bg-slate-700 dark:hover:bg-slate-600 text-white font-bold rounded-xl text-xs flex items-center gap-1.5 shadow-xs transition active:scale-95 cursor-pointer"
+                    title="Buka Kios Informasi Pos Satpam">
+                    <span>🛡️ Kios Satpam</span>
+                    <span class="text-xs">&nearr;</span>
+                </a>
                 <button type="button" onclick="openCurrentPermitCreateModal()"
                     class="px-3.5 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold rounded-xl text-xs flex items-center gap-1.5 shadow-xs transition active:scale-95 cursor-pointer">
                     <span id="label-permit-create-btn">+ Buat Ajuan Pulang Cepat</span>
@@ -1478,7 +1484,11 @@
                         @forelse($todayEarlyLeaves ?? [] as $el)
                             <tr class="hover:bg-slate-50/70 dark:hover:bg-slate-800/40 transition">
                                 <td class="py-3 px-3.5 whitespace-nowrap">
-                                    <div class="font-mono font-bold text-slate-900 dark:text-white">{{ $el->letter_number }}</div>
+                                    @if($el->status === 'APPROVED')
+                                        <div class="font-mono font-bold text-slate-900 dark:text-white">{{ $el->letter_number }}</div>
+                                    @else
+                                        <div class="font-mono text-slate-400 text-xs italic" title="Nomor surat resmi akan terbit setelah disetujui">-</div>
+                                    @endif
                                     <div class="text-[11px] text-slate-400">{{ $el->date ? $el->date->format('d/m/Y') : '-' }}</div>
                                 </td>
                                 <td class="py-3 px-3.5">
@@ -1546,6 +1556,16 @@
                                                 <span class="text-xs">&nearr;</span>
                                             </a>
                                         @endif
+
+                                        @if(($canManagePermits ?? false) || $el->created_by === Auth::id())
+                                            <form action="{{ route('attendance.early-leave.destroy', $el->id) }}" method="POST" class="inline m-0" onsubmit="return confirm('Yakin ingin menghapus ajuan pulang cepat untuk {{ addslashes($el->student?->name ?? 'siswa') }}?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="px-2.5 py-1.5 rounded-lg bg-rose-50 dark:bg-rose-950/60 hover:bg-rose-100 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800 font-bold text-[11px] transition cursor-pointer" title="Hapus Ajuan Pulang Cepat">
+                                                    <span>🗑️ Hapus</span>
+                                                </button>
+                                            </form>
+                                        @endif
                                     </div>
                                 </td>
                             </tr>
@@ -1595,7 +1615,11 @@
                         @forelse($todayExitPermits ?? [] as $sp)
                             <tr class="hover:bg-slate-50/70 dark:hover:bg-slate-800/40 transition">
                                 <td class="py-3 px-3.5 whitespace-nowrap">
-                                    <div class="font-mono font-bold text-slate-900 dark:text-white">{{ $sp->permit_number }}</div>
+                                    @if(in_array($sp->status, ['APPROVED', 'RETURNED']))
+                                        <div class="font-mono font-bold text-slate-900 dark:text-white">{{ $sp->permit_number }}</div>
+                                    @else
+                                        <div class="font-mono text-slate-400 text-xs italic" title="Nomor izin resmi akan terbit setelah disetujui">-</div>
+                                    @endif
                                     <div class="text-[11px] text-slate-400">{{ $sp->date ? $sp->date->format('d/m/Y') : '-' }}</div>
                                 </td>
                                 <td class="py-3 px-3.5">
@@ -1688,6 +1712,16 @@
                                                 <span>🖨️ Cetak Surat</span>
                                                 <span class="text-xs">&nearr;</span>
                                             </a>
+                                        @endif
+
+                                        @if(($canManagePermits ?? false) || $sp->created_by === Auth::id())
+                                            <form action="{{ route('attendance.school-pass.destroy', $sp->id) }}" method="POST" class="inline m-0" onsubmit="return confirm('Yakin ingin menghapus data perizinan keluar sekolah ini?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="px-2.5 py-1.5 rounded-lg bg-rose-50 dark:bg-rose-950/60 hover:bg-rose-100 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800 font-bold text-[11px] transition cursor-pointer" title="Hapus Izin Keluar Sekolah">
+                                                    <span>🗑️ Hapus</span>
+                                                </button>
+                                            </form>
                                         @endif
 
                                         @if($sp->status === 'APPROVED' && $sp->is_returning && !$sp->actual_back_time && ($canManagePermits ?? false))
@@ -1943,7 +1977,9 @@
                                     <span class="text-[10px] px-2 py-0.5 rounded bg-slate-200 dark:bg-slate-700 font-semibold text-slate-700 dark:text-slate-300">
                                         {{ $el->student?->schoolClass?->name ?? '-' }}
                                     </span>
-                                    <span class="text-[10px] font-mono text-slate-400">({{ $el->letter_number }})</span>
+                                    @if($el->status === 'APPROVED')
+                                        <span class="text-[10px] font-mono text-emerald-600 dark:text-emerald-400 font-bold">({{ $el->letter_number }})</span>
+                                    @endif
                                 </div>
                                 <div class="text-[11px] text-amber-700 dark:text-amber-400 font-bold flex items-center gap-1.5">
                                     <span>⏰ Pulang: {{ $el->leave_time }} WIB</span>
@@ -2001,6 +2037,16 @@
                                             <span>🖨️ Cetak Surat</span>
                                             <span class="text-xs">&nearr;</span>
                                         </a>
+                                    @endif
+
+                                    @if(($canManagePermits ?? false) || $el->created_by === Auth::id())
+                                        <form action="{{ route('attendance.early-leave.destroy', $el->id) }}" method="POST" class="inline m-0" onsubmit="return confirm('Yakin ingin menghapus ajuan pulang cepat untuk {{ addslashes($el->student?->name ?? 'siswa') }}?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="px-2 py-1 rounded-lg bg-rose-50 dark:bg-rose-950 hover:bg-rose-100 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800 font-bold text-[11px] transition cursor-pointer" title="Hapus">
+                                                <span>🗑️</span>
+                                            </button>
+                                        </form>
                                     @endif
                                 </div>
                             </div>
@@ -2463,7 +2509,9 @@
                                     <span class="font-bold text-slate-900 dark:text-white text-xs">
                                         {{ $sp->students->count() }} Siswa Diberi Izin
                                     </span>
-                                    <span class="text-[10px] font-mono text-slate-400">({{ $sp->permit_number }})</span>
+                                    @if(in_array($sp->status, ['APPROVED', 'RETURNED']))
+                                        <span class="text-[10px] font-mono text-teal-600 dark:text-teal-400 font-bold">({{ $sp->permit_number }})</span>
+                                    @endif
                                 </div>
                                 <div class="flex flex-wrap gap-1 max-w-sm">
                                     @foreach($sp->students as $st)
@@ -2533,6 +2581,16 @@
                                             <span>🖨️ Cetak Surat</span>
                                             <span class="text-xs">&nearr;</span>
                                         </a>
+                                    @endif
+
+                                    @if(($canManagePermits ?? false) || $sp->created_by === Auth::id())
+                                        <form action="{{ route('attendance.school-pass.destroy', $sp->id) }}" method="POST" class="inline m-0" onsubmit="return confirm('Yakin ingin menghapus izin keluar sekolah ini?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="px-2 py-1 rounded-lg bg-rose-50 dark:bg-rose-950 hover:bg-rose-100 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800 font-bold text-[11px] transition cursor-pointer" title="Hapus">
+                                                <span>🗑️</span>
+                                            </button>
+                                        </form>
                                     @endif
 
                                     @if($sp->status === 'APPROVED' && $sp->is_returning && !$sp->actual_back_time && ($canManagePermits ?? false))

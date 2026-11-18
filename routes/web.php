@@ -63,6 +63,10 @@ Route::get('/api/website/live-stats', [SchoolWebsiteController::class, 'liveStat
 Route::get('/kiosk', [KioskController::class, 'index'])->name('kiosk.index');
 Route::get('/kiosk/data', [KioskController::class, 'data'])->name('kiosk.data');
 
+// Kios Informasi Satpam (Monitoring Siswa Izin Pulang Cepat & Izin Keluar Sekolah Sementara)
+Route::get('/kiosk-satpam', [AttendanceController::class, 'kiosSatpam'])->name('attendance.kiosk-satpam');
+Route::post('/kiosk-satpam/return/{permit}', [AttendanceController::class, 'kiosSatpamReturnStudent'])->name('attendance.kiosk-satpam.return');
+
 // Portal Gateway SIS-SMA1LE Terpadu
 Route::get('/portal', [PublicPortalController::class, 'portalSelection'])->name('portal.select');
 
@@ -211,6 +215,9 @@ Route::middleware('auth')->group(function () {
             Route::delete('/{permit}', [SchoolExitPermitController::class, 'destroy'])->name('destroy');
             Route::get('/{permit}/print', [SchoolExitPermitController::class, 'printLetter'])->name('print');
         });
+
+        // Kios Pos Satpam Perizinan
+        Route::get('/kios-satpam', [AttendanceController::class, 'kiosSatpam'])->name('kios-satpam');
 
         // Fitur Jadwal Petugas Piket (Guru & TU Piket Harian)
         Route::prefix('picket-schedules')->name('picket-schedules.')->group(function () {

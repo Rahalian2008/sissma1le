@@ -456,7 +456,7 @@ class EarlyLeaveController extends Controller
             'is_early_leave' => true,
             'early_leave_time' => $earlyLeave->leave_time,
             'early_leave_reason' => "[Pulang Cepat Resmi: {$earlyLeave->reason_category}] {$earlyLeave->reason}",
-            'status' => in_array($attendance->status, ['HADIR', 'TERLAMBAT']) ? $attendance->status : 'HADIR',
+            'status' => in_array($attendance->status, ['HADIR', 'TERLAMBAT']) ? $attendance->status : 'PULANG_CEPAT',
             'requested_status' => 'PULANG_CEPAT',
             'time_out' => $attendance->time_out ?? $earlyLeave->leave_time,
             'out_method' => 'PULANG_CEPAT',

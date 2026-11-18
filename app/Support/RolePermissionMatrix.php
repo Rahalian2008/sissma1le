@@ -60,21 +60,21 @@ class RolePermissionMatrix
             'attendance' => [
                 'super_admin', 'admin', 'kepala_sekolah',
                 'wakasek_kesiswaan', 'kesiswaan', 'ta_kesiswaan',
-                'guru_piket', 'tu_piket', 'petugas_piket',
+                'guru_piket', 'tu_piket', 'petugas_piket', 'piket',
                 'wali_kelas', 'guru', 'staff', 'tu', 'siswa', 'orang_tua',
             ],
 
             'early_leave' => [
                 'super_admin', 'admin', 'kepala_sekolah',
                 'wakasek_kesiswaan', 'kesiswaan', 'ta_kesiswaan',
-                'guru_piket', 'tu_piket', 'petugas_piket',
+                'guru_piket', 'tu_piket', 'petugas_piket', 'piket',
                 'wali_kelas', 'guru', 'siswa', 'orang_tua',
             ],
 
             'school_pass' => [
                 'super_admin', 'admin', 'kepala_sekolah',
                 'wakasek_kesiswaan', 'kesiswaan', 'ta_kesiswaan',
-                'guru_piket', 'tu_piket', 'petugas_piket',
+                'guru_piket', 'tu_piket', 'petugas_piket', 'piket',
                 'wali_kelas', 'guru', 'siswa',
             ],
 

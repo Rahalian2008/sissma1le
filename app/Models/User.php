@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Support\RolePermissionMatrix;
+use Carbon\Carbon;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -12,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
 class User extends Authenticatable
@@ -101,6 +103,10 @@ class User extends Authenticatable
         // Check against raw attributes or parsed roles
         $userRoles = is_array($this->roles) ? $this->roles : (json_decode($this->roles ?? '[]', true) ?: []);
         if (in_array($role, $userRoles, true)) {
+            return true;
+        }
+
+        if (in_array($role, ['guru_piket', 'petugas_piket', 'piket'], true) && $this->isScheduledPicketToday()) {
             return true;
         }
 
@@ -239,6 +245,10 @@ class User extends Authenticatable
             }
         }
 
+        if ($this->isScheduledPicketToday() && ! in_array('guru_piket', $roles, true) && ! in_array('petugas_piket', $roles, true)) {
+            $roles[] = 'guru_piket';
+        }
+
         return ! empty($roles) ? array_values(array_unique(array_filter($roles, 'is_string'))) : ['user'];
     }
 
@@ -331,7 +341,51 @@ class User extends Authenticatable
 
     public function canManageSchoolPermits(): bool
     {
-        return $this->hasAnyRole(['admin', 'super_admin', 'guru', 'wali_kelas', 'kesiswaan', 'kepala_sekolah', 'staff', 'tu', 'guru_piket', 'tu_piket', 'petugas_piket', 'ta_kesiswaan', 'kepala_administrasi']);
+        return $this->hasAnyRole([
+            'admin', 'super_admin', 'guru', 'wali_kelas', 'kesiswaan', 'kepala_sekolah',
+            'staff', 'tu', 'guru_piket', 'tu_piket', 'petugas_piket', 'piket', 'ta_kesiswaan',
+            'kepala_administrasi', 'security', 'satpam',
+        ]) || $this->isScheduledPicketToday();
+    }
+
+    /**
+     * Cek apakah user sedang terjadwal piket hari ini berdasarkan jadwal piket sekolah
+     */
+    public function isScheduledPicketToday(): bool
+    {
+        $rawRoles = $this->attributes['roles'] ?? null;
+        $userRoles = is_array($rawRoles) ? $rawRoles : (json_decode($rawRoles ?? '[]', true) ?: []);
+        $directRoles = array_unique(array_filter([$this->role, ...$userRoles]));
+
+        if (! empty(array_intersect($directRoles, ['guru_piket', 'tu_piket', 'petugas_piket', 'piket']))) {
+            return true;
+        }
+
+        try {
+            if (! Schema::hasTable('picket_schedules')) {
+                return false;
+            }
+
+            $today = Carbon::now('Asia/Jakarta');
+            $dayName = PicketSchedule::indonesianDayName($today);
+
+            return PicketSchedule::active()
+                ->where('day_name', $dayName)
+                ->where(function ($q) {
+                    $q->where('user_id', $this->id);
+                    if ($this->teacher_id) {
+                        $q->orWhere('teacher_id', $this->teacher_id);
+                    }
+                    if ($this->relationLoaded('teacher') && $this->teacher) {
+                        $q->orWhere('teacher_id', $this->teacher->id);
+                    } elseif (method_exists($this, 'teacher') && $this->teacher()->exists()) {
+                        $q->orWhere('teacher_id', $this->teacher->id);
+                    }
+                })
+                ->exists();
+        } catch (\Throwable) {
+            return false;
+        }
     }
 
     /**
@@ -698,17 +752,17 @@ class User extends Authenticatable
 
     public function isGuruPiket(): bool
     {
-        return $this->hasAnyRole(['guru_piket', 'petugas_piket', 'admin', 'super_admin']);
+        return $this->hasAnyRole(['guru_piket', 'petugas_piket', 'piket', 'admin', 'super_admin']) || $this->isScheduledPicketToday();
     }
 
     public function isTuPiket(): bool
     {
-        return $this->hasAnyRole(['tu_piket', 'petugas_piket', 'admin', 'super_admin']);
+        return $this->hasAnyRole(['tu_piket', 'petugas_piket', 'piket', 'admin', 'super_admin']);
     }
 
     public function isPiket(): bool
     {
-        return $this->hasAnyRole(['guru_piket', 'tu_piket', 'petugas_piket', 'admin', 'super_admin']);
+        return $this->hasAnyRole(['guru_piket', 'tu_piket', 'petugas_piket', 'piket', 'admin', 'super_admin']) || $this->isScheduledPicketToday();
     }
 
     public function isKepalaAdministrasi(): bool

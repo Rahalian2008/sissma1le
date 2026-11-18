@@ -46,6 +46,12 @@
         </div>
 
         <div class="flex items-center gap-2.5 flex-wrap">
+            <a href="{{ route('attendance.kiosk-satpam') }}" target="_blank"
+                class="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-slate-900 hover:bg-slate-800 dark:bg-slate-700 dark:hover:bg-slate-600 text-white transition flex items-center gap-1.5 shadow-xs cursor-pointer"
+                title="Buka Kios Informasi Pos Satpam">
+                <span>🛡️ Kios Satpam</span>
+                <span class="text-xs">&nearr;</span>
+            </a>
             <button type="button" onclick="openRecapSchoolPassModal()"
                 class="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-700 transition flex items-center gap-2 shadow-xs cursor-pointer">
                 <span>🖨️ Cetak Rekapitulasi Laporan</span>
@@ -173,7 +179,11 @@
                                 {{ $permits->firstItem() + $index }}
                             </td>
                             <td class="py-3 px-4">
-                                <div class="font-mono font-bold text-slate-900 dark:text-white">{{ $permit->permit_number }}</div>
+                                @if(in_array($permit->status, ['APPROVED', 'RETURNED']))
+                                    <div class="font-mono font-bold text-slate-900 dark:text-white">{{ $permit->permit_number }}</div>
+                                @else
+                                    <div class="font-mono text-slate-400 text-xs italic" title="Nomor surat izin resmi akan terbit setelah disetujui">-</div>
+                                @endif
                                 <div class="text-[11px] text-slate-500 mt-0.5">
                                     {{ $permit->formatted_date }}
                                 </div>

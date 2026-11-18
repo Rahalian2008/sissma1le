@@ -60,12 +60,22 @@
                             </span>
                         </td>
                         <td class="py-3 px-4 text-right space-x-1 whitespace-nowrap">
-                            <a href="{{ route('bk.parent-call.print-letter', $c) }}" target="_blank" class="inline-flex items-center px-2 py-1 rounded-lg bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 font-bold hover:bg-amber-100 transition text-[11px]">
+                            <a href="{{ route('bk.parent-call.print-letter', $c) }}" target="_blank" class="inline-flex items-center px-2 py-1 rounded-lg bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 font-bold hover:bg-amber-100 transition text-[11px]" title="Cetak Surat Panggilan">
                                 Cetak Surat
                             </a>
-                            <a href="{{ route('bk.parent-call.show', $c) }}" class="inline-flex items-center px-2 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold hover:bg-slate-200 transition text-[11px]">
+                            <a href="{{ route('bk.parent-call.show', $c) }}" class="inline-flex items-center px-2 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold hover:bg-slate-200 transition text-[11px]" title="Lihat Berita Acara Musyawarah">
                                 Berita Acara
                             </a>
+                            <a href="{{ route('bk.parent-call.edit', $c) }}" class="inline-flex items-center px-2 py-1 rounded-lg bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 font-bold hover:bg-blue-100 transition text-[11px]" title="Edit Surat Panggilan">
+                                Edit
+                            </a>
+                            <form action="{{ route('bk.parent-call.destroy', $c) }}" method="POST" class="inline m-0" onsubmit="return confirm('Yakin ingin menghapus data surat pemanggilan orang tua untuk {{ addslashes($c->student?->name ?? 'siswa') }}?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="inline-flex items-center px-2 py-1 rounded-lg bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 font-bold hover:bg-rose-100 transition text-[11px] cursor-pointer" title="Hapus Data">
+                                    Hapus
+                                </button>
+                            </form>
                         </td>
                     </tr>
                     @empty

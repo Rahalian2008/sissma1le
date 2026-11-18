@@ -8,6 +8,7 @@ use App\Models\AchievementItem;
 use App\Models\Attendance;
 use App\Models\QuranTahfidzRecord;
 use App\Models\Student;
+use App\Models\Teacher;
 use App\Models\User;
 use App\Models\Violation;
 use App\Models\ViolationItem;

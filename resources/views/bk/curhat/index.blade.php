@@ -389,8 +389,8 @@
                             <svg id="attach-icon-plus" class="w-5 h-5 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
                         </button>
 
-                        <!-- Menu Pilihan Lampiran Popup WhatsApp Style -->
-                        <div id="attach-menu" class="hidden absolute bottom-14 left-0 w-56 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 p-2 space-y-1 z-50 animate-scale-up">
+                        <!-- Menu Pilihan Lampiran Popup WhatsApp Style (Muncul Ke Atas) -->
+                        <div id="attach-menu" class="hidden absolute left-0 w-56 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 p-2 space-y-1 z-50 origin-bottom-left animate-scale-up" style="bottom: calc(100% + 12px) !important; margin-bottom: 0 !important;">
                             <button type="button" onclick="selectAttachment('image/*')" class="w-full flex items-center gap-3 p-2 rounded-xl hover:bg-emerald-50 dark:hover:bg-slate-700/60 transition cursor-pointer text-left group">
                                 <span class="w-9 h-9 rounded-xl bg-blue-500/15 text-blue-500 flex items-center justify-center text-lg shrink-0 group-hover:scale-105 transition">📷</span>
                                 <div class="min-w-0">
@@ -1281,6 +1281,11 @@
 </script>
 
 <style>
+    #attach-menu {
+        bottom: calc(100% + 12px) !important;
+        left: 0 !important;
+        transform-origin: bottom left;
+    }
     @keyframes scaleUp {
         from { transform: scale(0.95); opacity: 0; }
         to { transform: scale(1); opacity: 1; }

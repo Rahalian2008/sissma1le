@@ -18,6 +18,7 @@ use App\Models\Student;
 use App\Models\Teacher;
 use App\Models\User;
 use App\Services\AttendanceService;
+use App\Services\AuditTrailService;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -1847,5 +1848,63 @@ class AttendanceController extends Controller
             ->groupBy('day_name');
 
         return view('attendance.picket_schedule.print', compact('school', 'weeklyPickets'));
+    }
+
+    /**
+     * Kios Informasi Pos Satpam - Monitoring Siswa Izin Pulang Cepat & Izin Keluar Sekolah (School Pass)
+     * Desain layar besar, kontras tinggi, auto-refresh 30 detik untuk kemudahan petugas keamanan sekolah (Satpam).
+     */
+    public function kiosSatpam(Request $request): View
+    {
+        $school = SchoolIdentity::current();
+        $today = Carbon::today('Asia/Jakarta');
+        $todayStr = $today->toDateString();
+
+        // 1. Data Izin Pulang Cepat Hari Ini yang Sudah Disetujui (APPROVED)
+        $earlyLeaves = Schema::hasTable('early_leave_requests')
+            ? EarlyLeaveRequest::with(['student.schoolClass', 'approver'])
+                ->whereDate('date', $todayStr)
+                ->where('status', 'APPROVED')
+                ->orderByDesc('leave_time')
+                ->get()
+            : collect();
+
+        // 2. Data Izin Keluar Lingkungan Sekolah (School Pass) Hari Ini yang Disetujui / Sudah Kembali
+        $exitPermits = Schema::hasTable('school_exit_permits')
+            ? SchoolExitPermit::with(['students.schoolClass', 'approver'])
+                ->whereDate('date', $todayStr)
+                ->whereIn('status', ['APPROVED', 'RETURNED'])
+                ->orderByDesc('out_time')
+                ->get()
+            : collect();
+
+        // Statistik Cepat untuk Kios Satpam
+        $stats = [
+            'total_approved_early_leaves' => $earlyLeaves->count(),
+            'total_approved_exit_permits' => $exitPermits->count(),
+            'students_currently_outside' => $exitPermits->where('status', 'APPROVED')->whereNull('actual_back_time')->sum(fn ($p) => $p->students->count()),
+            'students_returned' => $exitPermits->where('status', 'RETURNED')->sum(fn ($p) => $p->students->count()),
+        ];
+
+        return view('attendance.kios_satpam', compact('school', 'today', 'earlyLeaves', 'exitPermits', 'stats'));
+    }
+
+    /**
+     * Konfirmasi Siswa Kembali ke Lingkungan Sekolah Langsung dari Kios Satpam
+     */
+    public function kiosSatpamReturnStudent(Request $request, SchoolExitPermit $permit): RedirectResponse
+    {
+        $actualTime = $request->input('actual_back_time', Carbon::now('Asia/Jakarta')->format('H:i'));
+
+        $permit->update([
+            'status' => 'RETURNED',
+            'actual_back_time' => $actualTime,
+            'security_checked_in_at' => now(),
+            'approval_notes' => trim(($permit->approval_notes ? $permit->approval_notes."\n" : '')."[Satpam] Dikonfirmasi kembali ke sekolah pukul {$actualTime} WIB"),
+        ]);
+
+        AuditTrailService::log('update', 'school_exit_permit', "Petugas Satpam mengonfirmasi siswa izin No. {$permit->permit_number} telah kembali ke sekolah pukul {$actualTime} WIB");
+
+        return back()->with('success', "Konfirmasi berhasil! Rombongan siswa No. {$permit->permit_number} telah kembali ke sekolah pukul {$actualTime} WIB.");
     }
 }
