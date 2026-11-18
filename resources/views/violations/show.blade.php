@@ -38,7 +38,7 @@
             <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80 space-y-1.5">
                 <div class="text-slate-500 dark:text-slate-400 font-semibold">Pelapor & Verifikator:</div>
                 <div class="text-slate-700 dark:text-slate-300">Dicatat oleh: <strong>{{ $violation->reporter->name ?? 'Pendidik' }}</strong></div>
-                <div class="text-slate-700 dark:text-slate-300">Verifikator: <strong>{{ $violation->verifier->name ?? 'Menunggu Verifikasi' }}</strong></div>
+                <div class="text-slate-700 dark:text-slate-300">Verifikator: <strong>{{ $violation->verifier_display }}</strong></div>
             </div>
         </div>
 

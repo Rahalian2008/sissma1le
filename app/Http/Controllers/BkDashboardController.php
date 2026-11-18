@@ -24,53 +24,72 @@ class BkDashboardController extends Controller
     {
         $user = Auth::user();
         $activeRole = session('active_role') ?? $user?->active_role;
-        $allowedBkRoles = ['koordinator_bk', 'guru_bk', 'bk', 'kepala_sekolah', 'admin', 'super_admin'];
+        $allowedBkRoles = ['koordinator_bk', 'guru_bk', 'bk', 'kepala_sekolah', 'admin', 'super_admin', 'wali_kelas'];
 
         $canAccessBk = in_array($activeRole, $allowedBkRoles, true)
             || ($activeRole === 'all_roles' && $user?->hasAnyRole($allowedBkRoles))
             || ($user?->hasAnyRole(['super_admin', 'admin', 'kepala_sekolah']) && in_array($activeRole, array_merge($allowedBkRoles, ['all_roles']), true));
 
         if (! $canAccessBk) {
-            abort(403, 'Akses Bimbingan Konseling hanya diperbolehkan untuk Koordinator BK, Guru BK, Kepala Sekolah, dan Administrator.');
+            abort(403, 'Akses Bimbingan Konseling hanya diperbolehkan untuk Koordinator BK, Guru BK, Kepala Sekolah, Administrator, dan Wali Kelas.');
         }
 
+        $isHomeroomOnly = $user->hasRole('wali_kelas') && ! $user->hasAnyRole(['admin', 'super_admin', 'koordinator_bk', 'guru_bk', 'bk', 'kepala_sekolah']);
+        $homeroomClass = $isHomeroomOnly ? ($user->teacher?->homeroomClass ?? $user->getHomeroomClasses()->first()) : null;
+        $classId = $homeroomClass?->id;
+
         // 1. Metrik 4 Bidang Layanan POP-BK
-        $pribadiCount = BkCounselingSession::where('field_of_service', 'PRIBADI')->count();
-        $sosialCount = BkCounselingSession::where('field_of_service', 'SOSIAL')->count();
-        $belajarCount = BkCounselingSession::where('field_of_service', 'BELAJAR')->count();
-        $karierCount = BkCounselingSession::where('field_of_service', 'KARIER')->count();
-        $totalSessions = BkCounselingSession::count();
+        $pribadiCount = BkCounselingSession::where('field_of_service', 'PRIBADI')
+            ->when($isHomeroomOnly && $classId, fn ($q) => $q->whereHas('student', fn ($sq) => $sq->where('class_id', $classId)))
+            ->count();
+        $sosialCount = BkCounselingSession::where('field_of_service', 'SOSIAL')
+            ->when($isHomeroomOnly && $classId, fn ($q) => $q->whereHas('student', fn ($sq) => $sq->where('class_id', $classId)))
+            ->count();
+        $belajarCount = BkCounselingSession::where('field_of_service', 'BELAJAR')
+            ->when($isHomeroomOnly && $classId, fn ($q) => $q->whereHas('student', fn ($sq) => $sq->where('class_id', $classId)))
+            ->count();
+        $karierCount = BkCounselingSession::where('field_of_service', 'KARIER')
+            ->when($isHomeroomOnly && $classId, fn ($q) => $q->whereHas('student', fn ($sq) => $sq->where('class_id', $classId)))
+            ->count();
+        $totalSessions = BkCounselingSession::when($isHomeroomOnly && $classId, fn ($q) => $q->whereHas('student', fn ($sq) => $sq->where('class_id', $classId)))
+            ->count();
 
         // 2. Metrik Responsif & Pendukung
-        $activeSessionsCount = BkCounselingSession::whereIn('status', ['TERJADWAL', 'SEDANG_BERLANGSUNG'])->count();
-        $homeVisitsCount = BkHomeVisit::count();
-        $parentCallsCount = BkParentCall::count();
-        $totalPsychResults = BkPsychologicalTestResult::count();
-        $totalAkpd = BkAkpd::count();
-        $totalRpl = BkRpl::count();
-        $totalCaseConferences = BkCaseConference::count();
-        $totalReferrals = BkReferral::count();
+        $activeSessionsCount = BkCounselingSession::whereIn('status', ['TERJADWAL', 'SEDANG_BERLANGSUNG'])
+            ->when($isHomeroomOnly && $classId, fn ($q) => $q->whereHas('student', fn ($sq) => $sq->where('class_id', $classId)))
+            ->count();
+        $homeVisitsCount = BkHomeVisit::when($isHomeroomOnly && $classId, fn ($q) => $q->whereHas('student', fn ($sq) => $sq->where('class_id', $classId)))
+            ->count();
+        $parentCallsCount = BkParentCall::when($isHomeroomOnly && $classId, fn ($q) => $q->whereHas('student', fn ($sq) => $sq->where('class_id', $classId)))
+            ->count();
+        $totalPsychResults = BkPsychologicalTestResult::when($isHomeroomOnly && $classId, fn ($q) => $q->whereHas('student', fn ($sq) => $sq->where('class_id', $classId)))
+            ->count();
+        $totalAkpd = $isHomeroomOnly ? 0 : BkAkpd::count();
+        $totalRpl = $isHomeroomOnly ? 0 : BkRpl::count();
+        $totalCaseConferences = $isHomeroomOnly ? 0 : BkCaseConference::count();
+        $totalReferrals = $isHomeroomOnly ? 0 : BkReferral::count();
 
         // 3. Distribusi Gaya Belajar VAK
         $vakDistribution = [
-            'VISUAL' => BkPsychologicalTestResult::where('dominant_dimension', 'VISUAL')->count(),
-            'AUDITORI' => BkPsychologicalTestResult::where('dominant_dimension', 'AUDITORI')->count(),
-            'KINESTETIK' => BkPsychologicalTestResult::where('dominant_dimension', 'KINESTETIK')->count(),
+            'VISUAL' => BkPsychologicalTestResult::where('dominant_dimension', 'VISUAL')->when($isHomeroomOnly && $classId, fn ($q) => $q->whereHas('student', fn ($sq) => $sq->where('class_id', $classId)))->count(),
+            'AUDITORI' => BkPsychologicalTestResult::where('dominant_dimension', 'AUDITORI')->when($isHomeroomOnly && $classId, fn ($q) => $q->whereHas('student', fn ($sq) => $sq->where('class_id', $classId)))->count(),
+            'KINESTETIK' => BkPsychologicalTestResult::where('dominant_dimension', 'KINESTETIK')->when($isHomeroomOnly && $classId, fn ($q) => $q->whereHas('student', fn ($sq) => $sq->where('class_id', $classId)))->count(),
         ];
 
         // 4. Distribusi Minat Karier Holland RIASEC
         $riasecDistribution = [
-            'R' => BkPsychologicalTestResult::where('dominant_dimension', 'R')->count(),
-            'I' => BkPsychologicalTestResult::where('dominant_dimension', 'I')->count(),
-            'A' => BkPsychologicalTestResult::where('dominant_dimension', 'A')->count(),
-            'S' => BkPsychologicalTestResult::where('dominant_dimension', 'S')->count(),
-            'E' => BkPsychologicalTestResult::where('dominant_dimension', 'E')->count(),
-            'C' => BkPsychologicalTestResult::where('dominant_dimension', 'C')->count(),
+            'R' => BkPsychologicalTestResult::where('dominant_dimension', 'R')->when($isHomeroomOnly && $classId, fn ($q) => $q->whereHas('student', fn ($sq) => $sq->where('class_id', $classId)))->count(),
+            'I' => BkPsychologicalTestResult::where('dominant_dimension', 'I')->when($isHomeroomOnly && $classId, fn ($q) => $q->whereHas('student', fn ($sq) => $sq->where('class_id', $classId)))->count(),
+            'A' => BkPsychologicalTestResult::where('dominant_dimension', 'A')->when($isHomeroomOnly && $classId, fn ($q) => $q->whereHas('student', fn ($sq) => $sq->where('class_id', $classId)))->count(),
+            'S' => BkPsychologicalTestResult::where('dominant_dimension', 'S')->when($isHomeroomOnly && $classId, fn ($q) => $q->whereHas('student', fn ($sq) => $sq->where('class_id', $classId)))->count(),
+            'E' => BkPsychologicalTestResult::where('dominant_dimension', 'E')->when($isHomeroomOnly && $classId, fn ($q) => $q->whereHas('student', fn ($sq) => $sq->where('class_id', $classId)))->count(),
+            'C' => BkPsychologicalTestResult::where('dominant_dimension', 'C')->when($isHomeroomOnly && $classId, fn ($q) => $q->whereHas('student', fn ($sq) => $sq->where('class_id', $classId)))->count(),
         ];
 
         // 5. Siswa Prioritas Bimbingan (Siswa dengan akumulasi poin pelanggaran tinggi atau absensi bermasalah)
         $priorityStudents = Student::with(['schoolClass', 'violations'])
             ->where('is_active', true)
+            ->when($isHomeroomOnly && $classId, fn ($q) => $q->where('class_id', $classId))
             ->withCount(['violations as verified_violations_sum_points' => function ($query) {
                 $query->where('status', 'DIVERIFIKASI')->select(\DB::raw('COALESCE(SUM(points), 0)'));
             }])
@@ -80,17 +99,19 @@ class BkDashboardController extends Controller
 
         // 6. Sesi Konseling Terbaru
         $recentSessions = BkCounselingSession::with(['student.schoolClass', 'counselor'])
+            ->when($isHomeroomOnly && $classId, fn ($q) => $q->whereHas('student', fn ($sq) => $sq->where('class_id', $classId)))
             ->latest('date')
             ->take(6)
             ->get();
 
         // 7. Hasil Psikotes Terkini
         $recentPsychResults = BkPsychologicalTestResult::with(['student.schoolClass', 'test'])
+            ->when($isHomeroomOnly && $classId, fn ($q) => $q->whereHas('student', fn ($sq) => $sq->where('class_id', $classId)))
             ->latest('taken_at')
             ->take(6)
             ->get();
 
-        $classes = SchoolClass::orderBy('name')->get();
+        $classes = ($isHomeroomOnly && $classId) ? SchoolClass::where('id', $classId)->get() : SchoolClass::orderBy('name')->get();
 
         return view('bk.dashboard', compact(
             'pribadiCount',
@@ -121,6 +142,15 @@ class BkDashboardController extends Controller
      */
     public function studentProfile360(Student $student): View
     {
+        $user = Auth::user();
+        $isHomeroomOnly = $user && $user->hasRole('wali_kelas') && ! $user->hasAnyRole(['admin', 'super_admin', 'koordinator_bk', 'guru_bk', 'bk', 'kepala_sekolah']);
+        if ($isHomeroomOnly) {
+            $homeroomClass = $user->teacher?->homeroomClass ?? $user->getHomeroomClasses()->first();
+            if ($homeroomClass && $student->class_id !== $homeroomClass->id) {
+                abort(403, 'Akses terbatas untuk peserta didik di kelas binaan Anda.');
+            }
+        }
+
         $student->load([
             'schoolClass',
             'violations.category',

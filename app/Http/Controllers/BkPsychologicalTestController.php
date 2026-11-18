@@ -48,11 +48,16 @@ class BkPsychologicalTestController extends Controller
             $student = $user->student;
         }
 
+        $isHomeroomOnly = $user && $user->hasRole('wali_kelas') && ! $user->hasAnyRole(['admin', 'super_admin', 'koordinator_bk', 'guru_bk', 'bk', 'kepala_sekolah']);
+        $homeroomClass = $isHomeroomOnly ? ($user->teacher?->homeroomClass ?? $user->getHomeroomClasses()->first()) : null;
+
         $query = BkPsychologicalTestResult::with(['student.schoolClass', 'test'])
             ->latest('taken_at');
 
         if ($student) {
             $query->where('student_id', $student->id);
+        } elseif ($isHomeroomOnly && $homeroomClass) {
+            $query->whereHas('student', fn ($sq) => $sq->where('class_id', $homeroomClass->id));
         } elseif ($request->filled('class_id')) {
             $query->whereHas('student', fn ($sq) => $sq->where('class_id', $request->class_id));
         }
@@ -67,7 +72,7 @@ class BkPsychologicalTestController extends Controller
         }
 
         $results = $query->paginate(15)->withQueryString();
-        $classes = SchoolClass::orderBy('name')->get();
+        $classes = ($isHomeroomOnly && $homeroomClass) ? SchoolClass::where('id', $homeroomClass->id)->get() : SchoolClass::orderBy('name')->get();
 
         return view('bk.psychological.index', compact('tests', 'results', 'student', 'classes'));
     }
@@ -152,6 +157,15 @@ class BkPsychologicalTestController extends Controller
      */
     public function result(BkPsychologicalTestResult $result): View
     {
+        $user = Auth::user();
+        $isHomeroomOnly = $user && $user->hasRole('wali_kelas') && ! $user->hasAnyRole(['admin', 'super_admin', 'koordinator_bk', 'guru_bk', 'bk', 'kepala_sekolah']);
+        if ($isHomeroomOnly) {
+            $homeroomClass = $user->teacher?->homeroomClass ?? $user->getHomeroomClasses()->first();
+            if ($homeroomClass && $result->student && $result->student->class_id !== $homeroomClass->id) {
+                abort(403, 'Akses terbatas untuk hasil psikotes siswa kelas binaan Anda.');
+            }
+        }
+
         $result->load(['student.schoolClass', 'test']);
 
         // Jika belum ada analisis AI dan action plan, generate otomatis
@@ -216,6 +230,14 @@ class BkPsychologicalTestController extends Controller
             abort(403, 'Anda tidak berhak mengakses atau mencetak hasil asesmen siswa lain.');
         }
 
+        $isHomeroomOnly = $user && $user->hasRole('wali_kelas') && ! $user->hasAnyRole(['admin', 'super_admin', 'koordinator_bk', 'guru_bk', 'bk', 'kepala_sekolah']);
+        if ($isHomeroomOnly) {
+            $homeroomClass = $user->teacher?->homeroomClass ?? $user->getHomeroomClasses()->first();
+            if ($homeroomClass && $result->student && $result->student->class_id !== $homeroomClass->id) {
+                abort(403, 'Akses terbatas untuk hasil psikotes siswa kelas binaan Anda.');
+            }
+        }
+
         $result->load(['student.schoolClass', 'test']);
 
         if (empty($result->action_plan) || empty($result->scientific_sources)) {
@@ -254,9 +276,19 @@ class BkPsychologicalTestController extends Controller
      */
     public function classReport(Request $request): View
     {
-        $classes = SchoolClass::orderBy('name')->get();
-        $selectedClassId = $request->class_id ?: ($classes->first()?->id);
-        $selectedClass = SchoolClass::with('students')->find($selectedClassId);
+        $user = Auth::user();
+        $isHomeroomOnly = $user && $user->hasRole('wali_kelas') && ! $user->hasAnyRole(['admin', 'super_admin', 'koordinator_bk', 'guru_bk', 'bk', 'kepala_sekolah']);
+        $homeroomClass = $isHomeroomOnly ? ($user->teacher?->homeroomClass ?? $user->getHomeroomClasses()->first()) : null;
+
+        if ($isHomeroomOnly && $homeroomClass) {
+            $classes = SchoolClass::where('id', $homeroomClass->id)->get();
+            $selectedClassId = $homeroomClass->id;
+            $selectedClass = SchoolClass::with('students')->find($selectedClassId);
+        } else {
+            $classes = SchoolClass::orderBy('name')->get();
+            $selectedClassId = $request->class_id ?: ($classes->first()?->id);
+            $selectedClass = SchoolClass::with('students')->find($selectedClassId);
+        }
 
         $vakResults = collect();
         $riasecResults = collect();

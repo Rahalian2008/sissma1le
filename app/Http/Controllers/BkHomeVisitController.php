@@ -16,8 +16,18 @@ class BkHomeVisitController extends Controller
 {
     public function index(Request $request): View
     {
+        $user = Auth::user();
+        $isHomeroomOnly = $user && $user->hasRole('wali_kelas') && ! $user->hasAnyRole(['admin', 'super_admin', 'koordinator_bk', 'guru_bk', 'bk', 'kepala_sekolah']);
+
         $query = BkHomeVisit::with(['student.schoolClass', 'counselor', 'homeroom'])
             ->latest('visit_date');
+
+        if ($isHomeroomOnly) {
+            $homeroomClass = $user->teacher?->homeroomClass ?? $user->getHomeroomClasses()->first();
+            if ($homeroomClass) {
+                $query->whereHas('student', fn ($sq) => $sq->where('class_id', $homeroomClass->id));
+            }
+        }
 
         if ($request->filled('status')) {
             $query->where('status', $request->status);
@@ -80,6 +90,15 @@ class BkHomeVisitController extends Controller
 
     public function show(BkHomeVisit $visit): View
     {
+        $user = Auth::user();
+        $isHomeroomOnly = $user && $user->hasRole('wali_kelas') && ! $user->hasAnyRole(['admin', 'super_admin', 'koordinator_bk', 'guru_bk', 'bk', 'kepala_sekolah']);
+        if ($isHomeroomOnly) {
+            $homeroomClass = $user->teacher?->homeroomClass ?? $user->getHomeroomClasses()->first();
+            if ($homeroomClass && $visit->student && $visit->student->class_id !== $homeroomClass->id) {
+                abort(403, 'Akses terbatas untuk data home visit siswa kelas binaan Anda.');
+            }
+        }
+
         $visit->load(['student.schoolClass', 'counselor', 'homeroom']);
 
         return view('bk.home_visit.show', compact('visit'));

@@ -200,7 +200,7 @@ class BkCurhatController extends Controller
             'topic' => $request->topic,
             'category' => $request->category,
             'status' => 'OPEN',
-            'is_anonymous' => ! $isCounselor && (bool) $request->is_anonymous,
+            'is_anonymous' => false,
             'last_message_at' => now(),
             'last_message_preview' => $request->message ? Str::limit($request->message, 80) : '[Lampiran]',
             'unread_counselor_count' => $isCounselor ? 0 : 1,

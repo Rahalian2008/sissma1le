@@ -145,6 +145,7 @@ class RolePermissionMatrix
             'bk' => [
                 'super_admin', 'admin', 'kepala_sekolah',
                 'koordinator_bk', 'guru_bk', 'bk',
+                'wali_kelas', 'siswa',
             ],
 
             'library' => [

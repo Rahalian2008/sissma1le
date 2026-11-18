@@ -19,11 +19,15 @@ use Illuminate\Support\Str;
 class DisciplineAutomationService
 {
     /**
-     * Dapatkan ID pengguna dengan role 'admin' (bukan super_admin / administrator)
-     * untuk dijadikan verifikator pada otomasi tata tertib & prestasi.
+     * Dapatkan ID pengguna verifikator pada otomasi tata tertib & prestasi (Wakasek Kesiswaan / Admin).
      */
     public function getAdminVerifierId(): int
     {
+        $wakasekUser = Teacher::getWakasekKesiswaan()['user'] ?? null;
+        if ($wakasekUser) {
+            return $wakasekUser->id;
+        }
+
         $admin = User::where('role', 'admin')->where('role', '!=', 'super_admin')->first()
             ?? User::where('role', 'admin')->first()
             ?? User::whereJsonContains('roles', 'admin')->where('role', '!=', 'super_admin')->first()

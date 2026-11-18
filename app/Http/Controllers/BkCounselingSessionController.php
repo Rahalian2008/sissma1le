@@ -16,8 +16,18 @@ class BkCounselingSessionController extends Controller
 {
     public function index(Request $request): View
     {
+        $user = Auth::user();
+        $isHomeroomOnly = $user && $user->hasRole('wali_kelas') && ! $user->hasAnyRole(['admin', 'super_admin', 'koordinator_bk', 'guru_bk', 'bk', 'kepala_sekolah']);
+
         $query = BkCounselingSession::with(['student.schoolClass', 'counselor'])
             ->latest('date');
+
+        if ($isHomeroomOnly) {
+            $homeroomClass = $user->teacher?->homeroomClass ?? $user->getHomeroomClasses()->first();
+            if ($homeroomClass) {
+                $query->whereHas('student', fn ($sq) => $sq->where('class_id', $homeroomClass->id));
+            }
+        }
 
         if ($request->filled('field_of_service')) {
             $query->where('field_of_service', $request->field_of_service);
@@ -93,6 +103,15 @@ class BkCounselingSessionController extends Controller
 
     public function show(BkCounselingSession $session): View
     {
+        $user = Auth::user();
+        $isHomeroomOnly = $user && $user->hasRole('wali_kelas') && ! $user->hasAnyRole(['admin', 'super_admin', 'koordinator_bk', 'guru_bk', 'bk', 'kepala_sekolah']);
+        if ($isHomeroomOnly) {
+            $homeroomClass = $user->teacher?->homeroomClass ?? $user->getHomeroomClasses()->first();
+            if ($homeroomClass && $session->student && $session->student->class_id !== $homeroomClass->id) {
+                abort(403, 'Akses terbatas untuk catatan konseling siswa kelas binaan Anda.');
+            }
+        }
+
         $session->load(['student.schoolClass', 'counselor']);
 
         return view('bk.counseling.show', compact('session'));

@@ -6,6 +6,7 @@ use App\Models\AuditLog;
 use App\Models\Notification;
 use App\Models\SchoolClass;
 use App\Models\Student;
+use App\Models\Teacher;
 use App\Models\User;
 use App\Models\Violation;
 use App\Models\ViolationCategory;
@@ -178,7 +179,7 @@ class ViolationController extends Controller
             'evidence_path' => $evidencePath,
             'reporter_id' => $user->id,
             'status' => $initialStatus,
-            'verified_by' => ($initialStatus === 'DIVERIFIKASI') ? $user->id : null,
+            'verified_by' => ($initialStatus === 'DIVERIFIKASI') ? (Teacher::getWakasekKesiswaan()['user']?->id ?? $user->id) : null,
             'verified_at' => ($initialStatus === 'DIVERIFIKASI') ? now() : null,
         ]);
 
@@ -236,7 +237,7 @@ class ViolationController extends Controller
         $violation->update([
             'status' => $validated['status'],
             'rejection_reason' => $validated['rejection_reason'] ?? null,
-            'verified_by' => $user->id,
+            'verified_by' => ($validated['status'] === 'DIVERIFIKASI') ? (Teacher::getWakasekKesiswaan()['user']?->id ?? $user->id) : $user->id,
             'verified_at' => now(),
         ]);
 

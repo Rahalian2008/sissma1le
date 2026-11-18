@@ -449,147 +449,142 @@
 </div>
 
 <!-- ================= MODAL MULAI CURHAT BARU ================= -->
-<div id="modal-new-chat" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4">
-    <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 max-w-lg w-full p-5 sm:p-6 shadow-2xl relative animate-scale-up">
-        <button type="button" onclick="closeNewChatModal()" class="absolute top-4 right-4 p-1.5 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-        </button>
-
-        <div class="flex items-center gap-3 mb-4">
-            <div class="w-10 h-10 rounded-2xl bg-emerald-500/20 text-emerald-500 flex items-center justify-center text-xl shrink-0">
-                💌
+<div id="modal-new-chat" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
+    <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 max-w-xl w-full max-h-[92vh] flex flex-col shadow-2xl relative animate-scale-up overflow-hidden my-auto">
+        <!-- Header Modal (Fixed) -->
+        <div class="p-4 sm:p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between shrink-0 bg-slate-50/60 dark:bg-slate-900/60">
+            <div class="flex items-center gap-3 min-w-0">
+                <div class="w-10 h-10 rounded-2xl bg-emerald-500/20 text-emerald-500 flex items-center justify-center text-xl shrink-0">
+                    💌
+                </div>
+                <div class="min-w-0">
+                    <h3 class="text-sm sm:text-base font-black text-slate-900 dark:text-white truncate">Buka Sesi Curhat &amp; Konseling Baru</h3>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400 truncate">Pilih konselor dan topik yang ingin kamu ceritakan atau diskusikan.</p>
+                </div>
             </div>
-            <div>
-                <h3 class="text-sm sm:text-base font-black text-slate-900 dark:text-white">Buka Sesi Curhat &amp; Konseling Baru</h3>
-                <p class="text-[11px] text-slate-500 dark:text-slate-400">Pilih topik yang ingin kamu ceritakan atau diskusikan.</p>
-            </div>
+            <button type="button" onclick="closeNewChatModal()" class="p-1.5 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition shrink-0">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
         </div>
 
-        <form action="{{ route('bk.curhat.store') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
+        <form action="{{ route('bk.curhat.store') }}" method="POST" enctype="multipart/form-data" class="flex flex-col flex-1 min-h-0">
             @csrf
 
-            @if($isCounselor)
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Pilih Peserta Didik <span class="text-rose-500">*</span></label>
-                    <select name="student_id" required class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none focus:border-emerald-500">
-                        <option value="">-- Cari &amp; Pilih Siswa --</option>
-                        @foreach(\App\Models\Student::with('schoolClass')->where('is_active', true)->orderBy('name')->get() as $std)
-                            <option value="{{ $std->id }}">{{ $std->name }} ({{ $std->schoolClass?->name ?? 'Tanpa Rombel' }} - {{ $std->nisn }})</option>
-                        @endforeach
-                    </select>
-                </div>
-            @else
-                <!-- Pilihan Konselor / Guru BK Yang Dituju -->
-                <div>
-                    <div class="flex items-center justify-between mb-1.5">
-                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300">
-                            Pilih Guru BK / Konselor yang Dituju <span class="text-rose-500">*</span>
-                        </label>
-                        <span class="text-[10.5px] text-emerald-600 dark:text-emerald-400 font-semibold">Master Data Guru &amp; PTK</span>
+            <!-- Scrollable Form Body -->
+            <div class="p-4 sm:p-5 space-y-4 overflow-y-auto flex-1 scrollbar-thin">
+                @if($isCounselor)
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Pilih Peserta Didik <span class="text-rose-500">*</span></label>
+                        <select name="student_id" required class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none focus:border-emerald-500">
+                            <option value="">-- Cari &amp; Pilih Siswa --</option>
+                            @foreach(\App\Models\Student::with('schoolClass')->where('is_active', true)->orderBy('name')->get() as $std)
+                                <option value="{{ $std->id }}">{{ $std->name }} ({{ $std->schoolClass?->name ?? 'Tanpa Rombel' }} - {{ $std->nisn }})</option>
+                            @endforeach
+                        </select>
                     </div>
-                    
-                    <div class="space-y-1.5 max-h-52 overflow-y-auto pr-1">
-                        <!-- Pilihan 1: Semua Tim BK -->
-                        <label class="p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center justify-between cursor-pointer hover:border-emerald-500 transition has-checked:border-emerald-500 has-checked:bg-emerald-50/70 dark:has-checked:bg-emerald-950/40">
-                            <div class="flex items-center gap-2.5">
-                                <input type="radio" name="assigned_counselor_id" value="" checked class="rounded-full text-emerald-600 focus:ring-emerald-500">
-                                <div>
-                                    <div class="flex items-center gap-1.5">
-                                        <p class="text-xs font-bold text-slate-800 dark:text-white">🌟 Semua Tim BK</p>
-                                        <span class="px-1.5 py-0.2 rounded text-[8.5px] font-black bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">Fleksibel</span>
-                                    </div>
-                                    <p class="text-[10px] text-slate-500 dark:text-slate-400">Siapa saja yang aktif dapat langsung merespons dan mendampingi curhatmu.</p>
-                                </div>
-                            </div>
-                        </label>
-
-                        <!-- Pilihan Konselor dari Master Data Guru & PTK -->
-                        @foreach($bkCounselors as $counselor)
-                            <label class="p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center justify-between cursor-pointer hover:border-emerald-500 transition has-checked:border-emerald-500 has-checked:bg-emerald-50/70 dark:has-checked:bg-emerald-950/40">
-                                <div class="flex items-center gap-2.5">
-                                    <input type="radio" name="assigned_counselor_id" value="{{ $counselor['user_id'] }}" class="rounded-full text-emerald-600 focus:ring-emerald-500">
-                                    <div class="w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs">
-                                        {{ substr($counselor['name'], 0, 1) }}
-                                    </div>
-                                    <div>
+                @else
+                    <!-- Pilihan Konselor / Guru BK Yang Dituju -->
+                    <div>
+                        <div class="flex items-center justify-between mb-1.5">
+                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300">
+                                Pilih Guru BK / Konselor yang Dituju <span class="text-rose-500">*</span>
+                            </label>
+                            <span class="text-[10.5px] text-emerald-600 dark:text-emerald-400 font-semibold">Master Data Guru &amp; PTK</span>
+                        </div>
+                        
+                        <div class="space-y-2 max-h-56 overflow-y-auto pr-1">
+                            <!-- Pilihan 1: Semua Tim BK -->
+                            <label class="p-3 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center justify-between cursor-pointer hover:border-emerald-500 transition has-checked:border-emerald-500 has-checked:bg-emerald-50/70 dark:has-checked:bg-emerald-950/40">
+                                <div class="flex items-center gap-3 min-w-0">
+                                    <input type="radio" name="assigned_counselor_id" value="" checked class="rounded-full text-emerald-600 focus:ring-emerald-500 shrink-0">
+                                    <div class="min-w-0">
                                         <div class="flex items-center gap-1.5 flex-wrap">
-                                            <p class="text-xs font-bold text-slate-800 dark:text-white">{{ $counselor['name'] }}</p>
-                                            @if($counselor['is_coordinator'])
-                                                <span class="px-1.5 py-0.2 rounded text-[8.5px] font-black bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30">Koordinator BK</span>
-                                            @else
-                                                <span class="px-1.5 py-0.2 rounded text-[8.5px] font-bold bg-teal-500/20 text-teal-700 dark:text-teal-300 border border-teal-500/30">Guru BK</span>
-                                            @endif
+                                            <p class="text-xs font-black text-slate-800 dark:text-white">🌟 Semua Tim BK</p>
+                                            <span class="px-1.5 py-0.2 rounded text-[8.5px] font-black bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">Fleksibel</span>
                                         </div>
-                                        <p class="text-[10px] text-slate-500 dark:text-slate-400">NIP: {{ $counselor['nip'] ?: '-' }}</p>
+                                        <p class="text-[10.5px] text-slate-500 dark:text-slate-400 leading-snug mt-0.5">Siapa saja dari tim BK yang sedang aktif dapat langsung merespons dan mendampingi curhatmu.</p>
                                     </div>
                                 </div>
                             </label>
-                        @endforeach
+
+                            <!-- Pilihan Konselor dari Master Data Guru & PTK -->
+                            @foreach($bkCounselors as $counselor)
+                                <label class="p-3 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center justify-between cursor-pointer hover:border-emerald-500 transition has-checked:border-emerald-500 has-checked:bg-emerald-50/70 dark:has-checked:bg-emerald-950/40">
+                                    <div class="flex items-center gap-3 min-w-0">
+                                        <input type="radio" name="assigned_counselor_id" value="{{ $counselor['user_id'] }}" class="rounded-full text-emerald-600 focus:ring-emerald-500 shrink-0">
+                                        <div class="w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs">
+                                            {{ substr($counselor['name'], 0, 1) }}
+                                        </div>
+                                        <div class="min-w-0">
+                                            <div class="flex items-center gap-1.5 flex-wrap">
+                                                <p class="text-xs font-bold text-slate-800 dark:text-white truncate">{{ $counselor['name'] }}</p>
+                                                @if($counselor['is_coordinator'])
+                                                    <span class="px-1.5 py-0.2 rounded text-[8.5px] font-black bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30 shrink-0">Koordinator BK</span>
+                                                @else
+                                                    <span class="px-1.5 py-0.2 rounded text-[8.5px] font-bold bg-teal-500/20 text-teal-700 dark:text-teal-300 border border-teal-500/30 shrink-0">Guru BK</span>
+                                                @endif
+                                            </div>
+                                            <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">NIP: {{ $counselor['nip'] ?: '-' }}</p>
+                                        </div>
+                                    </div>
+                                </label>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+
+                <!-- Kategori / Bidang Bimbingan -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Kategori Bimbingan <span class="text-rose-500">*</span></label>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+                        <label class="p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 flex flex-col items-center gap-1 cursor-pointer hover:border-emerald-500 transition text-center has-checked:border-emerald-500 has-checked:bg-emerald-50 dark:has-checked:bg-emerald-950/40">
+                            <input type="radio" name="category" value="PRIBADI" checked class="hidden">
+                            <span class="text-base">🧠</span>
+                            <span class="text-[10px] font-bold text-slate-800 dark:text-slate-200">Pribadi</span>
+                        </label>
+                        <label class="p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 flex flex-col items-center gap-1 cursor-pointer hover:border-emerald-500 transition text-center has-checked:border-emerald-500 has-checked:bg-emerald-50 dark:has-checked:bg-emerald-950/40">
+                            <input type="radio" name="category" value="BELAJAR" class="hidden">
+                            <span class="text-base">📚</span>
+                            <span class="text-[10px] font-bold text-slate-800 dark:text-slate-200">Belajar</span>
+                        </label>
+                        <label class="p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 flex flex-col items-center gap-1 cursor-pointer hover:border-emerald-500 transition text-center has-checked:border-emerald-500 has-checked:bg-emerald-50 dark:has-checked:bg-emerald-950/40">
+                            <input type="radio" name="category" value="SOSIAL" class="hidden">
+                            <span class="text-base">👥</span>
+                            <span class="text-[10px] font-bold text-slate-800 dark:text-slate-200">Sosial</span>
+                        </label>
+                        <label class="p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 flex flex-col items-center gap-1 cursor-pointer hover:border-emerald-500 transition text-center has-checked:border-emerald-500 has-checked:bg-emerald-50 dark:has-checked:bg-emerald-950/40">
+                            <input type="radio" name="category" value="KARIER" class="hidden">
+                            <span class="text-base">🎓</span>
+                            <span class="text-[10px] font-bold text-slate-800 dark:text-slate-200">Karier</span>
+                        </label>
                     </div>
                 </div>
-            @endif
 
-            <!-- Kategori / Bidang Bimbingan -->
-            <div>
-                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Kategori Bimbingan <span class="text-rose-500">*</span></label>
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
-                    <label class="p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 flex flex-col items-center gap-1 cursor-pointer hover:border-emerald-500 transition text-center has-checked:border-emerald-500 has-checked:bg-emerald-50 dark:has-checked:bg-emerald-950/40">
-                        <input type="radio" name="category" value="PRIBADI" checked class="hidden">
-                        <span class="text-base">🧠</span>
-                        <span class="text-[10px] font-bold text-slate-800 dark:text-slate-200">Pribadi</span>
-                    </label>
-                    <label class="p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 flex flex-col items-center gap-1 cursor-pointer hover:border-emerald-500 transition text-center has-checked:border-emerald-500 has-checked:bg-emerald-50 dark:has-checked:bg-emerald-950/40">
-                        <input type="radio" name="category" value="BELAJAR" class="hidden">
-                        <span class="text-base">📚</span>
-                        <span class="text-[10px] font-bold text-slate-800 dark:text-slate-200">Belajar</span>
-                    </label>
-                    <label class="p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 flex flex-col items-center gap-1 cursor-pointer hover:border-emerald-500 transition text-center has-checked:border-emerald-500 has-checked:bg-emerald-50 dark:has-checked:bg-emerald-950/40">
-                        <input type="radio" name="category" value="SOSIAL" class="hidden">
-                        <span class="text-base">👥</span>
-                        <span class="text-[10px] font-bold text-slate-800 dark:text-slate-200">Sosial</span>
-                    </label>
-                    <label class="p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 flex flex-col items-center gap-1 cursor-pointer hover:border-emerald-500 transition text-center has-checked:border-emerald-500 has-checked:bg-emerald-50 dark:has-checked:bg-emerald-950/40">
-                        <input type="radio" name="category" value="KARIER" class="hidden">
-                        <span class="text-base">🎓</span>
-                        <span class="text-[10px] font-bold text-slate-800 dark:text-slate-200">Karier</span>
-                    </label>
+                <!-- Topik Singkat -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Judul / Pokok Topik Curhat <span class="text-rose-500">*</span></label>
+                    <input type="text" name="topic" required placeholder="Contoh: Bingung memilih jurusan kuliah, masalah pertemanan..." 
+                           class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none focus:border-emerald-500">
+                </div>
+
+                <!-- Pesan Pembuka -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Pesan Awal / Cerita <span class="text-rose-500">*</span></label>
+                    <textarea name="message" rows="3" required placeholder="Tuliskan apa yang sedang kamu rasakan atau alami..." 
+                              class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none focus:border-emerald-500 resize-none"></textarea>
+                </div>
+
+                <!-- Opsi Lampiran -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Lampirkan Foto/Dokumen/Audio (Opsional)</label>
+                    <input type="file" name="attachment" accept="image/*,video/*,audio/*,.mp3,.wav,.m4a,.aac,.ogg,.webm,.pdf,.doc,.docx" 
+                           class="w-full text-xs text-slate-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 dark:file:bg-slate-800 dark:file:text-emerald-400">
                 </div>
             </div>
 
-            <!-- Topik Singkat -->
-            <div>
-                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Judul / Pokok Topik Curhat <span class="text-rose-500">*</span></label>
-                <input type="text" name="topic" required placeholder="Contoh: Bingung memilih jurusan kuliah, masalah pertemanan..." 
-                       class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none focus:border-emerald-500">
-            </div>
-
-            <!-- Pesan Pembuka -->
-            <div>
-                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Pesan Awal / Cerita <span class="text-rose-500">*</span></label>
-                <textarea name="message" rows="3" required placeholder="Tuliskan apa yang sedang kamu rasakan atau alami..." 
-                          class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none focus:border-emerald-500 resize-none"></textarea>
-            </div>
-
-            <!-- Opsi Lampiran -->
-            <div>
-                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Lampirkan Foto/Dokumen/Audio (Opsional)</label>
-                <input type="file" name="attachment" accept="image/*,video/*,audio/*,.mp3,.wav,.m4a,.aac,.ogg,.webm,.pdf,.doc,.docx" 
-                       class="w-full text-xs text-slate-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 dark:file:bg-slate-800 dark:file:text-emerald-400">
-            </div>
-
-            @if(!$isCounselor)
-                <!-- Mode Anonim -->
-                <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 flex items-start gap-2.5">
-                    <input type="checkbox" name="is_anonymous" id="is_anonymous" value="1" class="mt-0.5 rounded text-emerald-600 focus:ring-emerald-500">
-                    <label for="is_anonymous" class="text-xs text-slate-700 dark:text-slate-300 select-none cursor-pointer">
-                        <strong class="text-slate-900 dark:text-white">Kirim sebagai Pesan Anonim (Rahasia)</strong><br>
-                        <span class="text-[11px] text-slate-500 dark:text-slate-400">Namamu tidak akan terpampang secara publik di ruang konsultasi demi kenyamananmu.</span>
-                    </label>
-                </div>
-            @endif
-
-            <div class="flex items-center justify-end gap-2 pt-2">
-                <button type="button" onclick="closeNewChatModal()" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+            <!-- Footer Modal (Fixed & Visible) -->
+            <div class="p-3.5 sm:p-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/90 flex items-center justify-end gap-2 shrink-0">
+                <button type="button" onclick="closeNewChatModal()" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800 transition">
                     Batal
                 </button>
                 <button type="submit" class="px-5 py-2.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/30 transition flex items-center gap-1.5 cursor-pointer">

@@ -15,10 +15,21 @@ class BkSociometryController extends Controller
 {
     public function index(): View
     {
-        $sociometries = BkSociometry::with(['schoolClass', 'counselor'])
+        $user = Auth::user();
+        $isHomeroomOnly = $user && $user->hasRole('wali_kelas') && ! $user->hasAnyRole(['admin', 'super_admin', 'koordinator_bk', 'guru_bk', 'bk', 'kepala_sekolah']);
+
+        $query = BkSociometry::with(['schoolClass', 'counselor'])
             ->withCount('responses')
-            ->latest('date')
-            ->paginate(15);
+            ->latest('date');
+
+        if ($isHomeroomOnly) {
+            $homeroomClass = $user->teacher?->homeroomClass ?? $user->getHomeroomClasses()->first();
+            if ($homeroomClass) {
+                $query->where('class_id', $homeroomClass->id);
+            }
+        }
+
+        $sociometries = $query->paginate(15);
 
         return view('bk.sociometry.index', compact('sociometries'));
     }
@@ -52,6 +63,15 @@ class BkSociometryController extends Controller
 
     public function show(BkSociometry $sociometry): View
     {
+        $user = Auth::user();
+        $isHomeroomOnly = $user && $user->hasRole('wali_kelas') && ! $user->hasAnyRole(['admin', 'super_admin', 'koordinator_bk', 'guru_bk', 'bk', 'kepala_sekolah']);
+        if ($isHomeroomOnly) {
+            $homeroomClass = $user->teacher?->homeroomClass ?? $user->getHomeroomClasses()->first();
+            if ($homeroomClass && $sociometry->class_id !== $homeroomClass->id) {
+                abort(403, 'Akses terbatas untuk sosiometri kelas binaan Anda.');
+            }
+        }
+
         $sociometry->load(['schoolClass.students', 'counselor', 'responses.student', 'responses.firstChoice', 'responses.secondChoice', 'responses.thirdChoice']);
 
         // Kalkulasi popularitas pilihan siswa di kelas

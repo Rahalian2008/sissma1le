@@ -38,7 +38,7 @@
             <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1.5">
                 <div class="text-slate-500 font-semibold">Pelapor & Verifikator:</div>
                 <div class="text-slate-700">Dicatat oleh: <strong>{{ $achievement->reporter->name ?? 'Sistem' }}</strong></div>
-                <div class="text-slate-700">Verifikator: <strong>{{ $achievement->verifier->name ?? 'Menunggu Verifikasi' }}</strong></div>
+                <div class="text-slate-700">Verifikator: <strong>{{ $achievement->verifier_display }}</strong></div>
             </div>
         </div>
 

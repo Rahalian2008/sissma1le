@@ -16,8 +16,18 @@ class BkParentCallController extends Controller
 {
     public function index(Request $request): View
     {
+        $user = Auth::user();
+        $isHomeroomOnly = $user && $user->hasRole('wali_kelas') && ! $user->hasAnyRole(['admin', 'super_admin', 'koordinator_bk', 'guru_bk', 'bk', 'kepala_sekolah']);
+
         $query = BkParentCall::with(['student.schoolClass', 'counselor'])
             ->latest('call_date');
+
+        if ($isHomeroomOnly) {
+            $homeroomClass = $user->teacher?->homeroomClass ?? $user->getHomeroomClasses()->first();
+            if ($homeroomClass) {
+                $query->whereHas('student', fn ($sq) => $sq->where('class_id', $homeroomClass->id));
+            }
+        }
 
         if ($request->filled('status')) {
             $query->where('status', $request->status);
@@ -87,6 +97,15 @@ class BkParentCallController extends Controller
 
     public function show(BkParentCall $parentCall): View
     {
+        $user = Auth::user();
+        $isHomeroomOnly = $user && $user->hasRole('wali_kelas') && ! $user->hasAnyRole(['admin', 'super_admin', 'koordinator_bk', 'guru_bk', 'bk', 'kepala_sekolah']);
+        if ($isHomeroomOnly) {
+            $homeroomClass = $user->teacher?->homeroomClass ?? $user->getHomeroomClasses()->first();
+            if ($homeroomClass && $parentCall->student && $parentCall->student->class_id !== $homeroomClass->id) {
+                abort(403, 'Akses terbatas untuk catatan panggilan orang tua siswa kelas binaan Anda.');
+            }
+        }
+
         $parentCall->load(['student.schoolClass', 'counselor']);
 
         return view('bk.parent_call.show', compact('parentCall'));
@@ -129,6 +148,15 @@ class BkParentCallController extends Controller
 
     public function printLetter(BkParentCall $parentCall): View
     {
+        $user = Auth::user();
+        $isHomeroomOnly = $user && $user->hasRole('wali_kelas') && ! $user->hasAnyRole(['admin', 'super_admin', 'koordinator_bk', 'guru_bk', 'bk', 'kepala_sekolah']);
+        if ($isHomeroomOnly) {
+            $homeroomClass = $user->teacher?->homeroomClass ?? $user->getHomeroomClasses()->first();
+            if ($homeroomClass && $parentCall->student && $parentCall->student->class_id !== $homeroomClass->id) {
+                abort(403, 'Akses terbatas untuk surat panggilan orang tua siswa kelas binaan Anda.');
+            }
+        }
+
         $parentCall->load(['student.schoolClass.homeroomTeacher', 'counselor']);
         $school = SchoolIdentity::first();
         $headmaster = Teacher::getHeadmaster();

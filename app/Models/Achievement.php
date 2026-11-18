@@ -72,4 +72,20 @@ class Achievement extends Model
     {
         return $this->status === 'DIVERIFIKASI';
     }
+
+    /**
+     * Dapatkan identitas resmi verifikator (Wakasek Kesiswaan)
+     */
+    public function getVerifierDisplayAttribute(): string
+    {
+        if (! $this->isVerified()) {
+            return 'Menunggu Verifikasi';
+        }
+
+        $wakasek = Teacher::getWakasekKesiswaan();
+        $name = $wakasek['name'] ?? ($this->verifier?->name ?? 'Winda Dwi Atyani, S.Pd., M.Pd.');
+        $nip = $wakasek['nip'] ?? ($this->verifier?->nip ?? '197911162008012007');
+
+        return "{$name} (Wakasek Kesiswaan • NIP. {$nip})";
+    }
 }

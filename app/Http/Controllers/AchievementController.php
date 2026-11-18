@@ -8,6 +8,7 @@ use App\Models\AuditLog;
 use App\Models\Notification;
 use App\Models\SchoolClass;
 use App\Models\Student;
+use App\Models\Teacher;
 use App\Models\User;
 use App\Services\CsvImportService;
 use Carbon\Carbon;
@@ -175,7 +176,7 @@ class AchievementController extends Controller
             'certificate_path' => $certificatePath,
             'reporter_id' => $user->id,
             'status' => $initialStatus,
-            'verified_by' => ($initialStatus === 'DIVERIFIKASI') ? $user->id : null,
+            'verified_by' => ($initialStatus === 'DIVERIFIKASI') ? (Teacher::getWakasekKesiswaan()['user']?->id ?? $user->id) : null,
             'verified_at' => ($initialStatus === 'DIVERIFIKASI') ? now() : null,
         ]);
 
@@ -238,7 +239,7 @@ class AchievementController extends Controller
         $achievement->update([
             'status' => $validated['status'],
             'rejection_reason' => $validated['rejection_reason'] ?? null,
-            'verified_by' => $user->id,
+            'verified_by' => ($validated['status'] === 'DIVERIFIKASI') ? (Teacher::getWakasekKesiswaan()['user']?->id ?? $user->id) : $user->id,
             'verified_at' => now(),
         ]);
 

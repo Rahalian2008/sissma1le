@@ -346,12 +346,6 @@
                         </a>
                         @endif
 
-                        <!-- Al-Qur'an Digital 30 Juz & Terjemahan (Tampil di Semua Akun/Role Termasuk Siswa) -->
-                        <a href="{{ route('quran.index') }}" data-tooltip="Al-Qur'an Digital 30 Juz" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium leading-snug transition {{ request()->routeIs('quran.*') ? 'bg-emerald-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
-                            <span class="text-sm shrink-0">📖</span>
-                            <span class="sidebar-label font-bold text-emerald-400">Al-Qur'an Digital</span>
-                        </a>
-
                         <!-- 7 KAIH -->
                         @if($canNav('habits'))
                         <a href="{{ route('habits.journal') }}" data-tooltip="7 KAIH" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium leading-snug transition {{ (request()->routeIs('habits.*') || request()->routeIs('ai.*')) ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
@@ -438,7 +432,7 @@
 
                 <!-- 5. Bimbingan Konseling (BK) -->
                 @if($canNav('bk'))
-                <a href="{{ route('bk.dashboard') }}" data-tooltip="Bimbingan Konseling" class="flex items-center justify-between px-3 py-2.5 rounded-xl text-[13.5px] font-semibold leading-snug transition {{ request()->routeIs('bk.*') ? 'bg-teal-600 text-white shadow-xs shadow-teal-600/30' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                <a href="{{ $isStudentUser ? route('bk.curhat.index') : route('bk.dashboard') }}" data-tooltip="Bimbingan Konseling" class="flex items-center justify-between px-3 py-2.5 rounded-xl text-[13.5px] font-semibold leading-snug transition {{ request()->routeIs('bk.*') ? 'bg-teal-600 text-white shadow-xs shadow-teal-600/30' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
                     <div class="flex items-center gap-2.5 min-w-0">
                         <svg class="w-4.5 h-4.5 shrink-0 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
@@ -448,19 +442,6 @@
                     @if(in_array($currentActiveSlug, ['koordinator_bk', 'guru_bk', 'bk']))
                         <span class="sidebar-label px-1.5 py-0.5 text-[9px] font-extrabold rounded-md bg-teal-500/25 text-teal-300 border border-teal-500/30">Aktif</span>
                     @endif
-                </a>
-                @endif
-
-                @if($isStudentUser)
-                <!-- Ruang Curhat Guru BK (Siswa) -->
-                <a href="{{ route('bk.curhat.index') }}" data-tooltip="Curhat Guru BK" class="flex items-center justify-between px-3 py-2.5 rounded-xl text-[13.5px] font-semibold leading-snug transition {{ request()->routeIs('bk.curhat.*') ? 'bg-emerald-600 text-white shadow-xs shadow-emerald-600/30' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
-                    <div class="flex items-center gap-2.5 min-w-0">
-                        <svg class="w-4.5 h-4.5 shrink-0 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-                        </svg>
-                        <span class="sidebar-label font-bold">Curhat Guru BK</span>
-                    </div>
-                    <span class="sidebar-label px-1.5 py-0.5 text-[9px] font-extrabold rounded-md bg-emerald-500/25 text-emerald-300 border border-emerald-500/30">Online</span>
                 </a>
                 @endif
 
@@ -627,6 +608,13 @@
                         class="inline-flex items-center gap-1.5 px-2 sm:px-2.5 py-1 text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700/80 transition text-xs font-bold active:scale-95 shrink-0">
                         <span class="text-sm">🌐</span>
                         <span class="hidden md:inline">Website Sekolah</span>
+                    </a>
+
+                    {{-- Al-Qur'an Digital Link (Mushaf 30 Juz & Terjemahan) --}}
+                    <a href="{{ route('quran.index') }}" aria-label="Al-Qur'an Digital 30 Juz" title="Mushaf Al-Qur'an Digital 30 Juz & Terjemahan"
+                        class="inline-flex items-center gap-1.5 px-2 sm:px-2.5 py-1 text-emerald-700 dark:text-emerald-300 hover:text-emerald-600 dark:hover:text-emerald-400 bg-emerald-50/70 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 rounded-xl border border-emerald-300/80 dark:border-emerald-800 transition text-xs font-bold active:scale-95 shrink-0">
+                        <span class="text-sm">📖</span>
+                        <span class="hidden md:inline">Al-Qur'an Digital</span>
                     </a>
 
                     @if($canSeeKiosk)
@@ -1105,12 +1093,6 @@
                     </a>
                     @endif
 
-                    <!-- Al-Qur'an Digital 30 Juz & Terjemahan (Tampil di Semua Akun/Role Termasuk Siswa) -->
-                    <a href="{{ route('quran.index') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium leading-snug transition {{ request()->routeIs('quran.*') ? 'bg-emerald-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
-                        <span class="text-sm shrink-0">📖</span>
-                        <span class="font-bold text-emerald-400">Al-Qur'an Digital 30 Juz</span>
-                    </a>
-
                     @if($canNav('habits'))
                     <!-- 7 KAIH -->
                     <a href="{{ route('habits.journal') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium leading-snug transition {{ (request()->routeIs('habits.*') || request()->routeIs('ai.*')) ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
@@ -1197,7 +1179,7 @@
 
             <!-- 5. Bimbingan Konseling (BK) Mobile -->
             @if($canNav('bk'))
-            <a href="{{ route('bk.dashboard') }}" class="flex items-center justify-between px-3 py-2.5 rounded-xl text-[13.5px] font-semibold leading-snug transition {{ request()->routeIs('bk.*') ? 'bg-teal-600 text-white shadow-xs shadow-teal-600/30' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+            <a href="{{ $isStudentUser ? route('bk.curhat.index') : route('bk.dashboard') }}" class="flex items-center justify-between px-3 py-2.5 rounded-xl text-[13.5px] font-semibold leading-snug transition {{ request()->routeIs('bk.*') ? 'bg-teal-600 text-white shadow-xs shadow-teal-600/30' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
                 <div class="flex items-center gap-2.5 min-w-0">
                     <svg class="w-4.5 h-4.5 shrink-0 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
@@ -1207,19 +1189,6 @@
                 @if(in_array($currentActiveSlug, ['koordinator_bk', 'guru_bk', 'bk']))
                     <span class="px-1.5 py-0.5 text-[9px] font-extrabold rounded-md bg-teal-500/25 text-teal-300 border border-teal-500/30">Aktif</span>
                 @endif
-            </a>
-            @endif
-
-            @if($isStudentUser)
-            <!-- Ruang Curhat Guru BK Mobile (Siswa) -->
-            <a href="{{ route('bk.curhat.index') }}" class="flex items-center justify-between px-3 py-2.5 rounded-xl text-[13.5px] font-semibold leading-snug transition {{ request()->routeIs('bk.curhat.*') ? 'bg-emerald-600 text-white shadow-xs shadow-emerald-600/30' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
-                <div class="flex items-center gap-2.5 min-w-0">
-                    <svg class="w-4.5 h-4.5 shrink-0 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-                    </svg>
-                    <span class="font-bold">Curhat Guru BK</span>
-                </div>
-                <span class="px-1.5 py-0.5 text-[9px] font-extrabold rounded-md bg-emerald-500/25 text-emerald-300 border border-emerald-500/30">Online</span>
             </a>
             @endif
 
