@@ -239,3 +239,105 @@ test('student can choose a specific counselor and send voice note audio recordin
     $pageResponse->assertStatus(200);
     $pageResponse->assertSee('Ida Marttin Maolidah SE, SP.,M.Pd.');
 });
+
+test('only guru bk and koordinator bk can delete resolved curhat chat and it is deleted for student as well', function () {
+    Storage::fake('public');
+
+    $rand = Str::lower(Str::random(6));
+
+    $studentUser = User::create([
+        'name' => 'Siswa Delete Test',
+        'email' => "siswa_del_{$rand}@sman1lengkong.sch.id",
+        'username' => "nisn_del_{$rand}",
+        'nip' => null,
+        'role' => 'siswa',
+        'roles' => ['siswa'],
+        'password' => bcrypt('password'),
+    ]);
+
+    $class = SchoolClass::first() ?? SchoolClass::create([
+        'name' => 'X-Merdeka-1',
+        'grade' => 'X',
+        'major' => 'Umum',
+    ]);
+
+    $student = Student::create([
+        'user_id' => $studentUser->id,
+        'nis' => '76'.rand(1000, 9999),
+        'nisn' => "nisn_del_{$rand}",
+        'name' => 'Siswa Delete Test',
+        'class_id' => $class->id,
+        'gender' => 'P',
+        'is_active' => true,
+    ]);
+
+    $counselorUser = User::create([
+        'name' => 'Guru BK Tester',
+        'email' => "gurubk_{$rand}@sman1lengkong.sch.id",
+        'username' => "nip_bk_{$rand}",
+        'nip' => '199001012020012001',
+        'role' => 'guru_bk',
+        'roles' => ['guru_bk'],
+        'password' => bcrypt('password'),
+    ]);
+
+    // Buat konsultasi dengan status OPEN
+    $consultation = BkConsultation::create([
+        'consultation_code' => 'BK-TEST-'.rand(1000, 9999),
+        'student_id' => $student->id,
+        'user_id' => $studentUser->id,
+        'assigned_counselor_id' => $counselorUser->id,
+        'topic' => 'Sesi Konsultasi yang Akan Dihapus',
+        'category' => 'BELAJAR',
+        'status' => 'OPEN',
+        'is_anonymous' => false,
+        'last_message_at' => now(),
+    ]);
+
+    // Lampirkan pesan dan file
+    $file = UploadedFile::fake()->create('dokumen_curhat.pdf', 100, 'application/pdf');
+    $filePath = $file->store("bk/curhat/{$consultation->id}", 'public');
+
+    $consultation->messages()->create([
+        'sender_id' => $studentUser->id,
+        'sender_role' => 'STUDENT',
+        'message' => 'Ini dokumen keluhan belajar saya.',
+        'attachment_type' => 'DOCUMENT',
+        'attachment_path' => $filePath,
+        'attachment_name' => 'dokumen_curhat.pdf',
+        'attachment_mime' => 'application/pdf',
+        'attachment_size' => 102400,
+    ]);
+
+    Storage::disk('public')->assertExists($filePath);
+
+    // 1. Siswa mencoba menghapus -> 403 Forbidden
+    $respStudent = $this->actingAs($studentUser)->delete(route('bk.curhat.destroy', $consultation));
+    $respStudent->assertStatus(403);
+    expect(BkConsultation::find($consultation->id))->not->toBeNull();
+
+    // 2. Guru BK mencoba menghapus saat status masih OPEN -> ditolak (redirect with error)
+    $respBkNotResolved = $this->actingAs($counselorUser)->delete(route('bk.curhat.destroy', $consultation));
+    $respBkNotResolved->assertSessionHas('error');
+    expect(BkConsultation::find($consultation->id))->not->toBeNull();
+
+    // 3. Ubah status menjadi RESOLVED (Selesai)
+    $consultation->update(['status' => 'RESOLVED']);
+
+    // 4. Guru BK menghapus percakapan yang sudah berstatus RESOLVED
+    $respBkDelete = $this->actingAs($counselorUser)->delete(route('bk.curhat.destroy', $consultation));
+    $respBkDelete->assertRedirect(route('bk.curhat.index'));
+    $respBkDelete->assertSessionHas('success');
+
+    // 5. Verifikasi terhapus permanen dari database
+    expect(BkConsultation::find($consultation->id))->toBeNull();
+    expect($consultation->messages()->count())->toBe(0);
+
+    // 6. Verifikasi berkas lampiran di storage juga terhapus
+    Storage::disk('public')->assertMissing($filePath);
+
+    // 7. Verifikasi di akun siswa, chat sudah hilang dan tidak muncul lagi
+    $respStudentCheck = $this->actingAs($studentUser)->get(route('bk.curhat.index'));
+    $respStudentCheck->assertStatus(200);
+    $respStudentCheck->assertDontSee('Sesi Konsultasi yang Akan Dihapus');
+});

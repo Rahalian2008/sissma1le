@@ -307,6 +307,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/curhat/{consultation}/message', [BkCurhatController::class, 'sendMessage'])->name('curhat.message');
         Route::get('/curhat/{consultation}/messages', [BkCurhatController::class, 'fetchMessages'])->name('curhat.fetch-messages');
         Route::post('/curhat/{consultation}/resolve', [BkCurhatController::class, 'resolve'])->name('curhat.resolve');
+        Route::delete('/curhat/{consultation}', [BkCurhatController::class, 'destroy'])->name('curhat.destroy');
 
         // Fitur Lengkap / Operasional Manajemen BK (Admin BK: Koordinator BK, Kepala Sekolah, Wakasek Kesiswaan, Guru BK, serta Super Admin/Admin)
         Route::middleware('role:super_admin,admin,koordinator_bk,kepala_sekolah,wakasek_kesiswaan,guru_bk,bk')->group(function () {

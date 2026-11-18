@@ -12,6 +12,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 
@@ -71,6 +72,7 @@ class BkCurhatController extends Controller
                 'bkCoordinator' => $bkCoordinator,
                 'bkCounselors' => $bkCounselors,
                 'isCounselor' => false,
+                'canDeleteChat' => $this->canDeleteConsultation($user),
             ]);
         }
 
@@ -138,6 +140,7 @@ class BkCurhatController extends Controller
             'bkCounselors' => $bkCounselors,
             'unreadTotal' => $unreadTotal,
             'isCounselor' => true,
+            'canDeleteChat' => $this->canDeleteConsultation($user),
         ]);
     }
 
@@ -395,6 +398,58 @@ class BkCurhatController extends Controller
     }
 
     /**
+     * Hapus percakapan curhat secara permanen.
+     * Hanya dapat dilakukan oleh Koordinator BK dan Guru BK (atau Admin),
+     * dan hanya jika status percakapan sudah SELESAI (RESOLVED / CLOSED).
+     * Jika dihapus, maka seluruh rekaman pesan, audio, dan berkas di server
+     * maupun di tampilan akun siswa ikut terhapus permanen.
+     */
+    public function destroy(Request $request, BkConsultation $consultation): RedirectResponse|JsonResponse
+    {
+        /** @var User $user */
+        $user = Auth::user();
+
+        // 1. Validasi hak akses: hanya Koordinator BK dan Guru BK (serta Admin)
+        if (! $this->canDeleteConsultation($user)) {
+            abort(403, 'Akses ditolak: Penghapusan percakapan curhat hanya berhak dilakukan oleh Koordinator BK dan Guru BK.');
+        }
+
+        // 2. Validasi status: hanya percakapan yang berstatus selesai yang boleh dihapus
+        $isFinished = in_array(strtoupper((string) $consultation->status), ['RESOLVED', 'CLOSED', 'SELESAI'], true);
+        if (! $isFinished) {
+            return back()->with('error', 'Sesi curhat belum dapat dihapus. Sesi percakapan harus ditandai selesai terlebih dahulu.');
+        }
+
+        $code = $consultation->consultation_code;
+
+        // 3. Hapus seluruh berkas lampiran dan rekaman audio dari penyimpanan publik
+        try {
+            foreach ($consultation->messages as $msg) {
+                if ($msg->attachment_path && Storage::disk('public')->exists($msg->attachment_path)) {
+                    Storage::disk('public')->delete($msg->attachment_path);
+                }
+            }
+            Storage::disk('public')->deleteDirectory('bk/curhat/'.$consultation->id);
+        } catch (\Throwable $e) {
+            // Lanjutkan jika folder penyimpanan kosong atau tidak ditemukan
+        }
+
+        // 4. Hapus seluruh rekaman pesan dan sesi konsultasi dari database
+        $consultation->messages()->delete();
+        $consultation->delete();
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => "Percakapan curhat [{$code}] berhasil dihapus permanen.",
+            ]);
+        }
+
+        return redirect()->route('bk.curhat.index')
+            ->with('success', "Percakapan curhat [{$code}] berhasil dihapus permanen dari server dan akun siswa.");
+    }
+
+    /**
      * Helper penyimpanan file lampiran dan pesan
      */
     private function saveMessage(BkConsultation $consultation, User $user, string $senderRole, ?string $messageText, $attachmentFile): BkConsultationMessage
@@ -451,5 +506,22 @@ class BkCurhatController extends Controller
         return $user->hasAnyRole(['super_admin', 'admin', 'koordinator_bk', 'guru_bk', 'bk', 'kepala_sekolah'])
             || in_array($user->role, ['super_admin', 'admin', 'koordinator_bk', 'guru_bk', 'bk', 'kepala_sekolah'], true)
             || ! $user->isStudent();
+    }
+
+    /**
+     * Cek hak otorisasi penghapusan percakapan curhat.
+     * Khusus untuk Koordinator BK dan Guru BK (serta Administrator sistem).
+     */
+    private function canDeleteConsultation(?User $user): bool
+    {
+        if (! $user) {
+            return false;
+        }
+
+        $allowedRoles = ['koordinator_bk', 'guru_bk', 'bk', 'admin', 'super_admin'];
+
+        return $user->hasAnyRole($allowedRoles)
+            || in_array($user->role, $allowedRoles, true)
+            || in_array(session('active_role'), $allowedRoles, true);
     }
 }

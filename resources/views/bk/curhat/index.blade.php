@@ -119,12 +119,23 @@
                                 </span>
                             </div>
 
-                            <div class="flex items-center gap-1.5 mt-0.5">
-                                <span class="px-1.5 py-0.2 text-[9px] font-extrabold rounded bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300 truncate max-w-[120px]">
-                                    {{ $conv->topic }}
-                                </span>
-                                @if($conv->status === 'RESOLVED')
-                                    <span class="px-1 py-0.2 text-[8.5px] font-bold rounded bg-slate-200 text-slate-600 dark:bg-slate-800 dark:text-slate-400">Selesai</span>
+                            <div class="flex items-center justify-between gap-1.5 mt-0.5">
+                                <div class="flex items-center gap-1.5 min-w-0">
+                                    <span class="px-1.5 py-0.2 text-[9px] font-extrabold rounded bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300 truncate max-w-[120px]">
+                                        {{ $conv->topic }}
+                                    </span>
+                                    @if(in_array($conv->status, ['RESOLVED', 'CLOSED', 'SELESAI']))
+                                        <span class="px-1 py-0.2 text-[8.5px] font-bold rounded bg-slate-200 text-slate-600 dark:bg-slate-800 dark:text-slate-400">Selesai</span>
+                                    @endif
+                                </div>
+                                @if(($canDeleteChat ?? false) && in_array($conv->status, ['RESOLVED', 'CLOSED', 'SELESAI']))
+                                    <form action="{{ route('bk.curhat.destroy', $conv) }}" method="POST" onsubmit="event.stopPropagation(); return confirm('Peringatan: Hapus percakapan selesai ini secara permanen dari server dan akun siswa?')" onclick="event.stopPropagation();" class="shrink-0">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="p-1 rounded-md text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/50 transition cursor-pointer" title="Hapus chat selesai ini">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                        </button>
+                                    </form>
                                 @endif
                             </div>
 
@@ -214,6 +225,16 @@
                             <span class="px-2.5 py-1 rounded-xl text-[10px] font-black bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
                                 Sesi Telah Ditutup
                             </span>
+                            @if($canDeleteChat ?? false)
+                                <form action="{{ route('bk.curhat.destroy', $activeConsultation) }}" method="POST" onsubmit="return confirm('Peringatan: Menghapus percakapan ini akan menghapus seluruh rekaman pesan, audio, dan file secara permanen dari server dan akun siswa. Apakah Anda yakin ingin menghapus?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="px-2.5 py-1.5 rounded-xl text-[11px] font-bold bg-rose-600 hover:bg-rose-500 text-white transition flex items-center gap-1.5 shadow-xs cursor-pointer" title="Hapus Percakapan Permanen">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                        <span>Hapus Chat</span>
+                                    </button>
+                                </form>
+                            @endif
                         @endif
                     </div>
                 </div>
@@ -795,6 +816,12 @@
                 const response = await fetch(url, {
                     headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
                 });
+
+                if (response.status === 404) {
+                    clearInterval(pollInterval);
+                    window.location.href = "{{ route('bk.curhat.index') }}";
+                    return;
+                }
 
                 if (response.ok) {
                     const data = await response.json();
