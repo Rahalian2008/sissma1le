@@ -10,6 +10,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BkAkpdController;
 use App\Http\Controllers\BkCaseConferenceController;
 use App\Http\Controllers\BkCounselingSessionController;
+use App\Http\Controllers\BkCurhatController;
 use App\Http\Controllers\BkDashboardController;
 use App\Http\Controllers\BkHomeVisitController;
 use App\Http\Controllers\BkParentCallController;
@@ -299,6 +300,13 @@ Route::middleware('auth')->group(function () {
         Route::get('/case-conference/{caseConference}', [BkCaseConferenceController::class, 'show'])->name('case-conference.show');
         Route::get('/referral', [BkReferralController::class, 'index'])->name('referral.index');
         Route::get('/referral/{referral}', [BkReferralController::class, 'show'])->name('referral.show');
+
+        // Ruang Curhat & Konseling Online Siswa (Interaktif Chat Gaya WhatsApp)
+        Route::get('/curhat', [BkCurhatController::class, 'index'])->name('curhat.index');
+        Route::post('/curhat', [BkCurhatController::class, 'store'])->name('curhat.store');
+        Route::post('/curhat/{consultation}/message', [BkCurhatController::class, 'sendMessage'])->name('curhat.message');
+        Route::get('/curhat/{consultation}/messages', [BkCurhatController::class, 'fetchMessages'])->name('curhat.fetch-messages');
+        Route::post('/curhat/{consultation}/resolve', [BkCurhatController::class, 'resolve'])->name('curhat.resolve');
 
         // Fitur Lengkap / Operasional Manajemen BK (Admin BK: Koordinator BK, Kepala Sekolah, Wakasek Kesiswaan, Guru BK, serta Super Admin/Admin)
         Route::middleware('role:super_admin,admin,koordinator_bk,kepala_sekolah,wakasek_kesiswaan,guru_bk,bk')->group(function () {

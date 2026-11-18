@@ -386,6 +386,20 @@
                 </div>
             </a>
 
+            <!-- Ruang Curhat & Konseling BK (Online Chat WhatsApp Style) -->
+            <a href="{{ route('bk.curhat.index') }}" class="group p-3 sm:p-3.5 rounded-xl sm:rounded-2xl border transition duration-200 flex flex-col justify-between overflow-hidden bg-gradient-to-br from-emerald-500/10 via-teal-500/5 to-slate-50 dark:from-emerald-950/40 dark:via-teal-950/20 dark:to-slate-800/60 border-emerald-300/80 dark:border-emerald-800/80 hover:border-emerald-400 hover:shadow-xs">
+                <div class="flex items-start justify-between gap-1 mb-2">
+                    <span class="text-xl">💬</span>
+                    <span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+                        ONLINE BK
+                    </span>
+                </div>
+                <div>
+                    <h4 class="font-bold text-xs text-emerald-900 dark:text-emerald-200 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 truncate">Curhat Guru BK</h4>
+                    <p class="text-[10px] text-slate-500 dark:text-slate-400 truncate">Konsultasi Pribadi &amp; Studi</p>
+                </div>
+            </a>
+
             <!-- 10. Tata Tertib & Prestasi Siswa -->
             <a href="{{ route('violations.index') }}" class="group p-3 sm:p-3.5 rounded-xl sm:rounded-2xl border transition duration-200 flex flex-col justify-between overflow-hidden bg-slate-50 dark:bg-slate-800/60 border-slate-200/80 dark:border-slate-700 hover:border-amber-400 hover:shadow-xs">
                 <div class="flex items-start justify-between gap-1 mb-2">

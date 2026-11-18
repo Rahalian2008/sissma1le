@@ -7,6 +7,13 @@
             <span>Dashboard BK</span>
         </a>
 
+        <!-- 2. Ruang Curhat & Konseling Online (Chat Interaktif) -->
+        <a href="{{ route('bk.curhat.index') }}" 
+           class="px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition flex items-center gap-2 {{ request()->routeIs('bk.curhat.*') ? 'bg-emerald-600 text-white shadow-xs shadow-emerald-600/30' : 'text-emerald-700 dark:text-emerald-400 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-slate-800 font-extrabold' }}">
+            <span>💬</span>
+            <span>Ruang Curhat BK</span>
+        </a>
+
         <!-- 2. AKPD Diagnostik -->
         <a href="{{ route('bk.akpd.index') }}" 
            class="px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition flex items-center gap-2 {{ request()->routeIs('bk.akpd.*') ? 'bg-teal-600 text-white shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:text-teal-600 hover:bg-slate-100 dark:hover:bg-slate-800' }}">

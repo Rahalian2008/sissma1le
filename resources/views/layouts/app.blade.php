@@ -451,6 +451,19 @@
                 </a>
                 @endif
 
+                @if($isStudentUser)
+                <!-- Ruang Curhat Guru BK (Siswa) -->
+                <a href="{{ route('bk.curhat.index') }}" data-tooltip="Curhat Guru BK" class="flex items-center justify-between px-3 py-2.5 rounded-xl text-[13.5px] font-semibold leading-snug transition {{ request()->routeIs('bk.curhat.*') ? 'bg-emerald-600 text-white shadow-xs shadow-emerald-600/30' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                    <div class="flex items-center gap-2.5 min-w-0">
+                        <svg class="w-4.5 h-4.5 shrink-0 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                        </svg>
+                        <span class="sidebar-label font-bold">Curhat Guru BK</span>
+                    </div>
+                    <span class="sidebar-label px-1.5 py-0.5 text-[9px] font-extrabold rounded-md bg-emerald-500/25 text-emerald-300 border border-emerald-500/30">Online</span>
+                </a>
+                @endif
+
                 <!-- 6. Perpustakaan -->
                 @if($canNav('library'))
                 <a href="{{ route('library.index') }}" data-tooltip="Perpustakaan" class="flex items-center justify-between px-3 py-2.5 rounded-xl text-[13.5px] font-semibold leading-snug transition {{ request()->routeIs('library.*') ? 'bg-indigo-600 text-white shadow-xs shadow-indigo-600/30' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
@@ -1194,6 +1207,19 @@
                 @if(in_array($currentActiveSlug, ['koordinator_bk', 'guru_bk', 'bk']))
                     <span class="px-1.5 py-0.5 text-[9px] font-extrabold rounded-md bg-teal-500/25 text-teal-300 border border-teal-500/30">Aktif</span>
                 @endif
+            </a>
+            @endif
+
+            @if($isStudentUser)
+            <!-- Ruang Curhat Guru BK Mobile (Siswa) -->
+            <a href="{{ route('bk.curhat.index') }}" class="flex items-center justify-between px-3 py-2.5 rounded-xl text-[13.5px] font-semibold leading-snug transition {{ request()->routeIs('bk.curhat.*') ? 'bg-emerald-600 text-white shadow-xs shadow-emerald-600/30' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                <div class="flex items-center gap-2.5 min-w-0">
+                    <svg class="w-4.5 h-4.5 shrink-0 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                    </svg>
+                    <span class="font-bold">Curhat Guru BK</span>
+                </div>
+                <span class="px-1.5 py-0.5 text-[9px] font-extrabold rounded-md bg-emerald-500/25 text-emerald-300 border border-emerald-500/30">Online</span>
             </a>
             @endif
 
