@@ -27,8 +27,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Set default Carbon locale to Indonesian
+        // Set default Carbon locale to Indonesian & enforce Asia/Jakarta timezone
         Carbon::setLocale('id');
+        date_default_timezone_set(config('app.timezone', 'Asia/Jakarta'));
 
         // Standardize string length for MySQL utf8mb4 indexes on shared hostings (Hostinger)
         Schema::defaultStringLength(191);

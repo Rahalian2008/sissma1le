@@ -175,6 +175,9 @@
                                 @elseif($timeValidation['session_phase'] === 'PULANG') SESI PULANG SEKOLAH ({{ $schedule['out_start'] }} - {{ $schedule['out_end'] }} WIB)
                                 @else SESI AKTIF @endif
                             </strong>. Siswa dapat memindai kartu RFID / QR Code atau mengambil foto selfie kamera langsung.
+                            <span class="block text-[11px] text-slate-500 dark:text-slate-400 mt-1">
+                                💡 <em>Panduan Sesi:</em> Sistem presensi berpindah otomatis berdasarkan jam sekolah real-time (Pagi: 05:45 - 11:00 WIB untuk Masuk/Hadir, Sore: 15:00 - 21:30 WIB untuk Pulang). Jika ingin merekam <strong>Sesi Masuk (Hadir)</strong> di sore hari atau saat simulasi, pilih <strong>"🟢 Sesi Masuk (Hadir)"</strong> pada Terminal Gerbang/Selfie atau centang <strong>Simulasi / Bypass Waktu (Admin)</strong>.
+                            </span>
                         @else
                             @if(!empty($timeValidation['is_holiday']))
                                 <strong>Hari ini sekolah libur ({{ $timeValidation['holiday_name'] ?? 'Libur Nasional' }}).</strong> Presensi otomatis ditutup.
@@ -348,6 +351,30 @@
                                 </div>
                             </div>
 
+                            <!-- Pilihan Target Sesi Presensi Terminal Gerbang -->
+                            <div class="space-y-1.5">
+                                <div class="flex items-center justify-between">
+                                    <label class="block text-[11px] font-bold text-slate-300 uppercase tracking-wider">
+                                        Target Sesi Presensi Terminal Gerbang:
+                                    </label>
+                                    <span class="text-[10px] text-slate-400">Pilih jika ingin memaksakan sesi tertentu</span>
+                                </div>
+                                <div class="grid grid-cols-3 gap-2">
+                                    <button type="button" onclick="setAttendanceSession('auto')" id="btn-session-auto" class="session-btn p-2 rounded-xl border text-center transition border-emerald-500 bg-emerald-950/60 text-white font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer">
+                                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                                        <span>⚡ Otomatis (Jam)</span>
+                                    </button>
+                                    <button type="button" onclick="setAttendanceSession('checkin')" id="btn-session-checkin" class="session-btn p-2 rounded-xl border text-center transition border-slate-700 bg-slate-900/60 text-slate-400 font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer">
+                                        <span class="w-2 h-2 rounded-full bg-blue-400"></span>
+                                        <span>🟢 Sesi Masuk (Hadir)</span>
+                                    </button>
+                                    <button type="button" onclick="setAttendanceSession('checkout')" id="btn-session-checkout" class="session-btn p-2 rounded-xl border text-center transition border-slate-700 bg-slate-900/60 text-slate-400 font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer">
+                                        <span class="w-2 h-2 rounded-full bg-purple-400"></span>
+                                        <span>🟣 Sesi Pulang</span>
+                                    </button>
+                                </div>
+                            </div>
+
                             <!-- Pilihan Gerbang Metode Terminal Sekolah -->
                             <div class="space-y-1.5">
                                 <label class="block text-[11px] font-bold text-slate-300 uppercase tracking-wider">
@@ -485,6 +512,30 @@
                     </p>
                     <div id="selfie-gps-status" class="text-[10px] text-slate-500 font-mono">
                         GPS: Menunggu koordinat perangkat...
+                    </div>
+                </div>
+
+                <!-- Pilihan Target Sesi Presensi Selfie -->
+                <div class="space-y-1.5">
+                    <div class="flex items-center justify-between">
+                        <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                            Target Sesi Presensi Selfie:
+                        </label>
+                        <span class="text-[10px] text-slate-400">Pilih sesi yang diinginkan</span>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button type="button" onclick="setAttendanceSession('auto')" id="btn-selfie-session-auto" class="selfie-session-btn session-btn p-2 rounded-xl border text-center transition border-emerald-500 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-200 font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                            <span>⚡ Otomatis</span>
+                        </button>
+                        <button type="button" onclick="setAttendanceSession('checkin')" id="btn-selfie-session-checkin" class="selfie-session-btn session-btn p-2 rounded-xl border text-center transition border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer">
+                            <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                            <span>🟢 Masuk (Hadir)</span>
+                        </button>
+                        <button type="button" onclick="setAttendanceSession('checkout')" id="btn-selfie-session-checkout" class="selfie-session-btn session-btn p-2 rounded-xl border text-center transition border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer">
+                            <span class="w-2 h-2 rounded-full bg-purple-500"></span>
+                            <span>🟣 Pulang</span>
+                        </button>
                     </div>
                 </div>
 
@@ -2651,6 +2702,49 @@
         updateSelectedStudentsCounter();
     }
 
+    // Target Sesi Presensi Controller (Otomatis / Datang / Pulang)
+    let currentAttendanceSession = 'auto';
+
+    function setAttendanceSession(session) {
+        currentAttendanceSession = session;
+
+        // Terminal Gerbang Buttons
+        const btnAuto = document.getElementById('btn-session-auto');
+        const btnCheckin = document.getElementById('btn-session-checkin');
+        const btnCheckout = document.getElementById('btn-session-checkout');
+
+        [btnAuto, btnCheckin, btnCheckout].forEach(btn => {
+            if (!btn) return;
+            btn.className = 'session-btn p-2 rounded-xl border text-center transition border-slate-700 bg-slate-900/60 text-slate-400 font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer';
+        });
+
+        if (session === 'auto' && btnAuto) {
+            btnAuto.className = 'session-btn p-2 rounded-xl border text-center transition border-emerald-500 bg-emerald-950/60 text-white font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer';
+        } else if (session === 'checkin' && btnCheckin) {
+            btnCheckin.className = 'session-btn p-2 rounded-xl border text-center transition border-blue-500 bg-blue-950/60 text-white font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer';
+        } else if (session === 'checkout' && btnCheckout) {
+            btnCheckout.className = 'session-btn p-2 rounded-xl border text-center transition border-purple-500 bg-purple-950/60 text-white font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer';
+        }
+
+        // Selfie Buttons Sync
+        const selfieAuto = document.getElementById('btn-selfie-session-auto');
+        const selfieCheckin = document.getElementById('btn-selfie-session-checkin');
+        const selfieCheckout = document.getElementById('btn-selfie-session-checkout');
+
+        [selfieAuto, selfieCheckin, selfieCheckout].forEach(btn => {
+            if (!btn) return;
+            btn.className = 'selfie-session-btn session-btn p-2 rounded-xl border text-center transition border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer';
+        });
+
+        if (session === 'auto' && selfieAuto) {
+            selfieAuto.className = 'selfie-session-btn session-btn p-2 rounded-xl border text-center transition border-emerald-500 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-200 font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer';
+        } else if (session === 'checkin' && selfieCheckin) {
+            selfieCheckin.className = 'selfie-session-btn session-btn p-2 rounded-xl border text-center transition border-blue-500 bg-blue-50 dark:bg-blue-950/60 text-blue-800 dark:text-blue-200 font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer';
+        } else if (session === 'checkout' && selfieCheckout) {
+            selfieCheckout.className = 'selfie-session-btn session-btn p-2 rounded-xl border text-center transition border-purple-500 bg-purple-50 dark:bg-purple-950/60 text-purple-800 dark:text-purple-200 font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer';
+        }
+    }
+
     // Scanner Gate Controller (Barcode, RFID, Face Recognition)
     let currentScannerGate = '{{ $enableBarcode ? 'barcode' : ($enableRfid ? 'rfid' : ($enableFaceRecognition ? 'face' : 'barcode')) }}';
 
@@ -2714,7 +2808,8 @@
         let targetUrl = "{{ route('attendance.barcode.scan') }}";
         let bodyPayload = {
             device_code: deviceCode,
-            bypass_time: isBypass
+            bypass_time: isBypass,
+            session_type: currentAttendanceSession !== 'auto' ? currentAttendanceSession : null
         };
 
         if (currentScannerGate === 'rfid') {
@@ -2858,7 +2953,8 @@
                     selfie_image: dataUrl,
                     latitude: userLat,
                     longitude: userLng,
-                    bypass_time: bypassToggle && bypassToggle.checked
+                    bypass_time: bypassToggle && bypassToggle.checked,
+                    session_type: currentAttendanceSession !== 'auto' ? currentAttendanceSession : null
                 })
             });
 

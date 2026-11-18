@@ -274,20 +274,20 @@
                                 </td>
                                 <td class="py-3.5 px-4 text-center">
                                     <div class="inline-flex items-center gap-1.5">
-                                        <a href="{{ route('bk.psychological.result', $res) }}" class="p-1.5 rounded-lg bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 hover:bg-teal-100 transition" title="Lihat Laporan & RTL AI Lengkap">
+                                        <a href="{{ \Illuminate\Support\Facades\Route::has('bk.psychological.result') ? route('bk.psychological.result', $res) : url('/bk/psikotes/hasil/' . $res->id) }}" class="p-1.5 rounded-lg bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 hover:bg-teal-100 transition" title="Lihat Laporan & RTL AI Lengkap">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                         </a>
-                                        <a href="{{ route('bk.psychological.print', $res) }}" target="_blank" class="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 transition" title="Cetak Surat Laporan Resmi">
+                                        <a href="{{ \Illuminate\Support\Facades\Route::has('bk.psychological.print') ? route('bk.psychological.print', $res) : url('/bk/psikotes/hasil/' . $res->id . '/print') }}" target="_blank" class="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 transition" title="Cetak Surat Laporan Resmi">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
                                         </a>
                                         @if(auth()->user()->isCounselor() || auth()->user()->hasRole('admin') || auth()->user()->hasRole('super_admin'))
-                                            <form action="{{ route('bk.psychological.generate-ai', $res) }}" method="POST" class="inline">
+                                            <form action="{{ \Illuminate\Support\Facades\Route::has('bk.psychological.generate-ai') ? route('bk.psychological.generate-ai', $res) : url('/bk/psikotes/hasil/' . $res->id . '/ai-analysis') }}" method="POST" class="inline">
                                                 @csrf
                                                 <button type="submit" class="p-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 transition cursor-pointer" title="Generate Ulang Analisis AI">
                                                     <span class="text-xs font-bold leading-none">⚡</span>
                                                 </button>
                                             </form>
-                                            <form action="{{ route('bk.psychological.destroy', $res) }}" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data hasil asesmen {{ addslashes($res->student->name ?? 'siswa ini') }}? Data yang dihapus tidak dapat dipulihkan.');">
+                                            <form action="{{ \Illuminate\Support\Facades\Route::has('bk.psychological.destroy') ? route('bk.psychological.destroy', $res) : url('/bk/psikotes/hasil/' . $res->id) }}" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data hasil asesmen {{ addslashes($res->student->name ?? 'siswa ini') }}? Data yang dihapus tidak dapat dipulihkan.');">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="p-1.5 rounded-lg bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900/60 transition cursor-pointer" title="Hapus Data Asesmen">

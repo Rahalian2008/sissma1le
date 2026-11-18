@@ -241,24 +241,34 @@
                     Anda telah melakukan presensi masuk dan pulang untuk hari ini.
                 </p>
             @elseif($currentSession === 'checkout')
-                <button type="button" id="btn-capture" onclick="takeSelfie('checkout')" disabled
-                    class="w-full max-w-xs xs:max-w-sm sm:max-w-md px-4 sm:px-10 py-3 sm:py-4 bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-black rounded-xl sm:rounded-2xl shadow-xl shadow-sky-600/25 text-xs sm:text-base tracking-wide transition transform active:scale-95 flex items-center justify-center gap-2 sm:gap-3 cursor-pointer">
-                    <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-                    </svg>
-                    <span>AMBIL SELFIE & PRESENSI PULANG</span>
-                </button>
+                <div class="w-full flex flex-col items-center gap-2">
+                    <button type="button" id="btn-capture" onclick="takeSelfie('checkout')" disabled
+                        class="w-full max-w-xs xs:max-w-sm sm:max-w-md px-4 sm:px-10 py-3 sm:py-4 bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-black rounded-xl sm:rounded-2xl shadow-xl shadow-sky-600/25 text-xs sm:text-base tracking-wide transition transform active:scale-95 flex items-center justify-center gap-2 sm:gap-3 cursor-pointer">
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                        </svg>
+                        <span>AMBIL SELFIE & PRESENSI PULANG</span>
+                    </button>
+                    <button type="button" onclick="takeSelfie('checkin')" class="text-xs text-indigo-500 dark:text-indigo-400 hover:underline font-semibold cursor-pointer">
+                        Atau paksa rekam: Sesi Presensi Masuk (Hadir)
+                    </button>
+                </div>
                 <p class="text-xs text-slate-400 mt-2">
                     Merekam waktu kepulangan dan foto selfie pulang tervalidasi otomatis.
                 </p>
             @else
-                <button type="button" id="btn-capture" onclick="takeSelfie('checkin')" disabled
-                    class="w-full max-w-xs xs:max-w-sm sm:max-w-md px-4 sm:px-10 py-3 sm:py-4 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 disabled:opacity-50 disabled:cursor-not-allowed text-slate-950 font-black rounded-xl sm:rounded-2xl shadow-xl shadow-emerald-500/20 text-xs sm:text-base tracking-wide transition transform active:scale-95 flex items-center justify-center gap-2 sm:gap-3 cursor-pointer">
-                    <svg class="w-5 h-5 sm:w-6 sm:h-6 text-slate-950 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
-                    </svg>
-                    <span>AMBIL SELFIE & PRESENSI MASUK</span>
-                </button>
+                <div class="w-full flex flex-col items-center gap-2">
+                    <button type="button" id="btn-capture" onclick="takeSelfie('checkin')" disabled
+                        class="w-full max-w-xs xs:max-w-sm sm:max-w-md px-4 sm:px-10 py-3 sm:py-4 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 disabled:opacity-50 disabled:cursor-not-allowed text-slate-950 font-black rounded-xl sm:rounded-2xl shadow-xl shadow-emerald-500/20 text-xs sm:text-base tracking-wide transition transform active:scale-95 flex items-center justify-center gap-2 sm:gap-3 cursor-pointer">
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6 text-slate-950 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                        </svg>
+                        <span>AMBIL SELFIE & PRESENSI MASUK</span>
+                    </button>
+                    <button type="button" onclick="takeSelfie('checkout')" class="text-xs text-indigo-500 dark:text-indigo-400 hover:underline font-semibold cursor-pointer">
+                        Atau paksa rekam: Sesi Presensi Pulang
+                    </button>
+                </div>
                 <p class="text-xs text-slate-400 mt-2">
                     Kehadiran siswa di dalam area sekolah berstatus otomatis <strong>VALID</strong>.
                 </p>

@@ -355,7 +355,7 @@ class AttendanceController extends Controller
         $user = Auth::user();
         $student = $user->student ?? Student::first();
         $location = AttendanceLocation::primary();
-        $schedule = AttendanceService::getScheduleForDay(Carbon::now());
+        $schedule = AttendanceService::getScheduleForDay(Carbon::now('Asia/Jakarta'));
 
         $isGeofenceEnabled = SchoolSetting::get('enable_geofence_radius', '1') === '1';
 
@@ -379,12 +379,12 @@ class AttendanceController extends Controller
             'day_name' => ucfirst($schedule['day']),
         ];
 
-        $today = Carbon::today()->toDateString();
+        $today = Carbon::today('Asia/Jakarta')->toDateString();
         $existingAttendance = $student ? Attendance::where('student_id', $student->id)
             ->where('date', $today)
             ->first() : null;
 
-        $currentTime = Carbon::now()->format('H:i:s');
+        $currentTime = Carbon::now('Asia/Jakarta')->format('H:i:s');
         $isCheckoutTime = $currentTime >= $schedule['out_start'];
 
         return view('attendance.selfie', compact('student', 'settings', 'existingAttendance', 'schedule', 'isCheckoutTime'));
@@ -415,7 +415,12 @@ class AttendanceController extends Controller
             'device_info' => ['nullable', 'string'],
             'liveness_score' => ['nullable', 'numeric'],
             'session_type' => ['nullable', 'string'],
+            'bypass_time' => ['nullable', 'boolean'],
         ]);
+
+        if ($request->boolean('bypass_time')) {
+            $validated['bypass_time'] = true;
+        }
 
         $result = $this->attendanceService->processSelfieAttendance($student, $validated);
 
@@ -671,11 +676,13 @@ class AttendanceController extends Controller
             return response()->json([
                 'status' => 'ready',
                 'service' => 'SISSMA1LE RFID Attendance IoT Endpoint',
-                'server_time' => now()->format('Y-m-d H:i:s'),
+                'server_time' => now('Asia/Jakarta')->format('Y-m-d H:i:s'),
                 'supported_methods' => ['POST', 'GET'],
                 'payload_example' => [
                     'rfid_uid' => 'A4B5C6D7',
                     'device_code' => 'RFID-01',
+                    'session_type' => 'checkin', // 'checkin', 'checkout', atau null (auto)
+                    'bypass_time' => false,
                 ],
                 'note' => 'Gunakan HTTP POST dengan Content-Type: application/json atau form-data.',
             ]);
@@ -684,6 +691,8 @@ class AttendanceController extends Controller
         $validated = $request->validate([
             'rfid_uid' => ['required', 'string'],
             'device_code' => ['nullable', 'string'],
+            'session_type' => ['nullable', 'string'],
+            'bypass_time' => ['nullable', 'boolean'],
         ]);
 
         $cleanUid = strtoupper(trim($validated['rfid_uid']));
@@ -693,13 +702,19 @@ class AttendanceController extends Controller
         $device = AttendanceDevice::where('device_code', $deviceCode)->first();
         if ($device) {
             $device->update([
-                'last_ping_at' => now(),
+                'last_ping_at' => now('Asia/Jakarta'),
                 'status' => 'ONLINE',
                 'ip_address' => $request->ip(),
             ]);
         }
 
-        $result = $this->attendanceService->processRfidAttendance($cleanUid, $deviceCode);
+        $meta = [
+            'device_code' => $deviceCode,
+            'session_type' => $validated['session_type'] ?? null,
+            'bypass_time' => $request->boolean('bypass_time'),
+        ];
+
+        $result = $this->attendanceService->processRfidAttendance($cleanUid, $deviceCode, $meta);
 
         return response()->json($result, $result['success'] ? 200 : 422);
     }
@@ -714,7 +729,7 @@ class AttendanceController extends Controller
 
         if ($device) {
             $device->update([
-                'last_ping_at' => now(),
+                'last_ping_at' => now('Asia/Jakarta'),
                 'status' => 'ONLINE',
                 'ip_address' => $request->ip(),
             ]);
@@ -723,7 +738,7 @@ class AttendanceController extends Controller
         return response()->json([
             'success' => true,
             'message' => "Heartbeat perangkat {$deviceCode} diterima.",
-            'server_time' => now()->format('Y-m-d H:i:s'),
+            'server_time' => now('Asia/Jakarta')->format('Y-m-d H:i:s'),
             'device_code' => $deviceCode,
             'status' => 'ONLINE',
             'rfid_enabled' => SchoolSetting::get('enable_attendance_rfid', '1') === '1',
@@ -746,9 +761,17 @@ class AttendanceController extends Controller
         $validated = $request->validate([
             'barcode' => ['required', 'string'],
             'device_code' => ['nullable', 'string'],
+            'session_type' => ['nullable', 'string'],
+            'bypass_time' => ['nullable', 'boolean'],
         ]);
 
-        $result = $this->attendanceService->processBarcodeAttendance($validated['barcode'], $validated['device_code'] ?? 'BARCODE-SCAN-01');
+        $meta = [
+            'device_code' => $validated['device_code'] ?? 'BARCODE-SCAN-01',
+            'session_type' => $validated['session_type'] ?? null,
+            'bypass_time' => $request->boolean('bypass_time'),
+        ];
+
+        $result = $this->attendanceService->processBarcodeAttendance($validated['barcode'], $meta['device_code'], $meta);
 
         return response()->json($result, $result['success'] ? 200 : 422);
     }
@@ -769,9 +792,17 @@ class AttendanceController extends Controller
         $validated = $request->validate([
             'identifier' => ['required', 'string'],
             'device_code' => ['nullable', 'string'],
+            'session_type' => ['nullable', 'string'],
+            'bypass_time' => ['nullable', 'boolean'],
         ]);
 
-        $result = $this->attendanceService->processFaceRecognitionAttendance($validated['identifier'], $validated['device_code'] ?? 'FACE-CAM-01');
+        $meta = [
+            'device_code' => $validated['device_code'] ?? 'FACE-CAM-01',
+            'session_type' => $validated['session_type'] ?? null,
+            'bypass_time' => $request->boolean('bypass_time'),
+        ];
+
+        $result = $this->attendanceService->processFaceRecognitionAttendance($validated['identifier'], $meta['device_code'], $meta);
 
         return response()->json($result, $result['success'] ? 200 : 422);
     }
