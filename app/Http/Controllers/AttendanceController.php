@@ -1467,7 +1467,7 @@ class AttendanceController extends Controller
         $targetClassId = $targetStudent?->class_id;
 
         if (! $user->canRecordAttendanceManual($targetClassId)) {
-            abort(403, 'Akses Ditolak: Fitur absen manual presensi hanya dapat dilaksanakan oleh Wakasek Kesiswaan, Wali Kelas pada kelasnya, atau Sekretaris Kelas pada kelasnya.');
+            return back()->with('error', 'Akses Ditolak: Fitur absen manual presensi hanya dapat dilaksanakan oleh Wakasek Kesiswaan, Wali Kelas pada kelasnya, atau Sekretaris Kelas pada kelasnya.');
         }
 
         $validated = $request->validate([

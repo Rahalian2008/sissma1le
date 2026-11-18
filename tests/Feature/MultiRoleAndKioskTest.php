@@ -320,13 +320,13 @@ test('dashboards display worship and tahfidz summaries and parent portal renders
     // Admin dashboard contains worship & tahfidz summary
     $adminResponse = $this->actingAs($admin)->get(route('dashboard'));
     $adminResponse->assertStatus(200)
-        ->assertSee('Ringkasan Presensi Ibadah & Progres Tahfidz Al-Qur\'an', false);
+        ->assertSee('Presensi Ibadah & Tahfidz Juz 30', false);
 
     // Parent Portal contains worship & tahfidz tab and summary
     $portalResponse = $this->get(route('parent.portal', ['nisn' => $student->nisn]));
     $portalResponse->assertStatus(200)
-        ->assertSee('Ringkasan Presensi Ibadah & Progres Tahfidz Al-Qur\'an', false)
+        ->assertSee('Presensi Ibadah Berjamaah & Tahfidz Al-Qur\'an', false)
         ->assertSee('Ibadah & Tahfidz', false)
-        ->assertSee('Shalat Dhuha Bersama', false)
-        ->assertSee('Dzuhur / Jum\'at Berjamaah', false);
+        ->assertSee('Shalat Dhuha', false)
+        ->assertSee('Shalat Dzuhur / Jumat', false);
 });

@@ -284,22 +284,30 @@ class User extends Authenticatable
 
         // 2. Wali Kelas hanya untuk kelas binaannya sendiri
         if ($this->hasRole('wali_kelas')) {
+            if ($classId === null) {
+                return true;
+            }
+
             $homeroomClassId = $this->teacher?->homeroomClass?->id;
             if (! $homeroomClassId) {
                 return false;
             }
 
-            return $classId === null || (int) $homeroomClassId === (int) $classId;
+            return (int) $homeroomClassId === (int) $classId;
         }
 
         // 3. Sekretaris Kelas hanya untuk kelasnya sendiri
         if ($this->hasRole('sekretaris_kelas')) {
+            if ($classId === null) {
+                return true;
+            }
+
             $studentClassId = $this->student?->class_id;
             if (! $studentClassId) {
                 return false;
             }
 
-            return $classId === null || (int) $studentClassId === (int) $classId;
+            return (int) $studentClassId === (int) $classId;
         }
 
         return false;

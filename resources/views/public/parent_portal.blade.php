@@ -846,11 +846,25 @@
                             @if(!empty($psi->career_recommendations) && is_array($psi->career_recommendations))
                                 <div class="pt-2 border-t border-slate-800">
                                     <span class="text-[11px] font-bold text-fuchsia-300 block mb-1.5">Pilihan Karir & Profesi Masa Depan:</span>
-                                    <div class="flex flex-wrap gap-1.5">
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                         @foreach($psi->career_recommendations as $cr)
-                                            <span class="px-2.5 py-0.5 rounded-lg bg-slate-900 text-fuchsia-200 border border-fuchsia-800/40 text-[11px] font-bold">
-                                                ✓ {{ $cr }}
-                                            </span>
+                                            @php
+                                                $major = is_array($cr) ? ($cr['major'] ?? ($cr['title'] ?? ($cr['name'] ?? ''))) : (string) $cr;
+                                                $field = is_array($cr) ? ($cr['field'] ?? null) : null;
+                                                $prospect = is_array($cr) ? ($cr['prospect'] ?? null) : null;
+                                            @endphp
+                                            <div class="p-2 rounded-xl bg-slate-900 text-fuchsia-200 border border-fuchsia-800/40 text-[11px] font-bold">
+                                                <div class="text-white flex items-center gap-1.5">
+                                                    <span class="text-fuchsia-400">✓</span>
+                                                    <span>{{ $major }}</span>
+                                                </div>
+                                                @if($field)
+                                                    <div class="text-[10px] text-slate-400 mt-0.5 font-normal">{{ $field }}</div>
+                                                @endif
+                                                @if($prospect)
+                                                    <div class="text-[9.5px] text-fuchsia-300/80 mt-0.5 font-normal">Prospek: {{ $prospect }}</div>
+                                                @endif
+                                            </div>
                                         @endforeach
                                     </div>
                                 </div>

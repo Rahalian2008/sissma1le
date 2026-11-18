@@ -371,8 +371,19 @@ class KioskController extends Controller
             ];
         });
 
-        // 12. Profil Identitas Sekolah Resmi
+        // 12. Profil Identitas Sekolah Resmi & Visi Misi Website
         $schoolIdentity = SchoolIdentity::first();
+
+        // Data Visi & Misi dari Kelola Konten Web
+        $customVisi = SchoolSetting::get('website_visi');
+        $customVisiSub = SchoolSetting::get('website_visi_sub');
+        $vision = ! empty($customVisi) ? $customVisi : SchoolSetting::get('school_vision', 'Terwujudnya Peserta Didik yang Beriman dan Bertaqwa, Berakhlak Mulia, Cerdas, Terampil, Mandiri, dan Berwawasan Lingkungan Global.');
+        $visionSub = ! empty($customVisiSub) ? $customVisiSub : '(Unggul dalam IPTEK, Kokoh dalam IMTAQ, Harmonis dengan Alam Semesta)';
+
+        $customMissions = SchoolSetting::get('website_misi_json');
+        $decodedMissions = $customMissions !== null ? json_decode($customMissions, true) : null;
+        $missions = is_array($decodedMissions) && count($decodedMissions) > 0 ? $decodedMissions : WebsiteContentController::DEFAULT_MISSIONS;
+
         $schoolProfile = [
             'name' => SchoolSetting::get('school_name', $schoolIdentity?->name ?? 'SMA Negeri 1 Lengkong'),
             'npsn' => SchoolSetting::get('school_npsn', $schoolIdentity?->npsn ?? '20202265'),
@@ -380,8 +391,9 @@ class KioskController extends Controller
             'address' => SchoolSetting::get('school_address', $schoolIdentity?->address ?? 'Jalan Raya Tegalega, Kecamatan Lengkong, Kabupaten Sukabumi, Provinsi Jawa Barat'),
             'principal_name' => SchoolSetting::get('headmaster_name', $schoolIdentity?->headmaster_name ?? 'Pian Sopian, S.Pd., M.M.Pd'),
             'principal_nip' => SchoolSetting::get('headmaster_nip', $schoolIdentity?->headmaster_nip ?? '198009132008011005'),
-            'motto' => SchoolSetting::get('school_motto', 'Cerdas, Berkarakter, Unggul dalam Prestasi dan Berdaya Saing Global'),
-            'vision' => SchoolSetting::get('school_vision', 'Terwujudnya Peserta Didik yang Berakhlak Mulia, Cerdas, Berkarakter, dan Berdaya Saing Global.'),
+            'vision' => $vision,
+            'vision_sub' => $visionSub,
+            'missions' => $missions,
         ];
 
         // Running Text Ticker Quotes

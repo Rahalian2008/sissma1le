@@ -466,10 +466,15 @@ class BkCurhatController extends Controller
             $attachmentSize = $attachmentFile->getSize();
             $ext = strtolower($attachmentFile->getClientOriginalExtension());
 
-            if (str_starts_with($attachmentName, 'voicenote_') || str_starts_with($attachmentMime, 'audio/') || in_array($ext, ['mp3', 'wav', 'm4a', 'aac', 'ogg', 'oga', 'weba'], true)) {
+            $isVoice = str_starts_with($attachmentName, 'voicenote_')
+                || str_starts_with((string) $attachmentMime, 'audio/')
+                || in_array($ext, ['mp3', 'wav', 'm4a', 'aac', 'ogg', 'oga', 'weba'], true)
+                || ($ext === 'webm' && (str_contains((string) $messageText, 'Suara') || str_contains($attachmentName, 'audio') || str_contains($attachmentName, 'suara')));
+
+            if ($isVoice) {
                 $attachmentType = 'AUDIO';
                 if (empty($attachmentMime) || str_starts_with($attachmentMime, 'video/') || $attachmentMime === 'application/octet-stream') {
-                    $attachmentMime = 'audio/webm';
+                    $attachmentMime = ($ext === 'mp3') ? 'audio/mpeg' : 'audio/webm';
                 }
             } elseif (str_starts_with($attachmentMime, 'image/') || in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'], true)) {
                 $attachmentType = 'IMAGE';

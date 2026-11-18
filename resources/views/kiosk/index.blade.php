@@ -925,20 +925,54 @@
                         </div>
                     </div>
 
-                    <!-- Vision & Motto -->
-                    <div class="my-3 space-y-2.5">
-                        <div class="p-3 rounded-xl bg-slate-900/80 border border-white/5">
-                            <span class="text-[10px] font-bold text-teal-400 uppercase tracking-wider block mb-1">VISI SEKOLAH</span>
-                            <p class="text-xs sm:text-sm text-slate-200 italic font-medium">
+                    <!-- Visi & Misi Resmi (Diambil dari Kelola Konten Web di Visi & Misi) -->
+                    <div class="flex-1 min-h-0 my-2 flex flex-col gap-2.5 overflow-hidden">
+                        <!-- Visi Sekolah -->
+                        <div class="p-2.5 sm:p-3 rounded-xl bg-slate-900/80 border border-teal-500/20 shrink-0 shadow-sm">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="text-[10px] font-black text-teal-400 uppercase tracking-wider flex items-center gap-1.5">
+                                    <span>🌟</span> VISI SEKOLAH
+                                </span>
+                                <span class="text-[9.5px] text-slate-400 font-medium">SIS-SMA1LE &bull; Profil Resmi</span>
+                            </div>
+                            <p class="text-xs sm:text-sm text-white font-medium italic leading-snug">
                                 "{{ $data['profile']['vision'] }}"
                             </p>
+                            @if(!empty($data['profile']['vision_sub']))
+                                <p class="text-[10.5px] text-teal-300 font-semibold mt-1">
+                                    {{ $data['profile']['vision_sub'] }}
+                                </p>
+                            @endif
                         </div>
 
-                        <div class="p-3 rounded-xl bg-slate-900/80 border border-white/5">
-                            <span class="text-[10px] font-bold text-indigo-400 uppercase tracking-wider block mb-1">MOTTO &amp; KARAKTER SEKOLAH</span>
-                            <p class="text-xs sm:text-sm text-slate-200 font-semibold">
-                                &bull; {{ $data['profile']['motto'] }}
-                            </p>
+                        <!-- Misi Sekolah (Cards / Grid) -->
+                        <div class="flex-1 min-h-0 flex flex-col overflow-hidden">
+                            <div class="flex items-center justify-between pb-1.5 mb-1.5 border-b border-white/10 shrink-0">
+                                <span class="text-[10px] font-black text-indigo-400 uppercase tracking-wider flex items-center gap-1.5">
+                                    <span>🎯</span> MISI SEKOLAH
+                                </span>
+                                <span class="text-[9.5px] text-slate-400 font-mono">{{ count($data['profile']['missions'] ?? []) }} Misi Utama</span>
+                            </div>
+
+                            <div class="flex-1 min-h-0 overflow-y-auto kiosk-scroll grid grid-cols-1 sm:grid-cols-2 gap-2 pr-1">
+                                @forelse($data['profile']['missions'] ?? [] as $misi)
+                                    <div class="p-2.5 rounded-xl bg-slate-900/70 border border-white/5 hover:border-indigo-500/30 transition flex items-start gap-2.5">
+                                        <div class="w-6 h-6 rounded-lg bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 flex items-center justify-center font-black text-[10px] shrink-0 font-mono mt-0.5">
+                                            {{ $misi['number'] ?? '01' }}
+                                        </div>
+                                        <div class="min-w-0 flex-1">
+                                            <h4 class="text-xs font-bold text-white truncate">{{ $misi['title'] ?? '' }}</h4>
+                                            <p class="text-[10px] text-slate-300 leading-snug mt-0.5 line-clamp-3">
+                                                {{ $misi['desc'] ?? '' }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                @empty
+                                    <div class="col-span-2 text-center text-slate-500 text-xs italic py-4">
+                                        Data misi sekolah belum dikonfigurasi.
+                                    </div>
+                                @endforelse
+                            </div>
                         </div>
                     </div>
 

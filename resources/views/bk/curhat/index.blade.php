@@ -290,7 +290,7 @@
                                                 <span class="text-[9.5px] opacity-75">{{ $msg->formatted_size ?: 'Audio Rekaman' }}</span>
                                             </div>
                                         </div>
-                                        <audio controls class="w-full h-8 rounded-lg outline-none" preload="auto">
+                                        <audio controls class="w-full h-8 rounded-lg outline-none" preload="metadata" onloadedmetadata="fixWebmDuration(this)">
                                             <source src="{{ $msg->attachment_url }}" type="{{ $msg->attachment_mime ?: 'audio/webm' }}">
                                             Browser Anda tidak mendukung pemutar audio.
                                         </audio>
@@ -963,7 +963,7 @@
                             <span class="text-[9.5px] opacity-75">${msg.formatted_size || 'Audio Rekaman'}</span>
                         </div>
                     </div>
-                    <audio controls class="w-full h-8 rounded-lg outline-none" preload="auto">
+                    <audio controls class="w-full h-8 rounded-lg outline-none" preload="metadata" onloadedmetadata="fixWebmDuration(this)">
                         <source src="${msg.attachment_url}" type="${msg.attachment_mime || 'audio/webm'}">
                         Browser Anda tidak mendukung pemutar audio.
                     </audio>
@@ -1210,15 +1210,35 @@
         }
     }
 
+    // Perbaiki durasi WebM pada browser Chrome/Edge yang sering menampilkan 0:00 atau Infinity
+    function fixWebmDuration(audio) {
+        if (!audio) return;
+        if (audio.duration === Infinity || isNaN(audio.duration) || audio.duration === 0) {
+            const onSeeked = function() {
+                audio.removeEventListener('seeked', onSeeked);
+                audio.currentTime = 0;
+            };
+            audio.addEventListener('seeked', onSeeked);
+            try {
+                audio.currentTime = 1e101;
+            } catch (e) {}
+        }
+    }
+
     async function sendAudioMessage(file) {
         const form = document.getElementById('chat-input-form');
         if (!form) return;
+
+        const durationSec = recordStartTime ? Math.max(1, Math.round((Date.now() - recordStartTime) / 1000)) : 0;
+        const mins = String(Math.floor(durationSec / 60)).padStart(2, '0');
+        const secs = String(durationSec % 60).padStart(2, '0');
+        const durationText = durationSec > 0 ? ` (${mins}:${secs})` : '';
 
         const formData = new FormData();
         const tokenInput = form.querySelector('input[name="_token"]');
         if (tokenInput) formData.append('_token', tokenInput.value);
         formData.append('attachment', file);
-        formData.append('message', '🎙️ Pesan Suara');
+        formData.append('message', `🎙️ Pesan Suara${durationText}`);
 
         try {
             const response = await fetch(form.action, {

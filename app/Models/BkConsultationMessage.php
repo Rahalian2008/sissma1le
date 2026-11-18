@@ -83,7 +83,7 @@ class BkConsultationMessage extends Model
             return true;
         }
 
-        if (! empty($this->attachment_name) && str_starts_with($this->attachment_name, 'voicenote_')) {
+        if (! empty($this->attachment_name) && (str_starts_with($this->attachment_name, 'voicenote_') || str_contains($this->attachment_name, 'audio') || str_contains($this->attachment_name, 'suara'))) {
             return true;
         }
 
@@ -94,7 +94,17 @@ class BkConsultationMessage extends Model
         $path = $this->attachment_name ?? $this->attachment_path ?? '';
         $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
 
-        return in_array($ext, ['mp3', 'wav', 'm4a', 'aac', 'ogg', 'oga', 'weba'], true);
+        if (in_array($ext, ['mp3', 'wav', 'm4a', 'aac', 'ogg', 'oga', 'weba'], true)) {
+            return true;
+        }
+
+        if ($ext === 'webm') {
+            if (str_contains((string) $this->message, 'Suara') || str_contains($path, 'curhat') || str_contains($path, 'voicenote')) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function getIsVideoAttribute(): bool

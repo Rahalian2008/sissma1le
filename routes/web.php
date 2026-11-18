@@ -1091,7 +1091,9 @@ Route::get('/storage/{path}', function (string $path) {
             }
         }
 
-        if (! $mimeType || $mimeType === 'text/plain' || $mimeType === 'application/octet-stream') {
+        $isCurhatAudio = str_contains($cleanPath, 'curhat') || str_contains($cleanPath, 'voicenote') || in_array($ext, ['mp3', 'wav', 'ogg', 'm4a', 'aac', 'weba'], true);
+
+        if (! $mimeType || $mimeType === 'text/plain' || $mimeType === 'application/octet-stream' || ($isCurhatAudio && str_starts_with((string) $mimeType, 'video/'))) {
             $mimeType = match ($ext) {
                 'jpg', 'jpeg' => 'image/jpeg',
                 'png' => 'image/png',
@@ -1099,7 +1101,14 @@ Route::get('/storage/{path}', function (string $path) {
                 'gif' => 'image/gif',
                 'svg' => 'image/svg+xml',
                 'pdf' => 'application/pdf',
-                default => 'image/jpeg',
+                'mp3' => 'audio/mpeg',
+                'wav' => 'audio/wav',
+                'ogg', 'oga' => 'audio/ogg',
+                'm4a' => 'audio/mp4',
+                'aac' => 'audio/aac',
+                'mp4' => 'video/mp4',
+                'webm' => $isCurhatAudio ? 'audio/webm' : 'video/webm',
+                default => 'application/octet-stream',
             };
         }
 
@@ -1114,11 +1123,11 @@ Route::get('/storage/{path}', function (string $path) {
             }
         }
 
-        return response(file_get_contents($filePath), 200, [
+        return response()->file($filePath, [
             'Content-Type' => $mimeType,
-            'Content-Length' => (string) $size,
             'Cache-Control' => 'public, max-age=86400',
             'Content-Disposition' => 'inline',
+            'Accept-Ranges' => 'bytes',
         ]);
     }
 
