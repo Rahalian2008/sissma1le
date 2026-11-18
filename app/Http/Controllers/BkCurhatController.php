@@ -464,13 +464,17 @@ class BkCurhatController extends Controller
             $attachmentName = $attachmentFile->getClientOriginalName();
             $attachmentMime = $attachmentFile->getMimeType();
             $attachmentSize = $attachmentFile->getSize();
+            $ext = strtolower($attachmentFile->getClientOriginalExtension());
 
-            if (str_starts_with($attachmentMime, 'image/')) {
-                $attachmentType = 'IMAGE';
-            } elseif (str_starts_with($attachmentMime, 'video/')) {
-                $attachmentType = 'VIDEO';
-            } elseif (str_starts_with($attachmentMime, 'audio/') || in_array(strtolower($attachmentFile->getClientOriginalExtension()), ['mp3', 'wav', 'm4a', 'aac', 'ogg', 'oga', 'webm'], true) || str_starts_with($attachmentName, 'voicenote_')) {
+            if (str_starts_with($attachmentName, 'voicenote_') || str_starts_with($attachmentMime, 'audio/') || in_array($ext, ['mp3', 'wav', 'm4a', 'aac', 'ogg', 'oga', 'weba'], true)) {
                 $attachmentType = 'AUDIO';
+                if (empty($attachmentMime) || str_starts_with($attachmentMime, 'video/') || $attachmentMime === 'application/octet-stream') {
+                    $attachmentMime = 'audio/webm';
+                }
+            } elseif (str_starts_with($attachmentMime, 'image/') || in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'], true)) {
+                $attachmentType = 'IMAGE';
+            } elseif (str_starts_with($attachmentMime, 'video/') || in_array($ext, ['mp4', 'mov', 'avi', 'mkv', 'webm'], true)) {
+                $attachmentType = 'VIDEO';
             } else {
                 $attachmentType = 'DOCUMENT';
             }

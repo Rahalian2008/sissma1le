@@ -84,6 +84,9 @@
                         <th class="py-3 px-4 text-center">Karier</th>
                         <th class="py-3 px-4 text-center">Kebutuhan Dominan</th>
                         <th class="py-3 px-4 text-center">Tanggal Isi</th>
+                        @if(auth()->user()->isCounselor() || auth()->user()->hasRole('admin') || auth()->user()->hasRole('super_admin'))
+                            <th class="py-3 px-4 text-center">Aksi / Reset</th>
+                        @endif
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100">
@@ -120,10 +123,21 @@
                             <td class="py-3 px-4 text-center text-slate-400 font-mono">
                                 {{ $resp->submitted_at?->format('d/m/Y H:i') ?? '-' }}
                             </td>
+                            @if(auth()->user()->isCounselor() || auth()->user()->hasRole('admin') || auth()->user()->hasRole('super_admin'))
+                                <td class="py-3 px-4 text-center">
+                                    <form action="{{ url('/bk/akpd/' . $akpd->id . '/response/' . $resp->id) }}" method="POST" class="inline" onsubmit="return confirm('Peringatan: Reset respons AKPD untuk {{ addslashes($resp->student?->name ?? 'siswa ini') }}? Data angket akan dihapus dan siswa bersangkutan dapat mengisi kembali instrumen ini.');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="p-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 transition cursor-pointer" title="Reset Respons Siswa (Izinkan Mengulang)">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                        </button>
+                                    </form>
+                                </td>
+                            @endif
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="9" class="py-12 text-center text-slate-400">
+                            <td colspan="{{ (auth()->user()->isCounselor() || auth()->user()->hasRole('admin') || auth()->user()->hasRole('super_admin')) ? 10 : 9 }}" class="py-12 text-center text-slate-400">
                                 Belum ada siswa yang mengisi instrumen ini pada kelas yang dipilih.
                             </td>
                         </tr>

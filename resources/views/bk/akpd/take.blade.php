@@ -73,9 +73,15 @@
             <a href="{{ route('bk.akpd.show', $akpd) }}" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-xl transition">
                 Batal / Kembali
             </a>
-            <button type="submit" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-md transition cursor-pointer">
-                Simpan & Analisis Kebutuhan
-            </button>
+            @if($existing && (auth()->user()->isStudent() || auth()->user()->role === 'siswa') && !auth()->user()->isCounselor() && !auth()->user()->hasRole('admin') && !auth()->user()->hasRole('super_admin'))
+                <button type="button" disabled class="px-6 py-2.5 bg-slate-400 text-white font-bold text-xs rounded-xl cursor-not-allowed opacity-75">
+                    Sudah Diisi (1x Selesai)
+                </button>
+            @else
+                <button type="submit" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-md transition cursor-pointer">
+                    Simpan & Analisis Kebutuhan
+                </button>
+            @endif
         </div>
     </form>
 </div>

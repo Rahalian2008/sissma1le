@@ -74,7 +74,14 @@ class BkPsychologicalTestController extends Controller
         $results = $query->paginate(15)->withQueryString();
         $classes = ($isHomeroomOnly && $homeroomClass) ? SchoolClass::where('id', $homeroomClass->id)->get() : SchoolClass::orderBy('name')->get();
 
-        return view('bk.psychological.index', compact('tests', 'results', 'student', 'classes'));
+        $testResultsByTestId = [];
+        if ($student) {
+            $testResultsByTestId = BkPsychologicalTestResult::where('student_id', $student->id)
+                ->get()
+                ->keyBy('test_id');
+        }
+
+        return view('bk.psychological.index', compact('tests', 'results', 'student', 'classes', 'testResultsByTestId'));
     }
 
     /**
@@ -106,6 +113,19 @@ class BkPsychologicalTestController extends Controller
         }
 
         $test = BkPsychologicalTest::with('questions')->where('slug', $slug)->firstOrFail();
+
+        // Batasi siswa hanya dapat mengisi 1 kali
+        if (($user->isStudent() || $user->student) && ! $isAdminOrCounselor) {
+            $existingResult = BkPsychologicalTestResult::where('test_id', $test->id)
+                ->where('student_id', $student->id)
+                ->first();
+
+            if ($existingResult) {
+                return redirect()->route('bk.psychological.result', $existingResult)
+                    ->with('warning', "Anda sudah menyelesaikan asesmen [{$test->name}] ini sebelumnya (hanya dapat diisi 1 kali). Untuk melakukan pengisian ulang, silakan hubungi Guru BK atau Administrator untuk melakukan reset pengerjaan.");
+            }
+        }
+
         $availableStudents = $isAdminOrCounselor ? Student::where('is_active', true)->orderBy('name')->take(50)->get() : collect();
 
         return view('bk.psychological.take', compact('test', 'student', 'isAdminOrCounselor', 'availableStudents'));
@@ -139,6 +159,18 @@ class BkPsychologicalTestController extends Controller
         }
 
         $test = BkPsychologicalTest::where('slug', $slug)->firstOrFail();
+
+        // Validasi pembatasan 1 kali pengisian untuk siswa
+        if (($user->isStudent() || $user->student) && ! $isAdminOrCounselor) {
+            $existingResult = BkPsychologicalTestResult::where('test_id', $test->id)
+                ->where('student_id', $student->id)
+                ->first();
+
+            if ($existingResult) {
+                return redirect()->route('bk.psychological.result', $existingResult)
+                    ->with('warning', "Anda sudah menyelesaikan tes [{$test->name}] ini sebelumnya (hanya dapat diisi 1 kali). Silakan hubungi Guru BK atau Administrator jika membutuhkan reset pengerjaan.");
+            }
+        }
 
         $validated = $request->validate([
             'answers' => ['required', 'array'],
@@ -253,13 +285,19 @@ class BkPsychologicalTestController extends Controller
     }
 
     /**
-     * Hapus data hasil asesmen siswa dari Bank Data
+     * Hapus / Reset data hasil asesmen siswa dari Bank Data
      */
     public function destroyResult(BkPsychologicalTestResult $result): RedirectResponse
     {
         $user = Auth::user();
-        if (! $user->isCounselor() && ! $user->hasRole('admin') && ! $user->hasRole('super_admin')) {
-            abort(403, 'Hanya Guru BK atau Administrator yang berhak menghapus data hasil asesmen psikotes.');
+        $canReset = $user && (
+            $user->hasAnyRole(['super_admin', 'admin', 'koordinator_bk', 'guru_bk', 'bk'])
+            || in_array($user->role, ['super_admin', 'admin', 'koordinator_bk', 'guru_bk', 'bk'], true)
+            || (method_exists($user, 'isCounselor') && $user->isCounselor())
+        );
+
+        if (! $canReset) {
+            abort(403, 'Hanya Super Admin, Admin, Koordinator BK, atau Guru BK yang berhak mereset hasil asesmen psikotes.');
         }
 
         $studentName = $result->student?->name ?? 'Siswa';
@@ -268,7 +306,7 @@ class BkPsychologicalTestController extends Controller
         $result->delete();
 
         return redirect()->route('bk.psychological.index')
-            ->with('success', "Data hasil asesmen {$testName} untuk {$studentName} berhasil dihapus dari bank data.");
+            ->with('success', "Data hasil asesmen {$testName} untuk {$studentName} berhasil di-reset. Siswa kini dapat mengerjakan kembali asesmen tersebut.");
     }
 
     /**

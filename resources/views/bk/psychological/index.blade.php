@@ -122,10 +122,25 @@
 
                 <div class="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800">
                     @if(auth()->user()->isStudent() || auth()->user()->student)
-                        <a href="{{ route('bk.psychological.take', $test->slug) }}" class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-white font-bold text-xs shadow-md {{ $theme['btn'] }} transition">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                            <span>Mulai Mengerjakan Tes</span>
-                        </a>
+                        @php
+                            $existingRes = ($testResultsByTestId ?? [])[$test->id] ?? null;
+                        @endphp
+                        @if($existingRes)
+                            <div class="space-y-2">
+                                <a href="{{ url('/bk/psikotes/hasil/' . $existingRes->id) }}" class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-white font-bold text-xs shadow-md bg-emerald-600 hover:bg-emerald-700 transition">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                    <span>Sudah Dikerjakan (Lihat Hasil)</span>
+                                </a>
+                                <p class="text-[10.5px] text-center text-slate-500 dark:text-slate-400 font-medium">
+                                    🔒 Asesmen hanya dapat diisi 1 kali. Reset hanya oleh Guru BK / Admin.
+                                </p>
+                            </div>
+                        @else
+                            <a href="{{ url('/bk/psikotes/ambil/' . $test->slug) }}" class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-white font-bold text-xs shadow-md {{ $theme['btn'] }} transition">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                <span>Mulai Mengerjakan Tes (1x)</span>
+                            </a>
+                        @endif
                     @else
                         <div class="flex items-center gap-2">
                             <a href="{{ route('bk.psychological.index', ['test_id' => $test->id]) }}" class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs transition">
@@ -274,23 +289,23 @@
                                 </td>
                                 <td class="py-3.5 px-4 text-center">
                                     <div class="inline-flex items-center gap-1.5">
-                                        <a href="{{ \Illuminate\Support\Facades\Route::has('bk.psychological.result') ? route('bk.psychological.result', $res) : url('/bk/psikotes/hasil/' . $res->id) }}" class="p-1.5 rounded-lg bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 hover:bg-teal-100 transition" title="Lihat Laporan & RTL AI Lengkap">
+                                        <a href="{{ url('/bk/psikotes/hasil/' . $res->id) }}" class="p-1.5 rounded-lg bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 hover:bg-teal-100 transition" title="Lihat Laporan & RTL AI Lengkap">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                         </a>
-                                        <a href="{{ \Illuminate\Support\Facades\Route::has('bk.psychological.print') ? route('bk.psychological.print', $res) : url('/bk/psikotes/hasil/' . $res->id . '/print') }}" target="_blank" class="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 transition" title="Cetak Surat Laporan Resmi">
+                                        <a href="{{ url('/bk/psikotes/hasil/' . $res->id . '/print') }}" target="_blank" class="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 transition" title="Cetak Surat Laporan Resmi">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
                                         </a>
                                         @if(auth()->user()->isCounselor() || auth()->user()->hasRole('admin') || auth()->user()->hasRole('super_admin'))
-                                            <form action="{{ \Illuminate\Support\Facades\Route::has('bk.psychological.generate-ai') ? route('bk.psychological.generate-ai', $res) : url('/bk/psikotes/hasil/' . $res->id . '/ai-analysis') }}" method="POST" class="inline">
+                                            <form action="{{ url('/bk/psikotes/hasil/' . $res->id . '/ai-analysis') }}" method="POST" class="inline">
                                                 @csrf
                                                 <button type="submit" class="p-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 transition cursor-pointer" title="Generate Ulang Analisis AI">
                                                     <span class="text-xs font-bold leading-none">⚡</span>
                                                 </button>
                                             </form>
-                                            <form action="{{ \Illuminate\Support\Facades\Route::has('bk.psychological.destroy') ? route('bk.psychological.destroy', $res) : url('/bk/psikotes/hasil/' . $res->id) }}" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data hasil asesmen {{ addslashes($res->student->name ?? 'siswa ini') }}? Data yang dihapus tidak dapat dipulihkan.');">
+                                            <form action="{{ url('/bk/psikotes/hasil/' . $res->id) }}" method="POST" class="inline" onsubmit="return confirm('Peringatan: Reset hasil asesmen {{ addslashes($res->student->name ?? 'siswa ini') }}? Data asesmen akan dihapus dan siswa bersangkutan dapat mengerjakan kembali tes ini.');">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="p-1.5 rounded-lg bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900/60 transition cursor-pointer" title="Hapus Data Asesmen">
+                                                <button type="submit" class="p-1.5 rounded-lg bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900/60 transition cursor-pointer" title="Reset Asesmen (Izinkan Siswa Mengerjakan Ulang)">
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                                                 </button>
                                             </form>
@@ -313,14 +328,14 @@
                                             <p class="text-[11px] text-slate-500">Silakan klik tombol <b>"Mulai Mengerjakan Tes"</b> pada salah satu instrumen di atas.</p>
                                         @elseif(auth()->user()->isCounselor() || auth()->user()->hasRole('admin') || auth()->user()->hasRole('super_admin'))
                                             <div class="flex flex-wrap items-center justify-center gap-2 pt-1">
-                                                <form action="{{ route('bk.psychological.demo-seed') }}" method="POST" class="inline">
+                                                <form action="{{ url('/bk/psikotes/demo-seed') }}" method="POST" class="inline">
                                                     @csrf
                                                     <input type="hidden" name="slug" value="vak">
                                                     <button type="submit" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition shadow-sm flex items-center gap-1.5 cursor-pointer">
                                                         <span>⚡ Generate Data Demo VAK</span>
                                                     </button>
                                                 </form>
-                                                <form action="{{ route('bk.psychological.demo-seed') }}" method="POST" class="inline">
+                                                <form action="{{ url('/bk/psikotes/demo-seed') }}" method="POST" class="inline">
                                                     @csrf
                                                     <input type="hidden" name="slug" value="riasec">
                                                     <button type="submit" class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs transition shadow-sm flex items-center gap-1.5 cursor-pointer">

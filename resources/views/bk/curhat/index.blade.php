@@ -36,10 +36,10 @@
     </div>
 
     <!-- MAIN CHAT APP CONTAINER (WhatsApp Web Style) -->
-    <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden flex flex-col md:flex-row h-[78vh] min-h-[580px] max-h-[820px] relative">
+    <div class="w-full max-w-full bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden flex flex-col md:flex-row h-[78vh] min-h-[540px] max-h-[820px] relative">
         
         <!-- ================= KOLOM KIRI: DAFTAR PERCAKAPAN (SIDEBAR) ================= -->
-        <div id="chat-sidebar" class="w-full md:w-80 lg:w-96 border-r border-slate-200 dark:border-slate-800 flex flex-col bg-slate-50/70 dark:bg-slate-950/70 h-full {{ $activeConsultation ? 'hidden md:flex' : 'flex' }}">
+        <div id="chat-sidebar" class="w-full md:w-72 lg:w-80 shrink-0 border-r border-slate-200 dark:border-slate-800 flex flex-col bg-slate-50/70 dark:bg-slate-950/70 h-full min-w-0 overflow-hidden {{ $activeConsultation ? 'hidden md:flex' : 'flex' }}">
             <!-- Header Sidebar -->
             <div class="p-3.5 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
                 <div class="flex items-center gap-2.5">
@@ -162,7 +162,7 @@
         </div>
 
         <!-- ================= KOLOM KANAN: RUANG CHAT AKTIF (ACTIVE CHAT WINDOW) ================= -->
-        <div id="chat-window" class="flex-1 flex flex-col h-full bg-[#efeae2] dark:bg-[#0b141a] {{ $activeConsultation ? 'flex' : 'hidden md:flex' }}">
+        <div id="chat-window" class="flex-1 min-w-0 w-full overflow-hidden flex flex-col h-full bg-[#efeae2] dark:bg-[#0b141a] {{ $activeConsultation ? 'flex' : 'hidden md:flex' }}">
             @if($activeConsultation)
                 <!-- Header Chat Aktif -->
                 <div class="p-3 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between gap-2 shrink-0 z-10 shadow-xs">
@@ -278,16 +278,6 @@
                                     </div>
                                 @endif
 
-                                <!-- Media: Video -->
-                                @if($msg->is_video && $msg->attachment_url)
-                                    <div class="mb-2 rounded-xl overflow-hidden bg-black max-w-sm">
-                                        <video controls class="w-full max-h-72 rounded-xl">
-                                            <source src="{{ $msg->attachment_url }}" type="{{ $msg->attachment_mime ?: 'video/mp4' }}">
-                                            Browser Anda tidak mendukung pemutar video.
-                                        </video>
-                                    </div>
-                                @endif
-
                                 <!-- Media: Audio / Voice Note (Pesan Suara) -->
                                 @if($msg->is_audio && $msg->attachment_url)
                                     <div class="mb-2 p-2.5 rounded-2xl bg-black/10 dark:bg-white/10 flex flex-col gap-1.5 min-w-[220px] sm:min-w-[280px]">
@@ -300,10 +290,20 @@
                                                 <span class="text-[9.5px] opacity-75">{{ $msg->formatted_size ?: 'Audio Rekaman' }}</span>
                                             </div>
                                         </div>
-                                        <audio controls class="w-full h-8 rounded-lg outline-none" preload="metadata">
+                                        <audio controls class="w-full h-8 rounded-lg outline-none" preload="auto">
                                             <source src="{{ $msg->attachment_url }}" type="{{ $msg->attachment_mime ?: 'audio/webm' }}">
                                             Browser Anda tidak mendukung pemutar audio.
                                         </audio>
+                                    </div>
+                                @endif
+
+                                <!-- Media: Video -->
+                                @if($msg->is_video && $msg->attachment_url)
+                                    <div class="mb-2 rounded-xl overflow-hidden bg-black max-w-sm">
+                                        <video controls class="w-full max-h-72 rounded-xl">
+                                            <source src="{{ $msg->attachment_url }}" type="{{ $msg->attachment_mime ?: 'video/mp4' }}">
+                                            Browser Anda tidak mendukung pemutar video.
+                                        </video>
                                     </div>
                                 @endif
 
@@ -867,14 +867,6 @@
                     <img src="${msg.attachment_url}" alt="${msg.attachment_name || 'Gambar'}" class="max-h-72 w-auto object-cover rounded-xl hover:opacity-95 transition">
                 </div>
             `;
-        } else if (msg.is_video && msg.attachment_url) {
-            mediaHtml += `
-                <div class="mb-2 rounded-xl overflow-hidden bg-black max-w-sm">
-                    <video controls class="w-full max-h-72 rounded-xl">
-                        <source src="${msg.attachment_url}">
-                    </video>
-                </div>
-            `;
         } else if (msg.is_audio && msg.attachment_url) {
             mediaHtml += `
                 <div class="mb-2 p-2.5 rounded-2xl bg-black/10 dark:bg-white/10 flex flex-col gap-1.5 min-w-[220px] sm:min-w-[280px]">
@@ -885,10 +877,18 @@
                             <span class="text-[9.5px] opacity-75">${msg.formatted_size || 'Audio Rekaman'}</span>
                         </div>
                     </div>
-                    <audio controls class="w-full h-8 rounded-lg outline-none" preload="metadata">
+                    <audio controls class="w-full h-8 rounded-lg outline-none" preload="auto">
                         <source src="${msg.attachment_url}" type="${msg.attachment_mime || 'audio/webm'}">
                         Browser Anda tidak mendukung pemutar audio.
                     </audio>
+                </div>
+            `;
+        } else if (msg.is_video && msg.attachment_url) {
+            mediaHtml += `
+                <div class="mb-2 rounded-xl overflow-hidden bg-black max-w-sm">
+                    <video controls class="w-full max-h-72 rounded-xl">
+                        <source src="${msg.attachment_url}">
+                    </video>
                 </div>
             `;
         } else if (msg.is_document && msg.attachment_url) {
@@ -1115,6 +1115,9 @@
         };
 
         try {
+            if (mediaRecorder.state === 'recording') {
+                mediaRecorder.requestData();
+            }
             mediaRecorder.stop();
         } catch (e) {
             resetVoiceRecordingUI();

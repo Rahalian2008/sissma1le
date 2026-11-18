@@ -77,17 +77,34 @@ class BkConsultationMessage extends Model
         );
     }
 
-    public function getIsVideoAttribute(): bool
-    {
-        return $this->attachment_type === 'VIDEO' || (
-            $this->attachment_mime && str_starts_with($this->attachment_mime, 'video/')
-        );
-    }
-
     public function getIsAudioAttribute(): bool
     {
-        return $this->attachment_type === 'AUDIO' || (
-            $this->attachment_mime && str_starts_with($this->attachment_mime, 'audio/')
+        if ($this->attachment_type === 'AUDIO') {
+            return true;
+        }
+
+        if (! empty($this->attachment_name) && str_starts_with($this->attachment_name, 'voicenote_')) {
+            return true;
+        }
+
+        if ($this->attachment_mime && str_starts_with($this->attachment_mime, 'audio/')) {
+            return true;
+        }
+
+        $path = $this->attachment_name ?? $this->attachment_path ?? '';
+        $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+
+        return in_array($ext, ['mp3', 'wav', 'm4a', 'aac', 'ogg', 'oga', 'weba'], true);
+    }
+
+    public function getIsVideoAttribute(): bool
+    {
+        if ($this->is_audio) {
+            return false;
+        }
+
+        return $this->attachment_type === 'VIDEO' || (
+            $this->attachment_mime && str_starts_with($this->attachment_mime, 'video/')
         );
     }
 

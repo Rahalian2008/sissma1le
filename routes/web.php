@@ -273,33 +273,6 @@ Route::middleware('auth')->group(function () {
         // Akses Terbuka / Khusus Peserta Didik & Guru Bina
         Route::get('/', [BkDashboardController::class, 'index'])->name('dashboard');
         Route::get('/siswa/{student}/360', [BkDashboardController::class, 'studentProfile360'])->name('student.profile360');
-        Route::get('/konseling', [BkCounselingSessionController::class, 'index'])->name('counseling.index');
-        Route::get('/konseling/{session}', [BkCounselingSessionController::class, 'show'])->name('counseling.show');
-        Route::get('/home-visit', [BkHomeVisitController::class, 'index'])->name('home-visit.index');
-        Route::get('/home-visit/{visit}', [BkHomeVisitController::class, 'show'])->name('home-visit.show');
-        Route::get('/parent-call', [BkParentCallController::class, 'index'])->name('parent-call.index');
-        Route::get('/parent-call/{parentCall}', [BkParentCallController::class, 'show'])->name('parent-call.show');
-        Route::get('/sociometry', [BkSociometryController::class, 'index'])->name('sociometry.index');
-        Route::get('/sociometry/{sociometry}', [BkSociometryController::class, 'show'])->name('sociometry.show');
-        Route::post('/sociometry/{sociometry}/response', [BkSociometryController::class, 'storeResponse'])->name('sociometry.response');
-        Route::get('/psikotes', [BkPsychologicalTestController::class, 'index'])->name('psychological.index');
-        Route::get('/psikotes/ambil/{slug}', [BkPsychologicalTestController::class, 'takeTest'])->name('psychological.take');
-        Route::post('/psikotes/ambil/{slug}', [BkPsychologicalTestController::class, 'submitTest'])->name('psychological.submit');
-        Route::get('/psikotes/hasil/{result}', [BkPsychologicalTestController::class, 'result'])->name('psychological.result');
-        Route::get('/psikotes/hasil/{result}/print', [BkPsychologicalTestController::class, 'printResult'])->name('psychological.print');
-        Route::post('/psikotes/hasil/{result}/ai-analysis', [BkPsychologicalTestController::class, 'generateAi'])->name('psychological.generate-ai');
-        Route::delete('/psikotes/hasil/{result}', [BkPsychologicalTestController::class, 'destroyResult'])->name('psychological.destroy');
-        Route::post('/psikotes/demo-seed', [BkPsychologicalTestController::class, 'demoSeed'])->name('psychological.demo-seed');
-        Route::get('/akpd', [BkAkpdController::class, 'index'])->name('akpd.index');
-        Route::get('/akpd/{akpd}', [BkAkpdController::class, 'show'])->name('akpd.show');
-        Route::get('/akpd/{akpd}/ambil', [BkAkpdController::class, 'take'])->name('akpd.take');
-        Route::post('/akpd/{akpd}/ambil', [BkAkpdController::class, 'submit'])->name('akpd.submit');
-        Route::get('/rpl', [BkRplController::class, 'index'])->name('rpl.index');
-        Route::get('/rpl/{rpl}', [BkRplController::class, 'show'])->name('rpl.show');
-        Route::get('/case-conference', [BkCaseConferenceController::class, 'index'])->name('case-conference.index');
-        Route::get('/case-conference/{caseConference}', [BkCaseConferenceController::class, 'show'])->name('case-conference.show');
-        Route::get('/referral', [BkReferralController::class, 'index'])->name('referral.index');
-        Route::get('/referral/{referral}', [BkReferralController::class, 'show'])->name('referral.show');
 
         // Ruang Curhat & Konseling Online Siswa (Interaktif Chat Gaya WhatsApp)
         Route::get('/curhat', [BkCurhatController::class, 'index'])->name('curhat.index');
@@ -310,6 +283,7 @@ Route::middleware('auth')->group(function () {
         Route::delete('/curhat/{consultation}', [BkCurhatController::class, 'destroy'])->name('curhat.destroy');
 
         // Fitur Lengkap / Operasional Manajemen BK (Admin BK: Koordinator BK, Kepala Sekolah, Wakasek Kesiswaan, Guru BK, serta Super Admin/Admin)
+        // Didefinisikan SEBELUM rute parameter wildcard {session}, {visit}, {parentCall}, dll. agar tidak bentrok dengan /create
         Route::middleware('role:super_admin,admin,koordinator_bk,kepala_sekolah,wakasek_kesiswaan,guru_bk,bk')->group(function () {
             // Sesi Konseling
             Route::get('/konseling/create', [BkCounselingSessionController::class, 'create'])->name('counseling.create');
@@ -345,8 +319,9 @@ Route::middleware('auth')->group(function () {
             // Psikotes & Profil Kelas
             Route::get('/psikotes/rekap-kelas', [BkPsychologicalTestController::class, 'classReport'])->name('psychological.class-report');
 
-            // AKPD Analisis
+            // AKPD Analisis & Reset Response
             Route::get('/akpd/{akpd}/cetak-analisis', [BkAkpdController::class, 'printAnalysis'])->name('akpd.print-analysis');
+            Route::delete('/akpd/{akpd}/response/{response}', [BkAkpdController::class, 'destroyResponse'])->name('akpd.response.destroy');
 
             // RPL BK
             Route::get('/rpl/create', [BkRplController::class, 'create'])->name('rpl.create');
@@ -372,6 +347,38 @@ Route::middleware('auth')->group(function () {
             Route::delete('/referral/{referral}', [BkReferralController::class, 'destroy'])->name('referral.destroy');
             Route::get('/referral/{referral}/print', [BkReferralController::class, 'print'])->name('referral.print');
         });
+
+        // Akses Terbuka / Khusus Peserta Didik & Guru Bina (Index, Detail & Submisi)
+        Route::get('/konseling', [BkCounselingSessionController::class, 'index'])->name('counseling.index');
+        Route::get('/konseling/{session}', [BkCounselingSessionController::class, 'show'])->name('counseling.show');
+        Route::get('/home-visit', [BkHomeVisitController::class, 'index'])->name('home-visit.index');
+        Route::get('/home-visit/{visit}', [BkHomeVisitController::class, 'show'])->name('home-visit.show');
+        Route::get('/parent-call', [BkParentCallController::class, 'index'])->name('parent-call.index');
+        Route::get('/parent-call/{parentCall}', [BkParentCallController::class, 'show'])->name('parent-call.show');
+        Route::get('/sociometry', [BkSociometryController::class, 'index'])->name('sociometry.index');
+        Route::get('/sociometry/{sociometry}', [BkSociometryController::class, 'show'])->name('sociometry.show');
+        Route::post('/sociometry/{sociometry}/response', [BkSociometryController::class, 'storeResponse'])->name('sociometry.response');
+
+        Route::get('/psikotes', [BkPsychologicalTestController::class, 'index'])->name('psychological.index');
+        Route::get('/psikotes/ambil/{slug}', [BkPsychologicalTestController::class, 'takeTest'])->name('psychological.take');
+        Route::post('/psikotes/ambil/{slug}', [BkPsychologicalTestController::class, 'submitTest'])->name('psychological.submit');
+        Route::get('/psikotes/hasil/{result}', [BkPsychologicalTestController::class, 'result'])->name('psychological.result');
+        Route::get('/psikotes/hasil/{result}/print', [BkPsychologicalTestController::class, 'printResult'])->name('psychological.print');
+        Route::post('/psikotes/hasil/{result}/ai-analysis', [BkPsychologicalTestController::class, 'generateAi'])->name('psychological.generate-ai');
+        Route::delete('/psikotes/hasil/{result}', [BkPsychologicalTestController::class, 'destroyResult'])->name('psychological.destroy');
+        Route::post('/psikotes/demo-seed', [BkPsychologicalTestController::class, 'demoSeed'])->name('psychological.demo-seed');
+
+        Route::get('/akpd', [BkAkpdController::class, 'index'])->name('akpd.index');
+        Route::get('/akpd/{akpd}', [BkAkpdController::class, 'show'])->name('akpd.show');
+        Route::get('/akpd/{akpd}/ambil', [BkAkpdController::class, 'take'])->name('akpd.take');
+        Route::post('/akpd/{akpd}/ambil', [BkAkpdController::class, 'submit'])->name('akpd.submit');
+
+        Route::get('/rpl', [BkRplController::class, 'index'])->name('rpl.index');
+        Route::get('/rpl/{rpl}', [BkRplController::class, 'show'])->name('rpl.show');
+        Route::get('/case-conference', [BkCaseConferenceController::class, 'index'])->name('case-conference.index');
+        Route::get('/case-conference/{caseConference}', [BkCaseConferenceController::class, 'show'])->name('case-conference.show');
+        Route::get('/referral', [BkReferralController::class, 'index'])->name('referral.index');
+        Route::get('/referral/{referral}', [BkReferralController::class, 'show'])->name('referral.show');
     });
 
     // Gerakan 7 Kebiasaan Anak Indonesia Hebat
