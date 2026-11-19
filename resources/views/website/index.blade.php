@@ -196,13 +196,13 @@
         <aside aria-label="Pengumuman Resmi Sekolah" class="bg-gradient-to-r from-indigo-700/95 via-indigo-600/95 to-blue-700/95 dark:from-indigo-950/95 dark:via-slate-900/95 dark:to-indigo-950/95 backdrop-blur-md text-white py-1.5 sm:py-2 px-3 sm:px-4 shadow-xs border-b border-indigo-500/30 dark:border-indigo-900/50 pt-[env(safe-area-inset-top,0px)]">
             <div class="max-w-7xl 2xl:max-w-[1536px] mx-auto flex items-center justify-between gap-2">
                 <div class="flex items-center gap-1.5 sm:gap-2 min-w-0">
-                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-400 text-slate-950 text-[9px] sm:text-[10px] font-black uppercase tracking-wider shrink-0 shadow-xs">
+                    <span class="inline-flex items-center gap-1 px-1.5 sm:px-2 py-0.5 rounded-full bg-amber-400 text-slate-950 text-[9px] sm:text-[10px] font-black uppercase tracking-wider shrink-0 shadow-xs">
                         <span class="w-1.5 h-1.5 rounded-full bg-slate-950 animate-ping"></span>
                         Resmi
                     </span>
-                    <!-- Mobile View: Ringkas & rapi tanpa truncate ellipsis '...' -->
-                    <p class="sm:hidden text-indigo-100 text-[10.5px] font-semibold whitespace-nowrap">
-                        <span class="font-bold text-amber-300">{{ $settings['app_name'] ?? 'SIS-SMA1LE' }}</span> • Terakreditasi A • NPSN: {{ $settings['school_npsn'] ?? '20202265' }}
+                    <!-- Mobile View: Rapih, proporsional, dan tidak terpotong -->
+                    <p class="sm:hidden text-indigo-100 text-[11px] font-semibold truncate">
+                        <span class="font-bold text-white">{{ $settings['school_name'] ?? 'SMAN 1 Lengkong' }}</span> • <span class="text-amber-300 font-bold">Akreditasi A</span>
                     </p>
                     <!-- Tablet & Desktop View: Lengkap -->
                     <p class="hidden sm:block truncate text-indigo-100 text-xs font-medium">
@@ -210,11 +210,8 @@
                     </p>
                 </div>
                 <div class="flex items-center gap-2 shrink-0">
-                    <!-- Mobile Quick Bel & SPMB Pill -->
-                    <a href="{{ route('school_bell.index') }}" class="sm:hidden px-2 py-0.5 rounded-full bg-amber-400 text-slate-950 font-black text-[10px] shadow-xs flex items-center gap-1">
-                        <span>🔔 Bel</span>
-                    </a>
-                    <a href="{{ route('spmb.public.register') }}" class="sm:hidden px-2.5 py-0.5 rounded-full bg-gradient-to-r from-emerald-400 to-teal-300 text-slate-950 font-black text-[10px] shadow-xs flex items-center gap-1">
+                    <!-- Mobile Quick SPMB Pill (Rapi & Proporsional di Ponsel) -->
+                    <a href="{{ route('spmb.public.register') }}" class="sm:hidden px-2.5 py-0.5 rounded-full bg-gradient-to-r from-emerald-400 to-teal-300 text-slate-950 font-black text-[10px] shadow-xs flex items-center gap-1 shrink-0">
                         <span>🎓 SPMB</span>
                     </a>
                     <div class="hidden md:flex items-center gap-3 text-[11px] text-indigo-100 shrink-0">
@@ -270,7 +267,7 @@
                         @endif
                     </div>
                 </div>
-                <div class="min-w-0">
+                <div class="min-w-0 max-w-[150px] xs:max-w-[220px] sm:max-w-none">
                     <h1 class="font-heading font-black text-slate-900 dark:text-white text-xs sm:text-base lg:text-lg tracking-tight leading-none group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors truncate">
                         {{ $settings['school_name'] ?? 'SMAN 1 LENGKONG' }}
                     </h1>
@@ -280,6 +277,35 @@
                     </p>
                 </div>
             </a>
+
+            <!-- Desktop Center Navigation Pill Bar (Modifikasi Menarik, Estetik & Modern) -->
+            <nav class="hidden lg:flex items-center gap-1 xl:gap-2 px-3 py-1.5 rounded-full bg-slate-100/90 dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800/80 shadow-xs backdrop-blur-md">
+                <a href="#hero" class="px-3 py-1.5 rounded-full text-xs font-bold text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800 transition shadow-2xs whitespace-nowrap">
+                    Beranda
+                </a>
+                <a href="#sambutan" class="px-3 py-1.5 rounded-full text-xs font-bold text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800 transition shadow-2xs whitespace-nowrap">
+                    Sambutan
+                </a>
+                <a href="#profil" class="px-3 py-1.5 rounded-full text-xs font-bold text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800 transition shadow-2xs whitespace-nowrap">
+                    Profil
+                </a>
+                <a href="#berita" class="px-3 py-1.5 rounded-full text-xs font-bold text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800 transition shadow-2xs whitespace-nowrap">
+                    Berita
+                </a>
+                <a href="#guru-staf" class="px-3 py-1.5 rounded-full text-xs font-bold text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800 transition shadow-2xs whitespace-nowrap">
+                    Guru & Staf
+                </a>
+                <a href="#agenda" class="px-3 py-1.5 rounded-full text-xs font-bold text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800 transition shadow-2xs whitespace-nowrap">
+                    Agenda
+                </a>
+                <a href="#prestasi" class="px-3 py-1.5 rounded-full text-xs font-bold text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800 transition shadow-2xs whitespace-nowrap">
+                    Prestasi
+                </a>
+                <a href="#ekosistem-sis" class="px-3.5 py-1.5 rounded-full text-xs font-extrabold text-indigo-600 dark:text-indigo-300 bg-white dark:bg-slate-800 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 border border-indigo-200/80 dark:border-indigo-800/80 transition shadow-xs flex items-center gap-1.5 whitespace-nowrap">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span>SIS-SMA1LE</span>
+                </a>
+            </nav>
 
             <!-- Actions: Dark Mode & Gateways -->
             <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
@@ -308,7 +334,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
                         </svg>
                         <span class="hidden sm:inline">Masuk SIS-SMA1LE</span>
-                        <span class="sm:hidden">SIS-SMA1LE</span>
+                        <span class="sm:hidden">Masuk</span>
                     </a>
                 @endauth
 
@@ -425,12 +451,15 @@
                 <a href="{{ route('parent.portal') }}" class="w-full text-center py-2.5 px-4 rounded-xl font-bold text-xs bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
                     👨‍👩‍👧‍👦 Buka Portal Orang Tua Siswa (Tanpa Login)
                 </a>
-                <div class="grid grid-cols-2 gap-1.5 pt-1">
-                    <a href="{{ route('guests.kiosk') }}" target="_blank" class="text-center py-2 px-1.5 rounded-xl font-bold text-[11px] bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700">
-                        👥 Kios Tamu
+                <div class="grid grid-cols-3 gap-1.5 pt-1">
+                    <a href="{{ route('school_bell.index') }}" target="_blank" class="text-center py-2 px-1 rounded-xl font-bold text-[10px] bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
+                        🔔 Bel
                     </a>
-                    <a href="{{ route('library.guest_book.index') }}" target="_blank" class="text-center py-2 px-1.5 rounded-xl font-bold text-[11px] bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700">
-                        📚 Kios Perpus
+                    <a href="{{ route('guests.kiosk') }}" target="_blank" class="text-center py-2 px-1 rounded-xl font-bold text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700">
+                        👥 Tamu
+                    </a>
+                    <a href="{{ route('library.guest_book.index') }}" target="_blank" class="text-center py-2 px-1 rounded-xl font-bold text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700">
+                        📚 Perpus
                     </a>
                 </div>
             </div>
