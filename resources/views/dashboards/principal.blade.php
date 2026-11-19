@@ -616,12 +616,6 @@
                 <span class="text-lg">🗂️</span>
                 <span class="truncate w-full">Adm. Ketatausahaan</span>
             </a>
-
-            <!-- 15. Display Kios TV -->
-            <a href="{{ route('kiosk.index') }}" target="_blank" class="p-3 bg-indigo-950/80 hover:bg-indigo-900 border border-indigo-500/40 rounded-2xl text-indigo-200 font-black transition flex flex-col items-center justify-center gap-1.5 hover:scale-[1.02] shadow-md shadow-indigo-900/30">
-                <span class="text-lg">📺</span>
-                <span class="truncate w-full">Display Kios TV</span>
-            </a>
         </div>
     </div>
 </div>

@@ -607,17 +607,6 @@
                         <span class="hidden md:inline">Al-Qur'an Digital</span>
                     </a>
 
-                    @if($canSeeKiosk)
-                    {{-- Display Kios TV Quick Launch (Disembunyikan di HP kecil agar topbar lega) --}}
-                    <a href="{{ route('kiosk.index') }}" target="_blank" aria-label="Buka Display Kios TV" title="Buka Display Kios TV (Layar Publik Lobby/Kelas)"
-                        class="hidden sm:inline-flex touch-target relative text-slate-500 dark:text-slate-400 hover:text-amber-500 dark:hover:text-amber-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition cursor-pointer p-2 items-center justify-center active:scale-95 shrink-0">
-                        <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                        </svg>
-                        <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-amber-500 rounded-full animate-ping"></span>
-                    </a>
-                    @endif
-
                     <!-- Fullscreen Toggle Button for Classroom/Kiosk/Laptop Displays -->
                     <button onclick="toggleAppFullscreen()" type="button" aria-label="Layar Penuh" title="Layar Penuh / Maksimalkan Luas Tampilan"
                         class="hidden md:inline-flex text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition cursor-pointer active:scale-95 shrink-0 w-8.5 h-8.5 items-center justify-center">
@@ -1437,12 +1426,12 @@
                 <span class="truncate max-w-[56px] xs:max-w-none">Web</span>
             </a>
 
-            <!-- 2. Kios TV -->
-            <a href="{{ route('kiosk.index') }}" target="_blank" class="flex-1 min-w-0 flex flex-col items-center justify-center gap-0.5 py-1 px-1 touch-target text-[11px] xs:text-[12px] font-semibold tracking-tight transition active:scale-95 text-slate-500 dark:text-slate-400 hover:text-indigo-500">
-                <svg class="w-5 h-5 text-sky-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+            <!-- 2. Kios Tamu -->
+            <a href="{{ route('guests.kiosk') }}" target="_blank" class="flex-1 min-w-0 flex flex-col items-center justify-center gap-0.5 py-1 px-1 touch-target text-[11px] xs:text-[12px] font-semibold tracking-tight transition active:scale-95 text-slate-500 dark:text-slate-400 hover:text-indigo-500">
+                <svg class="w-5 h-5 text-teal-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
                 </svg>
-                <span class="truncate max-w-[56px] xs:max-w-none">Kios TV</span>
+                <span class="truncate max-w-[56px] xs:max-w-none">Kios Tamu</span>
             </a>
 
             <!-- CENTER FAB: Bel Sekolah Terpadu (Akses Langsung Tanpa Login) -->

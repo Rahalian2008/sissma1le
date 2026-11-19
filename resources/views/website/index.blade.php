@@ -281,20 +281,6 @@
                 </div>
             </a>
 
-            <!-- Desktop Navigation Links -->
-            <nav class="hidden lg:flex items-center gap-1 xl:gap-1.5 text-xs font-bold text-slate-700 dark:text-slate-200">
-                <a href="#hero" class="px-2.5 py-1.5 rounded-lg hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition">Beranda</a>
-                <a href="#sambutan" class="px-2.5 py-1.5 rounded-lg hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition">Sambutan</a>
-                <a href="#profil" class="px-2.5 py-1.5 rounded-lg hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition">Profil</a>
-                <a href="#berita" class="px-2.5 py-1.5 rounded-lg hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition">Berita</a>
-                <a href="#guru-staf" class="px-2.5 py-1.5 rounded-lg hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition">Guru & Staf</a>
-                <a href="#agenda" class="px-2.5 py-1.5 rounded-lg hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition">Agenda</a>
-                <a href="#ekosistem-sis" class="px-2.5 py-1.5 rounded-lg text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 transition flex items-center gap-1">
-                    <span>💻 SIS-SMA1LE</span>
-                </a>
-                <a href="#prestasi" class="px-2.5 py-1.5 rounded-lg hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition">Prestasi</a>
-            </nav>
-
             <!-- Actions: Dark Mode & Gateways -->
             <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
                 <button type="button" id="theme-toggle" class="p-1.5 sm:p-2.5 rounded-xl text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/70 border border-slate-200/60 dark:border-slate-800 transition" aria-label="Ganti Tema">
