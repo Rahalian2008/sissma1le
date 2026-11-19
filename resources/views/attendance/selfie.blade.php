@@ -92,7 +92,9 @@
 
         <!-- Active Status Banner (Checkin vs Checkout) -->
         @php
-            $hasCheckin = $existingAttendance && !empty($existingAttendance->time);
+            $hasCheckin = $existingAttendance 
+                && in_array($existingAttendance->status, ['HADIR', 'TERLAMBAT']) 
+                && !empty($existingAttendance->time);
             $hasCheckout = $existingAttendance && !empty($existingAttendance->time_out);
             $isComplete = $hasCheckin && $hasCheckout;
 
@@ -361,6 +363,9 @@
                     @if($isPrivileged)
                         <button type="button" onclick="takeSelfie('checkout', true)" class="text-xs text-amber-600 dark:text-amber-400 hover:underline font-bold cursor-pointer">
                             ⚡ Mode Admin: Buka Paksa Sesi Presensi Pulang
+                        </button>
+                        <button type="button" onclick="takeSelfie('checkin', true)" class="text-xs text-indigo-600 dark:text-indigo-400 hover:underline font-semibold cursor-pointer">
+                            ⚡ Mode Admin: Paksa Sesi Presensi Masuk (Hadir)
                         </button>
                     @endif
                 </div>

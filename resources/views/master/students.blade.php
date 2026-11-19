@@ -14,25 +14,27 @@
             <h1 class="text-xl sm:text-3xl font-black text-white mt-2">Data Induk Siswa & Kartu RFID</h1>
             <p class="text-xs text-slate-300 mt-1">Kelola data identitas siswa, nomor induk, penetapan rombel, dan penetapan UID kartu presensi RFID.</p>
         </div>
-        <div class="flex flex-wrap items-center gap-2 sm:gap-3 w-full sm:w-auto">
-            <a href="{{ route('attendance.cards.index') }}" class="w-full sm:w-auto justify-center px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl text-xs flex items-center gap-2 shadow-xs transition">
-                <svg class="w-4 h-4 text-sky-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
-                Cetak Kartu Siswa (RFID/QR)
-            </a>
-            <form action="{{ route('master.students.sync_dapodik') }}" method="POST" class="inline" onsubmit="return confirm('Mulai sinkronisasi data identitas siswa dari file Dapodik Download?')">
-                @csrf
-                <button type="submit" class="w-full sm:w-auto justify-center px-4 py-2.5 bg-amber-600 hover:bg-amber-500 text-white font-bold rounded-xl text-xs flex items-center gap-2 shadow-xs transition cursor-pointer" title="Sinkronkan data identitas siswa (TTL, NIK, Agama, Alamat, Ortu, Sekolah Asal) dari file Dapodik">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-                    <span>Sinkronkan Dapodik</span>
+        <div class="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-2.5 w-full sm:w-auto">
+            <div class="inline-flex items-center p-1 rounded-xl bg-white/10 backdrop-blur-md border border-white/15 gap-1 flex-wrap">
+                <a href="{{ route('attendance.cards.index') }}" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold text-slate-200 hover:text-white hover:bg-white/10 transition inline-flex items-center gap-1.5">
+                    <svg class="w-3.5 h-3.5 text-sky-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+                    <span>Cetak Kartu RFID</span>
+                </a>
+                <form action="{{ route('master.students.sync_dapodik') }}" method="POST" class="inline" onsubmit="return confirm('Mulai sinkronisasi data identitas siswa dari file Dapodik Download?')">
+                    @csrf
+                    <button type="submit" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold text-slate-200 hover:text-white hover:bg-white/10 transition inline-flex items-center gap-1.5 cursor-pointer" title="Sinkronkan data identitas siswa dari file Dapodik">
+                        <svg class="w-3.5 h-3.5 text-amber-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                        <span>Sinkron Dapodik</span>
+                    </button>
+                </form>
+                <button type="button" onclick="document.getElementById('importStudentModal').classList.remove('hidden')" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold text-slate-200 hover:text-white hover:bg-white/10 transition inline-flex items-center gap-1.5 cursor-pointer">
+                    <svg class="w-3.5 h-3.5 text-emerald-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                    <span>Impor</span>
                 </button>
-            </form>
-            <button onclick="document.getElementById('importStudentModal').classList.remove('hidden')" class="w-full sm:w-auto justify-center px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs flex items-center gap-2 shadow-xs transition cursor-pointer">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
-                Impor Siswa
-            </button>
-            <button onclick="document.getElementById('addStudentModal').classList.remove('hidden')" class="w-full sm:w-auto justify-center px-4 py-2.5 bg-sky-600 hover:bg-sky-500 text-white font-bold rounded-xl text-xs flex items-center gap-2 shadow-xs transition cursor-pointer">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
-                + Tambah Siswa Baru
+            </div>
+            <button type="button" onclick="document.getElementById('addStudentModal').classList.remove('hidden')" class="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-white hover:bg-slate-100 text-sky-900 font-bold text-xs shadow-md transition cursor-pointer">
+                <svg class="w-4 h-4 text-sky-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                <span>Tambah Siswa</span>
             </button>
         </div>
     </div>

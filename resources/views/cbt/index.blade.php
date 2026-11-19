@@ -27,8 +27,8 @@
 
             <!-- Tombol Aksi Utama -->
             <div class="flex items-center gap-3 shrink-0 flex-wrap">
-                <a href="{{ route('cbt.exams.create') }}" class="px-5 py-3 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-sm shadow-lg shadow-amber-500/20 transition flex items-center gap-2 cursor-pointer">
-                    <span class="text-lg">➕</span>
+                <a href="{{ route('cbt.exams.create') }}" class="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs sm:text-sm shadow-xs shadow-indigo-600/30 transition flex items-center gap-2 cursor-pointer">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                     <span>Buat Jadwal Ujian Baru</span>
                 </a>
             </div>

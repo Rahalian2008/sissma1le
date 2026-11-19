@@ -245,10 +245,10 @@ class AttendanceService
 
         // Menentukan apakah request ini ditujukan untuk sesi Pulang (Checkout)
         $isAttemptingCheckout = ($sessionType === 'checkout') ||
-            ($existingAttendance && ! empty($existingAttendance->time) && empty($existingAttendance->time_out) && $sessionType !== 'checkin');
+            ($existingAttendance && in_array($existingAttendance->status, ['HADIR', 'TERLAMBAT']) && ! empty($existingAttendance->time) && empty($existingAttendance->time_out) && $sessionType !== 'checkin');
 
         if ($isAttemptingCheckout) {
-            if (! $existingAttendance || empty($existingAttendance->time)) {
+            if (! $existingAttendance || empty($existingAttendance->time) || ! in_array($existingAttendance->status, ['HADIR', 'TERLAMBAT'])) {
                 return [
                     'success' => false,
                     'message' => 'Anda belum melakukan presensi masuk hari ini. Silakan lakukan presensi masuk terlebih dahulu.',
@@ -307,7 +307,7 @@ class AttendanceService
         }
 
         // PROSES SESI MASUK
-        if ($existingAttendance && ! empty($existingAttendance->time)) {
+        if ($existingAttendance && in_array($existingAttendance->status, ['HADIR', 'TERLAMBAT']) && ! empty($existingAttendance->time) && $sessionType !== 'checkin') {
             return [
                 'success' => false,
                 'message' => 'Anda telah melakukan presensi masuk hari ini pada pukul '.substr($existingAttendance->time, 0, 5).' WIB.',

@@ -158,39 +158,46 @@
     <!-- MAIN TABS NAVIGATION -->
     <div class="border-b border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div class="flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-px no-scrollbar scroll-smooth">
-            <button type="button" @click="activeTab = 'schedules'" :class="activeTab === 'schedules' ? 'border-amber-500 text-amber-600 dark:text-amber-400 font-extrabold' : 'border-transparent text-slate-600 dark:text-slate-400 font-semibold hover:text-slate-900 hover:border-slate-300'" class="py-2.5 sm:py-3 px-3 sm:px-4 text-xs sm:text-sm border-b-2 transition flex items-center gap-1.5 sm:gap-2 cursor-pointer whitespace-nowrap">
-                <span>🔔 Jadwal Bel Harian</span>
-                <span class="px-2 py-0.5 rounded-full text-[10px] bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 font-mono">{{ $allBells->count() }}</span>
+            <button type="button" @click="activeTab = 'schedules'" :class="activeTab === 'schedules' ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 font-bold' : 'border-transparent text-slate-600 dark:text-slate-400 font-medium hover:text-slate-900 hover:border-slate-300'" class="py-2.5 sm:py-3 px-3 sm:px-4 text-xs sm:text-sm border-b-2 transition flex items-center gap-2 cursor-pointer whitespace-nowrap">
+                <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+                <span>Jadwal Bel Harian</span>
+                <span class="px-2 py-0.5 rounded-full text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-mono">{{ $allBells->count() }}</span>
             </button>
-            <button type="button" @click="activeTab = 'soundboard'" :class="activeTab === 'soundboard' ? 'border-amber-500 text-amber-600 dark:text-amber-400 font-extrabold' : 'border-transparent text-slate-600 dark:text-slate-400 font-semibold hover:text-slate-900 hover:border-slate-300'" class="py-2.5 sm:py-3 px-3 sm:px-4 text-xs sm:text-sm border-b-2 transition flex items-center gap-1.5 sm:gap-2 cursor-pointer whitespace-nowrap">
-                <span>🎛️ Soundboard</span>
-                <span class="px-2 py-0.5 rounded-full text-[10px] bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300 font-mono">{{ count($instantSounds) }}</span>
+            <button type="button" @click="activeTab = 'soundboard'" :class="activeTab === 'soundboard' ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 font-bold' : 'border-transparent text-slate-600 dark:text-slate-400 font-medium hover:text-slate-900 hover:border-slate-300'" class="py-2.5 sm:py-3 px-3 sm:px-4 text-xs sm:text-sm border-b-2 transition flex items-center gap-2 cursor-pointer whitespace-nowrap">
+                <svg class="w-4 h-4 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
+                <span>Soundboard</span>
+                <span class="px-2 py-0.5 rounded-full text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-mono">{{ count($instantSounds) }}</span>
             </button>
-            <button type="button" @click="activeTab = 'anthems'" :class="activeTab === 'anthems' ? 'border-amber-500 text-amber-600 dark:text-amber-400 font-extrabold' : 'border-transparent text-slate-600 dark:text-slate-400 font-semibold hover:text-slate-900 hover:border-slate-300'" class="py-2.5 sm:py-3 px-3 sm:px-4 text-xs sm:text-sm border-b-2 transition flex items-center gap-1.5 sm:gap-2 cursor-pointer whitespace-nowrap">
-                <span>🇮🇩 Lagu Nasional</span>
-                <span class="px-2 py-0.5 rounded-full text-[10px] bg-red-100 dark:bg-red-950 text-red-700 dark:text-red-300 font-mono">10</span>
+            <button type="button" @click="activeTab = 'anthems'" :class="activeTab === 'anthems' ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 font-bold' : 'border-transparent text-slate-600 dark:text-slate-400 font-medium hover:text-slate-900 hover:border-slate-300'" class="py-2.5 sm:py-3 px-3 sm:px-4 text-xs sm:text-sm border-b-2 transition flex items-center gap-2 cursor-pointer whitespace-nowrap">
+                <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"/></svg>
+                <span>Lagu Nasional</span>
+                <span class="px-2 py-0.5 rounded-full text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-mono">10</span>
             </button>
-            <button type="button" @click="activeTab = 'quran'" :class="activeTab === 'quran' ? 'border-amber-500 text-amber-600 dark:text-amber-400 font-extrabold' : 'border-transparent text-slate-600 dark:text-slate-400 font-semibold hover:text-slate-900 hover:border-slate-300'" class="py-2.5 sm:py-3 px-3 sm:px-4 text-xs sm:text-sm border-b-2 transition flex items-center gap-1.5 sm:gap-2 cursor-pointer whitespace-nowrap">
-                <span>📖 Murottal 114 Surah</span>
-                <span class="px-2 py-0.5 rounded-full text-[10px] bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-mono">114</span>
+            <button type="button" @click="activeTab = 'quran'" :class="activeTab === 'quran' ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 font-bold' : 'border-transparent text-slate-600 dark:text-slate-400 font-medium hover:text-slate-900 hover:border-slate-300'" class="py-2.5 sm:py-3 px-3 sm:px-4 text-xs sm:text-sm border-b-2 transition flex items-center gap-2 cursor-pointer whitespace-nowrap">
+                <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                <span>Murottal 114 Surah</span>
+                <span class="px-2 py-0.5 rounded-full text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-mono">114</span>
             </button>
         </div>
 
         <div class="shrink-0 w-full sm:w-auto flex flex-wrap items-center justify-end gap-2" x-show="activeTab === 'schedules'">
-            <button type="button" @click="openAddModal()" class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-md transition flex items-center gap-1.5 cursor-pointer">
-                <span>+ Tambah Jadwal Bel</span>
+            <button type="button" @click="openAddModal()" class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs shadow-xs shadow-indigo-600/30 transition flex items-center gap-1.5 cursor-pointer">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                <span>Tambah Jadwal Bel</span>
             </button>
             <form action="{{ route('school_bell.reset_defaults') }}" method="POST" onsubmit="return confirm('Kembalikan seluruh jadwal ke setelan resmi SMAN 1 Lengkong TP 2026/2027 (53 jadwal lengkap)? Jadwal saat ini akan ditimpa.')" class="inline">
                 @csrf
-                <button type="submit" class="px-3 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30 font-bold text-xs transition flex items-center gap-1.5 cursor-pointer" title="Muat Jadwal Resmi TP 2026/2027">
-                    <span>🔄 Reset Standar (53 Jadwal)</span>
+                <button type="submit" class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 font-semibold text-xs transition flex items-center gap-1.5 cursor-pointer" title="Muat Jadwal Resmi TP 2026/2027">
+                    <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                    <span>Reset Standar (53)</span>
                 </button>
             </form>
             @if($allBells->count() > 0)
             <form action="{{ route('school_bell.clear_all') }}" method="POST" onsubmit="return confirm('Peringatan! Apakah Anda yakin ingin menghapus SEMUA jadwal bel harian? Anda dapat mengisinya kembali atau memuat jadwal standar kapan saja.')" class="inline">
                 @csrf
-                <button type="submit" class="px-3 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/30 font-bold text-xs transition flex items-center gap-1.5 cursor-pointer" title="Hapus Semua Jadwal">
-                    <span>🗑️ Hapus Semua</span>
+                <button type="submit" class="px-3 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-900/40 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-800 font-semibold text-xs transition flex items-center gap-1.5 cursor-pointer" title="Hapus Semua Jadwal">
+                    <svg class="w-3.5 h-3.5 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                    <span>Hapus Semua</span>
                 </button>
             </form>
             @endif

@@ -28,3 +28,8 @@ Thumbs.db
 powershell.bat
 *.zip
 /database/presensi_export.sql
+*.sql
+!database/database_hostinger.sql
+!database/database_hostinger_sissma1le.sql
+!database_hostinger_sikatas1.sql
+!database_hostinger_sissma1le.sql

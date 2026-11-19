@@ -72,7 +72,7 @@ class Attendance extends Model
                     $att->class_id = $att->class_id ?: $student->class_id;
                 }
             }
-            if (empty($att->time)) {
+            if (empty($att->time) && $att->status !== 'ALPA') {
                 $att->time = now()->format('H:i:s');
             }
         });

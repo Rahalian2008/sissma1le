@@ -10,9 +10,9 @@
     <!-- Header -->
     <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 sm:gap-4 p-4 sm:p-6 bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl sm:rounded-3xl shadow-xs">
         <div class="min-w-0">
-            <div class="text-[11px] sm:text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider mb-1">Presensi Pengunjung</div>
+            <div class="text-[11px] sm:text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider mb-1">Presensi Pengunjung</div>
             <h1 class="text-lg sm:text-xl lg:text-2xl font-black text-slate-900 dark:text-white flex items-center gap-2">
-                <span>📝 Buku Tamu & Presensi Perpustakaan</span>
+                <span>Buku Tamu & Presensi Perpustakaan</span>
             </h1>
             <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
                 Pencatatan kehadiran pengunjung perpustakaan mandiri melalui Scan Barcode, Master Data Siswa & Guru, atau Entri Tamu Manual.
@@ -20,13 +20,16 @@
         </div>
 
         <div class="grid grid-cols-2 sm:flex sm:items-center gap-2 w-full lg:w-auto shrink-0">
-            <a href="{{ route('library.guest_book.index') }}" target="_blank" class="px-3.5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-sm transition flex items-center justify-center gap-1.5 text-center">
-                <span>🖥️ Kiosk Tamu</span>
+            <a href="{{ route('library.guest_book.index') }}" target="_blank" class="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-slate-700 dark:hover:bg-slate-600 text-white font-semibold text-xs transition flex items-center justify-center gap-1.5 text-center shadow-2xs">
+                <svg class="w-3.5 h-3.5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                <span>Kiosk Tamu</span>
+                <span class="text-xs">&nearr;</span>
             </a>
-            <a href="{{ route('library.reports.visitors') }}" class="px-3.5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-sm transition flex items-center justify-center gap-1.5 text-center">
-                <span>📊 Laporan</span>
+            <a href="{{ route('library.reports.visitors') }}" class="px-3.5 py-2 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 font-semibold text-xs transition flex items-center justify-center gap-1.5 text-center shadow-2xs">
+                <svg class="w-3.5 h-3.5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                <span>Laporan</span>
             </a>
-            <a href="{{ route('library.index') }}" class="col-span-2 sm:col-auto px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold text-xs transition text-center border border-slate-200/80 dark:border-slate-700">
+            <a href="{{ route('library.index') }}" class="col-span-2 sm:col-auto px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold text-xs transition text-center border border-slate-200/80 dark:border-slate-700">
                 &larr; Dashboard
             </a>
         </div>

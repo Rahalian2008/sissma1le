@@ -46,18 +46,26 @@
                 <form action="{{ route('attendance.rfid.toggle') }}" method="POST">
                     @csrf
                     <button type="submit" 
-                        class="px-4 py-2.5 rounded-xl font-bold text-xs transition flex items-center gap-2 shadow-sm cursor-pointer {{ $isEnabled ? 'bg-rose-600/90 hover:bg-rose-600 text-white' : 'bg-emerald-600 hover:bg-emerald-500 text-white' }}"
+                        class="px-3.5 py-2 rounded-xl font-semibold text-xs transition flex items-center gap-1.5 shadow-xs cursor-pointer {{ $isEnabled ? 'bg-rose-600/90 hover:bg-rose-600 text-white' : 'bg-emerald-600 hover:bg-emerald-500 text-white' }}"
                         title="Klik untuk menyalakan/mematikan penerimaan presensi kartu RFID">
-                        <span>{{ $isEnabled ? '⏸️ Nonaktifkan RFID' : '▶️ Aktifkan RFID' }}</span>
+                        @if($isEnabled)
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <span>Nonaktifkan RFID</span>
+                        @else
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <span>Aktifkan RFID</span>
+                        @endif
                     </button>
                 </form>
 
-                <a href="{{ route('attendance.rfid.simulator') }}" class="px-4 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs shadow-sm transition flex items-center gap-2">
-                    <span>🎮 Simulator Tap</span>
+                <a href="{{ route('attendance.rfid.simulator') }}" class="px-3.5 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-semibold text-xs shadow-xs transition flex items-center gap-1.5">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/></svg>
+                    <span>Simulator Tap</span>
                 </a>
 
-                <a href="{{ route('attendance.index') }}" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs border border-slate-700 transition flex items-center gap-2">
-                    <span>📱 Scanner Gerbang</span>
+                <a href="{{ route('attendance.index') }}" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs border border-slate-700 transition flex items-center gap-1.5">
+                    <svg class="w-3.5 h-3.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>
+                    <span>Scanner Gerbang</span>
                 </a>
             </div>
         </div>
@@ -138,14 +146,16 @@
                     </div>
 
                     <div class="flex items-center gap-2">
-                        <button type="button" onclick="openAddDeviceModal()" class="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs transition flex items-center gap-1.5 shadow-xs cursor-pointer">
-                            <span>➕ Tambah Mesin</span>
+                        <button type="button" onclick="openAddDeviceModal()" class="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs transition flex items-center gap-1.5 shadow-xs cursor-pointer">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                            <span>Tambah Mesin</span>
                         </button>
                         
                         <form action="{{ route('master.devices.generate_default') }}" method="POST" onsubmit="return confirm('Atur ulang seluruh konfigurasi mesin ke standar resmi SMAN 1 Lengkong?');">
                             @csrf
-                            <button type="submit" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs transition cursor-pointer" title="Inisialisasi 6 Mesin RFID Bawaan">
-                                <span>⚡ Reset Default</span>
+                            <button type="submit" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold text-xs transition flex items-center gap-1.5 cursor-pointer" title="Inisialisasi 6 Mesin RFID Bawaan">
+                                <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                                <span>Reset Default</span>
                             </button>
                         </form>
                     </div>

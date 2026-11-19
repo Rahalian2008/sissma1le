@@ -77,65 +77,91 @@
         </div>
 
         <div class="flex items-center gap-2 flex-wrap">
-            <!-- 1. Izin Keluar Sekolah -->
-            <button type="button" onclick="openSchoolPassModal()" 
-               class="px-3.5 py-2 rounded-xl text-xs font-bold bg-teal-600 hover:bg-teal-500 text-white transition flex items-center gap-1.5 shadow-xs shadow-teal-600/20 active:scale-95 cursor-pointer"
-               title="Buka Form Izin Keluar Lingkungan Sekolah (Lengkap sampai Cetak Dokumen)">
-                <span>🚪</span>
-                <span>Izin Keluar Sekolah</span>
-                @if(($pendingExitPermitsCount ?? 0) > 0)
-                    <span class="w-4 h-4 rounded-full bg-rose-600 text-white text-[10px] font-black flex items-center justify-center">{{ $pendingExitPermitsCount }}</span>
-                @endif
-            </button>
+            <!-- Group 1: Layanan Izin & Petugas Piket -->
+            <div class="inline-flex items-center gap-1.5 p-1 rounded-2xl bg-slate-100/90 dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 shadow-2xs flex-wrap">
+                <!-- 1. Izin Keluar Sekolah -->
+                <button type="button" onclick="openSchoolPassModal()" 
+                   class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:text-teal-600 dark:hover:text-teal-400 hover:bg-slate-50 dark:hover:bg-slate-750 border border-slate-200/70 dark:border-slate-700/60 shadow-2xs hover:shadow-xs transition flex items-center gap-1.5 active:scale-95 cursor-pointer"
+                   title="Buka Form Izin Keluar Lingkungan Sekolah (Lengkap sampai Cetak Dokumen)">
+                    <svg class="w-4 h-4 text-teal-600 dark:text-teal-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                    </svg>
+                    <span>Izin Keluar Sekolah</span>
+                    @if(($pendingExitPermitsCount ?? 0) > 0)
+                        <span class="px-1.5 py-0.2 rounded-full bg-rose-600 text-white text-[10px] font-black shrink-0">{{ $pendingExitPermitsCount }}</span>
+                    @endif
+                </button>
 
-            <!-- 2. Izin Pulang Cepat -->
-            <button type="button" onclick="openEarlyLeaveModal()" 
-               class="px-3.5 py-2 rounded-xl text-xs font-bold bg-amber-500 hover:bg-amber-400 text-amber-950 font-black transition flex items-center gap-1.5 shadow-xs shadow-amber-500/20 active:scale-95 cursor-pointer"
-               title="Buka Form Izin Pulang Cepat Siswa (Lengkap sampai Cetak Dokumen)">
-                <span>🏃</span>
-                <span>Izin Pulang Cepat</span>
-                @if(($pendingEarlyLeavesCount ?? 0) > 0)
-                    <span class="w-4 h-4 rounded-full bg-rose-600 text-white text-[10px] font-black flex items-center justify-center">{{ $pendingEarlyLeavesCount }}</span>
-                @endif
-            </button>
+                <!-- 2. Izin Pulang Cepat -->
+                <button type="button" onclick="openEarlyLeaveModal()" 
+                   class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:text-amber-600 dark:hover:text-amber-400 hover:bg-slate-50 dark:hover:bg-slate-750 border border-slate-200/70 dark:border-slate-700/60 shadow-2xs hover:shadow-xs transition flex items-center gap-1.5 active:scale-95 cursor-pointer"
+                   title="Buka Form Izin Pulang Cepat Siswa (Lengkap sampai Cetak Dokumen)">
+                    <svg class="w-4 h-4 text-amber-500 dark:text-amber-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                    <span>Izin Pulang Cepat</span>
+                    @if(($pendingEarlyLeavesCount ?? 0) > 0)
+                        <span class="px-1.5 py-0.2 rounded-full bg-rose-600 text-white text-[10px] font-black shrink-0">{{ $pendingEarlyLeavesCount }}</span>
+                    @endif
+                </button>
 
-            <!-- 3. Jadwal Petugas Piket -->
-            <button type="button" onclick="openPicketScheduleModal()" 
-               class="px-3.5 py-2 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-500 text-white transition flex items-center gap-1.5 shadow-xs shadow-indigo-600/20 active:scale-95 cursor-pointer"
-               title="Lihat & Kelola Jadwal Petugas Piket (Guru & TU Piket Harian)">
-                <span>📋</span>
-                <span>Jadwal Petugas Piket</span>
-                @if(isset($todayPickets) && $todayPickets->isNotEmpty())
-                    <span class="px-1.5 py-0.2 rounded-md bg-indigo-900/60 text-indigo-200 text-[10px] font-mono font-bold">{{ $todayPickets->count() }}</span>
-                @endif
-            </button>
+                <!-- 3. Jadwal Petugas Piket -->
+                <button type="button" onclick="openPicketScheduleModal()" 
+                   class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-50 dark:hover:bg-slate-750 border border-slate-200/70 dark:border-slate-700/60 shadow-2xs hover:shadow-xs transition flex items-center gap-1.5 active:scale-95 cursor-pointer"
+                   title="Lihat & Kelola Jadwal Petugas Piket (Guru & TU Piket Harian)">
+                    <svg class="w-4 h-4 text-indigo-600 dark:text-indigo-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+                    </svg>
+                    <span>Jadwal Petugas Piket</span>
+                    @if(isset($todayPickets) && $todayPickets->isNotEmpty())
+                        <span class="px-1.5 py-0.2 rounded-md bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 text-[10px] font-mono font-bold">{{ $todayPickets->count() }}</span>
+                    @endif
+                </button>
 
-            <!-- 4. Laporan & Persetujuan -->
-            <button type="button" onclick="scrollToPermitsSection()" 
-               class="px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700 text-white transition flex items-center gap-1.5 shadow-xs active:scale-95 cursor-pointer"
-               title="Lihat Laporan, Persetujuan & Cetak Dokumen Surat Resmi">
-                <span>📑</span>
-                <span>Laporan & Persetujuan</span>
-            </button>
+                <!-- 4. Laporan & Persetujuan -->
+                <button type="button" onclick="scrollToPermitsSection()" 
+                   class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-750 border border-slate-200/70 dark:border-slate-700/60 shadow-2xs hover:shadow-xs transition flex items-center gap-1.5 active:scale-95 cursor-pointer"
+                   title="Lihat Laporan, Persetujuan & Cetak Dokumen Surat Resmi">
+                    <svg class="w-4 h-4 text-slate-500 dark:text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    <span>Laporan & Persetujuan</span>
+                </button>
+            </div>
 
             @if(!Auth::user()->isStudent())
-            <!-- 5. Cetak Rekap Kelas (Tanpa Nama) -->
-            <a href="{{ route('reports.print.class_recap', ['start_date' => $selectedDate, 'end_date' => $selectedDate]) }}" target="_blank"
-                class="px-3.5 py-2 bg-sky-500 hover:bg-sky-400 text-white font-bold rounded-xl text-xs shadow-md flex items-center gap-1.5 transition">
-                <span>📊 Cetak Rekap Kelas (Tanpa Nama)</span>
-            </a>
+            <!-- Group 2: Laporan & Cetak Dokumen -->
+            <div class="inline-flex items-center gap-1.5 p-1 rounded-2xl bg-slate-100/90 dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 shadow-2xs flex-wrap">
+                <!-- 5. Cetak Rekap Kelas (Tanpa Nama) -->
+                <a href="{{ route('reports.print.class_recap', ['start_date' => $selectedDate, 'end_date' => $selectedDate]) }}" target="_blank"
+                    class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:text-sky-600 dark:hover:text-sky-400 hover:bg-slate-50 dark:hover:bg-slate-750 border border-slate-200/70 dark:border-slate-700/60 shadow-2xs hover:shadow-xs transition flex items-center gap-1.5 active:scale-95"
+                    title="Cetak Ringkasan Kehadiran per Kelas (Tanpa Daftar Nama Siswa)">
+                    <svg class="w-4 h-4 text-sky-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                    </svg>
+                    <span>Cetak Rekap Kelas</span>
+                </a>
 
-            <!-- 6. Dokumen Laporan -->
-            <a href="{{ route('attendance.report') }}" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition flex items-center gap-1.5 shadow-2xs">
-                <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                <span>Dokumen Laporan</span>
-            </a>
+                <!-- 6. Dokumen Laporan -->
+                <a href="{{ route('attendance.report') }}" 
+                   class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-50 dark:hover:bg-slate-750 border border-slate-200/70 dark:border-slate-700/60 shadow-2xs hover:shadow-xs transition flex items-center gap-1.5 active:scale-95"
+                   title="Buka Dokumen Laporan Presensi Lengkap">
+                    <svg class="w-4 h-4 text-slate-500 dark:text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    <span>Dokumen Laporan</span>
+                </a>
 
-            <!-- 7. Cetak Rekap & Kartu -->
-            <a href="{{ route('attendance.cards.index') }}" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-purple-600 hover:bg-purple-500 text-white transition flex items-center gap-1.5 shadow-xs shadow-purple-600/30">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
-                <span>Cetak Rekap & Kartu</span>
-            </a>
+                <!-- 7. Cetak Rekap & Kartu (Primary Accent) -->
+                <a href="{{ route('attendance.cards.index') }}" 
+                   class="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow-xs hover:shadow-sm transition flex items-center gap-1.5 active:scale-95"
+                   title="Cetak Rekap Presensi & Kartu Siswa">
+                    <svg class="w-4 h-4 text-white shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+                    </svg>
+                    <span>Cetak Rekap & Kartu</span>
+                </a>
+            </div>
             @endif
         </div>
     </div>
@@ -1575,8 +1601,9 @@
                                     <div class="text-2xl mb-1">🏃</div>
                                     <div class="font-semibold">Belum ada ajuan pulang cepat yang tercatat.</div>
                                     <p class="text-[11px] text-slate-500 mt-0.5">Siswa, Wali Kelas, atau Guru Piket dapat membuat ajuan pulang cepat melalui tombol di atas.</p>
-                                    <button type="button" onclick="openEarlyLeaveModal('form')" class="mt-3 px-3.5 py-1.5 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl text-xs transition cursor-pointer">
-                                        + Ajukan Pulang Cepat Sekarang
+                                    <button type="button" onclick="openEarlyLeaveModal('form')" class="mt-3 px-3.5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl text-xs transition inline-flex items-center gap-1.5 shadow-xs cursor-pointer">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                                        <span>Ajukan Pulang Cepat Sekarang</span>
                                     </button>
                                 </td>
                             </tr>
@@ -1743,8 +1770,9 @@
                                     <div class="text-2xl mb-1">🚪</div>
                                     <div class="font-semibold">Belum ada izin keluar lingkungan sekolah yang tercatat.</div>
                                     <p class="text-[11px] text-slate-500 mt-0.5">Wali Kelas, Guru Piket, atau Siswa dapat membuat surat izin keluar melalui tombol di atas.</p>
-                                    <button type="button" onclick="openSchoolPassModal('form')" class="mt-3 px-3.5 py-1.5 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl text-xs transition cursor-pointer">
-                                        + Buat Izin Keluar Sekarang
+                                    <button type="button" onclick="openSchoolPassModal('form')" class="mt-3 px-3.5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl text-xs transition inline-flex items-center gap-1.5 shadow-xs cursor-pointer">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                                        <span>Buat Izin Keluar Sekarang</span>
                                     </button>
                                 </td>
                             </tr>

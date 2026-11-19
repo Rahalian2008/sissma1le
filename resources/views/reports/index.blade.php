@@ -16,59 +16,54 @@
             </p>
         </div>
 
-        <div class="flex flex-wrap items-center gap-2">
-            <a href="{{ route('raport.index') }}"
-                class="px-3.5 py-2 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-500 hover:to-pink-500 text-white font-black rounded-xl text-xs shadow-lg shadow-indigo-600/30 flex items-center gap-1.5 transition">
-                ⚡ Raport Digital AI (8 Pilar)
-            </a>
-            <a href="{{ route('attendance.cards.index', ['class_id' => $classId]) }}"
-                class="px-3.5 py-2 bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-white font-bold rounded-xl text-xs shadow-md flex items-center gap-1.5 transition">
-                🪪 Cetak Kartu Siswa (RFID/QR)
-            </a>
-            <a href="{{ route('reports.print.combined', ['class_id' => $classId, 'start_date' => $startDate, 'end_date' => $endDate]) }}" target="_blank"
-                class="w-full sm:w-auto px-4 py-2 bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 text-white font-black rounded-xl text-xs shadow-md flex items-center justify-center gap-1.5 transition">
-                📑 Cetak 1 Dokumen (Presensi, Tata Tertib & 7 Kebiasaan)
-            </a>
-            <a href="{{ route('reports.print.attendance', ['class_id' => $classId, 'start_date' => $startDate, 'end_date' => $endDate]) }}" target="_blank"
-                class="px-3.5 py-2 bg-indigo-500 hover:bg-indigo-400 text-white font-bold rounded-xl text-xs shadow-md flex items-center gap-1.5 transition">
-                🖨️ Cetak Presensi Siswa
-            </a>
-            <a href="{{ route('reports.print.discipline', ['class_id' => $classId, 'start_date' => $startDate, 'end_date' => $endDate]) }}" target="_blank"
-                class="px-3.5 py-2 bg-purple-500 hover:bg-purple-400 text-white font-bold rounded-xl text-xs shadow-md flex items-center gap-1.5 transition">
-                🖨️ Cetak Tata Tertib
-            </a>
-            <a href="{{ route('reports.print.habits', ['class_id' => $classId, 'start_date' => $startDate, 'end_date' => $endDate]) }}" target="_blank"
-                class="px-3.5 py-2 bg-teal-500 hover:bg-teal-400 text-white font-bold rounded-xl text-xs shadow-md flex items-center gap-1.5 transition">
-                🖨️ Cetak 7 Kebiasaan
-            </a>
-            <a href="{{ route('worship.report', 'dhuha') }}"
-                class="px-3.5 py-2 bg-amber-600 hover:bg-amber-500 text-white font-bold rounded-xl text-xs shadow-md flex items-center gap-1.5 transition">
-                🕌 Laporan Dhuha
-            </a>
-            <a href="{{ route('worship.report', 'dzuhur-jumat') }}"
-                class="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl text-xs shadow-md flex items-center gap-1.5 transition">
-                🕌 Laporan Dzuhur/Jum'at
-            </a>
-            <a href="{{ route('worship.report', 'keputrian') }}"
-                class="px-3.5 py-2 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-xl text-xs shadow-md flex items-center gap-1.5 transition">
-                ✨ Laporan Keputrian
-            </a>
-            <a href="{{ route('tahfidz.report') }}"
-                class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs shadow-md flex items-center gap-1.5 transition">
-                📖 Laporan Tahfidz Juz 30
-            </a>
-            <a href="{{ route('reports.user_activity') }}"
-                class="px-3.5 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold rounded-xl text-xs shadow-md flex items-center gap-1.5 transition">
-                📊 Laporan Frekuensi Masuk & Aktivitas Sistem
-            </a>
-            <a href="{{ route('reports.export.csv', ['type' => $type, 'class_id' => $classId]) }}"
-                class="px-3.5 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl text-xs shadow-md flex items-center gap-1.5 transition">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                </svg>
-                Unduh CSV
-            </a>
-        </div>
+        <div class="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-2.5">
+            {{-- Quick Export & Print Group --}}
+            <div class="inline-flex items-center p-1 rounded-xl bg-white/10 backdrop-blur-md border border-white/15 gap-1 flex-wrap">
+                <a href="{{ route('reports.print.combined', ['class_id' => $classId, 'start_date' => $startDate, 'end_date' => $endDate]) }}" target="_blank"
+                    class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-500 hover:bg-emerald-400 text-white shadow-xs transition inline-flex items-center gap-1.5">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    <span>Cetak 1 Dokumen Terpadu</span>
+                </a>
+                <a href="{{ route('reports.print.attendance', ['class_id' => $classId, 'start_date' => $startDate, 'end_date' => $endDate]) }}" target="_blank"
+                    class="px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-200 hover:text-white hover:bg-white/10 transition inline-flex items-center gap-1.5" title="Cetak Presensi Siswa">
+                    <svg class="w-3.5 h-3.5 text-indigo-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                    <span>Presensi</span>
+                </a>
+                <a href="{{ route('reports.print.discipline', ['class_id' => $classId, 'start_date' => $startDate, 'end_date' => $endDate]) }}" target="_blank"
+                    class="px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-200 hover:text-white hover:bg-white/10 transition inline-flex items-center gap-1.5" title="Cetak Tata Tertib">
+                    <svg class="w-3.5 h-3.5 text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                    <span>Tata Tertib</span>
+                </a>
+                <a href="{{ route('reports.print.habits', ['class_id' => $classId, 'start_date' => $startDate, 'end_date' => $endDate]) }}" target="_blank"
+                    class="px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-200 hover:text-white hover:bg-white/10 transition inline-flex items-center gap-1.5" title="Cetak 7 Kebiasaan">
+                    <svg class="w-3.5 h-3.5 text-teal-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
+                    <span>7 Kebiasaan</span>
+                </a>
+                <a href="{{ route('reports.export.csv', ['type' => $type, 'class_id' => $classId]) }}"
+                    class="px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-200 hover:text-white hover:bg-white/10 transition inline-flex items-center gap-1.5" title="Unduh CSV">
+                    <svg class="w-3.5 h-3.5 text-emerald-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    <span>CSV</span>
+                </a>
+            </div>
+
+            {{-- External Links / Navigation Group --}}
+            <div class="inline-flex items-center p-1 rounded-xl bg-white/10 backdrop-blur-md border border-white/15 gap-1 flex-wrap">
+                <a href="{{ route('raport.index') }}"
+                    class="px-3 py-1.5 rounded-lg text-xs font-semibold text-white bg-indigo-600/80 hover:bg-indigo-600 transition inline-flex items-center gap-1.5">
+                    <svg class="w-3.5 h-3.5 text-amber-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                    <span>Raport Digital AI</span>
+                </a>
+                <a href="{{ route('attendance.cards.index', ['class_id' => $classId]) }}"
+                    class="px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-200 hover:text-white hover:bg-white/10 transition inline-flex items-center gap-1.5">
+                    <svg class="w-3.5 h-3.5 text-sky-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"/></svg>
+                    <span>Kartu Siswa</span>
+                </a>
+                <a href="{{ route('reports.user_activity') }}"
+                    class="px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-200 hover:text-white hover:bg-white/10 transition inline-flex items-center gap-1.5" title="Aktivitas Pengguna">
+                    <svg class="w-3.5 h-3.5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                    <span>Aktivitas</span>
+                </a>
+            </div>
     </div>
 
     <!-- Type Switcher Tabs (Responsive & Multi-row Wrapping) -->
