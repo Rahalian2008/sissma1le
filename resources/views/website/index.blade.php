@@ -202,11 +202,11 @@
                     </span>
                     <!-- Mobile View: Ringkas & rapi tanpa truncate ellipsis '...' -->
                     <p class="sm:hidden text-indigo-100 text-[10.5px] font-semibold whitespace-nowrap">
-                        Terakreditasi A • NPSN: {{ $settings['school_npsn'] ?? '20202265' }}
+                        <span class="font-bold text-amber-300">{{ $settings['app_name'] ?? 'SIS-SMA1LE' }}</span> • Terakreditasi A • NPSN: {{ $settings['school_npsn'] ?? '20202265' }}
                     </p>
                     <!-- Tablet & Desktop View: Lengkap -->
                     <p class="hidden sm:block truncate text-indigo-100 text-xs font-medium">
-                        Portal Resmi <span class="font-bold text-white">{{ $settings['school_name'] ?? 'SMAN 1 Lengkong' }}</span> • Terakreditasi A • NPSN: {{ $settings['school_npsn'] ?? '20202265' }}
+                        Portal Resmi <span class="font-bold text-white">{{ $settings['school_name'] ?? 'SMA Negeri 1 Lengkong' }}</span> • Terintegrasi Ekosistem <span class="font-bold text-amber-300">{{ $settings['app_name'] ?? 'SIS-SMA1LE' }}</span> • Terakreditasi A • NPSN: {{ $settings['school_npsn'] ?? '20202265' }}
                     </p>
                 </div>
                 <div class="flex items-center gap-2 shrink-0">
@@ -225,10 +225,6 @@
                         <span class="text-indigo-400">|</span>
                         <a href="{{ route('school_bell.index') }}" target="_blank" class="hover:text-amber-300 transition flex items-center gap-1 font-bold text-amber-300">
                             <span>🔔 Bel Sekolah</span>
-                        </a>
-                        <span class="text-indigo-400">|</span>
-                        <a href="{{ route('kiosk.index') }}" target="_blank" class="hover:text-amber-300 transition flex items-center gap-1 font-semibold text-white">
-                            <span>📺 Kios TV</span>
                         </a>
                         <span class="text-indigo-400">|</span>
                         <a href="{{ route('guests.kiosk') }}" target="_blank" class="hover:text-amber-300 transition flex items-center gap-1 font-semibold text-white">
@@ -280,12 +276,24 @@
                     </h1>
                     <p class="text-[9px] sm:text-[11px] font-semibold text-slate-500 dark:text-slate-400 mt-0.5 sm:mt-1 flex items-center gap-1 sm:gap-1.5 truncate">
                         <span class="inline-block w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
-                        Kab. Sukabumi • Jawa Barat
+                        <span class="font-bold text-indigo-600 dark:text-indigo-400">{{ $settings['app_name'] ?? 'SIS-SMA1LE' }}</span> • Sukabumi, Jawa Barat
                     </p>
                 </div>
             </a>
 
-
+            <!-- Desktop Navigation Links -->
+            <nav class="hidden lg:flex items-center gap-1 xl:gap-1.5 text-xs font-bold text-slate-700 dark:text-slate-200">
+                <a href="#hero" class="px-2.5 py-1.5 rounded-lg hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition">Beranda</a>
+                <a href="#sambutan" class="px-2.5 py-1.5 rounded-lg hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition">Sambutan</a>
+                <a href="#profil" class="px-2.5 py-1.5 rounded-lg hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition">Profil</a>
+                <a href="#berita" class="px-2.5 py-1.5 rounded-lg hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition">Berita</a>
+                <a href="#guru-staf" class="px-2.5 py-1.5 rounded-lg hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition">Guru & Staf</a>
+                <a href="#agenda" class="px-2.5 py-1.5 rounded-lg hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition">Agenda</a>
+                <a href="#ekosistem-sis" class="px-2.5 py-1.5 rounded-lg text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 transition flex items-center gap-1">
+                    <span>💻 SIS-SMA1LE</span>
+                </a>
+                <a href="#prestasi" class="px-2.5 py-1.5 rounded-lg hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition">Prestasi</a>
+            </nav>
 
             <!-- Actions: Dark Mode & Gateways -->
             <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
@@ -302,12 +310,6 @@
                 <div class="hidden xl:flex items-center gap-1.5">
                     <a href="{{ route('school_bell.index') }}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold text-amber-700 dark:text-amber-300 bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/40 dark:hover:bg-amber-900/50 border border-amber-300 dark:border-amber-700/60 transition" title="Bel Sekolah Digital Otomatis & Standby">
                         <span>🔔 Bel Sekolah</span>
-                    </a>
-                    <a href="{{ route('kiosk.index') }}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 bg-slate-100 hover:bg-slate-200/70 dark:bg-slate-800/80 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 transition" title="Layar Display TV Lobby Sekolah">
-                        <svg class="w-3.5 h-3.5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                        </svg>
-                        <span>Display TV</span>
                     </a>
                     <a href="{{ route('guests.kiosk') }}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 bg-slate-100 hover:bg-slate-200/70 dark:bg-slate-800/80 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 transition" title="Kios Buku Tamu Resepsionis Mandiri">
                         <span>👥 Kios Tamu</span>
@@ -338,8 +340,8 @@
                         <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
                         </svg>
-                        <span class="hidden sm:inline">Masuk Portal SIS</span>
-                        <span class="sm:hidden">Portal SIS</span>
+                        <span class="hidden sm:inline">Masuk SIS-SMA1LE</span>
+                        <span class="sm:hidden">SIS-SMA1LE</span>
                     </a>
                 @endauth
 
@@ -456,10 +458,7 @@
                 <a href="{{ route('parent.portal') }}" class="w-full text-center py-2.5 px-4 rounded-xl font-bold text-xs bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
                     👨‍👩‍👧‍👦 Buka Portal Orang Tua Siswa (Tanpa Login)
                 </a>
-                <div class="grid grid-cols-3 gap-1.5 pt-1">
-                    <a href="{{ route('kiosk.index') }}" target="_blank" class="text-center py-2 px-1.5 rounded-xl font-bold text-[11px] bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700">
-                        📺 Kios TV
-                    </a>
+                <div class="grid grid-cols-2 gap-1.5 pt-1">
                     <a href="{{ route('guests.kiosk') }}" target="_blank" class="text-center py-2 px-1.5 rounded-xl font-bold text-[11px] bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700">
                         👥 Kios Tamu
                     </a>
@@ -2212,9 +2211,6 @@
                     </div>
 
                     <div class="pt-4 border-t border-slate-800/80 flex flex-wrap items-center justify-between gap-2">
-                        <a href="{{ route('kiosk.index') }}" target="_blank" class="flex-1 min-w-[130px] text-center py-2 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs transition shadow-md shadow-indigo-600/30">
-                            📺 Kios TV Lobby ↗
-                        </a>
                         <a href="{{ route('guests.kiosk') }}" target="_blank" class="flex-1 min-w-[130px] text-center py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition shadow-md shadow-emerald-600/30">
                             👥 Kios Buku Tamu ↗
                         </a>
@@ -2573,9 +2569,9 @@
                             </a>
                         </li>
                         <li>
-                            <a href="{{ route('kiosk.index') }}" target="_blank" class="hover:text-white transition flex items-center gap-1.5">
-                                <span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span>
-                                <span>Display Kios TV Informasi Lobby ↗</span>
+                            <a href="{{ route('guests.kiosk') }}" target="_blank" class="hover:text-white transition flex items-center gap-1.5">
+                                <span class="w-1.5 h-1.5 rounded-full bg-teal-400"></span>
+                                <span>Kios Buku Tamu & Resepsionis ↗</span>
                             </a>
                         </li>
                     </ul>
@@ -3527,11 +3523,11 @@
             <div class="mt-5 p-3.5 rounded-2xl bg-slate-950/50 border border-slate-800 flex flex-wrap items-center justify-between gap-3 text-xs text-slate-400">
                 <span class="font-semibold text-slate-300">Layanan Kiosk Mandiri:</span>
                 <div class="flex items-center gap-4">
-                    <a href="{{ route('library.guest_book.index') }}" class="text-amber-400 hover:underline flex items-center gap-1">
+                    <a href="{{ route('library.guest_book.index') }}" target="_blank" class="text-amber-400 hover:underline flex items-center gap-1">
                         <span>📖 Buku Tamu Perpustakaan</span>
                     </a>
-                    <a href="{{ route('kiosk.index') }}" target="_blank" class="text-sky-400 hover:underline flex items-center gap-1">
-                        <span>📺 Display Kios TV</span>
+                    <a href="{{ route('guests.kiosk') }}" target="_blank" class="text-emerald-400 hover:underline flex items-center gap-1">
+                        <span>👥 Kios Buku Tamu Resepsionis</span>
                     </a>
                 </div>
             </div>
