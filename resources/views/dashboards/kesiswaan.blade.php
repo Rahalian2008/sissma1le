@@ -5,19 +5,12 @@
 @section('content')
 <div class="space-y-6 max-w-7xl mx-auto">
     <!-- Header Kesiswaan -->
-    <div class="bg-gradient-to-r from-slate-900 via-rose-950 to-slate-900 rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 text-white shadow-xl border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-            <span class="px-3 py-1 bg-white/10 rounded-full text-xs font-semibold text-rose-300 border border-white/10">
-                Bidang Kesiswaan & Kedisiplinan
-            </span>
-            <h2 class="text-xl sm:text-2xl font-extrabold text-white mt-2">SMAN 1 Lengkong - Kesiswaan</h2>
-            <p class="text-xs text-slate-300 mt-1">Pemantauan Tingkat Kehadiran, Penegakan Tata Tertib, dan Penghargaan Siswa</p>
-        </div>
-        <div class="flex items-center gap-3 w-full md:w-auto">
-            <a href="{{ route('reports.index') }}" class="w-full sm:w-auto justify-center px-5 py-3 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-2xl shadow-lg shadow-rose-600/30 text-xs sm:text-sm flex items-center gap-2">
-                Pusat Laporan & Rekapitulasi
-            </a>
-        </div>
+    <div class="bg-gradient-to-r from-slate-900 via-rose-950 to-slate-900 rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 text-white shadow-xl border border-slate-800">
+        <span class="px-3 py-1 bg-white/10 rounded-full text-xs font-semibold text-rose-300 border border-white/10">
+            Bidang Kesiswaan & Kedisiplinan
+        </span>
+        <h2 class="text-xl sm:text-2xl font-extrabold text-white mt-2">SMAN 1 Lengkong - Kesiswaan</h2>
+        <p class="text-xs text-slate-300 mt-1">Pemantauan Tingkat Kehadiran, Penegakan Tata Tertib, dan Penghargaan Siswa</p>
     </div>
 
     <!-- Menu Cepat Staf Kesiswaan -->

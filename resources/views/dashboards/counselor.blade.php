@@ -5,32 +5,20 @@
 @section('content')
 <div class="w-full max-w-full min-w-0 space-y-4 sm:space-y-6 max-w-7xl mx-auto px-1 xs:px-2 sm:px-0 overflow-x-hidden">
     <!-- Header Layanan Bimbingan & Konseling -->
-    <div class="bg-gradient-to-r from-slate-950 via-purple-950 to-slate-900 rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 text-white shadow-2xl border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-            <div class="flex flex-wrap items-center gap-2">
-                <span class="px-3 py-1 bg-purple-500/20 text-purple-300 border border-purple-500/30 rounded-full text-xs font-bold tracking-wide">
-                    Pusat Layanan Bimbingan & Konseling (BK)
-                </span>
-                <span class="px-2.5 py-0.5 bg-emerald-500/20 text-emerald-300 rounded-full text-[11px] font-mono flex items-center gap-1.5 border border-emerald-500/30">
-                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                    MONITORING HOLISTIK
-                </span>
-            </div>
-            <h1 class="text-xl sm:text-3xl font-black text-white mt-2">Bimbingan Konseling SMAN 1 Lengkong</h1>
-            <p class="text-xs text-slate-300 mt-1 max-w-2xl leading-relaxed">
-                Pusat pendampingan holistik siswa: pemantauan terpadu kedisiplinan tata tertib, deteksi dini presensi bermasalah, pembiasaan karakter 7 KAIH, ibadah, keputrian, ekstrakurikuler, dan tahfidz Al-Qur'an.
-            </p>
+    <div class="bg-gradient-to-r from-slate-950 via-purple-950 to-slate-900 rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 text-white shadow-2xl border border-slate-800">
+        <div class="flex flex-wrap items-center gap-2">
+            <span class="px-3 py-1 bg-purple-500/20 text-purple-300 border border-purple-500/30 rounded-full text-xs font-bold tracking-wide">
+                Pusat Layanan Bimbingan & Konseling (BK)
+            </span>
+            <span class="px-2.5 py-0.5 bg-emerald-500/20 text-emerald-300 rounded-full text-[11px] font-mono flex items-center gap-1.5 border border-emerald-500/30">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                MONITORING HOLISTIK
+            </span>
         </div>
-        <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
-            <a href="{{ route('guidance.create') }}" class="w-full sm:w-auto justify-center px-4 py-2.5 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl text-xs flex items-center gap-2 shadow-lg shadow-purple-600/30 transition">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                + Buka Catatan Pembinaan Baru
-            </a>
-            <a href="{{ route('discipline.ranking') }}" class="w-full sm:w-auto justify-center px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded-xl text-xs flex items-center gap-2 border border-slate-700 transition">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
-                Papan Peringkat
-            </a>
-        </div>
+        <h1 class="text-xl sm:text-3xl font-black text-white mt-2">Bimbingan Konseling SMAN 1 Lengkong</h1>
+        <p class="text-xs text-slate-300 mt-1 max-w-2xl leading-relaxed">
+            Pusat pendampingan holistik siswa: pemantauan terpadu kedisiplinan tata tertib, deteksi dini presensi bermasalah, pembiasaan karakter 7 KAIH, ibadah, keputrian, ekstrakurikuler, dan tahfidz Al-Qur'an.
+        </p>
     </div>
 
     <!-- Menu Cepat Staf & Koordinator BK -->

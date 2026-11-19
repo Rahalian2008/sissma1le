@@ -5,7 +5,7 @@
 @section('content')
 <div class="space-y-6 max-w-7xl mx-auto">
     <!-- Header Multi-Peran Terpadu -->
-    <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-6 relative overflow-hidden">
+    <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl border border-slate-800 relative overflow-hidden">
         <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
         <div class="space-y-2 relative z-10">
             <div class="flex flex-wrap items-center gap-2">
@@ -25,22 +25,6 @@
             <p class="text-xs sm:text-sm text-slate-300 max-w-3xl leading-relaxed">
                 NIP: {{ $teacher->nip ?? ($user->nip ?? '-') }} • Anda sedang dalam mode <strong>Semua Peran (Akses Lengkap)</strong>. Seluruh tanggung jawab, pemantauan presensi, kelas binaan, dan tugas pengajaran disajikan terpadu sesuai peran aktif Anda.
             </p>
-        </div>
-
-        <div class="flex flex-wrap items-center gap-2.5 relative z-10 shrink-0">
-            @if(in_array('guru', $allUserRoles, true))
-                <a href="{{ route('attendance.qr.session') }}" class="px-4 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl text-xs flex items-center gap-2 shadow-lg shadow-emerald-500/20 transition">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>
-                    + Presensi QR
-                </a>
-            @endif
-
-            @if(in_array('wali_kelas', $allUserRoles, true) && $class)
-                <a href="{{ route('reports.index', ['class_id' => $class->id]) }}" class="px-4 py-2.5 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl text-xs flex items-center gap-2 border border-white/20 transition">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                    Rekap {{ $class->name }}
-                </a>
-            @endif
         </div>
     </div>
 

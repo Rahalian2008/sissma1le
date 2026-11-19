@@ -5,19 +5,12 @@
 @section('content')
 <div class="w-full max-w-full min-w-0 space-y-4 sm:space-y-6 max-w-7xl 2xl:max-w-[1600px] 3xl:max-w-[1880px] mx-auto px-1 xs:px-2 sm:px-0 overflow-x-hidden">
     <!-- Header Wali Kelas -->
-    <div class="bg-gradient-to-r from-slate-900 to-indigo-900 rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 text-white shadow-xl border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-            <span class="px-3 py-1 bg-white/10 rounded-full text-xs font-semibold text-indigo-300 border border-white/10">
-                Wali Kelas Binaan
-            </span>
-            <h2 class="text-lg sm:text-2xl font-extrabold text-white mt-2">Kelas {{ $class->name ?? 'XI-IPA-1' }}</h2>
-            <p class="text-xs text-slate-300 mt-1">Wali Kelas: {{ $teacher->name ?? Auth::user()->name }} • Total {{ $students->count() }} Siswa Binaan</p>
-        </div>
-        <div class="flex items-center gap-3">
-            <a href="{{ route('reports.index', ['class_id' => $class->id ?? null]) }}" class="w-full sm:w-auto px-4 py-2.5 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2 border border-white/20 transition">
-                Cetak Rekap Kelas
-            </a>
-        </div>
+    <div class="bg-gradient-to-r from-slate-900 to-indigo-900 rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 text-white shadow-xl border border-slate-800">
+        <span class="px-3 py-1 bg-white/10 rounded-full text-xs font-semibold text-indigo-300 border border-white/10">
+            Wali Kelas Binaan
+        </span>
+        <h2 class="text-lg sm:text-2xl font-extrabold text-white mt-2">Kelas {{ $class->name ?? 'XI-IPA-1' }}</h2>
+        <p class="text-xs text-slate-300 mt-1">Wali Kelas: {{ $teacher->name ?? Auth::user()->name }} • Total {{ $students->count() }} Siswa Binaan</p>
     </div>
 
     <!-- Menu / Ikon Cepat Operasional Wali Kelas -->

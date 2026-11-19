@@ -5,28 +5,20 @@
 @section('content')
 <div class="space-y-6 max-w-7xl mx-auto">
     <!-- Header Wakasek Sarpras -->
-    <div class="bg-gradient-to-r from-slate-900 via-teal-950 to-slate-900 rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 text-white shadow-xl border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-            <div class="flex flex-wrap items-center gap-2">
-                <span class="px-3 py-1 bg-teal-500/20 text-teal-300 border border-teal-500/30 rounded-full text-xs font-bold tracking-wide">
-                    BIDANG SARANA & PRASARANA (SARPRAS)
-                </span>
-                <span class="px-2.5 py-0.5 bg-emerald-500/20 text-emerald-300 rounded-full text-[11px] font-mono flex items-center gap-1.5 border border-emerald-500/30">
-                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                    INFRASTRUKTUR PRESENSI IOT AKTIF
-                </span>
-            </div>
-            <h1 class="text-xl sm:text-3xl font-black text-white mt-2">Wakasek Bid. Sarpras</h1>
-            <p class="text-xs text-slate-300 mt-1 max-w-2xl leading-relaxed">
-                Supervisi sarana dan teknologi presensi: pemantauan mesin IoT RFID, Scanner QR Code gerbang, geofence radius sekolah, dan fasilitas pendukung kegiatan siswa.
-            </p>
+    <div class="bg-gradient-to-r from-slate-900 via-teal-950 to-slate-900 rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 text-white shadow-xl border border-slate-800">
+        <div class="flex flex-wrap items-center gap-2">
+            <span class="px-3 py-1 bg-teal-500/20 text-teal-300 border border-teal-500/30 rounded-full text-xs font-bold tracking-wide">
+                BIDANG SARANA & PRASARANA (SARPRAS)
+            </span>
+            <span class="px-2.5 py-0.5 bg-emerald-500/20 text-emerald-300 rounded-full text-[11px] font-mono flex items-center gap-1.5 border border-emerald-500/30">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                INFRASTRUKTUR PRESENSI IOT AKTIF
+            </span>
         </div>
-        <div class="flex flex-wrap items-center gap-2 sm:gap-3 w-full md:w-auto">
-            <a href="{{ route('attendance.history') }}" class="w-full sm:w-auto justify-center px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded-xl text-xs flex items-center gap-2 border border-slate-700 transition">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
-                Log Scan Hari Ini
-            </a>
-        </div>
+        <h1 class="text-xl sm:text-3xl font-black text-white mt-2">Wakasek Bid. Sarpras</h1>
+        <p class="text-xs text-slate-300 mt-1 max-w-2xl leading-relaxed">
+            Supervisi sarana dan teknologi presensi: pemantauan mesin IoT RFID, Scanner QR Code gerbang, geofence radius sekolah, dan fasilitas pendukung kegiatan siswa.
+        </p>
     </div>
 
     <!-- Key Metrics Grid -->

@@ -5,22 +5,12 @@
 @section('content')
 <div class="w-full max-w-full min-w-0 space-y-4 sm:space-y-6 max-w-7xl mx-auto px-1 xs:px-2 sm:px-0 overflow-x-hidden">
     <!-- Header Guru -->
-    <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 text-white shadow-xl border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-            <span class="px-3 py-1 bg-white/10 rounded-full text-xs font-semibold text-emerald-300 border border-white/10">
-                Pendidik & Pembina Kesiswaan
-            </span>
-            <h2 class="text-xl sm:text-2xl font-extrabold text-white mt-2">Selamat Datang, {{ $teacher->name ?? Auth::user()->name }}</h2>
-            <p class="text-xs text-slate-300 mt-1">NIP: {{ $teacher->nip ?? '-' }} • {{ $teacher->title ?? 'Guru Mata Pelajaran' }}</p>
-        </div>
-        <div class="flex items-center gap-3 w-full md:w-auto">
-            <a href="{{ route('attendance.qr.session') }}" class="w-full sm:w-auto justify-center px-5 py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-2xl shadow-lg shadow-emerald-500/20 text-xs sm:text-sm flex items-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/>
-                </svg>
-                Mulai Sesi Presensi QR
-            </a>
-        </div>
+    <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 text-white shadow-xl border border-slate-800">
+        <span class="px-3 py-1 bg-white/10 rounded-full text-xs font-semibold text-emerald-300 border border-white/10">
+            Pendidik & Pembina Kesiswaan
+        </span>
+        <h2 class="text-xl sm:text-2xl font-extrabold text-white mt-2">Selamat Datang, {{ $teacher->name ?? Auth::user()->name }}</h2>
+        <p class="text-xs text-slate-300 mt-1">NIP: {{ $teacher->nip ?? '-' }} • {{ $teacher->title ?? 'Guru Mata Pelajaran' }}</p>
     </div>
 
     <!-- Menu Cepat Guru & Pembina -->
