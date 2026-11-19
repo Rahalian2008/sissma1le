@@ -491,16 +491,7 @@ class User extends Authenticatable
 
         $allowedRoles = [
             'admin', 'super_admin', 'kepala_sekolah',
-            'wakasek_kurikulum', 'kurikulum',
-            'wakasek_kesiswaan', 'kesiswaan',
             'wakasek_humas', 'humas',
-            'wakasek_sarpras', 'sarpras',
-            'koordinator_bk', 'bk_koordinator', 'guru_bk', 'bk',
-            'kepala_perpustakaan', 'perpus_kepala',
-            'koordinator_keagamaan', 'keagamaan',
-            'guru', 'wali_kelas', 'pembina_ekstra', 'pembina_ekskul',
-            'tu', 'staff', 'tenaga_administrasi', 'kepala_administrasi',
-            'operator_dapodik', 'operator', 'tu_piket', 'guru_piket',
             'adm_web',
         ];
 
@@ -520,7 +511,6 @@ class User extends Authenticatable
             'admin', 'super_admin', 'kepala_sekolah',
             'wakasek_kesiswaan', 'kesiswaan',
             'wakasek_kurikulum', 'kurikulum',
-            'wakasek_humas', 'humas',
             'wakasek_sarpras', 'sarpras',
             'tu_piket', 'guru_piket', 'petugas_piket',
         ];
@@ -535,7 +525,7 @@ class User extends Authenticatable
      */
     public function allowedWebsiteContentTabs(): array
     {
-        // 1. Akun Admin/Super Admin & Kepala Sekolah: akses penuh semua fitur
+        // 1. Akun Admin/Super Admin & Kepala Sekolah: akses penuh seluruh fitur konten
         if ($this->hasAnyRole(['admin', 'super_admin', 'kepala_sekolah'])
             || in_array($this->role, ['admin', 'super_admin', 'kepala_sekolah'], true)
             || in_array($this->active_role, ['admin', 'super_admin', 'kepala_sekolah'], true)) {
@@ -545,36 +535,14 @@ class User extends Authenticatable
         $active = $this->active_role;
         $rolesToCheck = ($active === 'all_roles') ? $this->all_roles : array_unique(array_filter([$active, $this->role]));
 
-        // 2. Akun Wakasek Sarpras: Berita & Kabar, Agenda, dan Fasilitas Sekolah
-        if (! empty(array_intersect(['wakasek_sarpras', 'sarpras'], $rolesToCheck)) || $this->hasAnyRole(['wakasek_sarpras', 'sarpras'])) {
-            return ['news', 'agendas', 'facilities'];
+        // 2. Akun Wakasek Humas: kelola publikasi, berita, agenda, media, fasilitas sekolah
+        if (! empty(array_intersect(['wakasek_humas', 'humas'], $rolesToCheck)) || $this->hasAnyRole(['wakasek_humas', 'humas'])) {
+            return ['news', 'hero', 'running_text', 'vision', 'media', 'agendas', 'facilities'];
         }
 
-        // 3. Akun Wakasek Kurikulum, Wakasek Kesiswaan, Wakasek Humas, Koordinator BK, Kepala Perpustakaan, Koordinator Keagamaan: Berita & Kabar dan Agenda
-        $wakasekAndCoordRoles = [
-            'wakasek_kurikulum', 'kurikulum',
-            'wakasek_kesiswaan', 'kesiswaan',
-            'wakasek_humas', 'humas',
-            'koordinator_bk', 'bk_koordinator',
-            'kepala_perpustakaan', 'perpus_kepala',
-            'koordinator_keagamaan', 'keagamaan',
-        ];
-        if (! empty(array_intersect($wakasekAndCoordRoles, $rolesToCheck)) || $this->hasAnyRole($wakasekAndCoordRoles)) {
-            return ['news', 'agendas'];
-        }
-
-        // 4. Akun Guru, TU, Wali Kelas, Pembina Ekstra, Guru BK: Berita & Kabar
-        $staffAndTeacherRoles = [
-            'guru', 'tu', 'staff', 'tenaga_administrasi', 'wali_kelas', 'pembina_ekstra', 'pembina_ekskul', 'guru_bk', 'bk',
-            'kepala_administrasi', 'operator_dapodik', 'operator', 'tu_piket', 'guru_piket',
-        ];
-        if (! empty(array_intersect($staffAndTeacherRoles, $rolesToCheck)) || $this->hasAnyRole($staffAndTeacherRoles)) {
-            return ['news'];
-        }
-
-        // 5. Akun Siswa dengan peran adm_web: khusus Berita & Kabar saja
+        // 3. Akun Pengelola Konten Web Siswa / Staf Web (adm_web): Berita, Agenda, dan Fasilitas
         if (! empty(array_intersect(['adm_web'], $rolesToCheck)) || $this->hasAnyRole(['adm_web'])) {
-            return ['news'];
+            return ['news', 'agendas', 'facilities'];
         }
 
         return [];

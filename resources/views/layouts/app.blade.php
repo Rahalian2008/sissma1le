@@ -266,6 +266,106 @@
                     <span class="sidebar-label">Dashboard</span>
                 </a>
 
+            @if($isStudentUser || $navUser?->isStudent())
+                {{-- ========================================================
+                     NAVIGASI KHUSUS SISWA (FOKUS, MANDIRI & RAMAH SISWA)
+                     ======================================================== --}}
+                
+                <!-- Presensi Harian Siswa -->
+                <a href="{{ route('attendance.index') }}" data-tooltip="Presensi Saya" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[13.5px] font-semibold leading-snug transition {{ request()->routeIs('attendance.*') ? 'bg-indigo-600 text-white shadow-xs shadow-indigo-600/30' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                    <svg class="w-4.5 h-4.5 shrink-0 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                    </svg>
+                    <span class="sidebar-label">Presensi Saya</span>
+                </a>
+
+                <!-- 7 KAIH (Karakter & Pembiasaan) -->
+                <a href="{{ route('habits.journal') }}" data-tooltip="7 KAIH" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[13.5px] font-semibold leading-snug transition {{ (request()->routeIs('habits.*') || request()->routeIs('ai.*')) ? 'bg-indigo-600 text-white shadow-xs shadow-indigo-600/30' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                    <svg class="w-4.5 h-4.5 shrink-0 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
+                    </svg>
+                    <span class="sidebar-label">7 KAIH</span>
+                </a>
+
+                <!-- Hafalan Al-Qur'an (Tahfidz) -->
+                <a href="{{ route('tahfidz.index') }}" data-tooltip="Hafalan Qur'an" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[13.5px] font-semibold leading-snug transition {{ request()->routeIs('tahfidz.*') ? 'bg-indigo-600 text-white shadow-xs shadow-indigo-600/30' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                    <svg class="w-4.5 h-4.5 shrink-0 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                    </svg>
+                    <span class="sidebar-label">Hafalan Qur'an</span>
+                </a>
+
+                <!-- Raport Digital (AI) -->
+                <a href="{{ route('raport.index') }}" data-tooltip="Raport Digital (AI)" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[13.5px] font-semibold leading-snug transition {{ request()->routeIs('raport.*') ? 'bg-indigo-600 text-white shadow-xs shadow-indigo-600/30' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                    <svg class="w-4.5 h-4.5 shrink-0 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    <span class="sidebar-label">Raport Digital (AI)</span>
+                </a>
+
+                <!-- LMS Pembelajaran Siswa -->
+                <a href="{{ route('lms.index') }}" data-tooltip="LMS Belajar" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[13.5px] font-semibold leading-snug transition {{ request()->routeIs('lms.*') ? 'bg-indigo-600 text-white shadow-xs shadow-indigo-600/30' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                    <svg class="w-4.5 h-4.5 shrink-0 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                    </svg>
+                    <span class="sidebar-label">LMS Belajar</span>
+                </a>
+
+                <!-- Ujian Online (CBT) Siswa -->
+                <a href="{{ route('cbt.index') }}" data-tooltip="Ujian Online (CBT)" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[13.5px] font-semibold leading-snug transition {{ request()->routeIs('cbt.*') ? 'bg-indigo-600 text-white shadow-xs shadow-indigo-600/30' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                    <svg class="w-4.5 h-4.5 shrink-0 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span class="sidebar-label font-bold text-amber-300">Ujian Online (CBT)</span>
+                </a>
+
+                <!-- Rapor Siswa Kurnas -->
+                <a href="{{ route('rapor_kurnas.index') }}" data-tooltip="Rapor Siswa" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[13.5px] font-semibold leading-snug transition {{ request()->routeIs('rapor_kurnas.*') ? 'bg-indigo-600 text-white shadow-xs shadow-indigo-600/30' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                    <svg class="w-4.5 h-4.5 shrink-0 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                    </svg>
+                    <span class="sidebar-label">Rapor Siswa</span>
+                </a>
+
+                <!-- Curhat BK Siswa -->
+                <a href="{{ route('bk.curhat.index') }}" data-tooltip="Curhat BK" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[13.5px] font-semibold leading-snug transition {{ request()->routeIs('bk.*') ? 'bg-teal-600 text-white shadow-xs shadow-teal-600/30' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                    <svg class="w-4.5 h-4.5 shrink-0 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                    </svg>
+                    <span class="sidebar-label font-bold text-teal-300">Curhat BK</span>
+                </a>
+
+                <!-- Perpustakaan Digital Siswa -->
+                <a href="{{ route('library.index') }}" data-tooltip="Perpustakaan" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[13.5px] font-semibold leading-snug transition {{ request()->routeIs('library.*') ? 'bg-indigo-600 text-white shadow-xs shadow-indigo-600/30' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                    <svg class="w-4.5 h-4.5 shrink-0 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"/>
+                    </svg>
+                    <span class="sidebar-label">Perpustakaan</span>
+                </a>
+
+                <!-- Al-Qur'an Digital -->
+                <a href="{{ route('quran.index') }}" data-tooltip="Al-Qur'an Digital" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[13.5px] font-semibold leading-snug transition {{ request()->routeIs('quran.*') ? 'bg-emerald-600 text-white shadow-xs shadow-emerald-600/30' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                    <svg class="w-4.5 h-4.5 shrink-0 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                    </svg>
+                    <span class="sidebar-label">Al-Qur'an Digital</span>
+                </a>
+
+                <!-- Khusus Siswa bertugas Admin Web (adm_web) -->
+                @if($canNav('website_content'))
+                <a href="{{ route('master.website_content') }}" data-tooltip="Kelola Konten Web" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[13.5px] font-semibold leading-snug transition {{ request()->routeIs('master.website_content*') ? 'bg-indigo-600 text-white shadow-xs shadow-indigo-600/30' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                    <svg class="w-4.5 h-4.5 shrink-0 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/>
+                    </svg>
+                    <span class="sidebar-label font-bold text-sky-300">Kelola Konten Web</span>
+                </a>
+                @endif
+
+            @else
+                {{-- ========================================================
+                     NAVIGASI PENDIDIK & TENAGA KEPENDIDIKAN (GURU, TU, WAKASEK, KEPSEK, ADMIN)
+                     ======================================================== --}}
+
                 <!-- 2. Master Data -->
                 @if($canNav('master_data'))
                 <a href="{{ route('master.school_profile') }}" data-tooltip="Master Data" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[13.5px] font-semibold leading-snug transition {{ (request()->routeIs('master.*') && ! request()->routeIs('master.website_content*')) ? 'bg-indigo-600 text-white shadow-xs shadow-indigo-600/30' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
@@ -273,16 +373,6 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"/>
                     </svg>
                     <span class="sidebar-label">Master Data</span>
-                </a>
-                @endif
-
-                <!-- Presensi Harian Siswa (Akses Langsung Akun Siswa) -->
-                @if(($navUser?->isStudent() || $isStudentUser) && $canNav('attendance'))
-                <a href="{{ route('attendance.index') }}" data-tooltip="Presensi Siswa" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[13.5px] font-semibold leading-snug transition {{ request()->routeIs('attendance.*') ? 'bg-indigo-600 text-white shadow-xs shadow-indigo-600/30' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
-                    <svg class="w-4.5 h-4.5 shrink-0 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
-                    </svg>
-                    <span class="sidebar-label">Presensi Siswa</span>
                 </a>
                 @endif
 
@@ -413,7 +503,7 @@
                             <svg class="w-4 h-4 shrink-0 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
                             </svg>
-                            <span class="sidebar-label">{{ ($navUser && $navUser->isStudent()) ? 'Rapor Siswa (Kurnas)' : 'Rapor Kurnas' }}</span>
+                            <span class="sidebar-label">Rapor Kurnas</span>
                         </a>
                         @endif
                     </div>
@@ -422,7 +512,7 @@
 
                 <!-- 5. Bimbingan Konseling (BK) -->
                 @if($canNav('bk'))
-                <a href="{{ $isStudentUser ? route('bk.curhat.index') : route('bk.dashboard') }}" data-tooltip="Bimbingan Konseling" class="flex items-center justify-between px-3 py-2.5 rounded-xl text-[13.5px] font-semibold leading-snug transition {{ request()->routeIs('bk.*') ? 'bg-teal-600 text-white shadow-xs shadow-teal-600/30' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                <a href="{{ route('bk.dashboard') }}" data-tooltip="Bimbingan Konseling" class="flex items-center justify-between px-3 py-2.5 rounded-xl text-[13.5px] font-semibold leading-snug transition {{ request()->routeIs('bk.*') ? 'bg-teal-600 text-white shadow-xs shadow-teal-600/30' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
                     <div class="flex items-center gap-2.5 min-w-0">
                         <svg class="w-4.5 h-4.5 shrink-0 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
@@ -466,7 +556,7 @@
                 @endif
 
                 @if($canNav('website_content'))
-                <!-- Kelola Konten Web (Standalone Menu) -->
+                <!-- Kelola Konten Web (Khusus Humas, Adm Web, Admin & Kepsek) -->
                 <a href="{{ route('master.website_content') }}" data-tooltip="Kelola Konten Web" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[13.5px] font-semibold leading-snug transition {{ request()->routeIs('master.website_content*') ? 'bg-indigo-600 text-white shadow-xs shadow-indigo-600/30' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
                     <svg class="w-4.5 h-4.5 shrink-0 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/>
@@ -475,8 +565,8 @@
                 </a>
                 @endif
 
-                <!-- Bel Sekolah (Posisi di Bawah Kelola Konten Web) -->
-                @if(!Auth::check() || $canNav('school_bell') || in_array('guest', $roles))
+                <!-- Bel Sekolah (Hanya untuk Staf yang berwenang, bukan siswa atau tamu umum) -->
+                @if(Auth::check() && $canNav('school_bell'))
                 <a href="{{ route('school_bell.index') }}" data-tooltip="Bel Sekolah" class="flex items-center justify-between px-3 py-2.5 rounded-xl text-[13.5px] font-semibold leading-snug transition {{ request()->routeIs('school_bell.*') ? 'bg-amber-600 text-white shadow-xs shadow-amber-600/30' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
                     <div class="flex items-center gap-2.5 min-w-0">
                         <svg class="w-4.5 h-4.5 shrink-0 text-amber-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -486,6 +576,8 @@
                     </div>
                 </a>
                 @endif
+
+            @endif
 
                 <!-- 7. Website Resmi Sekolah -->
                 <a href="{{ route('website.home') }}" target="_blank" data-tooltip="Website Sekolah" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13.5px] font-semibold leading-snug transition text-amber-300 hover:bg-amber-500/10 hover:text-amber-200 border border-amber-500/20">
@@ -992,225 +1084,317 @@
                 <span>Dashboard</span>
             </a>
 
-            <!-- 2. Master Data -->
-            @if($canNav('master_data'))
-            <a href="{{ route('master.school_profile') }}" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[13.5px] font-semibold leading-snug transition {{ (request()->routeIs('master.*') && ! request()->routeIs('master.website_content*')) ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
-                <svg class="w-4.5 h-4.5 shrink-0 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"/>
-                </svg>
-                <span>Master Data</span>
-            </a>
-            @endif
+            @if($isStudentUser || $navUser?->isStudent())
+                {{-- ========================================================
+                     NAVIGASI MOBILE KHUSUS SISWA (FOKUS & SESUAI KAPASITAS)
+                     ======================================================== --}}
 
-            <!-- Presensi Harian Siswa (Menu Langsung Siswa) -->
-            @if(($navUser?->isStudent() || $isStudentUser) && $canNav('attendance'))
-            <a href="{{ route('attendance.index') }}" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[13.5px] font-semibold leading-snug transition {{ request()->routeIs('attendance.*') ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
-                <svg class="w-4.5 h-4.5 shrink-0 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
-                </svg>
-                <span>Presensi Siswa</span>
-            </a>
-            @endif
-
-            <!-- 3. Kesiswaan (Parent Menu) -->
-            @if($canNav('kesiswaan'))
-            <div>
-                <button type="button" onclick="toggleSidebarMenu('kesiswaan-menu-mobile', 'kesiswaan-chevron-mobile')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-[13.5px] font-semibold leading-snug transition {{ $isKesiswaanActive ? 'text-indigo-400 bg-indigo-500/10' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }} cursor-pointer">
-                    <div class="flex items-center gap-2.5 min-w-0">
-                        <svg class="w-4.5 h-4.5 shrink-0 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
-                        </svg>
-                        <span class="font-bold">Kesiswaan</span>
-                        @if(in_array($currentActiveSlug, ['wakasek_kesiswaan', 'wali_kelas', 'pembina_ekstra', 'guru_piket', 'koordinator_keagamaan']))
-                            <span class="px-1.5 py-0.5 text-[9px] font-extrabold rounded-md bg-indigo-500/25 text-indigo-300 border border-indigo-500/30">Aktif</span>
-                        @endif
-                    </div>
-                    <svg id="kesiswaan-chevron-mobile" class="w-4 h-4 text-slate-400 transition-transform duration-200 {{ $isKesiswaanActive ? 'rotate-180' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                <!-- Presensi Harian Siswa -->
+                <a href="{{ route('attendance.index') }}" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[13.5px] font-semibold leading-snug transition {{ request()->routeIs('attendance.*') ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                    <svg class="w-4.5 h-4.5 shrink-0 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
                     </svg>
-                </button>
-                <div id="kesiswaan-menu-mobile" class="{{ $isKesiswaanActive ? '' : 'hidden' }} pl-3 pr-1 py-1 space-y-1 border-l-2 border-indigo-500/30 ml-4 mt-0.5">
-                    @if($canNav('attendance'))
-                    <!-- Presensi -->
-                    <a href="{{ route('attendance.index') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium leading-snug transition {{ (request()->routeIs('attendance.*') || request()->routeIs('worship.*') || request()->routeIs('extracurricular.*')) ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
-                        <svg class="w-4 h-4 shrink-0 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
-                        </svg>
-                        <span>Presensi Harian</span>
-                    </a>
-                    @endif
+                    <span>Presensi Saya</span>
+                </a>
 
-                    @if($canNav('spmb'))
-                    <!-- SPMB Siswa Baru -->
-                    <a href="{{ route('spmb.index') }}" class="flex items-center justify-between px-3 py-2 rounded-xl text-[13px] font-medium leading-snug transition {{ request()->routeIs('spmb.*') ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
-                        <div class="flex items-center gap-2.5">
-                            <svg class="w-4 h-4 shrink-0 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
-                            </svg>
-                            <span>SPMB</span>
-                        </div>
-                    </a>
-                    @endif
-
-                    @if($canNav('discipline'))
-                    <!-- Tata Tertib Siswa -->
-                    <a href="{{ route('violations.index') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium leading-snug transition {{ (request()->routeIs('achievements.*') || request()->routeIs('violations.*') || request()->routeIs('guidance.*') || request()->routeIs('discipline.*')) ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
-                        <svg class="w-4 h-4 shrink-0 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-                        </svg>
-                        <span>Tata Tertib Siswa</span>
-                    </a>
-                    @endif
-
-                    @if($canNav('tahfidz'))
-                    <!-- Hafalan Al-Qur'an -->
-                    <a href="{{ route('tahfidz.index') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium leading-snug transition {{ request()->routeIs('tahfidz.*') ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
-                        <svg class="w-4 h-4 shrink-0 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-                        </svg>
-                        <span>Hafalan Al-Qur'an</span>
-                    </a>
-                    @endif
-
-                    @if($canNav('habits'))
-                    <!-- 7 KAIH -->
-                    <a href="{{ route('habits.journal') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium leading-snug transition {{ (request()->routeIs('habits.*') || request()->routeIs('ai.*')) ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
-                        <svg class="w-4 h-4 shrink-0 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
-                        </svg>
-                        <span>7 KAIH</span>
-                    </a>
-                    @endif
-
-                    @if($canNav('raport_digital'))
-                    <!-- Raport Digital -->
-                    <a href="{{ route('raport.index') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium leading-snug transition {{ request()->routeIs('raport.*') ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
-                        <svg class="w-4 h-4 shrink-0 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                        </svg>
-                        <span>Raport Digital (AI)</span>
-                    </a>
-                    @endif
-                </div>
-            </div>
-            @endif
-
-            <!-- 4. Kurikulum (Parent Menu) -->
-            @if($canNav('kurikulum'))
-            <div>
-                <button type="button" onclick="toggleSidebarMenu('kurikulum-menu-mobile', 'kurikulum-chevron-mobile')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-[13.5px] font-semibold leading-snug transition {{ $isKurikulumActive ? 'text-indigo-400 bg-indigo-500/10' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }} cursor-pointer">
-                    <div class="flex items-center gap-2.5 min-w-0">
-                        <svg class="w-4.5 h-4.5 shrink-0 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222"/>
-                        </svg>
-                        <span class="font-bold">Kurikulum</span>
-                        @if(in_array($currentActiveSlug, ['wakasek_kurikulum', 'guru']))
-                            <span class="px-1.5 py-0.5 text-[9px] font-extrabold rounded-md bg-sky-500/25 text-sky-300 border border-sky-500/30">Aktif</span>
-                        @endif
-                    </div>
-                    <svg id="kurikulum-chevron-mobile" class="w-4 h-4 text-slate-400 transition-transform duration-200 {{ $isKurikulumActive ? 'rotate-180' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                    </svg>
-                </button>
-                <div id="kurikulum-menu-mobile" class="{{ $isKurikulumActive ? '' : 'hidden' }} pl-3 pr-1 py-1 space-y-1 border-l-2 border-indigo-500/30 ml-4 mt-0.5">
-                    @if($canNav('cbt'))
-                    <!-- Ujian Online (CBT) -->
-                    <a href="{{ route('cbt.index') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium leading-snug transition {{ request()->routeIs('cbt.*') ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
-                        <svg class="w-4 h-4 shrink-0 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                        <span class="font-bold text-amber-300">Ujian Online (CBT)</span>
-                    </a>
-                    @endif
-
-                    @if($canNav('lms'))
-                    <!-- LMS Pembelajaran -->
-                    <a href="{{ route('lms.index') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium leading-snug transition {{ request()->routeIs('lms.*') ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
-                        <svg class="w-4 h-4 shrink-0 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-                        </svg>
-                        <span>LMS Pembelajaran</span>
-                    </a>
-                    @endif
-
-                    @if($canNav('rapor_kurnas'))
-                    <!-- Rapor Kurnas -->
-                    <a href="{{ route('rapor_kurnas.index') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium leading-snug transition {{ request()->routeIs('rapor_kurnas.*') ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
-                        <svg class="w-4 h-4 shrink-0 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-                        </svg>
-                        <span>{{ ($navUser && $navUser->isStudent()) ? 'Rapor Siswa (Kurnas)' : 'Rapor Kurnas' }}</span>
-                    </a>
-                    @endif
-                </div>
-            </div>
-            @endif
-
-            <!-- 5. Bimbingan Konseling (BK) Mobile -->
-            @if($canNav('bk'))
-            <a href="{{ $isStudentUser ? route('bk.curhat.index') : route('bk.dashboard') }}" class="flex items-center justify-between px-3 py-2.5 rounded-xl text-[13.5px] font-semibold leading-snug transition {{ request()->routeIs('bk.*') ? 'bg-teal-600 text-white shadow-xs shadow-teal-600/30' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
-                <div class="flex items-center gap-2.5 min-w-0">
+                <!-- 7 KAIH (Karakter) -->
+                <a href="{{ route('habits.journal') }}" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[13.5px] font-semibold leading-snug transition {{ (request()->routeIs('habits.*') || request()->routeIs('ai.*')) ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
                     <svg class="w-4.5 h-4.5 shrink-0 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
                     </svg>
-                    <span class="font-bold">Bimbingan Konseling</span>
-                </div>
-                @if(in_array($currentActiveSlug, ['koordinator_bk', 'guru_bk', 'bk']))
-                    <span class="px-1.5 py-0.5 text-[9px] font-extrabold rounded-md bg-teal-500/25 text-teal-300 border border-teal-500/30">Aktif</span>
-                @endif
-            </a>
-            @endif
+                    <span>7 KAIH</span>
+                </a>
 
-            <!-- 6. Perpustakaan -->
-            @if($canNav('library'))
-            <a href="{{ route('library.index') }}" class="flex items-center justify-between px-3 py-2.5 rounded-xl text-[13.5px] font-semibold leading-snug transition {{ request()->routeIs('library.*') ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
-                <div class="flex items-center gap-2.5 min-w-0">
+                <!-- Hafalan Al-Qur'an (Tahfidz) -->
+                <a href="{{ route('tahfidz.index') }}" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[13.5px] font-semibold leading-snug transition {{ request()->routeIs('tahfidz.*') ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                    <svg class="w-4.5 h-4.5 shrink-0 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                    </svg>
+                    <span>Hafalan Qur'an</span>
+                </a>
+
+                <!-- Raport Digital (AI) -->
+                <a href="{{ route('raport.index') }}" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[13.5px] font-semibold leading-snug transition {{ request()->routeIs('raport.*') ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                    <svg class="w-4.5 h-4.5 shrink-0 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    <span>Raport Digital (AI)</span>
+                </a>
+
+                <!-- LMS Pembelajaran Siswa -->
+                <a href="{{ route('lms.index') }}" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[13.5px] font-semibold leading-snug transition {{ request()->routeIs('lms.*') ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                    <svg class="w-4.5 h-4.5 shrink-0 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                    </svg>
+                    <span>LMS Belajar</span>
+                </a>
+
+                <!-- Ujian Online (CBT) Siswa -->
+                <a href="{{ route('cbt.index') }}" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[13.5px] font-semibold leading-snug transition {{ request()->routeIs('cbt.*') ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                    <svg class="w-4.5 h-4.5 shrink-0 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span class="font-bold text-amber-300">Ujian Online (CBT)</span>
+                </a>
+
+                <!-- Rapor Siswa Kurnas -->
+                <a href="{{ route('rapor_kurnas.index') }}" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[13.5px] font-semibold leading-snug transition {{ request()->routeIs('rapor_kurnas.*') ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                    <svg class="w-4.5 h-4.5 shrink-0 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                    </svg>
+                    <span>Rapor Siswa</span>
+                </a>
+
+                <!-- Curhat BK Siswa -->
+                <a href="{{ route('bk.curhat.index') }}" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[13.5px] font-semibold leading-snug transition {{ request()->routeIs('bk.*') ? 'bg-teal-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                    <svg class="w-4.5 h-4.5 shrink-0 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                    </svg>
+                    <span class="font-bold text-teal-300">Curhat BK</span>
+                </a>
+
+                <!-- Perpustakaan Siswa -->
+                <a href="{{ route('library.index') }}" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[13.5px] font-semibold leading-snug transition {{ request()->routeIs('library.*') ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
                     <svg class="w-4.5 h-4.5 shrink-0 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"/>
                     </svg>
                     <span>Perpustakaan</span>
-                </div>
-                @if(in_array($currentActiveSlug, ['kepala_perpustakaan', 'pengelola_perpustakaan', 'pustakawan']))
-                    <span class="px-1.5 py-0.5 text-[9px] font-extrabold rounded-md bg-amber-500/25 text-amber-300 border border-amber-500/30">Aktif</span>
-                @endif
-            </a>
-            @endif
+                </a>
 
-            @if($canNav('tu') && $navUser?->role !== 'guru')
-            {{-- 7. Adm. Ketatausahaan Mobile --}}
-            <a href="{{ route('tu.dashboard') }}" class="flex items-center justify-between px-3 py-2.5 rounded-xl text-[13.5px] font-semibold leading-snug transition {{ $isTuActive ? 'bg-emerald-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
-                <div class="flex items-center gap-2.5 min-w-0">
+                <!-- Al-Qur'an Digital -->
+                <a href="{{ route('quran.index') }}" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[13.5px] font-semibold leading-snug transition {{ request()->routeIs('quran.*') ? 'bg-emerald-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
                     <svg class="w-4.5 h-4.5 shrink-0 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
                     </svg>
-                    <span class="font-bold">Adm. Ketatausahaan</span>
-                </div>
-                @if(in_array($currentActiveSlug, ['kepala_administrasi', 'ta_kesiswaan', 'ta_kepegawaian', 'ta_persuratan', 'ta_sarpras', 'bendahara_bosp', 'bendahara_bopd', 'bendahara_gaji', 'tu_piket', 'operator_dapodik']))
-                    <span class="px-1.5 py-0.5 text-[9px] font-extrabold rounded-md bg-emerald-500/25 text-emerald-300 border border-emerald-500/30">Aktif</span>
+                    <span>Al-Qur'an Digital</span>
+                </a>
+
+                <!-- Khusus Siswa bertugas Admin Web (adm_web) -->
+                @if($canNav('website_content'))
+                <a href="{{ route('master.website_content') }}" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[13.5px] font-semibold leading-snug transition {{ request()->routeIs('master.website_content*') ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                    <svg class="w-4.5 h-4.5 shrink-0 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/>
+                    </svg>
+                    <span class="font-bold text-sky-300">Kelola Konten Web</span>
+                </a>
                 @endif
-            </a>
-            @endif
 
-            @if($canNav('website_content'))
-            <!-- Kelola Konten Web (Standalone Mobile) -->
-            <a href="{{ route('master.website_content') }}" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[13.5px] font-semibold leading-snug transition {{ request()->routeIs('master.website_content*') ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
-                <svg class="w-4.5 h-4.5 shrink-0 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/>
-                </svg>
-                <span class="font-bold">Kelola Konten Web</span>
-            </a>
-            @endif
+            @else
+                {{-- ========================================================
+                     NAVIGASI MOBILE PENDIDIK & TENAGA KEPENDIDIKAN
+                     ======================================================== --}}
 
-            <!-- Bel Sekolah (Mobile - Di Bawah Kelola Konten Web) -->
-            @if(!Auth::check() || $canNav('school_bell') || in_array('guest', $roles))
-            <a href="{{ route('school_bell.index') }}" class="flex items-center justify-between px-3 py-2.5 rounded-xl text-[13.5px] font-semibold leading-snug transition {{ request()->routeIs('school_bell.*') ? 'bg-amber-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
-                <div class="flex items-center gap-2.5 min-w-0">
-                    <svg class="w-4.5 h-4.5 shrink-0 text-amber-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                <!-- 2. Master Data -->
+                @if($canNav('master_data'))
+                <a href="{{ route('master.school_profile') }}" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[13.5px] font-semibold leading-snug transition {{ (request()->routeIs('master.*') && ! request()->routeIs('master.website_content*')) ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                    <svg class="w-4.5 h-4.5 shrink-0 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"/>
                     </svg>
-                    <span class="font-bold">Bel Sekolah</span>
+                    <span>Master Data</span>
+                </a>
+                @endif
+
+                <!-- 3. Kesiswaan (Parent Menu) -->
+                @if($canNav('kesiswaan'))
+                <div>
+                    <button type="button" onclick="toggleSidebarMenu('kesiswaan-menu-mobile', 'kesiswaan-chevron-mobile')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-[13.5px] font-semibold leading-snug transition {{ $isKesiswaanActive ? 'text-indigo-400 bg-indigo-500/10' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }} cursor-pointer">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <svg class="w-4.5 h-4.5 shrink-0 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                            </svg>
+                            <span class="font-bold">Kesiswaan</span>
+                            @if(in_array($currentActiveSlug, ['wakasek_kesiswaan', 'wali_kelas', 'pembina_ekstra', 'guru_piket', 'koordinator_keagamaan']))
+                                <span class="px-1.5 py-0.5 text-[9px] font-extrabold rounded-md bg-indigo-500/25 text-indigo-300 border border-indigo-500/30">Aktif</span>
+                            @endif
+                        </div>
+                        <svg id="kesiswaan-chevron-mobile" class="w-4 h-4 text-slate-400 transition-transform duration-200 {{ $isKesiswaanActive ? 'rotate-180' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+                    <div id="kesiswaan-menu-mobile" class="{{ $isKesiswaanActive ? '' : 'hidden' }} pl-3 pr-1 py-1 space-y-1 border-l-2 border-indigo-500/30 ml-4 mt-0.5">
+                        @if($canNav('attendance'))
+                        <!-- Presensi -->
+                        <a href="{{ route('attendance.index') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium leading-snug transition {{ (request()->routeIs('attendance.*') || request()->routeIs('worship.*') || request()->routeIs('extracurricular.*')) ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                            <svg class="w-4 h-4 shrink-0 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                            </svg>
+                            <span>Presensi Harian</span>
+                        </a>
+                        @endif
+
+                        @if($canNav('spmb'))
+                        <!-- SPMB Siswa Baru -->
+                        <a href="{{ route('spmb.index') }}" class="flex items-center justify-between px-3 py-2 rounded-xl text-[13px] font-medium leading-snug transition {{ request()->routeIs('spmb.*') ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                            <div class="flex items-center gap-2.5">
+                                <svg class="w-4 h-4 shrink-0 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+                                </svg>
+                                <span>SPMB</span>
+                            </div>
+                        </a>
+                        @endif
+
+                        @if($canNav('discipline'))
+                        <!-- Tata Tertib Siswa -->
+                        <a href="{{ route('violations.index') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium leading-snug transition {{ (request()->routeIs('achievements.*') || request()->routeIs('violations.*') || request()->routeIs('guidance.*') || request()->routeIs('discipline.*')) ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                            <svg class="w-4 h-4 shrink-0 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                            </svg>
+                            <span>Tata Tertib Siswa</span>
+                        </a>
+                        @endif
+
+                        @if($canNav('tahfidz'))
+                        <!-- Hafalan Al-Qur'an -->
+                        <a href="{{ route('tahfidz.index') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium leading-snug transition {{ request()->routeIs('tahfidz.*') ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                            <svg class="w-4 h-4 shrink-0 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                            </svg>
+                            <span>Hafalan Al-Qur'an</span>
+                        </a>
+                        @endif
+
+                        @if($canNav('habits'))
+                        <!-- 7 KAIH -->
+                        <a href="{{ route('habits.journal') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium leading-snug transition {{ (request()->routeIs('habits.*') || request()->routeIs('ai.*')) ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                            <svg class="w-4 h-4 shrink-0 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
+                            </svg>
+                            <span>7 KAIH</span>
+                        </a>
+                        @endif
+
+                        @if($canNav('raport_digital'))
+                        <!-- Raport Digital -->
+                        <a href="{{ route('raport.index') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium leading-snug transition {{ request()->routeIs('raport.*') ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                            <svg class="w-4 h-4 shrink-0 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                            <span>Raport Digital (AI)</span>
+                        </a>
+                        @endif
+                    </div>
                 </div>
-            </a>
+                @endif
+
+                <!-- 4. Kurikulum (Parent Menu) -->
+                @if($canNav('kurikulum'))
+                <div>
+                    <button type="button" onclick="toggleSidebarMenu('kurikulum-menu-mobile', 'kurikulum-chevron-mobile')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-[13.5px] font-semibold leading-snug transition {{ $isKurikulumActive ? 'text-indigo-400 bg-indigo-500/10' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }} cursor-pointer">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <svg class="w-4.5 h-4.5 shrink-0 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222"/>
+                            </svg>
+                            <span class="font-bold">Kurikulum</span>
+                            @if(in_array($currentActiveSlug, ['wakasek_kurikulum', 'guru']))
+                                <span class="px-1.5 py-0.5 text-[9px] font-extrabold rounded-md bg-sky-500/25 text-sky-300 border border-sky-500/30">Aktif</span>
+                            @endif
+                        </div>
+                        <svg id="kurikulum-chevron-mobile" class="w-4 h-4 text-slate-400 transition-transform duration-200 {{ $isKurikulumActive ? 'rotate-180' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+                    <div id="kurikulum-menu-mobile" class="{{ $isKurikulumActive ? '' : 'hidden' }} pl-3 pr-1 py-1 space-y-1 border-l-2 border-indigo-500/30 ml-4 mt-0.5">
+                        @if($canNav('cbt'))
+                        <!-- Ujian Online (CBT) -->
+                        <a href="{{ route('cbt.index') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium leading-snug transition {{ request()->routeIs('cbt.*') ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                            <svg class="w-4 h-4 shrink-0 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <span class="font-bold text-amber-300">Ujian Online (CBT)</span>
+                        </a>
+                        @endif
+
+                        @if($canNav('lms'))
+                        <!-- LMS Pembelajaran -->
+                        <a href="{{ route('lms.index') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium leading-snug transition {{ request()->routeIs('lms.*') ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                            <svg class="w-4 h-4 shrink-0 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                            </svg>
+                            <span>LMS Pembelajaran</span>
+                        </a>
+                        @endif
+
+                        @if($canNav('rapor_kurnas'))
+                        <!-- Rapor Kurnas -->
+                        <a href="{{ route('rapor_kurnas.index') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium leading-snug transition {{ request()->routeIs('rapor_kurnas.*') ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                            <svg class="w-4 h-4 shrink-0 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                            </svg>
+                            <span>{{ ($navUser && $navUser->isStudent()) ? 'Rapor Siswa (Kurnas)' : 'Rapor Kurnas' }}</span>
+                        </a>
+                        @endif
+                    </div>
+                </div>
+                @endif
+
+                <!-- 5. Bimbingan Konseling (BK) Mobile -->
+                @if($canNav('bk'))
+                <a href="{{ route('bk.dashboard') }}" class="flex items-center justify-between px-3 py-2.5 rounded-xl text-[13.5px] font-semibold leading-snug transition {{ request()->routeIs('bk.*') ? 'bg-teal-600 text-white shadow-xs shadow-teal-600/30' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                    <div class="flex items-center gap-2.5 min-w-0">
+                        <svg class="w-4.5 h-4.5 shrink-0 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                        </svg>
+                        <span class="font-bold">Bimbingan Konseling</span>
+                    </div>
+                    @if(in_array($currentActiveSlug, ['koordinator_bk', 'guru_bk', 'bk']))
+                        <span class="px-1.5 py-0.5 text-[9px] font-extrabold rounded-md bg-teal-500/25 text-teal-300 border border-teal-500/30">Aktif</span>
+                    @endif
+                </a>
+                @endif
+
+                <!-- 6. Perpustakaan -->
+                @if($canNav('library'))
+                <a href="{{ route('library.index') }}" class="flex items-center justify-between px-3 py-2.5 rounded-xl text-[13.5px] font-semibold leading-snug transition {{ request()->routeIs('library.*') ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                    <div class="flex items-center gap-2.5 min-w-0">
+                        <svg class="w-4.5 h-4.5 shrink-0 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"/>
+                        </svg>
+                        <span>Perpustakaan</span>
+                    </div>
+                    @if(in_array($currentActiveSlug, ['kepala_perpustakaan', 'pengelola_perpustakaan', 'pustakawan']))
+                        <span class="px-1.5 py-0.5 text-[9px] font-extrabold rounded-md bg-amber-500/25 text-amber-300 border border-amber-500/30">Aktif</span>
+                    @endif
+                </a>
+                @endif
+
+                @if($canNav('tu') && $navUser?->role !== 'guru')
+                {{-- 7. Adm. Ketatausahaan Mobile --}}
+                <a href="{{ route('tu.dashboard') }}" class="flex items-center justify-between px-3 py-2.5 rounded-xl text-[13.5px] font-semibold leading-snug transition {{ $isTuActive ? 'bg-emerald-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                    <div class="flex items-center gap-2.5 min-w-0">
+                        <svg class="w-4.5 h-4.5 shrink-0 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                        </svg>
+                        <span class="font-bold">Adm. Ketatausahaan</span>
+                    </div>
+                    @if(in_array($currentActiveSlug, ['kepala_administrasi', 'ta_kesiswaan', 'ta_kepegawaian', 'ta_persuratan', 'ta_sarpras', 'bendahara_bosp', 'bendahara_bopd', 'bendahara_gaji', 'tu_piket', 'operator_dapodik']))
+                        <span class="px-1.5 py-0.5 text-[9px] font-extrabold rounded-md bg-emerald-500/25 text-emerald-300 border border-emerald-500/30">Aktif</span>
+                    @endif
+                </a>
+                @endif
+
+                @if($canNav('website_content'))
+                <!-- Kelola Konten Web (Khusus Humas, Adm Web, Admin & Kepsek) -->
+                <a href="{{ route('master.website_content') }}" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[13.5px] font-semibold leading-snug transition {{ request()->routeIs('master.website_content*') ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                    <svg class="w-4.5 h-4.5 shrink-0 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/>
+                    </svg>
+                    <span class="font-bold">Kelola Konten Web</span>
+                </a>
+                @endif
+
+                <!-- Bel Sekolah (Hanya untuk Staf yang berwenang, bukan siswa atau tamu umum) -->
+                @if(Auth::check() && $canNav('school_bell'))
+                <a href="{{ route('school_bell.index') }}" class="flex items-center justify-between px-3 py-2.5 rounded-xl text-[13.5px] font-semibold leading-snug transition {{ request()->routeIs('school_bell.*') ? 'bg-amber-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                    <div class="flex items-center gap-2.5 min-w-0">
+                        <svg class="w-4.5 h-4.5 shrink-0 text-amber-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                        </svg>
+                        <span class="font-bold">Bel Sekolah</span>
+                    </div>
+                </a>
+                @endif
+
             @endif
 
             <!-- 7. Website Resmi Sekolah -->

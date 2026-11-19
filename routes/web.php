@@ -490,8 +490,8 @@ Route::middleware('auth')->group(function () {
     // Shortcut Audit Log Aktivitas untuk Admin Dashboard
     Route::get('/admin/audit-logs/activity-report', [ReportController::class, 'userActivityReport'])->name('admin.user_activity');
 
-    // Master Data Terpadu (Admin, Operator Dapodik, Kepala Urusan TU, Wakasek Kesiswaan & Kurikulum, Kepala Sekolah)
-    Route::prefix('master')->name('master.')->middleware('role:admin,super_admin,operator_dapodik,operator,kepala_administrasi,wakasek_kesiswaan,wakasek_kurikulum,kepala_sekolah')->group(function () {
+    // Master Data Terpadu (Admin, Operator Dapodik, Kepala Urusan TU, Kepala Sekolah)
+    Route::prefix('master')->name('master.')->middleware('role:admin,super_admin,operator_dapodik,operator,kepala_administrasi,kepala_sekolah')->group(function () {
         // Identitas Sekolah Lengkap
         Route::get('/school-profile', [MasterDataController::class, 'schoolProfile'])->name('school_profile');
         Route::post('/school-profile', [MasterDataController::class, 'updateSchoolProfile'])->name('school_profile.update');
@@ -588,8 +588,8 @@ Route::middleware('auth')->group(function () {
         Route::delete('/extracurriculars/{id}/members/{studentId}', [MasterDataController::class, 'removeExtracurricularMember'])->name('extracurriculars.members.remove');
     });
 
-    // Kelola Konten & Tampilan Website Sekolah (Menu Mandiri Terpisah - Multi-Role)
-    Route::middleware(['auth'])->group(function () {
+    // Kelola Konten & Tampilan Website Sekolah (Menu Mandiri Terpisah - Khusus Humas, Adm Web, Kepsek & Admin)
+    Route::middleware(['auth', 'role:super_admin,admin,kepala_sekolah,wakasek_humas,humas,adm_web'])->group(function () {
         Route::prefix('master')->name('master.')->group(function () {
             Route::get('/website-content', [WebsiteContentController::class, 'index'])->name('website_content');
             Route::post('/website-content/hero', [WebsiteContentController::class, 'updateHero'])->name('website_content.hero');

@@ -31,8 +31,8 @@ class EnsureTenagaKependidikan
             return $next($request);
         }
 
-        // Aturan: Tenaga Pendidik (primary role === 'guru') dilarang keras mengakses Adm Ketatausahaan
-        if ($user->role === 'guru') {
+        // Aturan: Tenaga Pendidik murni dilarang keras mengakses Adm Ketatausahaan (kecuali memiliki tugas wewenang TU/Sarpras yang sah)
+        if ($user->role === 'guru' && ! $user->hasAnyRole(['wakasek_sarpras', 'ta_sarpras', 'kepala_administrasi', 'operator_dapodik'])) {
             abort(403, 'Akses Ditolak: Aplikasi Adm. Ketatausahaan hanya untuk peran Tenaga Kependidikan (Staf TU). Tenaga Pendidik tidak memiliki akses ke modul ini.');
         }
 

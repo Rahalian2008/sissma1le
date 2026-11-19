@@ -97,10 +97,22 @@ class SchoolBellController extends Controller
     }
 
     /**
+     * Pastikan pengguna memiliki otoritas untuk memodifikasi jadwal bel sekolah.
+     */
+    protected function authorizeBellManager(): void
+    {
+        if (! auth()->check() || ! auth()->user()->canAccessSchoolBell()) {
+            abort(403, 'Akses Ditolak: Anda tidak memiliki wewenang untuk mengatur atau memodifikasi jadwal bel sekolah.');
+        }
+    }
+
+    /**
      * Tambah Jadwal Bel Sekolah Baru
      */
     public function store(Request $request): RedirectResponse
     {
+        $this->authorizeBellManager();
+
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'time' => ['required', 'string', 'regex:/^([01][0-9]|2[0-3]):[0-5][0-9](:[0-5][0-9])?$/'],
@@ -238,6 +250,8 @@ class SchoolBellController extends Controller
      */
     public function resetDefaults(): RedirectResponse
     {
+        $this->authorizeBellManager();
+
         SchoolBell::query()->delete();
         SchoolBell::ensureDefaultSchedules(force: true);
         AuditLog::log('RESET_DEFAULT_SCHOOL_BELLS', 'SchoolBell');
@@ -250,6 +264,8 @@ class SchoolBellController extends Controller
      */
     public function clearAll(): RedirectResponse
     {
+        $this->authorizeBellManager();
+
         $count = SchoolBell::count();
         SchoolBell::query()->delete();
         SchoolSetting::set('school_bells_initialized', '1', 'school_bell', 'Status inisialisasi jadwal bel sekolah');
@@ -263,6 +279,8 @@ class SchoolBellController extends Controller
      */
     public function update(Request $request, SchoolBell $schoolBell): RedirectResponse
     {
+        $this->authorizeBellManager();
+
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'time' => ['required', 'string', 'regex:/^([01][0-9]|2[0-3]):[0-5][0-9](:[0-5][0-9])?$/'],
@@ -424,6 +442,8 @@ class SchoolBellController extends Controller
      */
     public function toggle(SchoolBell $schoolBell): JsonResponse|RedirectResponse
     {
+        $this->authorizeBellManager();
+
         $schoolBell->update(['is_active' => ! $schoolBell->is_active]);
 
         $statusStr = $schoolBell->is_active ? 'diaktifkan' : 'dinonaktifkan';
@@ -445,6 +465,8 @@ class SchoolBellController extends Controller
      */
     public function destroy(SchoolBell $schoolBell): RedirectResponse
     {
+        $this->authorizeBellManager();
+
         $title = $schoolBell->title;
         $schoolBell->delete();
 

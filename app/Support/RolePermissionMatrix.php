@@ -40,7 +40,7 @@ class RolePermissionMatrix
                 'wakasek_kesiswaan', 'kesiswaan', 'ta_kesiswaan',
                 'wali_kelas', 'pembina_ekstra',
                 'guru_piket', 'tu_piket', 'petugas_piket',
-                'koordinator_keagamaan', 'guru', 'siswa', 'orang_tua',
+                'koordinator_keagamaan', 'guru',
             ],
 
             'quran' => [
@@ -95,19 +95,19 @@ class RolePermissionMatrix
                 'wakasek_kesiswaan', 'kesiswaan',
                 'koordinator_bk', 'guru_bk', 'bk',
                 'wali_kelas', 'guru_piket', 'tu_piket', 'petugas_piket',
-                'guru', 'siswa', 'orang_tua',
+                'guru',
             ],
 
             'tahfidz' => [
                 'super_admin', 'admin', 'kepala_sekolah',
-                'wakasek_kesiswaan', 'koordinator_keagamaan',
-                'wali_kelas', 'guru', 'siswa', 'orang_tua',
+                'wakasek_kesiswaan', 'wakasek_kurikulum', 'koordinator_keagamaan',
+                'wali_kelas', 'guru',
             ],
 
             'habits' => [
                 'super_admin', 'admin', 'kepala_sekolah',
                 'wakasek_kesiswaan', 'koordinator_keagamaan',
-                'wali_kelas', 'guru', 'siswa', 'orang_tua',
+                'wali_kelas', 'guru',
             ],
 
             'raport_digital' => [
@@ -123,7 +123,7 @@ class RolePermissionMatrix
 
             'kurikulum' => [
                 'super_admin', 'admin', 'kepala_sekolah',
-                'wakasek_kurikulum', 'kurikulum', 'guru', 'wali_kelas', 'siswa',
+                'wakasek_kurikulum', 'kurikulum', 'guru', 'wali_kelas',
             ],
 
             'cbt' => [
@@ -133,7 +133,7 @@ class RolePermissionMatrix
 
             'lms' => [
                 'super_admin', 'admin', 'kepala_sekolah',
-                'wakasek_kurikulum', 'kurikulum', 'guru', 'siswa',
+                'wakasek_kurikulum', 'kurikulum', 'guru', 'siswa', 'wali_kelas',
             ],
 
             'rapor_kurnas' => [
@@ -199,17 +199,8 @@ class RolePermissionMatrix
 
             'website_content' => [
                 'super_admin', 'admin', 'kepala_sekolah',
-                'wakasek_kurikulum', 'kurikulum',
-                'wakasek_kesiswaan', 'kesiswaan',
                 'wakasek_humas', 'humas',
-                'wakasek_sarpras', 'sarpras',
-                'koordinator_bk', 'guru_bk', 'bk',
-                'kepala_perpustakaan', 'pengelola_perpustakaan', 'pustakawan',
-                'koordinator_keagamaan',
-                'guru', 'wali_kelas', 'pembina_ekstra',
-                'kepala_administrasi', 'staff', 'tu', 'tenaga_administrasi',
-                'operator_dapodik', 'operator',
-                'tu_piket', 'guru_piket', 'adm_web',
+                'adm_web',
             ],
         ];
     }
