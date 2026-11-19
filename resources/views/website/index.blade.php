@@ -292,25 +292,6 @@
                     </svg>
                 </button>
 
-                <!-- Kiosk Ecosystem Quick Links -->
-                <div class="hidden xl:flex items-center gap-1.5">
-                    <a href="{{ route('school_bell.index') }}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold text-amber-700 dark:text-amber-300 bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/40 dark:hover:bg-amber-900/50 border border-amber-300 dark:border-amber-700/60 transition" title="Bel Sekolah Digital Otomatis & Standby">
-                        <span>🔔 Bel Sekolah</span>
-                    </a>
-                    <a href="{{ route('guests.kiosk') }}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 bg-slate-100 hover:bg-slate-200/70 dark:bg-slate-800/80 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 transition" title="Kios Buku Tamu Resepsionis Mandiri">
-                        <span>👥 Kios Tamu</span>
-                    </a>
-                    <a href="{{ route('library.guest_book.index') }}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 bg-slate-100 hover:bg-slate-200/70 dark:bg-slate-800/80 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 transition" title="Kios Buku Tamu Perpustakaan">
-                        <span>📚 Kios Perpus</span>
-                    </a>
-                </div>
-
-                <!-- SPMB Registration CTA Link -->
-                <a href="{{ route('spmb.public.register') }}" class="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 sm:py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 hover:from-emerald-500 hover:to-teal-500 text-white font-black text-xs sm:text-sm shadow-md shadow-emerald-600/25 transition-all hover:scale-[1.02] border border-emerald-400/30">
-                    <span class="w-2 h-2 rounded-full bg-white animate-ping"></span>
-                    <span>🎓 Daftar SPMB</span>
-                </a>
-
                 <!-- Primary Portal Auth Button -->
                 @auth
                     <a href="{{ route('dashboard') }}" class="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-1.5 sm:py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-700 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-bold text-xs sm:text-sm shadow-md shadow-indigo-600/30 transition-all hover:scale-[1.02]">
