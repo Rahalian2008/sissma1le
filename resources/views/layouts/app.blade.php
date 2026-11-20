@@ -917,34 +917,48 @@
                             $userActiveRole = Auth::user()->active_role;
                             $userAllRoles = Auth::user()->getActiveRoleOptions();
                         @endphp
-                        <div class="mb-3 sm:mb-5 p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl bg-gradient-to-r from-indigo-50/90 via-purple-50/60 to-emerald-50/70 dark:from-slate-800/90 dark:via-indigo-950/40 dark:to-emerald-950/30 border border-indigo-200/70 dark:border-indigo-800/60 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-2 sm:gap-2.5">
-                            <div class="flex items-center gap-2 sm:gap-2.5 min-w-0">
-                                <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl bg-indigo-600 text-white flex items-center justify-center shrink-0 shadow-xs">
-                                    <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+                        <div class="mb-3 sm:mb-5 p-3 sm:p-4 rounded-2xl bg-gradient-to-r from-indigo-50/90 via-purple-50/60 to-emerald-50/70 dark:from-slate-800/90 dark:via-indigo-950/40 dark:to-emerald-950/30 border border-indigo-200/70 dark:border-indigo-800/60 shadow-xs flex flex-col xl:flex-row xl:items-center justify-between gap-3">
+                            <!-- Informasi Peran Aktif -->
+                            <div class="flex items-center gap-3 shrink-0">
+                                <div class="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center shrink-0 shadow-sm shadow-indigo-600/30">
+                                    <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+                                    </svg>
                                 </div>
-                                <div class="truncate text-xs">
-                                    <div class="text-[9.5px] sm:text-[10.5px] uppercase tracking-wider font-extrabold text-indigo-700 dark:text-indigo-400">Mode Peran Aktif:</div>
-                                    <div class="font-black text-slate-800 dark:text-white truncate text-xs sm:text-sm">
-                                        {{ Auth::user()->getRoleTitleFor($userActiveRole) }}
+                                <div class="leading-tight">
+                                    <div class="text-[10.5px] uppercase tracking-wider font-extrabold text-indigo-700 dark:text-indigo-400">Mode Peran Aktif:</div>
+                                    <div class="flex items-center gap-1.5 mt-0.5">
+                                        <span class="font-black text-slate-900 dark:text-white text-sm">
+                                            {{ Auth::user()->getRoleTitleFor($userActiveRole) }}
+                                        </span>
                                         @if($userActiveRole === 'all_roles')
-                                            <span class="ml-1 px-1.5 py-0.2 rounded-md bg-amber-500/20 text-amber-600 dark:text-amber-300 font-bold text-[9.5px] sm:text-[10px]">Semua Aplikasi</span>
+                                            <span class="px-1.5 py-0.5 rounded-md bg-amber-500/20 text-amber-700 dark:text-amber-300 font-extrabold text-[10px] border border-amber-500/30">
+                                                Semua Aplikasi
+                                            </span>
                                         @endif
                                     </div>
                                 </div>
                             </div>
-                            <div class="flex items-center gap-1.5 overflow-x-auto scrollbar-none touch-pan-x select-none py-1 sm:flex-wrap shrink-0 max-w-full pr-6 sm:pr-0">
-                                <span class="text-[10px] font-bold text-slate-400 dark:text-slate-400 mr-1 hidden sm:inline">Pindah Role:</span>
-                                <a href="{{ route('user.switch_role_get', 'all_roles') }}" class="px-2.5 py-1 rounded-xl text-xs font-bold transition flex items-center gap-1 shrink-0 {{ $userActiveRole === 'all_roles' ? 'bg-indigo-600 text-white shadow-xs' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700' }}">
-                                    <span>⚡ Semua Akses</span>
-                                </a>
-                                @foreach($userAllRoles as $rSlug)
-                                    <a href="{{ route('user.switch_role_get', $rSlug) }}" class="px-2.5 py-1 rounded-xl text-xs font-semibold transition flex items-center gap-1 shrink-0 {{ $userActiveRole === $rSlug ? 'bg-indigo-600 text-white font-bold shadow-xs' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700' }}" title="Beralih ke {{ Auth::user()->getRoleTitleFor($rSlug) }}">
-                                        @if($userActiveRole === $rSlug)
-                                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                                        @endif
-                                        <span>{{ Auth::user()->getRoleTitleFor($rSlug) }}</span>
+
+                            <!-- Pilihan Tombol Beralih Role -->
+                            <div class="flex items-center gap-2 flex-wrap min-w-0">
+                                <span class="text-[11px] font-bold text-slate-500 dark:text-slate-400 shrink-0">Pindah Role:</span>
+                                <div class="flex items-center gap-1.5 flex-wrap">
+                                    <a href="{{ route('user.switch_role_get', 'all_roles') }}"
+                                       class="px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shrink-0 {{ $userActiveRole === 'all_roles' ? 'bg-indigo-600 text-white shadow-xs shadow-indigo-600/30' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700' }}">
+                                        <span>⚡ Semua Akses</span>
                                     </a>
-                                @endforeach
+                                    @foreach($userAllRoles as $rSlug)
+                                        <a href="{{ route('user.switch_role_get', $rSlug) }}"
+                                           class="px-3 py-1.5 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 shrink-0 {{ $userActiveRole === $rSlug ? 'bg-indigo-600 text-white font-bold shadow-xs shadow-indigo-600/30' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700' }}"
+                                           title="Beralih ke {{ Auth::user()->getRoleTitleFor($rSlug) }}">
+                                            @if($userActiveRole === $rSlug)
+                                                <span class="w-2 h-2 rounded-full bg-emerald-400 ring-2 ring-indigo-400"></span>
+                                            @endif
+                                            <span>{{ Auth::user()->getRoleTitleFor($rSlug) }}</span>
+                                        </a>
+                                    @endforeach
+                                </div>
                             </div>
                         </div>
                     @endif
