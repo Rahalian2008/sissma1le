@@ -954,6 +954,20 @@ class User extends Authenticatable
         return $this->hasRole('siswa') && ! $this->hasAnyRole(['admin', 'super_admin', 'guru', 'wali_kelas', 'kepala_sekolah', 'bk', 'kesiswaan', 'wakasek_kesiswaan', 'wakasek_kurikulum', 'wakasek_humas', 'wakasek_sarpras', 'tu', 'staff']);
     }
 
+    /**
+     * Memeriksa apakah user merupakan siswa dan duduk di tingkat Kelas X (Fase E).
+     */
+    public function isGradeXStudent(): bool
+    {
+        if (! $this->isStudent()) {
+            return false;
+        }
+
+        $student = $this->student ?? Student::where('user_id', $this->id)->first();
+
+        return $student ? $student->isGradeX() : false;
+    }
+
     public function isParent(): bool
     {
         return $this->hasRole('orang_tua');

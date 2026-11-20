@@ -233,6 +233,24 @@ class Student extends Model
         return QuranTahfidzRecord::normalizeGrade($grade) ?: 'X';
     }
 
+    /**
+     * Memeriksa apakah siswa berada di tingkat Kelas X (Fase E).
+     */
+    public function isGradeX(): bool
+    {
+        $grade = strtoupper(trim((string) ($this->schoolClass?->grade ?? '')));
+        if (! $grade && $this->class_id) {
+            $schoolClass = SchoolClass::find($this->class_id);
+            $grade = strtoupper(trim((string) ($schoolClass?->grade ?? '')));
+        }
+        if (in_array($grade, ['X', '10', 'FASE E'], true)) {
+            return true;
+        }
+        $className = strtoupper(trim((string) ($this->schoolClass?->name ?? '')));
+
+        return str_starts_with($className, 'X ') || str_starts_with($className, 'X-') || str_starts_with($className, '10 ');
+    }
+
     public function hasFaceRegistered(): bool
     {
         return ! empty($this->face_descriptor) || ! empty($this->face_photo_path);

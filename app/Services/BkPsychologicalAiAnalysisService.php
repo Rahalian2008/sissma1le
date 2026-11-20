@@ -702,12 +702,12 @@ PROMPT;
         $gardnerDom = $gardner?->dominant_dimension ?? 'VISUAL SPASIAL';
         $gardnerPct = (float) (($gardner?->dimension_scores['percentages'] ?? [])[$gardnerDom] ?? 75.0);
 
-        $summary = "Laporan evaluasi komprehensif resmi SMAN 1 Lengkong untuk peserta didik {$studentName} ({$studentClass}). Laporan ini mengintegrasikan tiga pilar psikometri utama: Gaya Belajar (VAK), Minat Karier (Holland RIASEC), dan Kecerdasan Majemuk (Howard Gardner) menjadi satu kesatuan profil yang utuh, logis, dan saling menguatkan tanpa menimbulkan kebingungan antarhasil instrumen.\n\n" .
-            "RINGKASAN INTEGRASI TRI-DIMENSI:\n" .
-            "1. Modalitas Belajar (Gaya Belajar VAK): Menunjukkan dominansi pada modalitas {$vakDom} ({$vakPct}%) didukung modalitas {$vakSec}. Ananda menyerap materi paling efektif melalui visualisasi skema/diagram dan diskusi terstruktur.\n" .
-            "2. Orientasi Minat Karier (Holland RIASEC): Menunjukkan preferensi dominan pada tipe {$riasecDom} ({$riasecPct}%) dengan kode kombinasi [{$riasecCode}]. Hal ini mencerminkan dorongan kuat berkegiatan dalam bidang pelayanan sosial, edukasi kemanusiaan, manajemen organisasi, serta keteraturan sistem.\n" .
-            "3. Kapasitas Kognitif & Kecerdasan Majemuk (Gardner): Menunjukkan potensi tertinggi pada {$gardnerDom} ({$gardnerPct}%), menggambarkan kemampuan imajinasi visual, kepekaan tata letak, dan refleksi mandiri yang matang.\n\n" .
-            "BENANG MERAH & SINERGI PROFIL ANANDA:\n" .
+        $summary = "Laporan evaluasi komprehensif resmi SMAN 1 Lengkong untuk peserta didik {$studentName} ({$studentClass}). Laporan ini mengintegrasikan tiga pilar psikometri utama: Gaya Belajar (VAK), Minat Karier (Holland RIASEC), dan Kecerdasan Majemuk (Howard Gardner) menjadi satu kesatuan profil yang utuh, logis, dan saling menguatkan tanpa menimbulkan kebingungan antarhasil instrumen.\n\n".
+            "RINGKASAN INTEGRASI TRI-DIMENSI:\n".
+            "1. Modalitas Belajar (Gaya Belajar VAK): Menunjukkan dominansi pada modalitas {$vakDom} ({$vakPct}%) didukung modalitas {$vakSec}. Ananda menyerap materi paling efektif melalui visualisasi skema/diagram dan diskusi terstruktur.\n".
+            "2. Orientasi Minat Karier (Holland RIASEC): Menunjukkan preferensi dominan pada tipe {$riasecDom} ({$riasecPct}%) dengan kode kombinasi [{$riasecCode}]. Hal ini mencerminkan dorongan kuat berkegiatan dalam bidang pelayanan sosial, edukasi kemanusiaan, manajemen organisasi, serta keteraturan sistem.\n".
+            "3. Kapasitas Kognitif & Kecerdasan Majemuk (Gardner): Menunjukkan potensi tertinggi pada {$gardnerDom} ({$gardnerPct}%), menggambarkan kemampuan imajinasi visual, kepekaan tata letak, dan refleksi mandiri yang matang.\n\n".
+            "BENANG MERAH & SINERGI PROFIL ANANDA:\n".
             "Ketiga hasil tes ini tidak saling bertolak belakang, melainkan membentuk profil sinergis sebagai 'Creative Social Communicator & Media Educator'. Ananda bukan tipe teknisi mekanik yang bekerja menyendiri, melainkan seorang kreator solutif yang menggunakan daya cipta visual dan estetika kognitifnya untuk membantu, mengedukasi, dan menggerakkan komunitas sosial di sekitarnya.";
 
         $overall = [
@@ -717,7 +717,7 @@ PROMPT;
                 'skor' => $vak?->total_score ?? 21,
                 'persentase' => $vakPct,
                 'kategori' => 'Tinggi',
-                'interpretasi' => "Memproses informasi paling cepat melalui visualisasi grafis, bahan tayang menarik, dan dialog konseptual.",
+                'interpretasi' => 'Memproses informasi paling cepat melalui visualisasi grafis, bahan tayang menarik, dan dialog konseptual.',
             ],
             [
                 'dimensi' => 'Minat Karier (Holland RIASEC)',
@@ -725,7 +725,7 @@ PROMPT;
                 'skor' => $riasec?->total_score ?? 16,
                 'persentase' => $riasecPct,
                 'kategori' => 'Tinggi',
-                'interpretasi' => "Termotivasi pada lingkungan kerja interaktif, kerja tim kemanusiaan, edukasi publik, dan pengelolaan proyek sosial.",
+                'interpretasi' => 'Termotivasi pada lingkungan kerja interaktif, kerja tim kemanusiaan, edukasi publik, dan pengelolaan proyek sosial.',
             ],
             [
                 'dimensi' => 'Kecerdasan Majemuk (Gardner)',
@@ -733,7 +733,7 @@ PROMPT;
                 'skor' => $gardner?->total_score ?? 12,
                 'persentase' => $gardnerPct,
                 'kategori' => 'Tinggi',
-                'interpretasi' => "Memiliki keunggulan dalam persepsi ruang, komposisi estetika, serta perancangan media komunikasi visual fungsional.",
+                'interpretasi' => 'Memiliki keunggulan dalam persepsi ruang, komposisi estetika, serta perancangan media komunikasi visual fungsional.',
             ],
         ];
 
@@ -756,7 +756,7 @@ PROMPT;
             'analisis_mendalam' => [
                 'gambaran_umum' => "Secara terpadu, {$studentName} memadukan kepekaan estetika visual dengan kepedulian sosial yang tinggi. Gaya belajarnya yang visual-auditori menjadikannya pembelajar tangkas jika disajikan materi multimedia.",
                 'dinamika_dominansi' => "Kombinasi {$gardnerDom} (75%) dan {$riasecDom} (66.7%) membuktikan bahwa kecerdasan visual yang dimiliki ananda paling tepat disalurkan untuk karya yang memiliki nilai guna kemasyarakatan, bukan sekadar teori.",
-                'area_distraksi_atau_pertumbuhan' => "Perlu latihan berkelanjutan dalam penguasaan artikulasi verbal / public speaking agar gagasan visual yang luar biasa dapat dipresentasikan secara meyakinkan kepada orang banyak.",
+                'area_distraksi_atau_pertumbuhan' => 'Perlu latihan berkelanjutan dalam penguasaan artikulasi verbal / public speaking agar gagasan visual yang luar biasa dapat dipresentasikan secara meyakinkan kepada orang banyak.',
             ],
             'profil_potensi' => [
                 'potensi_intelektual' => 'Kemampuan merancang konsep, tata visual, dan pemecahan masalah spasial-kreatif.',

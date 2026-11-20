@@ -32,7 +32,10 @@
             <span>Tes Psikotes Siswa</span>
         </a>
 
-        @if(!$isWaliKelas)
+        @php
+            $canSeeAkpd = ! $isWaliKelas && (! $isStudent || ($navUser && $navUser->isGradeXStudent()));
+        @endphp
+        @if($canSeeAkpd)
         <!-- 4. AKPD Diagnostik -->
         <a href="{{ route('bk.akpd.index') }}" 
            class="px-3.5 py-2 rounded-xl text-xs font-semibold sm:font-bold whitespace-nowrap transition flex items-center gap-2 {{ request()->routeIs('bk.akpd.*') ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:text-indigo-600 hover:bg-slate-100 dark:hover:bg-slate-800' }}">

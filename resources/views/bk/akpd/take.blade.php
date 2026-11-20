@@ -70,7 +70,7 @@
         @endforeach
 
         <div class="flex items-center justify-between pt-2">
-            <a href="{{ route('bk.akpd.show', $akpd) }}" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-xl transition">
+            <a href="{{ auth()->user()?->isStudent() ? route('bk.akpd.index') : route('bk.akpd.show', $akpd) }}" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-xl transition">
                 Batal / Kembali
             </a>
             @if($existing && (auth()->user()->isStudent() || auth()->user()->role === 'siswa') && !auth()->user()->isCounselor() && !auth()->user()->hasRole('admin') && !auth()->user()->hasRole('super_admin'))

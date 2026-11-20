@@ -328,6 +328,8 @@ Route::middleware('auth')->group(function () {
 
             // AKPD Analisis & Reset Response
             Route::get('/akpd/{akpd}/cetak-analisis', [BkAkpdController::class, 'printAnalysis'])->name('akpd.print-analysis');
+            Route::get('/akpd/{akpd}/rekap-kelas', [BkAkpdController::class, 'classReport'])->name('akpd.class-report');
+            Route::get('/akpd/{akpd}/cetak-kelas', [BkAkpdController::class, 'printClassReport'])->name('akpd.print-class');
             Route::delete('/akpd/{akpd}/response/{response}', [BkAkpdController::class, 'destroyResponse'])->name('akpd.response.destroy');
 
             // RPL BK
@@ -381,6 +383,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/akpd/{akpd}', [BkAkpdController::class, 'show'])->name('akpd.show');
         Route::get('/akpd/{akpd}/ambil', [BkAkpdController::class, 'take'])->name('akpd.take');
         Route::post('/akpd/{akpd}/ambil', [BkAkpdController::class, 'submit'])->name('akpd.submit');
+        Route::get('/akpd/{akpd}/siswa/{student}', [BkAkpdController::class, 'individualReport'])->name('akpd.individual');
+        Route::get('/akpd/{akpd}/siswa/{student}/cetak', [BkAkpdController::class, 'printIndividual'])->name('akpd.print-individual');
 
         Route::get('/rpl', [BkRplController::class, 'index'])->name('rpl.index');
         Route::get('/rpl/{rpl}', [BkRplController::class, 'show'])->name('rpl.show');

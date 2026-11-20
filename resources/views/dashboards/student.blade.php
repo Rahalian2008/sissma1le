@@ -386,6 +386,22 @@
                 </div>
             </a>
 
+            <!-- AKPD Diagnostik (Khusus Siswa Kelas X / Fase E) -->
+            @if($student?->isGradeX())
+            <a href="{{ route('bk.akpd.index') }}" class="group p-3 sm:p-3.5 rounded-xl sm:rounded-2xl border transition duration-200 flex flex-col justify-between overflow-hidden bg-gradient-to-br from-indigo-500/10 via-teal-500/5 to-slate-50 dark:from-indigo-950/40 dark:via-teal-950/20 dark:to-slate-800/60 border-indigo-300/80 dark:border-indigo-800/80 hover:border-indigo-400 hover:shadow-xs">
+                <div class="flex items-start justify-between gap-1 mb-2">
+                    <span class="text-xl">📋</span>
+                    <span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300">
+                        FASE E (X)
+                    </span>
+                </div>
+                <div>
+                    <h4 class="font-bold text-xs text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 truncate">AKPD Diagnostik</h4>
+                    <p class="text-[10px] text-slate-500 dark:text-slate-400 truncate">Asesmen Kebutuhan BK</p>
+                </div>
+            </a>
+            @endif
+
             <!-- 10. Tata Tertib & Prestasi Siswa -->
             <a href="{{ route('violations.index') }}" class="group p-3 sm:p-3.5 rounded-xl sm:rounded-2xl border transition duration-200 flex flex-col justify-between overflow-hidden bg-slate-50 dark:bg-slate-800/60 border-slate-200/80 dark:border-slate-700 hover:border-amber-400 hover:shadow-xs">
                 <div class="flex items-start justify-between gap-1 mb-2">
