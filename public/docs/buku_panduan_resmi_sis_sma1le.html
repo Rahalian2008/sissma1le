@@ -1,0 +1,1216 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Buku Panduan Resmi SIS-SMA1LE - SMA Negeri 1 Lengkong</title>
+    <style>
+        @page {
+            size: A4 portrait;
+            margin: 12mm 14mm 12mm 14mm;
+            @bottom-right {
+                content: "Halaman " counter(page);
+                font-size: 8pt;
+                color: #64748b;
+                font-family: 'Segoe UI', Arial, sans-serif;
+            }
+            @bottom-left {
+                content: "SIS-SMA1LE • SMAN 1 Lengkong";
+                font-size: 8pt;
+                color: #64748b;
+                font-family: 'Segoe UI', Arial, sans-serif;
+            }
+        }
+        * {
+            box-sizing: border-box;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+            font-size: 9.5pt;
+            color: #1e293b;
+            line-height: 1.45;
+            background: #fff;
+            margin: 0;
+            padding: 0;
+        }
+        .page {
+            page-break-after: always;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        .page:last-child {
+            page-break-after: avoid;
+        }
+
+        /* Cover Page Styling */
+        .cover-wrapper {
+            border: 3px double #0f766e;
+            padding: 30px 25px;
+            border-radius: 12px;
+            text-align: center;
+            min-height: 94vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background: radial-gradient(circle at top right, #f0fdfa, #ffffff 60%);
+        }
+        .cover-header {
+            border-bottom: 2px solid #0f766e;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        .cover-instansi {
+            font-size: 11pt;
+            font-weight: 800;
+            color: #0f172a;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 0;
+        }
+        .cover-subinstansi {
+            font-size: 9pt;
+            color: #475569;
+            margin: 2px 0 0 0;
+        }
+        .cover-logo {
+            width: 95px;
+            height: auto;
+            margin: 15px auto 10px auto;
+            display: block;
+        }
+        .cover-title {
+            font-size: 22pt;
+            font-weight: 900;
+            color: #0f172a;
+            line-height: 1.25;
+            margin: 10px 0 5px 0;
+            text-transform: uppercase;
+        }
+        .cover-title-highlight {
+            color: #0d9488;
+        }
+        .cover-subtitle {
+            font-size: 11.5pt;
+            font-weight: 700;
+            color: #1e3a8a;
+            margin: 0 0 15px 0;
+        }
+        .cover-badge {
+            display: inline-block;
+            background: #0f766e;
+            color: #ffffff;
+            font-size: 9pt;
+            font-weight: 700;
+            padding: 5px 16px;
+            border-radius: 999px;
+            letter-spacing: 0.5px;
+            margin-bottom: 20px;
+        }
+        .cover-features-box {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: left;
+            margin: 0 auto;
+            width: 92%;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+        }
+        .cover-feature-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 9pt;
+            color: #334155;
+            margin-bottom: 8px;
+        }
+        .cover-feature-item:last-child { margin-bottom: 0; }
+        .cover-feature-icon {
+            width: 20px;
+            height: 20px;
+            background: #ccfbf1;
+            color: #0f766e;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 8pt;
+            shrink: 0;
+        }
+        .cover-meta {
+            font-size: 8.5pt;
+            color: #64748b;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 12px;
+            margin-top: 20px;
+        }
+
+        /* Headings */
+        h1.chap-title {
+            font-size: 14pt;
+            font-weight: 900;
+            color: #0f172a;
+            border-bottom: 2px solid #0d9488;
+            padding-bottom: 5px;
+            margin-top: 0;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        h2.sec-title {
+            font-size: 11pt;
+            font-weight: 800;
+            color: #1e3a8a;
+            margin-top: 14px;
+            margin-bottom: 6px;
+            border-left: 3.5px solid #0d9488;
+            padding-left: 8px;
+        }
+        h3.subsec-title {
+            font-size: 10pt;
+            font-weight: 700;
+            color: #0f172a;
+            margin-top: 10px;
+            margin-bottom: 4px;
+        }
+
+        /* Browser Mockup Window */
+        .browser-mockup {
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #ffffff;
+            margin: 10px 0;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.04);
+            page-break-inside: avoid;
+        }
+        .browser-bar {
+            background: #f1f5f9;
+            padding: 5px 10px;
+            border-bottom: 1px solid #cbd5e1;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .browser-dots {
+            display: flex;
+            gap: 4px;
+        }
+        .browser-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+        .dot-red { background: #ef4444; }
+        .dot-yellow { background: #f59e0b; }
+        .dot-green { background: #10b981; }
+        .browser-url {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            padding: 1px 10px;
+            font-size: 7.5pt;
+            color: #475569;
+            font-family: monospace;
+            flex-grow: 1;
+            margin-left: 8px;
+        }
+        .browser-body {
+            padding: 10px 12px;
+            background: #f8fafc;
+        }
+
+        /* Mockup Cards & Elements */
+        .ui-grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin: 6px 0;
+        }
+        .ui-grid-4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+            margin: 6px 0;
+        }
+        .ui-grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin: 6px 0;
+        }
+        .ui-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 8px 10px;
+        }
+        .ui-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+        .ui-card-title {
+            font-size: 8.5pt;
+            font-weight: 800;
+            color: #0f172a;
+        }
+        .ui-badge {
+            font-size: 7pt;
+            font-weight: 800;
+            padding: 2px 6px;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+        .badge-green { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
+        .badge-blue { background: #dbeafe; color: #1e40af; border: 1px solid #bfdbfe; }
+        .badge-purple { background: #ede9fe; color: #5b21b6; border: 1px solid #ddd6fe; }
+        .badge-amber { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+        .badge-rose { background: #ffe4e6; color: #9f1239; border: 1px solid #fecdd3; }
+        .badge-teal { background: #ccfbf1; color: #115e59; border: 1px solid #99f6e4; }
+
+        .ui-btn {
+            display: inline-block;
+            font-size: 7.5pt;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 4px;
+            text-decoration: none;
+        }
+        .ui-btn-primary { background: #0d9488; color: #ffffff; }
+        .ui-btn-indigo { background: #4f46e5; color: #ffffff; }
+        .ui-btn-dark { background: #1e293b; color: #ffffff; }
+        .ui-btn-light { background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; }
+
+        /* Flow Diagrams */
+        .flow-diagram {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 10px;
+            margin: 8px 0;
+        }
+        .flow-step {
+            text-align: center;
+            flex: 1;
+        }
+        .flow-step-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #0f766e;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 4px auto;
+            font-weight: 800;
+            font-size: 10pt;
+        }
+        .flow-step-text {
+            font-size: 7.5pt;
+            font-weight: 700;
+            color: #0f172a;
+        }
+        .flow-step-desc {
+            font-size: 6.5pt;
+            color: #64748b;
+        }
+        .flow-arrow {
+            font-size: 12pt;
+            color: #0d9488;
+            font-weight: 900;
+            padding: 0 4px;
+        }
+
+        /* Callouts */
+        .callout {
+            border-radius: 6px;
+            padding: 8px 12px;
+            margin: 8px 0;
+            font-size: 8.5pt;
+            line-height: 1.4;
+        }
+        .callout-info { background: #f0fdfa; border-left: 3.5px solid #0d9488; color: #134e4a; }
+        .callout-warning { background: #fffbeb; border-left: 3.5px solid #f59e0b; color: #78350f; }
+        .callout-tips { background: #eff6ff; border-left: 3.5px solid #3b82f6; color: #1e3a8a; }
+
+        /* Tables */
+        table.tbl-doc {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 8pt;
+            margin: 8px 0;
+        }
+        table.tbl-doc th, table.tbl-doc td {
+            border: 1px solid #cbd5e1;
+            padding: 4px 6px;
+            text-align: left;
+        }
+        table.tbl-doc th {
+            background: #f1f5f9;
+            font-weight: 800;
+            color: #0f172a;
+        }
+        table.tbl-doc tr:nth-child(even) td { background: #f8fafc; }
+
+        /* Steps List */
+        ol.step-list {
+            margin: 4px 0 8px 18px;
+            padding: 0;
+            font-size: 8.5pt;
+        }
+        ol.step-list li {
+            margin-bottom: 3px;
+        }
+
+        .img-mock {
+            max-width: 100%;
+            height: auto;
+            border-radius: 6px;
+            border: 1px solid #cbd5e1;
+            display: block;
+            margin: 4px auto;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HALAMAN 1: COVER RESMI -->
+    <div class="page">
+        <div class="cover-wrapper">
+            <div class="cover-header">
+                <p class="cover-instansi">Pemerintah Daerah Provinsi Jawa Barat • Dinas Pendidikan</p>
+                <p class="cover-instansi" style="font-size: 13pt; color: #0f766e;">SMA NEGERI 1 LENGKONG</p>
+                <p class="cover-subinstansi">Jalan Raya Lengkong No. 123, Kabupaten Sukabumi, Jawa Barat | sman1lengkong@gmail.com</p>
+            </div>
+
+            <div>
+                <img src="images/logo_sekolah.png" class="cover-logo" alt="Logo SMAN 1 Lengkong">
+                <div class="cover-title">BUKU PANDUAN RESMI<br><span class="cover-title-highlight">SIS-SMA1LE</span></div>
+                <div class="cover-subtitle">Sistem Informasi Siswa Terpadu &amp; Bimbingan Konseling 360°</div>
+                <div class="cover-badge">MODUL OPERASIONAL LENGKAP SELURUH PERAN (ROLE)</div>
+            </div>
+
+            <div class="cover-features-box">
+                <div class="cover-feature-item">
+                    <div class="cover-feature-icon">1</div>
+                    <div><strong>Modul AKPD Diagnostik Non-Tes (Fase E):</strong> Pemetaan 4 bidang layanan bimbingan, laporan individu A4, dan profil kelas dengan grafik.</div>
+                </div>
+                <div class="cover-feature-item">
+                    <div class="cover-feature-icon">2</div>
+                    <div><strong>Asesmen Psikotes &amp; Master AI 360°:</strong> Tes VAK, Holland RIASEC, Gardner, serta integrasi sinergi rekam jejak karakter kedisiplinan.</div>
+                </div>
+                <div class="cover-feature-item">
+                    <div class="cover-feature-icon">3</div>
+                    <div><strong>Aplikasi Rapor Kurikulum Nasional 2025:</strong> Standar Permendikdasmen No. 13 Tahun 2025 dengan penilaian sumatif TP dan projek P5.</div>
+                </div>
+                <div class="cover-feature-item">
+                    <div class="cover-feature-icon">4</div>
+                    <div><strong>Presensi Multi-Metode &amp; Tata Tertib:</strong> Presensi Selfie GPS Geofencing, RFID/Barcode, dan buku saku poin pelanggaran/prestasi.</div>
+                </div>
+            </div>
+
+            <div class="cover-meta">
+                <strong>Portal Website Resmi:</strong> https://sman1lengkong.school<br>
+                Tahun Ajaran 2026/2027 • Dokumen Resmi Panduan Pengguna Versi Rilis 2.0
+            </div>
+        </div>
+    </div>
+
+    <!-- HALAMAN 2: DAFTAR ISI & MATRIKS ROLE -->
+    <div class="page">
+        <h1 class="chap-title">
+            <span>DAFTAR ISI &amp; MATRIKS AKSES PENGGUNA</span>
+            <span style="font-size: 9pt; font-weight: normal; color: #64748b;">SIS-SMA1LE</span>
+        </h1>
+
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 14px; margin-bottom: 12px; font-size: 8.5pt;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                <div>
+                    <strong>BAB I:</strong> Gerbang Akses &amp; Manajemen Autentikasi<br>
+                    <strong>BAB II:</strong> Panduan Peserta Didik (Siswa Kelas X, XI, XII)<br>
+                    <strong>BAB III:</strong> Asesmen Kebutuhan (AKPD) Diagnostik Kelas X<br>
+                    <strong>BAB IV:</strong> Asesmen Psikotes &amp; Master AI Terpadu 360°<br>
+                    <strong>BAB V:</strong> Panduan Guru Bimbingan &amp; Konseling (BK)<br>
+                    <strong>BAB VI:</strong> Layanan Konseling, Home Visit &amp; Sosiometri
+                </div>
+                <div>
+                    <strong>BAB VII:</strong> Panduan Wali Kelas &amp; Monitoring Rombel<br>
+                    <strong>BAB VIII:</strong> Panduan Guru Mata Pelajaran (KBM &amp; CBT)<br>
+                    <strong>BAB IX:</strong> Rapor Kurikulum Nasional 2025<br>
+                    <strong>BAB X:</strong> Panduan Kepala Sekolah &amp; Administrator TU<br>
+                    <strong>BAB XI:</strong> Presensi Multi-Metode &amp; Tata Tertib Siswa<br>
+                    <strong>BAB XII:</strong> Panduan Cetak A4 Resmi &amp; Troubleshooting
+                </div>
+            </div>
+        </div>
+
+        <h2 class="sec-title">Matriks Kewenangan Berdasarkan 7 Peran Pengguna (Role Permission)</h2>
+        <table class="tbl-doc">
+            <thead>
+                <tr>
+                    <th width="16%">Peran Pengguna</th>
+                    <th width="28%">Menu Akses Harian</th>
+                    <th width="32%">Fitur Bimbingan &amp; Asesmen</th>
+                    <th width="24%">Output Laporan Dokumen</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Siswa Kelas X (Fase E)</strong></td>
+                    <td>Beranda Siswa, Presensi Selfie GPS, Jadwal Pelajaran, Ujian CBT, Buku Poin Disiplin.</td>
+                    <td><span class="ui-badge badge-teal">AKPD Diagnostik</span>, Tes Psikotes (VAK, RIASEC, Gardner), Ruang Curhat BK.</td>
+                    <td>Laporan AKPD Individu A4 &amp; Laporan Psikotes 2 Halaman.</td>
+                </tr>
+                <tr>
+                    <td><strong>Siswa Kelas XI &amp; XII</strong></td>
+                    <td>Beranda Siswa, Presensi, Jadwal, Ujian CBT, Buku Poin Disiplin, E-Rapor.</td>
+                    <td>Tes Psikotes Minat Karier, Ruang Curhat BK. <em>(AKPD otomatis diproteksi)</em>.</td>
+                    <td>Laporan Psikotes Mandiri &amp; Rapor Siswa.</td>
+                </tr>
+                <tr>
+                    <td><strong>Guru BK / Koordinator</strong></td>
+                    <td>Dashboard BK 360°, Ruang Curhat, Konseling, Home Visit, Pemanggilan Ortu, Sosiometri.</td>
+                    <td>Penuh: AKPD Kelas X, Rekapitulasi Rombel, Analisis Master AI Gemini, Reset Respons.</td>
+                    <td>Laporan Individu A4, Profil Kelas A4, RPL BK 1 Lembar, Surat Panggilan.</td>
+                </tr>
+                <tr>
+                    <td><strong>Wali Kelas</strong></td>
+                    <td>Dashboard Wali Kelas, Rekap Presensi Rombel, Pembinaan Poin Disiplin.</td>
+                    <td>Memantau Peta Profil AKPD &amp; Hasil Psikotes siswa di kelas binaan.</td>
+                    <td>Cetak Rapor Kurnas Kelas Binaan &amp; Leger Rombel.</td>
+                </tr>
+                <tr>
+                    <td><strong>Guru Mapel</strong></td>
+                    <td>Jurnal Mengajar KBM, Presensi Kelas, Bank Soal CBT, Penilaian Formatif/Sumatif TP.</td>
+                    <td>Konsultasi perkembangan kesulitan belajar siswa dengan Guru BK.</td>
+                    <td>Nilai Akhir Rapor &amp; Rekap TP Mapel.</td>
+                </tr>
+                <tr>
+                    <td><strong>Kepala Sekolah</strong></td>
+                    <td>Dashboard Eksekutif, Live Stats Presensi Sekolah, Pengawasan Guru &amp; Siswa.</td>
+                    <td>Monitoring tren bimbingan karir dan peminatan perguruan tinggi.</td>
+                    <td>Pengesahan Resmi Cetak Laporan AKPD, Psikotes, &amp; Rapor.</td>
+                </tr>
+                <tr>
+                    <td><strong>Admin / TU</strong></td>
+                    <td>Master PTK, Siswa, Rombel, Pengguna, Backup Database, Persuratan Dinas.</td>
+                    <td>Pemeliharaan teknis instrumen asesmen dan reset akun pengguna.</td>
+                    <td>Buku Induk Siswa &amp; Rekapitulasi Tahunan.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Visual Wireframe Bar Navigasi -->
+        <h3 class="subsec-title">Visualisasi Struktur Navigasi Aplikasi:</h3>
+        <div class="browser-mockup">
+            <div class="browser-bar">
+                <div class="browser-dots"><span class="browser-dot dot-red"></span><span class="browser-dot dot-yellow"></span><span class="browser-dot dot-green"></span></div>
+                <div class="browser-url">https://sman1lengkong.school/bk/dashboard</div>
+            </div>
+            <div class="browser-body" style="padding: 6px 10px;">
+                <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                    <span class="ui-badge badge-teal">Dashboard BK</span>
+                    <span class="ui-badge badge-green">Ruang Curhat BK</span>
+                    <span class="ui-badge badge-purple">Tes Psikotes Siswa</span>
+                    <span class="ui-badge badge-blue">AKPD Diagnostik (X)</span>
+                    <span class="ui-badge badge-indigo">Sosiometri Kelas</span>
+                    <span class="ui-badge badge-amber">Layanan Konseling</span>
+                    <span class="ui-badge badge-rose">Panggilan Orang Tua</span>
+                    <span class="ui-badge badge-teal">RPL 1 Lembar</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HALAMAN 3: GERBANG AKSES & LOGIN -->
+    <div class="page">
+        <h1 class="chap-title">
+            <span>BAB I: GERBANG AKSES &amp; ALUR LOGIN</span>
+            <span style="font-size: 9pt; font-weight: normal; color: #64748b;">AUTENTIKASI</span>
+        </h1>
+
+        <h2 class="sec-title">1.1 Akses Single Sign-On (SSO) Portal</h2>
+        <p>Aplikasi dapat diakses melalui peramban resmi dengan mengunjungi: <code>https://sman1lengkong.school</code>.</p>
+        
+        <div class="flow-diagram">
+            <div class="flow-step">
+                <div class="flow-step-icon">1</div>
+                <div class="flow-step-text">Buka Browser</div>
+                <div class="flow-step-desc">Chrome / Edge</div>
+            </div>
+            <div class="flow-arrow">&rarr;</div>
+            <div class="flow-step">
+                <div class="flow-step-icon">2</div>
+                <div class="flow-step-text">Ketik Domain</div>
+                <div class="flow-step-desc">sman1lengkong.school</div>
+            </div>
+            <div class="flow-arrow">&rarr;</div>
+            <div class="flow-step">
+                <div class="flow-step-icon">3</div>
+                <div class="flow-step-text">Pilih Portal</div>
+                <div class="flow-step-desc">Siswa/Guru/Admin</div>
+            </div>
+            <div class="flow-arrow">&rarr;</div>
+            <div class="flow-step">
+                <div class="flow-step-icon">4</div>
+                <div class="flow-step-text">Input Kredensial</div>
+                <div class="flow-step-desc">Username &amp; Password</div>
+            </div>
+            <div class="flow-arrow">&rarr;</div>
+            <div class="flow-step">
+                <div class="flow-step-icon">5</div>
+                <div class="flow-step-text">Dashboard Aktif</div>
+                <div class="flow-step-desc">Masuk Sesuai Role</div>
+            </div>
+        </div>
+
+        <h2 class="sec-title">1.2 Antarmuka Halaman Masuk (Login Interface)</h2>
+        <div class="browser-mockup">
+            <div class="browser-bar">
+                <div class="browser-dots"><span class="browser-dot dot-red"></span><span class="browser-dot dot-yellow"></span><span class="browser-dot dot-green"></span></div>
+                <div class="browser-url">https://sman1lengkong.school/login</div>
+            </div>
+            <div class="browser-body">
+                <div style="max-width: 320px; margin: 0 auto; background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px; text-align: center;">
+                    <img src="images/logo_sekolah.png" style="width: 45px; margin-bottom: 6px;" alt="Logo">
+                    <div style="font-weight: 800; font-size: 10pt; color: #0f172a;">MASUK SIS-SMA1LE</div>
+                    <div style="font-size: 7.5pt; color: #64748b; margin-bottom: 10px;">Gunakan Akun Terdaftar Sekolah</div>
+                    <div style="text-align: left; font-size: 8pt; margin-bottom: 6px;">
+                        <label style="font-weight: bold; color: #334155;">NISN / NIP / Username:</label>
+                        <div style="border: 1px solid #cbd5e1; border-radius: 4px; padding: 4px 6px; background: #f8fafc; font-family: monospace;">0099123456</div>
+                    </div>
+                    <div style="text-align: left; font-size: 8pt; margin-bottom: 10px;">
+                        <label style="font-weight: bold; color: #334155;">Kata Sandi (Password):</label>
+                        <div style="border: 1px solid #cbd5e1; border-radius: 4px; padding: 4px 6px; background: #f8fafc; font-family: monospace;">••••••••••••</div>
+                    </div>
+                    <div class="ui-btn ui-btn-primary" style="width: 90%; display: block; margin: 0 auto; padding: 6px;">Masuk ke Aplikasi</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="callout callout-info">
+            <strong>Bantuan Lupa Kata Sandi:</strong> Apabila siswa atau guru lupa kata sandi akun, segera hubungi <em>Operator Dapodik / Admin TU</em> sekolah untuk mendapatkan pengaturan ulang kata sandi sementara.
+        </div>
+    </div>
+
+    <!-- HALAMAN 4: PANDUAN PESERTA DIDIK -->
+    <div class="page">
+        <h1 class="chap-title">
+            <span>BAB II: PANDUAN PENGGUNAAN OLEH SISWA</span>
+            <span style="font-size: 9pt; font-weight: normal; color: #64748b;">ROLE SISWA</span>
+        </h1>
+
+        <h2 class="sec-title">2.1 Tata Letak Beranda Siswa (Student Dashboard)</h2>
+        <p>Beranda siswa dirancang modern dan adaptif menyajikan status harian secara terpadu:</p>
+
+        <!-- Visual Mockup Dashboard Siswa -->
+        <div class="browser-mockup">
+            <div class="browser-bar">
+                <div class="browser-dots"><span class="browser-dot dot-red"></span><span class="browser-dot dot-yellow"></span><span class="browser-dot dot-green"></span></div>
+                <div class="browser-url">https://sman1lengkong.school/dashboard</div>
+            </div>
+            <div class="browser-body">
+                <div class="ui-grid-4">
+                    <div class="ui-card">
+                        <div class="ui-card-title">Presensi Hari Ini</div>
+                        <div style="font-size: 11pt; font-weight: 900; color: #0d9488; margin: 2px 0;">06:48 WIB</div>
+                        <span class="ui-badge badge-green">Hadir Tepat Waktu</span>
+                    </div>
+                    <div class="ui-card">
+                        <div class="ui-card-title">Poin Pelanggaran</div>
+                        <div style="font-size: 11pt; font-weight: 900; color: #059669; margin: 2px 0;">0 Poin</div>
+                        <span class="ui-badge badge-green">Disiplin Sangat Baik</span>
+                    </div>
+                    <div class="ui-card">
+                        <div class="ui-card-title">Poin Prestasi</div>
+                        <div style="font-size: 11pt; font-weight: 900; color: #3b82f6; margin: 2px 0;">35 Pts</div>
+                        <span class="ui-badge badge-blue">Penghargaan Aktif</span>
+                    </div>
+                    <div class="ui-card">
+                        <div class="ui-card-title">Tahfidz Quran</div>
+                        <div style="font-size: 11pt; font-weight: 900; color: #7c3aed; margin: 2px 0;">Juz 30</div>
+                        <span class="ui-badge badge-purple">Mutaba'ah Aktif</span>
+                    </div>
+                </div>
+
+                <div class="ui-grid-3" style="margin-top: 8px;">
+                    <div class="ui-card" style="border-left: 3px solid #0d9488;">
+                        <div class="ui-card-title">🤝 Ruang Curhat BK</div>
+                        <p style="font-size: 7.5pt; color: #64748b; margin: 2px 0;">Konseling online rahasia dengan Guru BK</p>
+                        <span class="ui-btn ui-btn-light" style="font-size: 7pt;">Buka Chat BK</span>
+                    </div>
+                    <div class="ui-card" style="border-left: 3px solid #4f46e5;">
+                        <div class="ui-card-title">📋 AKPD Diagnostik</div>
+                        <p style="font-size: 7.5pt; color: #64748b; margin: 2px 0;">Khusus Kelas X / Fase E</p>
+                        <span class="ui-btn ui-btn-indigo" style="font-size: 7pt;">Isi / Lihat Hasil</span>
+                    </div>
+                    <div class="ui-card" style="border-left: 3px solid #9333ea;">
+                        <div class="ui-card-title">🧠 Psikotes Minat Bakat</div>
+                        <p style="font-size: 7.5pt; color: #64748b; margin: 2px 0;">VAK, RIASEC &amp; Kecerdasan Majemuk</p>
+                        <span class="ui-btn ui-btn-light" style="font-size: 7pt;">Mulai Tes</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h2 class="sec-title">2.2 Presensi Mandiri Siswa (Selfie Kamera &amp; GPS)</h2>
+        <ol class="step-list">
+            <li>Klik menu <strong>"Presensi Siswa"</strong> dari beranda.</li>
+            <li>Pilih tab <strong>"Selfie Kamera"</strong>. Pastikan browser diizinkan mengakses kamera dan lokasi GPS.</li>
+            <li>Sistem memvalidasi jarak siswa terhadap koordinat sekolah (maksimal toleransi radius 100 meter).</li>
+            <li>Klik tombol <strong>"Ambil Foto &amp; Kirim Presensi"</strong>. Jam kehadiran seketika tersimpan.</li>
+            <li><em>Catatan:</em> Siswa yang belum presensi sampai pukul 11:00 WIB otomatis tercatat <strong>ALPA</strong> oleh sistem.</li>
+        </ol>
+
+        <h2 class="sec-title">2.3 Ruang Curhat Online (Kerahasiaan Terjamin)</h2>
+        <p>Siswa dapat berkonsultasi mengenai masalah pribadi, stres tugas, relasi pertemanan, maupun konsultasi cita-cita tanpa rasa malu. Pesan terenkripsi dan hanya dibaca oleh Guru BK.</p>
+    </div>
+
+    <!-- HALAMAN 5: MODUL AKPD DIAGNOSTIK KELAS X -->
+    <div class="page">
+        <h1 class="chap-title">
+            <span>BAB III: AKPD DIAGNOSTIK NON-TES (FASE E)</span>
+            <span style="font-size: 9pt; font-weight: normal; color: #64748b;">KELAS X</span>
+        </h1>
+
+        <h2 class="sec-title">3.1 Mengapa Hanya Kelas X (Fase E)?</h2>
+        <p>Berdasarkan Panduan Operasional Penyelenggaraan Bimbingan dan Konseling (POP-BK) Kemendikbudristek, **AKPD (Angket Kebutuhan Peserta Didik)** adalah instrumen asesmen diagnostik awal fase. Oleh karena itu, sistem membatasi pengisian hanya untuk siswa Kelas X. Siswa Kelas XI dan XII otomatis disembunyikan menunya agar fokus pada pendalaman minat karir (Psikotes).</p>
+
+        <h2 class="sec-title">3.2 Tata Cara Pengisian Angket oleh Siswa</h2>
+        <ol class="step-list">
+            <li>Buka menu <strong>"AKPD Diagnostik"</strong> melalui card beranda siswa.</li>
+            <li>Bacalah 40 butir pernyataan kebutuhan yang terbagi dalam 4 bidang layanan.</li>
+            <li>Beri centang (✔) pada kotak di butir pernyataan yang sedang/pernah Ananda alami dan memerlukan bimbingan Guru BK.</li>
+            <li>Klik tombol <strong>"Simpan &amp; Analisis Kebutuhan"</strong> di bagian bawah.</li>
+        </ol>
+
+        <!-- Visual Mockup Formulir AKPD -->
+        <div class="browser-mockup">
+            <div class="browser-bar">
+                <div class="browser-dots"><span class="browser-dot dot-red"></span><span class="browser-dot dot-yellow"></span><span class="browser-dot dot-green"></span></div>
+                <div class="browser-url">https://sman1lengkong.school/bk/akpd/1/ambil</div>
+            </div>
+            <div class="browser-body">
+                <div style="background: #fff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px 10px; margin-bottom: 6px;">
+                    <span class="ui-badge badge-rose">Bidang Pribadi</span>
+                    <span style="font-size: 8pt; font-weight: bold; margin-left: 6px;">Kematangan Emosi &amp; Karakter</span>
+                    <div style="margin-top: 4px; font-size: 7.5pt; color: #334155;">
+                        <input type="checkbox" checked disabled> [P01] Saya merasa belum mampu mengendalikan emosi atau rasa marah saat menghadapi masalah.<br>
+                        <input type="checkbox" disabled> [P02] Saya merasa kurang percaya diri saat berbicara di depan teman-teman kelas.
+                    </div>
+                </div>
+                <div style="background: #fff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px 10px;">
+                    <span class="ui-badge badge-blue">Bidang Belajar</span>
+                    <span style="font-size: 8pt; font-weight: bold; margin-left: 6px;">Keterampilan &amp; Strategi Belajar</span>
+                    <div style="margin-top: 4px; font-size: 7.5pt; color: #334155;">
+                        <input type="checkbox" checked disabled> [B01] Saya sering menunda-nunda mengerjakan tugas sekolah hingga menumpuk.<br>
+                        <input type="checkbox" disabled> [B02] Saya merasa sulit memahami materi pelajaran eksak/hitung-hitungan.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h2 class="sec-title">3.3 Laporan Kebutuhan Individual &amp; Format Cetak A4</h2>
+        <p>Seketika setelah angket disimpan, sistem mengolah matriks skor dan menampilkan:</p>
+        <ul>
+            <li><strong>Grafik Progress Bar 4 Bidang:</strong> Pribadi, Sosial, Belajar, dan Karier.</li>
+            <li><strong>Derajat Prioritas:</strong> &ge; 50% (Sangat Tinggi / Prioritas Utama), 26-49% (Sedang), &le; 25% (Rendah / Mandiri).</li>
+            <li><strong>Cetak Format Resmi A4:</strong> Berisi Kop Surat Sekolah, Tabel Skor, Rekomendasi Program Layanan, dan Tanda Tangan: <strong>Orang Tua</strong>, <strong>Kepala Sekolah</strong> (di tengah), dan <strong>Koordinator BK</strong> (di kanan).</li>
+        </ul>
+    </div>
+
+    <!-- HALAMAN 6: MODUL PSIKOTES AI 360 -->
+    <div class="page">
+        <h1 class="chap-title">
+            <span>BAB IV: ASESMEN PSIKOTES &amp; MASTER AI 360°</span>
+            <span style="font-size: 9pt; font-weight: normal; color: #64748b;">PSIKOMETRI</span>
+        </h1>
+
+        <h2 class="sec-title">4.1 Tiga Instrumen Psikometri Terstandarisasi</h2>
+        <div class="ui-grid-3">
+            <div class="ui-card" style="border-top: 3px solid #10b981;">
+                <span class="ui-badge badge-green">Gaya Belajar</span>
+                <div class="ui-card-title" style="margin-top: 4px;">Tes Modalitas VAK</div>
+                <p style="font-size: 7.5pt; color: #64748b; margin: 4px 0;">Mengukur modalitas visual, auditori, atau kinestetik dalam menyerap materi.</p>
+                <div style="font-size: 7pt; font-weight: bold; color: #047857;">24 Butir Soal • ±20 Menit</div>
+            </div>
+            <div class="ui-card" style="border-top: 3px solid #3b82f6;">
+                <span class="ui-badge badge-blue">Minat Karier</span>
+                <div class="ui-card-title" style="margin-top: 4px;">Holland RIASEC</div>
+                <p style="font-size: 7.5pt; color: #64748b; margin: 4px 0;">Tipe kepribadian vokasional (Realistic, Investigative, Artistic, Social, Enterprising, Conventional).</p>
+                <div style="font-size: 7pt; font-weight: bold; color: #1d4ed8;">36 Butir Soal • ±25 Menit</div>
+            </div>
+            <div class="ui-card" style="border-top: 3px solid #8b5cf6;">
+                <span class="ui-badge badge-purple">Kecerdasan Majemuk</span>
+                <div class="ui-card-title" style="margin-top: 4px;">Howard Gardner</div>
+                <p style="font-size: 7.5pt; color: #64748b; margin: 4px 0;">Pemetaan 8 spektrum kecerdasan (Linguistik, Logis, Spasial, Musikal, Interpersonal, dll).</p>
+                <div style="font-size: 7pt; font-weight: bold; color: #6d28d9;">32 Butir Soal • ±25 Menit</div>
+            </div>
+        </div>
+
+        <h2 class="sec-title">4.2 Grand Asesmen Terpadu 360° (Integrasi Psikotes &amp; Karakter)</h2>
+        <p>Berbeda dari tes parsial biasa, SIS-SMA1LE mengintegrasikan ketiga hasil tes psikometri bersama rekam jejak presensi dan tata tertib sekolah:</p>
+
+        <!-- Mockup Visual Matriks 360 -->
+        <div class="browser-mockup">
+            <div class="browser-bar">
+                <div class="browser-dots"><span class="browser-dot dot-red"></span><span class="browser-dot dot-yellow"></span><span class="browser-dot dot-green"></span></div>
+                <div class="browser-url">https://sman1lengkong.school/bk/psikotes/holistik/716/print</div>
+            </div>
+            <div class="browser-body">
+                <table class="tbl-doc" style="margin: 0; background: #fff;">
+                    <thead>
+                        <tr>
+                            <th width="25%">Pilar Pengukuran</th>
+                            <th width="30%">Hasil Dominan &amp; Kode</th>
+                            <th width="15%">Skor</th>
+                            <th width="30%">Fungsi Terpadu dalam Belajar &amp; Karier</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>1. Gaya Belajar VAK</strong></td>
+                            <td>VISUAL - AUDITORI (Multimodal)</td>
+                            <td><strong>65.6%</strong></td>
+                            <td>Menyerap materi melalui bagan, grafis &amp; diskusi lisan.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>2. Minat Karier RIASEC</strong></td>
+                            <td>KODE SEC (Social - Enterprising - Conv)</td>
+                            <td><strong>66.7%</strong></td>
+                            <td>Tertarik bidang edukasi, manajemen &amp; interaksi manusia.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>3. Kecerdasan Majemuk</strong></td>
+                            <td>VISUAL-SPASIAL &amp; INTERPERSONAL</td>
+                            <td><strong>75.0%</strong></td>
+                            <td>Keunggulan imajinasi spasial &amp; kepekaan sosial.</td>
+                        </tr>
+                        <tr style="background: #f0fdf4;">
+                            <td><strong>4. Karakter &amp; Presensi</strong></td>
+                            <td>Kedisiplinan Mandiri (0 Poin Pelanggaran)</td>
+                            <td><strong style="color: #15803d;">100%</strong></td>
+                            <td>Komitmen hadir konsisten &amp; stabilitas emosi belajar.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <h2 class="sec-title">4.3 Master AI Synthesis (Google Gemini Engine)</h2>
+        <p>Sistem AI menganalisis keselarasan pilar psikometri dan karakter siswa:</p>
+        <ul>
+            <li><strong>Benang Merah Profil:</strong> Sintesis terpadu (contoh: <em>Creative Social Communicator &amp; Media Educator</em>).</li>
+            <li><strong>Rekomendasi Jurusan PTN:</strong> Ilmu Komunikasi, Desain Komunikasi Visual (DKV), Psikologi, Pendidikan Media Digital.</li>
+            <li><strong>Rekomendasi Karier:</strong> Content Strategist, Penyuluh Pendidikan, Desainer Produk Digital, Koordinator Program Sosial.</li>
+            <li><strong>Cetak Resmi 2 Halaman A4:</strong> Bersih tanpa teks terpotong, disahkan oleh <strong>Orang Tua</strong>, <strong>Kepala Sekolah</strong>, dan <strong>Koordinator BK</strong>.</li>
+        </ul>
+    </div>
+
+    <!-- HALAMAN 7: PANDUAN GURU BK -->
+    <div class="page">
+        <h1 class="chap-title">
+            <span>BAB V: PANDUAN GURU BIMBINGAN KONSELING (BK)</span>
+            <span style="font-size: 9pt; font-weight: normal; color: #64748b;">ROLE KONSELOR</span>
+        </h1>
+
+        <h2 class="sec-title">5.1 Peta Profil Kebutuhan Rombel Kelas (AKPD)</h2>
+        <p>Guru BK dapat memfilter hasil asesmen per rombel Kelas X untuk menentukan skala prioritas program bimbingan:</p>
+
+        <!-- Visual Mockup Peta Profil Kelas -->
+        <div class="browser-mockup">
+            <div class="browser-bar">
+                <div class="browser-dots"><span class="browser-dot dot-red"></span><span class="browser-dot dot-yellow"></span><span class="browser-dot dot-green"></span></div>
+                <div class="browser-url">https://sman1lengkong.school/bk/akpd/1/rekap-kelas?class_id=28</div>
+            </div>
+            <div class="browser-body">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <div>
+                        <strong style="font-size: 9.5pt; color: #0f172a;">Profil Kebutuhan Kelas: X Merdeka 1 (Fase E)</strong>
+                        <div style="font-size: 7.5pt; color: #64748b;">Partisipasi: 32 dari 32 Siswa (100% Terkumpul)</div>
+                    </div>
+                    <span class="ui-btn ui-btn-primary">Cetak Profil Kelas A4</span>
+                </div>
+
+                <div class="ui-grid-4">
+                    <div class="ui-card">
+                        <div style="font-size: 7.5pt; color: #64748b;">Rata-rata Pribadi</div>
+                        <div style="font-size: 11pt; font-weight: 800; color: #e11d48;">42.5%</div>
+                        <span class="ui-badge badge-amber">Sedang</span>
+                    </div>
+                    <div class="ui-card">
+                        <div style="font-size: 7.5pt; color: #64748b;">Rata-rata Sosial</div>
+                        <div style="font-size: 11pt; font-weight: 800; color: #d97706;">28.0%</div>
+                        <span class="ui-badge badge-amber">Sedang</span>
+                    </div>
+                    <div class="ui-card">
+                        <div style="font-size: 7.5pt; color: #64748b;">Rata-rata Belajar</div>
+                        <div style="font-size: 11pt; font-weight: 800; color: #e11d48;">54.2%</div>
+                        <span class="ui-badge badge-rose">Tinggi</span>
+                    </div>
+                    <div class="ui-card">
+                        <div style="font-size: 7.5pt; color: #64748b;">Rata-rata Karier</div>
+                        <div style="font-size: 11pt; font-weight: 800; color: #059669;">21.0%</div>
+                        <span class="ui-badge badge-green">Rendah</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h2 class="sec-title">5.2 Integrasi Otomatis ke RPL BK 1 Lembar</h2>
+        <p>Berdasarkan <strong>Top 10 Butir Masalah Tertinggi di Kelas</strong>, sistem secara otomatis menyusun usulan topik materi Bimbingan Klasikal:</p>
+        <table class="tbl-doc">
+            <thead>
+                <tr>
+                    <th width="15%">Kode &amp; Bidang</th>
+                    <th width="45%">Pernyataan Butir Kebutuhan Dominan</th>
+                    <th width="40%">Usulan Topik Materi RPL BK 1 Lembar</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>[B01] BELAJAR</strong></td>
+                    <td>Sering menunda-nunda mengerjakan tugas sekolah hingga menumpuk.</td>
+                    <td><strong>Bimbingan Klasikal:</strong> Strategi Manajemen Waktu &amp; Mengatasi Prokrastinasi Belajar di SMA.</td>
+                </tr>
+                <tr>
+                    <td><strong>[P01] PRIBADI</strong></td>
+                    <td>Belum mampu mengendalikan emosi dan amarah secara stabil.</td>
+                    <td><strong>Bimbingan Klasikal:</strong> Mengenal Regulasi Emosi Diri &amp; Resiliensi Menghadapi Masalah.</td>
+                </tr>
+                <tr>
+                    <td><strong>[S02] SOSIAL</strong></td>
+                    <td>Merasa canggung dan sulit beradaptasi di lingkungan teman baru.</td>
+                    <td><strong>Bimbingan Kelompok:</strong> Keterampilan Komunikasi Asertif &amp; Adaptasi Sosial Positif.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 class="sec-title">5.3 Reset Respons AKPD Siswa</h2>
+        <p>Jika ada siswa yang salah mengisi atau memerlukan pengisian ulang, Guru BK/Admin dapat mencari nama siswa pada tabel rekapitulasi lalu klik tombol merah <strong>"Reset Respons"</strong>. Data lama akan terhapus dan siswa dapat langsung mengisi kembali.</p>
+    </div>
+
+    <!-- HALAMAN 8: PANDUAN LAYANAN KONSELING -->
+    <div class="page">
+        <h1 class="chap-title">
+            <span>BAB VI: LAYANAN KONSELING &amp; POP-BK TERPADU</span>
+            <span style="font-size: 9pt; font-weight: normal; color: #64748b;">LAYANAN BK</span>
+        </h1>
+
+        <h2 class="sec-title">6.1 Sesi Konseling Individual &amp; Kelompok</h2>
+        <ol class="step-list">
+            <li>Klik menu <strong>"Layanan Konseling &rarr; Catat Sesi"</strong>.</li>
+            <li>Pilih nama siswa, tanggal, jam, durasi, dan klasifikasi masalah (*Pribadi, Sosial, Belajar, Karier*).</li>
+            <li>Ketikkan deskripsi ringkas masalah, teknik konseling (*CBT, Rational Emotive, Client-Centered*), serta rencana tindakan (*action plan*).</li>
+            <li>Simpan sesi. Sistem menyusun portofolio bimbingan siswa secara rahasia dan aman.</li>
+        </ol>
+
+        <h2 class="sec-title">6.2 Sosiometri Kelas (Peta Jejaring Teman Sebaya)</h2>
+        <p>Instrumen untuk mendeteksi dinamika sosial pertemanan siswa di rombel kelas:</p>
+        <ul>
+            <li>Siswa memilih 2-3 teman belajar dan teman bermain yang paling disukai.</li>
+            <li>Sistem otomatis menghitung indeks popularitas sosial dan mendeteksi siswa yang terisolir (*isolated*) atau rentan perundungan.</li>
+            <li>Guru BK menggunakan hasil ini untuk menyusun formasi kelompok belajar yang suportif.</li>
+        </ul>
+
+        <h2 class="sec-title">6.3 Home Visit &amp; Surat Pemanggilan Orang Tua Resmi</h2>
+        <div class="browser-mockup">
+            <div class="browser-bar">
+                <div class="browser-dots"><span class="browser-dot dot-red"></span><span class="browser-dot dot-yellow"></span><span class="browser-dot dot-green"></span></div>
+                <div class="browser-url">https://sman1lengkong.school/bk/parent-call</div>
+            </div>
+            <div class="browser-body">
+                <div style="background: #fff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; margin-bottom: 6px;">
+                        <span style="font-weight: 800; font-size: 8.5pt;">Surat Pemanggilan Orang Tua / Wali Murid</span>
+                        <span class="ui-badge badge-rose">Surat Resmi Dinas</span>
+                    </div>
+                    <div style="font-size: 8pt; color: #334155; line-height: 1.4;">
+                        Nomor Surat: <strong>421.3/BK-042/SMAN1LE/2026</strong><br>
+                        Siswa Binaan: <strong>Ahmad Fauzi (XI Merdeka 2)</strong><br>
+                        Agenda: <em>Konsultasi Perkembangan Akademik &amp; Kehadiran Siswa</em><br>
+                        Waktu Hadir: <strong>Senin, 24 November 2026 - Pukul 09:00 WIB</strong> di Ruang BK.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h2 class="sec-title">6.4 Konferensi Kasus (Case Conference) &amp; Alih Tangan (Referral)</h2>
+        <p>Untuk kasus kompleks yang memerlukan koordinasi multi-pihak (*Kepala Sekolah, Wali Kelas, Kesiswaan, Guru Mapel, Psikolog Luar*), sistem menyediakan modul dokumentasi berita acara Konferensi Kasus dan surat pengantar Alih Tangan Kasus (*Referral*).</p>
+    </div>
+
+    <!-- HALAMAN 9: PANDUAN WALI KELAS -->
+    <div class="page">
+        <h1 class="chap-title">
+            <span>BAB VII: PANDUAN WALI KELAS</span>
+            <span style="font-size: 9pt; font-weight: normal; color: #64748b;">ROLE WALI KELAS</span>
+        </h1>
+
+        <h2 class="sec-title">7.1 Pemantauan Harian Rombel Binaan</h2>
+        <p>Wali Kelas memiliki wewenang khusus memantau seluruh dinamika siswa di rombelnya:</p>
+        <ol class="step-list">
+            <li><strong>Presensi Harian Rombel:</strong> Memantau siswa yang Hadir, Sakit, Izin, atau Alpa setiap pagi sebelum jam pelajaran pertama.</li>
+            <li><strong>Buku Saku Tata Tertib:</strong> Mendeteksi siswa yang telah mencapai ambang batas poin pelanggaran tertentu untuk segera diberikan pembinaan awal.</li>
+            <li><strong>Akses Hasil AKPD &amp; Psikotes Rombel:</strong> Wali kelas dapat membuka profil kebutuhan kelas dan psikotes siswa binaan untuk memahami gaya belajar dan potensi bakat anak asuhnya.</li>
+        </ol>
+
+        <h2 class="sec-title">7.2 Pengisian Catatan Rapor Kurikulum Nasional 2025</h2>
+        <ol class="step-list">
+            <li>Buka menu <strong>"Aplikasi Rapor &rarr; Catatan Wali Kelas"</strong>.</li>
+            <li>Pilih rombel binaan Anda.</li>
+            <li>Tuliskan catatan perkembangan karakter, apresiasi sikap positif, serta saran motivasi belajar untuk masing-masing siswa.</li>
+            <li>Input keikutsertaan ekstrakurikuler dan predikat nilai ekskul siswa.</li>
+            <li>Sinkronisasi otomatis rekapitulasi ketidakhadiran (Sakit, Izin, Alpa) dari modul presensi.</li>
+            <li>Klik tombol <strong>"Cetak Rapor Rombel"</strong> untuk mencetak buku rapor resmi.</li>
+        </ol>
+
+        <!-- Visual Mockup Rapor Wali Kelas -->
+        <div class="browser-mockup">
+            <div class="browser-bar">
+                <div class="browser-dots"><span class="browser-dot dot-red"></span><span class="browser-dot dot-yellow"></span><span class="browser-dot dot-green"></span></div>
+                <div class="browser-url">https://sman1lengkong.school/rapor-kurnas/homeroom</div>
+            </div>
+            <div class="browser-body">
+                <div style="background: #fff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px 10px;">
+                    <div style="font-size: 8pt; font-weight: bold; margin-bottom: 4px;">Catatan Perkembangan Karakter Peserta Didik</div>
+                    <div style="font-size: 7.5pt; color: #475569; font-style: italic; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 4px; padding: 4px 6px;">
+                        "Ananda menunjukkan antusiasme belajar yang sangat tinggi pada mata pelajaran eksak dan memiliki kemandirian kepemimpinan yang baik di kelas. Tingkatkan keterampilan komunikasi formal lisan."
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HALAMAN 10: PANDUAN GURU MAPEL & CBT -->
+    <div class="page">
+        <h1 class="chap-title">
+            <span>BAB VIII: PANDUAN GURU MATA PELAJARAN</span>
+            <span style="font-size: 9pt; font-weight: normal; color: #64748b;">ROLE GURU MAPEL</span>
+        </h1>
+
+        <h2 class="sec-title">8.1 Jurnal KBM &amp; Presensi Kelas Harian</h2>
+        <ol class="step-list">
+            <li>Buka menu <strong>"Akademik &rarr; Jurnal Mengajar"</strong>.</li>
+            <li>Pilih kelas yang sedang diajar dan jam pelajaran aktif.</li>
+            <li>Lakukan presensi kehadiran tatap muka siswa di kelas (Hadir, Sakit, Izin, Alpa).</li>
+            <li>Tuliskan ringkasan materi/Tujuan Pembelajaran (TP) yang disampaikan pada hari tersebut.</li>
+            <li>Klik <strong>"Simpan Jurnal KBM"</strong>.</li>
+        </ol>
+
+        <h2 class="sec-title">8.2 Asesmen Ujian CBT (Computer Based Test)</h2>
+        <ul>
+            <li><strong>Bank Soal Mandiri:</strong> Membuat soal pilihan ganda, pilihan majemuk, maupun esai lengkap dengan gambar formula matematika/sains.</li>
+            <li><strong>Pengaturan Ujian:</strong> Mengatur durasi pengerjaan, pengacakan nomor soal, acak opsi jawaban, serta token pembuka ujian.</li>
+            <li><strong>Koreksi Otomatis:</strong> Nilai siswa seketika terhitung setelah siswa menekan tombol selesai dan dapat langsung diekspor ke format Excel/Leger.</li>
+        </ul>
+
+        <h2 class="sec-title">8.3 Input Nilai Formatif &amp; Sumatif TP (Kurnas 2025)</h2>
+        <ol class="step-list">
+            <li>Buka menu <strong>"Aplikasi Rapor &rarr; Input Nilai Sumatif"</strong>.</li>
+            <li>Pilih mata pelajaran dan kelas yang Anda ampu.</li>
+            <li>Input nilai sumatif lingkup materi per Tujuan Pembelajaran (TP).</li>
+            <li>Tentukan centang status ketercapaian TP (<em>Tercapai Optimal</em> atau <em>Perlu Bimbingan</em>).</li>
+            <li>Sistem otomatis mengompilasi Nilai Akhir (NA) dan menyusun narasi deskripsi capaian rapor yang variatif dan bermakna.</li>
+        </ol>
+    </div>
+
+    <!-- HALAMAN 11: RAPOR KURIKULUM NASIONAL 2025 -->
+    <div class="page">
+        <h1 class="chap-title">
+            <span>BAB IX: RAPOR KURIKULUM NASIONAL 2025</span>
+            <span style="font-size: 9pt; font-weight: normal; color: #64748b;">E-RAPOR RESMI</span>
+        </h1>
+
+        <h2 class="sec-title">9.1 Format Standar Permendikdasmen No. 13 Tahun 2025</h2>
+        <p>Aplikasi Rapor Kurnas 2025 di SIS-SMA1LE beroperasi secara mandiri dan komprehensif memuat komponen resmi:</p>
+
+        <!-- Visual Mockup Halaman Rapor -->
+        <div class="browser-mockup">
+            <div class="browser-bar">
+                <div class="browser-dots"><span class="browser-dot dot-red"></span><span class="browser-dot dot-yellow"></span><span class="browser-dot dot-green"></span></div>
+                <div class="browser-url">https://sman1lengkong.school/rapor-kurnas/print/academic/716</div>
+            </div>
+            <div class="browser-body">
+                <table class="tbl-doc" style="margin: 0; background: #fff;">
+                    <thead>
+                        <tr>
+                            <th width="5%">No</th>
+                            <th width="30%">Mata Pelajaran</th>
+                            <th width="12%">Nilai Akhir</th>
+                            <th width="53%">Capaian Kompetensi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td><strong>Pendidikan Pancasila</strong></td>
+                            <td style="text-align: center; font-weight: bold;">88</td>
+                            <td>Menunjukkan penguasaan sangat baik dalam menganalisis periodisasi pemberlakuan UUD NRI Tahun 1945.</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td><strong>Bahasa Indonesia</strong></td>
+                            <td style="text-align: center; font-weight: bold;">86</td>
+                            <td>Menunjukkan penguasaan optimal dalam mengevaluasi informasi berupa gagasan dalam teks laporan hasil observasi.</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td><strong>Matematika</strong></td>
+                            <td style="text-align: center; font-weight: bold;">92</td>
+                            <td>Menunjukkan kemahiran tinggi dalam menyelesaikan masalah eksponen dan logaritma.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <h2 class="sec-title">9.2 Komponen Cetak Rapor Mandiri</h2>
+        <ul>
+            <li><strong>Cover Rapor Resmi:</strong> Logo Kementerian, Lambang Provinsi Jawa Barat, Nama Sekolah &amp; Identitas Siswa.</li>
+            <li><strong>Halaman Identitas Peserta Didik:</strong> Data lengkap NISN, NIS, data orang tua, dan alamat domisili.</li>
+            <li><strong>Halaman Nilai Akademik:</strong> Nilai mata pelajaran intrakurikuler dan deskripsi capaian pembelajaran.</li>
+            <li><strong>Halaman Kokurikuler (Projek P5):</strong> Dimensi Beriman &amp; Bertakwa, Mandiri, Gotong Royong, Bernalar Kritis, dan Kreatif.</li>
+            <li><strong>Leger Nilai Rombel:</strong> Rekapitulasi nilai seluruh siswa satu kelas dalam format horizontal lengkap dengan peringkat dan rata-rata.</li>
+            <li><strong>Transkrip Ijazah &amp; Buku Induk Siswa:</strong> Rekap kumulatif seluruh semester untuk syarat kelulusan dan arsip kearsipan sekolah seumur hidup.</li>
+        </ul>
+    </div>
+
+    <!-- HALAMAN 12: KEPALA SEKOLAH & ADMIN TU -->
+    <div class="page">
+        <h1 class="chap-title">
+            <span>BAB X: KEPALA SEKOLAH &amp; ADMINISTRATOR TU</span>
+            <span style="font-size: 9pt; font-weight: normal; color: #64748b;">MANAJEMEN</span>
+        </h1>
+
+        <h2 class="sec-title">10.1 Peran Eksekutif Kepala Sekolah</h2>
+        <ul>
+            <li><strong>Live Monitoring Presensi Sekolah:</strong> Grafik kehadiran guru, tenaga kependidikan, dan siswa yang terbarui secara otomatis setiap detik.</li>
+            <li><strong>Persetujuan &amp; Tanda Tangan Dokumen:</strong> Kepala Sekolah bertindak sebagai penandatangan utama (*Menyetujui*) pada Laporan AKPD, Laporan Psikotes Terpadu 360°, Buku Rapor Siswa, dan Surat Keluar Kedinasan.</li>
+            <li><strong>Disposisi Surat Masuk Digital:</strong> Memberikan lembar disposisi instruksi kepada wakasek, guru, atau staf TU secara elektronik.</li>
+        </ul>
+
+        <h2 class="sec-title">10.2 Peran Administrator &amp; Tata Usaha</h2>
+        <ol class="step-list">
+            <li><strong>Master Data Management:</strong> Mengelola data induk Guru &amp; PTK, Peserta Didik, Rombel Kelas, dan Tahun Pelajaran aktif.</li>
+            <li><strong>Buku Induk Siswa:</strong> Pengarsipan digital lembar buku induk siswa lengkap dengan riwayat mutasi masuk/keluar.</li>
+            <li><strong>Pengaturan Akun &amp; Keamanan:</strong> Reset kata sandi pengguna, pembagian hak akses peran (*roles assignment*), dan monitoring audit trail log aktivitas pengguna.</li>
+            <li><strong>Backup Database:</strong> Mengunduh cadangan basis data SQL secara berkala guna menjamin keamanan arsip sekolah.</li>
+        </ol>
+
+        <!-- Visual Mockup Tanda Tangan Tripartit -->
+        <div class="browser-mockup">
+            <div class="browser-bar">
+                <div class="browser-dots"><span class="browser-dot dot-red"></span><span class="browser-dot dot-yellow"></span><span class="browser-dot dot-green"></span></div>
+                <div class="browser-url">Format Tanda Tangan Resmi Pengesahan Dokumen Sekolah</div>
+            </div>
+            <div class="browser-body">
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; text-align: center; font-size: 8pt;">
+                    <div>
+                        Mengetahui,<br>Orang Tua / Wali Murid<br><br><br>
+                        <strong>( ........................................ )</strong>
+                    </div>
+                    <div>
+                        Menyetujui,<br>Kepala SMA Negeri 1 Lengkong<br><br><br>
+                        <strong><u>Drs. H. Pimpinan, M.Pd.</u></strong><br>NIP. 19700101 199501 1 001
+                    </div>
+                    <div>
+                        Lengkong, 20 November 2026<br>Koordinator BK,<br><br><br>
+                        <strong><u>Ida Marttin Maolidah SE, SP.,M.Pd.</u></strong><br>NIP. 197803102008012006
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HALAMAN 13: PETUNJUK CETAK & TROUBLESHOOTING -->
+    <div class="page">
+        <h1 class="chap-title">
+            <span>BAB XI: PETUNJUK CETAK RESMI &amp; PEMECAHAN MASALAH</span>
+            <span style="font-size: 9pt; font-weight: normal; color: #64748b;">PANDUAN TEKNIS</span>
+        </h1>
+
+        <h2 class="sec-title">11.1 Pengaturan Cetak Dialog Browser (Print Setup A4)</h2>
+        <p>Agar seluruh lembar dokumen cetak (Laporan AKPD, Laporan Psikotes 2 Halaman, Rapor Kurnas, dan Surat Resmi) pas dan rapi tanpa terpotong:</p>
+
+        <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px; margin: 8px 0;">
+            <div style="font-size: 8.5pt; font-weight: bold; margin-bottom: 6px; color: #0f766e;">Langkah Setting Dialog Cetak (Ctrl + P):</div>
+            <table class="tbl-doc">
+                <tr>
+                    <td width="30%"><strong>Ukuran Kertas (Paper Size)</strong></td>
+                    <td width="70%">Pilih <strong>A4 (210 x 297 mm)</strong>.</td>
+                </tr>
+                <tr>
+                    <td><strong>Tata Letak (Layout)</strong></td>
+                    <td>Pilih <strong>Portrait</strong> (kecuali Leger Rapor yang menggunakan <em>Landscape</em>).</td>
+                </tr>
+                <tr>
+                    <td><strong>Batas Tepi (Margins)</strong></td>
+                    <td>Pilih <strong>Default</strong> atau <strong>None</strong> (sistem sudah menyertakan margin resmi CSS).</td>
+                </tr>
+                <tr>
+                    <td><strong>Grafik Latar Belakang (Background graphics)</strong></td>
+                    <td><strong style="color: #0d9488;">WAJIB DICENTANG (✔)</strong> agar warna tabel, badge kategori, dan visual progress bar tercetak jelas.</td>
+                </tr>
+                <tr>
+                    <td><strong>Header dan Footer</strong></td>
+                    <td><strong>HAPUS CENTANG</strong> agar URL browser dan tanggal sistem tidak mencemari lembar dokumen resmi.</td>
+                </tr>
+            </table>
+        </div>
+
+        <h2 class="sec-title">11.2 Pemecahan Masalah Umum (Troubleshooting)</h2>
+        <table class="tbl-doc">
+            <thead>
+                <tr>
+                    <th width="30%">Gejala / Kendala</th>
+                    <th width="35%">Penyebab Teknis</th>
+                    <th width="35%">Solusi Penanganan</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Siswa Kelas XI/XII tidak melihat menu AKPD</td>
+                    <td>AKPD dikhususkan untuk asesmen diagnostik awal Fase E (Kelas X).</td>
+                    <td>Bukan galat. Siswa Kelas XI dan XII diarahkan mengikuti <em>Tes Psikotes Minat Karier</em>.</td>
+                </tr>
+                <tr>
+                    <td>Siswa tidak bisa mengulang pengisian AKPD</td>
+                    <td>Sistem membatasi pengisian sebanyak 1 kali (*one-time submission*).</td>
+                    <td>Guru BK atau Admin dapat melakukan <em>Reset Respons</em> melalui tabel matriks AKPD.</td>
+                </tr>
+                <tr>
+                    <td>Tampilan di browser belum berubah setelah update</td>
+                    <td>Browser menyimpan cache file stylesheet/tampilan lama.</td>
+                    <td>Tekan kombinasi tombol <strong>Ctrl + F5</strong> (Hard Refresh) pada keyboard laptop/komputer.</td>
+                </tr>
+                <tr>
+                    <td>Presensi Selfie: "Lokasi di luar radius sekolah"</td>
+                    <td>Akurasi sinyal GPS perangkat ponsel kurang optimal.</td>
+                    <td>Aktifkan mode akurasi tinggi GPS di HP, refresh browser, dan pastikan berada di area sekolah.</td>
+                </tr>
+                <tr>
+                    <td>Ujian CBT: Waktu habis tiba-tiba</td>
+                    <td>Timer pengerjaan telah mencapai batas durasi menit yang ditentukan.</td>
+                    <td>Jawaban yang sempat dijawab siswa tetap tersimpan otomatis oleh sistem database.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div style="margin-top: 35px; text-align: center; border-top: 1.5px solid #cbd5e1; padding-top: 15px;">
+            <p style="font-weight: 800; font-size: 9.5pt; color: #0f172a; margin: 0;">TIM PENGEMBANG TEKNOLOGI INFORMASI SMAN 1 LENGKONG</p>
+            <p style="font-size: 8pt; color: #64748b; margin: 3px 0 0 0;">Konsultasi &amp; Dukungan Teknis: Hubungi Koordinator Bimbingan Konseling &amp; Helpdesk IT Sekolah.</p>
+        </div>
+    </div>
+
+</body>
+</html>

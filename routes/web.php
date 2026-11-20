@@ -1064,6 +1064,30 @@ Route::get('/public/storage/library/covers/{filename}', function (string $filena
 });
 
 // Storage fallback route (ensures photos & files are served reliably in all server environments)
+// Modul Panduan Penggunaan Resmi Aplikasi SIS-SMA1LE
+Route::get('/panduan', function () {
+    $pdfPath = public_path('docs/MODUL_PANDUAN_SIS_SMA1LE.pdf');
+    if (! file_exists($pdfPath)) {
+        abort(404, 'Dokumen modul panduan PDF belum tersedia.');
+    }
+
+    return response()->file($pdfPath, [
+        'Content-Type' => 'application/pdf',
+        'Content-Disposition' => 'inline; filename="MODUL_PANDUAN_SIS_SMA1LE.pdf"',
+    ]);
+})->name('panduan');
+
+Route::get('/panduan/web', function () {
+    $htmlPath = public_path('docs/modul_panduan_lengkap.html');
+    if (! file_exists($htmlPath)) {
+        abort(404, 'Dokumen panduan web belum tersedia.');
+    }
+
+    return response()->file($htmlPath, [
+        'Content-Type' => 'text/html',
+    ]);
+})->name('panduan.web');
+
 Route::get('/storage/{path}', function (string $path) {
     $cleanPath = ltrim(preg_replace('/^(public\/|storage\/)+/', '', $path), '/');
 

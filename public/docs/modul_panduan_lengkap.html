@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Buku Panduan Penggunaan SIS-SMA1LE - SMAN 1 Lengkong</title>
+    <style>
+        @page {
+            size: A4 portrait;
+            margin: 15mm 15mm 15mm 15mm;
+            @bottom-right {
+                content: counter(page);
+                font-size: 8pt;
+                color: #777;
+            }
+        }
+        * {
+            box-sizing: border-box;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+            font-size: 10pt;
+            color: #1e293b;
+            line-height: 1.45;
+            background: #fff;
+            margin: 0;
+            padding: 0;
+        }
+        .page {
+            page-break-after: always;
+            position: relative;
+            padding-bottom: 20px;
+        }
+        .page:last-child {
+            page-break-after: avoid;
+        }
+        
+        /* Cover Page */
+        .cover {
+            text-align: center;
+            padding: 60px 20px 40px 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 90vh;
+        }
+        .cover-logo {
+            width: 110px;
+            height: auto;
+            margin: 0 auto 20px auto;
+        }
+        .cover-instansi {
+            font-size: 12pt;
+            font-weight: 700;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+        .cover-title {
+            font-size: 24pt;
+            font-weight: 900;
+            color: #0f172a;
+            margin: 15px 0 10px 0;
+            line-height: 1.2;
+            letter-spacing: -0.5px;
+        }
+        .cover-subtitle {
+            font-size: 13pt;
+            font-weight: 600;
+            color: #0d9488;
+            margin-bottom: 25px;
+        }
+        .cover-badge {
+            display: inline-block;
+            background: #f0fdfa;
+            color: #0f766e;
+            border: 1px solid #99f6e4;
+            padding: 6px 16px;
+            border-radius: 999px;
+            font-size: 9.5pt;
+            font-weight: 700;
+            margin-bottom: 30px;
+        }
+        .cover-illustration {
+            width: 85%;
+            max-height: 260px;
+            object-fit: cover;
+            border-radius: 16px;
+            border: 2px solid #e2e8f0;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+            margin: 0 auto;
+        }
+        .cover-footer {
+            margin-top: 40px;
+            font-size: 9pt;
+            color: #64748b;
+            border-top: 2px solid #e2e8f0;
+            padding-top: 15px;
+        }
+
+        /* Typography & Headings */
+        h1.chapter-title {
+            font-size: 16pt;
+            font-weight: 800;
+            color: #0f172a;
+            border-bottom: 2.5px solid #0d9488;
+            padding-bottom: 6px;
+            margin-top: 0;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        h2.section-title {
+            font-size: 12pt;
+            font-weight: 700;
+            color: #1e3a8a;
+            margin-top: 20px;
+            margin-bottom: 8px;
+            border-left: 4px solid #3b82f6;
+            padding-left: 10px;
+        }
+        h3.subsection-title {
+            font-size: 10.5pt;
+            font-weight: 700;
+            color: #334155;
+            margin-top: 14px;
+            margin-bottom: 6px;
+        }
+
+        p {
+            margin: 6px 0;
+            text-align: justify;
+        }
+
+        /* Callouts */
+        .callout {
+            border-radius: 8px;
+            padding: 10px 14px;
+            margin: 12px 0;
+            font-size: 9pt;
+            line-height: 1.4;
+        }
+        .callout-info {
+            background-color: #f0fdfa;
+            border-left: 4px solid #14b8a6;
+            color: #134e4a;
+        }
+        .callout-warning {
+            background-color: #fffbeb;
+            border-left: 4px solid #f59e0b;
+            color: #78350f;
+        }
+        .callout-tips {
+            background-color: #eff6ff;
+            border-left: 4px solid #3b82f6;
+            color: #1e3a8a;
+        }
+
+        /* Tables */
+        table.doc-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12px 0;
+            font-size: 8.5pt;
+        }
+        table.doc-table th, table.doc-table td {
+            border: 1px solid #cbd5e1;
+            padding: 6px 8px;
+            vertical-align: top;
+        }
+        table.doc-table th {
+            background-color: #f1f5f9;
+            font-weight: 700;
+            color: #0f172a;
+            text-align: left;
+        }
+        table.doc-table tr:nth-child(even) td {
+            background-color: #f8fafc;
+        }
+
+        /* Figures & Screenshots */
+        .figure-box {
+            text-align: center;
+            margin: 14px 0;
+            page-break-inside: avoid;
+        }
+        .figure-img {
+            max-width: 95%;
+            height: auto;
+            border-radius: 10px;
+            border: 1px solid #cbd5e1;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+        }
+        .figure-caption {
+            font-size: 8pt;
+            color: #64748b;
+            font-style: italic;
+            margin-top: 4px;
+        }
+
+        /* Numbered & Bullet Lists */
+        ol, ul {
+            margin: 6px 0 10px 20px;
+            padding: 0;
+        }
+        li {
+            margin-bottom: 4px;
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 2px 7px;
+            font-size: 7.5pt;
+            font-weight: 700;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+        .badge-teal { background: #ccfbf1; color: #0f766e; }
+        .badge-indigo { background: #e0e7ff; color: #3730a3; }
+        .badge-rose { background: #ffe4e6; color: #9f1239; }
+        .badge-amber { background: #fef3c7; color: #92400e; }
+
+        .toc-list {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+        }
+        .toc-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px dotted #cbd5e1;
+            font-size: 9.5pt;
+        }
+        .toc-item strong {
+            color: #0f172a;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HALAMAN 1: COVER UTAMA -->
+    <div class="page cover">
+        <div>
+            <img src="images/logo_sekolah.png" class="cover-logo" alt="Logo SMAN 1 Lengkong">
+            <div class="cover-instansi">PEMERINTAH PROVINSI JAWA BARAT<br>DINAS PENDIDIKAN • SMA NEGERI 1 LENGKONG</div>
+            <div class="cover-title">MODUL PANDUAN PENGGUNAAN SISTEM APLIKASI TERPADU SIS-SMA1LE</div>
+            <div class="cover-subtitle">Panduan Operasional Lengkap Seluruh Peran (Role) Berbasis Kurikulum Merdeka &amp; Kurikulum Nasional 2025</div>
+            <div class="cover-badge">✓ Terintegrasi Bimbingan Konseling 360°, Asesmen AKPD Fase E, Psikotes AI &amp; E-Rapor</div>
+        </div>
+
+        <div>
+            <img src="images/dashboard_tampilan.png" class="cover-illustration" alt="Dashboard Aplikasi SIS-SMA1LE">
+        </div>
+
+        <div class="cover-footer">
+            <strong>Sistem Informasi Siswa Terpadu SMAN 1 Lengkong (SIS-SMA1LE)</strong><br>
+            Alamat: Jl. Raya Lengkong No. 123, Kabupaten Sukabumi, Jawa Barat | Domain Resmi: <strong>https://sman1lengkong.school</strong><br>
+            Tahun Pelajaran 2026/2027 • Versi Rilis Produksi 2.0
+        </div>
+    </div>
+
+    <!-- HALAMAN 2: DAFTAR ISI & STRUKTUR HAK AKSES -->
+    <div class="page">
+        <h1 class="chapter-title">DAFTAR ISI &amp; MATRIKS PERAN PENGGUNA</h1>
+        
+        <ul class="toc-list">
+            <li class="toc-item"><span><strong>BAB I:</strong> Pengenalan Sistem &amp; Akses Login</span> <span>Halaman 3</span></li>
+            <li class="toc-item"><span><strong>BAB II:</strong> Panduan Khusus Peserta Didik (Siswa Kelas X, XI, XII)</span> <span>Halaman 4</span></li>
+            <li class="toc-item"><span><strong>BAB III:</strong> Modul AKPD Diagnostik Non-Tes (Khusus Kelas X / Fase E)</span> <span>Halaman 5</span></li>
+            <li class="toc-item"><span><strong>BAB IV:</strong> Modul Asesmen Psikotes &amp; Master AI Analisis 360°</span> <span>Halaman 6</span></li>
+            <li class="toc-item"><span><strong>BAB V:</strong> Panduan Guru Bimbingan &amp; Konseling (Guru BK &amp; Koordinator)</span> <span>Halaman 7</span></li>
+            <li class="toc-item"><span><strong>BAB VI:</strong> Panduan Wali Kelas (Presensi, AKPD Kelas, &amp; Rapor)</span> <span>Halaman 8</span></li>
+            <li class="toc-item"><span><strong>BAB VII:</strong> Panduan Guru Mata Pelajaran (KBM, CBT, &amp; Penilaian TP)</span> <span>Halaman 9</span></li>
+            <li class="toc-item"><span><strong>BAB VIII:</strong> Panduan Kepala Sekolah, Tata Usaha &amp; Administrator</span> <span>Halaman 10</span></li>
+            <li class="toc-item"><span><strong>BAB IX:</strong> Petunjuk Cetak Dokumen Resmi A4 &amp; Troubleshooting</span> <span>Halaman 11</span></li>
+        </ul>
+
+        <h2 class="section-title">Matriks Pembagian Hak Akses Berdasarkan Peran (Role)</h2>
+        <p>Aplikasi menerapkan sistem keamanan hak akses bertingkat (*Role-Based Access Control*) guna menjamin kerahasiaan dan integritas data sekolah:</p>
+
+        <table class="doc-table">
+            <thead>
+                <tr>
+                    <th width="20%">Peran (Role)</th>
+                    <th width="35%">Ruang Lingkup &amp; Fitur Utama</th>
+                    <th width="25%">Modul Bimbingan Konseling</th>
+                    <th width="20%">Akses Laporan</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Siswa Kelas X (Fase E)</strong></td>
+                    <td>Beranda Siswa, Presensi Selfie GPS, Jadwal KBM, CBT, Buku Poin Tata Tertib, Rapor Mandiri.</td>
+                    <td><span class="badge badge-teal">AKPD Diagnostik</span>, Tes Psikotes (VAK, RIASEC, Gardner), Ruang Curhat.</td>
+                    <td>Laporan AKPD Individu &amp; Laporan Psikotes Pribadi.</td>
+                </tr>
+                <tr>
+                    <td><strong>Siswa Kelas XI &amp; XII</strong></td>
+                    <td>Beranda Siswa, Presensi, Jadwal, CBT, Buku Poin Tata Tertib, Rapor.</td>
+                    <td>Tes Psikotes Minat Karier, Ruang Curhat BK. <em>(AKPD otomatis disembunyikan)</em>.</td>
+                    <td>Laporan Psikotes Pribadi &amp; Rapor.</td>
+                </tr>
+                <tr>
+                    <td><strong>Guru BK / Koordinator BK</strong></td>
+                    <td>Dashboard BK 360°, Konseling Individual, Konseling Kelompok, Sosiometri, Home Visit, Surat Panggilan Ortu.</td>
+                    <td>Penuh: AKPD Kelas X, Rekapitulasi Rombel, Psikotes AI 360°, Reset Respons Siswa.</td>
+                    <td>Laporan Individu, Profil Kelas, dan RPL BK 1 Lembar.</td>
+                </tr>
+                <tr>
+                    <td><strong>Wali Kelas</strong></td>
+                    <td>Dashboard Wali Kelas, Rekap Presensi Rombel Binaan, Buku Catatan Pelanggaran, Rapor Kurnas 2025.</td>
+                    <td>Memantau Peta Profil AKPD &amp; Psikotes Rombel Binaan.</td>
+                    <td>Laporan Profil Kelas &amp; Cetak Rapor Kelas Binaan.</td>
+                </tr>
+                <tr>
+                    <td><strong>Guru Mapel</strong></td>
+                    <td>Jurnal Mengajar Harian, Presensi KBM Kelas, Bank Soal CBT, Penilaian Formatif &amp; Sumatif TP, Nilai P5.</td>
+                    <td>Konsultasi Kesulitan Belajar Siswa.</td>
+                    <td>Rekap Nilai Siswa &amp; Leger Nilai Mapel.</td>
+                </tr>
+                <tr>
+                    <td><strong>Kepala Sekolah</strong></td>
+                    <td>Dashboard Eksekutif, Monitoring Presensi Real-Time, Pengawasan Kinerja Guru, Evaluasi Kedisiplinan.</td>
+                    <td>Persetujuan Dokumen Mutu BK.</td>
+                    <td>Mengesahkan Seluruh Dokumen Cetak Resmi A4.</td>
+                </tr>
+                <tr>
+                    <td><strong>Administrator / TU</strong></td>
+                    <td>Data Master PTK, Siswa, Rombel, Akun &amp; Password, Persuratan, Buku Induk, Maintenance Database.</td>
+                    <td>Pengelolaan Teknis Instrumen Asesmen.</td>
+                    <td>Arsip Master Seluruh Dokumen Sekolah.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="callout callout-info">
+            <strong>Standar Akreditasi &amp; Legalitas:</strong> Seluruh modul dirancang sesuai Panduan Operasional Penyelenggaraan Bimbingan dan Konseling (POP-BK) Kemendikbudristek dan regulasi Kurikulum Nasional Permendikdasmen No. 13 Tahun 2025.
+        </div>
+    </div>
+
+    <!-- HALAMAN 3: PENGENALAN SISTEM & LOGIN -->
+    <div class="page">
+        <h1 class="chapter-title">BAB I: PENGENALAN SISTEM &amp; CARA LOGIN</h1>
+        
+        <h2 class="section-title">1.1 Akses Sistem Melalui Web Browser</h2>
+        <p>Aplikasi SIS-SMA1LE adalah aplikasi berbasis *web responsive* yang dapat diakses dengan cepat melalui komputer, laptop, tablet, maupun *smartphone* tanpa perlu menginstal aplikasi tambahan.</p>
+        
+        <p>Buka peramban (*browser*) rekomendasi: <strong>Google Chrome</strong> atau <strong>Microsoft Edge</strong>, lalu ketik alamat domain resmi:</p>
+        <div style="background: #0f172a; color: #38bdf8; padding: 10px 15px; border-radius: 8px; font-family: monospace; font-size: 11pt; text-align: center; margin: 10px 0;">
+            https://sman1lengkong.school
+        </div>
+
+        <h2 class="section-title">1.2 Alur Masuk (Login) Akun</h2>
+        <ol>
+            <li>Pada halaman depan (*landing page*), klik tombol <strong>"Masuk Sistem"</strong> atau <strong>"Portal Login"</strong> di pojok kanan atas.</li>
+            <li>Masukkan <strong>Email / Username / NISN / NIP</strong> yang telah didaftarkan oleh Administrator Sekolah.</li>
+            <li>Ketikkan <strong>Kata Sandi (Password)</strong> akun Anda dengan teliti.</li>
+            <li>Centang kotak <em>"Ingat Saya"</em> jika menggunakan perangkat pribadi.</li>
+            <li>Klik tombol <strong>"Masuk"</strong>. Sistem akan langsung mengarahkan Anda ke Dashboard khusus sesuai hak akses peran Anda.</li>
+        </ol>
+
+        <div class="figure-box">
+            <img src="images/menu_bk.png" class="figure-img" style="max-height: 220px;" alt="Antarmuka Navigasi & Pilihan Layanan">
+            <div class="figure-caption">Gambar 1.1: Tampilan Gerbang Layanan dan Navigasi Terpadu SIS-SMA1LE</div>
+        </div>
+
+        <div class="callout callout-warning">
+            <strong>Keamanan Akun:</strong> Jangan membagikan kata sandi Anda kepada orang lain. Segera ganti kata sandi bawaan melalui menu <em>Profil Pengguna</em> setelah berhasil login pertama kali.
+        </div>
+    </div>
+
+    <!-- HALAMAN 4: PANDUAN PESERTA DIDIK -->
+    <div class="page">
+        <h1 class="chapter-title">BAB II: PANDUAN PENGGUNAAN OLEH SISWA</h1>
+        
+        <h2 class="section-title">2.1 Beranda Siswa (Student Dashboard)</h2>
+        <p>Saat siswa berhasil login, beranda akan menyajikan informasi terpadu:</p>
+        <ul>
+            <li><strong>Status Kehadiran Hari Ini:</strong> Menampilkan jam masuk presensi dan metode yang digunakan.</li>
+            <li><strong>Akumulasi Poin Tata Tertib:</strong> Total Poin Pelanggaran dan Poin Penghargaan Prestasi.</li>
+            <li><strong>Menu Pintas Bimbingan Konseling:</strong> Akses ke Ruang Curhat, Asesmen Psikotes, dan AKPD Diagnostik (khusus Kelas X).</li>
+            <li><strong>Akses LMS Pembelajaran:</strong> Jadwal pelajaran aktif, modul ajar, dan tugas CBT.</li>
+        </ul>
+
+        <h2 class="section-title">2.2 Presensi Kehadiran Siswa Mandiri</h2>
+        <ol>
+            <li>Klik menu <strong>"Presensi Siswa"</strong> di beranda.</li>
+            <li>Pilih tab <strong>"Selfie Kamera"</strong>. Pastikan GPS pada perangkat Anda aktif dan Anda berada di lingkungan SMA Negeri 1 Lengkong (radius sekolah 100 meter).</li>
+            <li>Arahkan kamera ke wajah dan tekan tombol <strong>"Ambil Foto &amp; Kirim Presensi"</strong>.</li>
+            <li>Status kehadiran Anda seketika tercatat di database sekolah dan dapat dipantau oleh Orang Tua serta Wali Kelas.</li>
+        </ol>
+
+        <h2 class="section-title">2.3 Ruang Curhat BK Online Siswa</h2>
+        <p>Bagi siswa yang menghadapi masalah pribadi, kesulitan belajar, pertemanan, maupun kebingungan arah studi lanjut:</p>
+        <ol>
+            <li>Klik menu <strong>"Ruang Curhat BK"</strong>.</li>
+            <li>Ketik pesan atau keluhan yang ingin dikonsultasikan kepada Guru BK.</li>
+            <li>Pesan bersifat <strong>rahasia dan aman</strong>; hanya Guru BK sekolah yang dapat membaca dan membalas curhatan Ananda.</li>
+        </ol>
+    </div>
+
+    <!-- HALAMAN 5: MODUL AKPD KELAS X -->
+    <div class="page">
+        <h1 class="chapter-title">BAB III: MODUL ASESMEN KEBUTUHAN (AKPD) KELAS X</h1>
+        
+        <h2 class="section-title">3.1 Mengapa Hanya Siswa Kelas X (Fase E)?</h2>
+        <p>Sesuai dengan regulasi Kurikulum Merdeka dan pedoman POP-BK, **AKPD Diagnostik** dilaksanakan di awal fase pendidikan SMA (Fase E / Kelas X) untuk memetakan kebutuhan dasar, orientasi adaptasi sosial, serta arah kesiapan pemilihan paket mata pelajaran pilihan pada Fase F (Kelas XI dan XII). Siswa Kelas XI dan XII otomatis dialihkan ke pemetaan Minat Bakat Karier Psikotes.</p>
+
+        <h2 class="section-title">3.2 Petunjuk Pengisian Angket oleh Siswa Kelas X</h2>
+        <ol>
+            <li>Buka menu <strong>"AKPD Diagnostik"</strong> pada Navbar BK atau klik card <strong>"FASE E (X)"</strong> di beranda.</li>
+            <li>Klik tombol <strong>"Mulai Isi Angket AKPD"</strong>.</li>
+            <li>Terdapat **40 butir pernyataan** yang mencakup 4 bidang layanan:
+                <ul>
+                    <li><strong>Bidang Pribadi:</strong> 10 butir terkait emosi, percaya diri, dan resolusi konflik diri.</li>
+                    <li><strong>Bidang Sosial:</strong> 10 butir terkait adaptasi pertemanan, komunikasi, dan pencegahan bullying.</li>
+                    <li><strong>Bidang Belajar:</strong> 10 butir terkait manajemen waktu, prokrastinasi, dan kesiapan materi SMA.</li>
+                    <li><strong>Bidang Karier:</strong> 10 butir terkait cita-cita profesi, jurusan kuliah PTN, dan sekolah kedinasan.</li>
+                </ul>
+            </li>
+            <li>Beri tanda centang (✔) pada kotak di sebelah kiri jika butir tersebut dialami dan Ananda membutuhkan bantuan/konseling Guru BK.</li>
+            <li>Klik <strong>"Simpan &amp; Analisis Kebutuhan"</strong> di bagian bawah halaman.</li>
+        </ol>
+
+        <div class="callout callout-tips">
+            <strong>Pengisian Sekali Selesai:</strong> Pengisian instrumen dibatasi tepat 1 kali (*one-time submission*) demi keaslian data diagnostik. Jika terjadi kesalahan isi mendasar, laporkan kepada Guru BK untuk dilakukan *Reset Respons*.
+        </div>
+
+        <h2 class="section-title">3.3 Laporan Profil Kebutuhan Individual Siswa</h2>
+        <p>Setelah mengisi, siswa dan Guru BK dapat melihat laporan hasil analisis lengkap:</p>
+        <ul>
+            <li><strong>Skor Persentase 4 Bidang:</strong> Visualisasi progress bar tingkat kebutuhan Ananda.</li>
+            <li><strong>Derajat Kebutuhan:</strong> Kategori resmi (&ge;50% Prioritas Utama, 26-49% Sedang, &le;25% Stabil).</li>
+            <li><strong>Rincian Butir Masalah:</strong> Daftar spesifik butir yang dicentang beserta dimensi profil perkembangan.</li>
+            <li><strong>Rekomendasi POP-BK:</strong> Arahan layanan dasar, layanan responsif, peminatan Fase F, dan dukungan orang tua.</li>
+            <li><strong>Cetak Format Resmi A4:</strong> Klik tombol hijau <em>"Cetak Laporan Resmi A4"</em> untuk mengunduh dokumen PDF bertandatangan Orang Tua, Kepala Sekolah (tengah), dan Koordinator BK (kanan).</li>
+        </ul>
+    </div>
+
+    <!-- HALAMAN 6: MODUL PSIKOTES AI 360 -->
+    <div class="page">
+        <h1 class="chapter-title">BAB IV: MODUL ASESMEN PSIKOTES &amp; MASTER AI 360°</h1>
+        
+        <h2 class="section-title">4.1 3 Pilar Pengukuran Psikometri Ilmiah</h2>
+        <div class="figure-box">
+            <img src="images/modul_psikotes.png" class="figure-img" style="max-height: 230px;" alt="3 Modul Tes Psikotes Siswa">
+            <div class="figure-caption">Gambar 4.1: Antarmuka Modul 3 Kategori Tes Psikotes Terstandarisasi</div>
+        </div>
+
+        <ol>
+            <li><strong>Tes Gaya Belajar VAK (24 Butir):</strong> Mengukur modalitas belajar sensori siswa (*Visual, Auditori, Kinestetik*). Menghasilkan rekomendasi metode belajar optimal.</li>
+            <li><strong>Tes Minat Bakat Karier Holland RIASEC (36 Butir):</strong> Mengukur kecenderungan tipe kepribadian vokasional (*Realistic, Investigative, Artistic, Social, Enterprising, Conventional*). Menghasilkan Kode Holland 3-Huruf dan rekomendasi program studi PTN.</li>
+            <li><strong>Tes Kecerdasan Majemuk Howard Gardner (32 Butir):</strong> Memetakan spektrum 8 potensi kecerdasan majemuk siswa (*Linguistik, Logis, Spasial, Musikal, Kinestetik, Interpersonal, Intrapersonal, Naturalis*).</li>
+        </ol>
+
+        <h2 class="section-title">4.2 Grand Asesmen Terpadu 360° (Tri-Dimensi + Karakter Sekolah)</h2>
+        <p>SIS-SMA1LE menggabungkan hasil tes psikometri bersama rekam jejak kedisiplinan sekolah menjadi **Satu Kesatuan Laporan Utuh**: </p>
+
+        <div class="figure-box">
+            <img src="images/matriks_tridimensi.png" class="figure-img" style="max-height: 180px;" alt="Matriks Tri-Dimensi & Karakter">
+            <div class="figure-caption">Gambar 4.2: Matriks Integrasi Tri-Dimensi & Rekam Jejak Karakter Sekolah</div>
+        </div>
+
+        <ul>
+            <li><strong>Pilar 1, 2, 3:</strong> Mengukur Gaya Belajar, Minat Karier, dan Kecerdasan Majemuk.</li>
+            <li><strong>Pilar 4 (Karakter &amp; Presensi):</strong> Mengambil data rekam jejak kehadiran nyata di sekolah dan poin pelanggaran tata tertib sebagai bukti komitmen belajar siswa.</li>
+            <li><strong>Analisis Master AI (Google Gemini):</strong> Menghasilkan sintesis *Benang Merah &amp; Sinergi Profil Ananda*, Kekuatan Utama (*Strength Zone*), Rekomendasi Jurusan PTN, serta Rekomendasi Karier Masa Depan.</li>
+        </ul>
+    </div>
+
+    <!-- HALAMAN 7: PANDUAN GURU BK -->
+    <div class="page">
+        <h1 class="chapter-title">BAB V: PANDUAN GURU BIMBINGAN KONSELING (BK)</h1>
+        
+        <h2 class="section-title">5.1 Peta Profil Kebutuhan Kelas (AKPD)</h2>
+        <p>Guru BK dapat memetakan kebutuhan rombel kelas secara komprehensif:</p>
+        <ol>
+            <li>Masuk ke menu <strong>AKPD Diagnostik &rarr; Peta Profil Kelas</strong>.</li>
+            <li>Gunakan dropdown filter rombel untuk memilih kelas binaan (misal: *X Merdeka 1, X Merdeka 2, dst.*).</li>
+            <li>Sistem menampilkan <strong>Grafik Komparasi Rata-rata 4 Bidang</strong> dan <strong>Top 10 Butir Masalah Tertinggi di Kelas</strong>.</li>
+            <li>Lihat bagian <strong>"Usulan Topik Materi RPL BK 1 Lembar"</strong>: sistem secara otomatis menyusun judul materi Bimbingan Klasikal semester aktif berdasarkan masalah dominan siswa di kelas tersebut.</li>
+            <li>Klik tombol <strong>"Cetak Laporan Profil Kelas A4"</strong> untuk mencetak dokumen format resmi bertandatangan Wali Kelas, Kepala Sekolah, dan Koordinator BK.</li>
+        </ol>
+
+        <h2 class="section-title">5.2 Manajemen Konseling Individual &amp; Kelompok</h2>
+        <ul>
+            <li>Buka menu <strong>"Layanan Konseling &rarr; Catat Sesi"</strong>.</li>
+            <li>Pilih nama siswa, tanggal pertemuan, klasifikasi masalah, dan teknik konseling yang diberikan.</li>
+            <li>Tuliskan ringkasan hasil bimbingan dan rencana tindak lanjut (*action plan*).</li>
+            <li>Simpan sesi. Data konseling tersimpan rapi dalam rekam jejak bimbingan siswa (*Counseling Portfolio*).</li>
+        </ul>
+
+        <h2 class="section-title">5.3 Home Visit &amp; Surat Pemanggilan Orang Tua</h2>
+        <ul>
+            <li>Menu <strong>"Home Visit"</strong> digunakan saat Guru BK melakukan kunjungan rumah, lengkap dengan pencatatan berita acara dan dokumentasi foto.</li>
+            <li>Menu <strong>"Pemanggilan Orang Tua"</strong> menyediakan generator otomatis surat dinas resmi pemanggilan orang tua dengan nomor surat terstandarisasi.</li>
+        </ul>
+    </div>
+
+    <!-- HALAMAN 8: PANDUAN WALI KELAS -->
+    <div class="page">
+        <h1 class="chapter-title">BAB VI: PANDUAN WALI KELAS</h1>
+        
+        <h2 class="section-title">6.1 Pemantauan Harian Rombel Binaan</h2>
+        <p>Wali Kelas memiliki wewenang khusus memantau seluruh dinamika siswa di rombelnya:</p>
+        <ol>
+            <li><strong>Monitoring Kehadiran Siswa:</strong> Melihat siswa yang hadir, izin, sakit, maupun alpa secara *real-time* setiap pagi.</li>
+            <li><strong>Pantauan Poin Kedisiplinan:</strong> Mendeteksi siswa yang telah mencapai akumulasi poin tertentu untuk segera dilakukan pembinaan bersama Guru BK.</li>
+            <li><strong>Akses Hasil AKPD &amp; Psikotes:</strong> Wali kelas dapat membuka profil kebutuhan kelas dan psikotes siswa binaan untuk memahami karakteristik gaya belajar dan bakat minat anak asuhnya.</li>
+        </ol>
+
+        <h2 class="section-title">6.2 Pengisian Nilai &amp; Rapor Kurikulum Nasional 2025</h2>
+        <ol>
+            <li>Buka menu <strong>"Aplikasi Rapor &rarr; Catatan Wali Kelas"</strong>.</li>
+            <li>Ketikkan catatan perkembangan karakter, saran pembinaan, dan motivasi belajar untuk masing-masing siswa.</li>
+            <li>Verifikasi nilai sumatif akhir semester dari seluruh guru mata pelajaran.</li>
+            <li>Klik tombol <strong>"Cetak Rapor Resmi"</strong>: Rapor otomatis terkompilasi sesuai standar format Permendikdasmen No. 13 Tahun 2025 lengkap dengan deskripsi capaian kompetensi.</li>
+        </ol>
+    </div>
+
+    <!-- HALAMAN 9: PANDUAN GURU MATA PELAJARAN -->
+    <div class="page">
+        <h1 class="chapter-title">BAB VII: PANDUAN GURU MATA PELAJARAN</h1>
+        
+        <h2 class="section-title">7.1 Presensi KBM &amp; Jurnal Mengajar Harian</h2>
+        <ol>
+            <li>Buka menu <strong>"Akademik &rarr; Jurnal Mengajar"</strong>.</li>
+            <li>Pilih kelas yang sedang diajar dan jam pelajaran aktif.</li>
+            <li>Lakukan presensi kehadiran tatap muka siswa di kelas (Hadir, Sakit, Izin, Alpa).</li>
+            <li>Tuliskan ringkasan materi/Tujuan Pembelajaran (TP) yang disampaikan pada hari tersebut.</li>
+            <li>Klik <strong>"Simpan Jurnal KBM"</strong>.</li>
+        </ol>
+
+        <h2 class="section-title">7.2 Asesmen CBT (Ujian Berbasis Komputer / Mobile)</h2>
+        <ul>
+            <li><strong>Bank Soal:</strong> Guru dapat membuat soal pilihan ganda, pilihan majemuk, maupun esai lengkap dengan gambar dan pembobotan nilai.</li>
+            <li><strong>Jadwal Ujian:</strong> Mengatur waktu mulai, durasi menit pengerjaan, dan token ujian.</li>
+            <li><strong>Koreksi Otomatis:</strong> Nilai CBT langsung terkoreksi secara instan oleh sistem dan dapat diekspor ke leger nilai rapor.</li>
+        </ul>
+
+        <h2 class="section-title">7.3 Input Nilai Rapor Kurikulum Nasional 2025</h2>
+        <ul>
+            <li>Pilih menu <strong>"Penilaian Sumatif TP"</strong>.</li>
+            <li>Input nilai sumatif lingkup materi dan tentukan status ketercapaian Tujuan Pembelajaran (*Tercapai Optimal* atau *Perlu Bimbingan*).</li>
+            <li>Sistem secara otomatis mengenerate kalimat deskripsi capaian rapor yang bermakna.</li>
+        </ul>
+    </div>
+
+    <!-- HALAMAN 10: PANDUAN KEPALA SEKOLAH & ADMIN -->
+    <div class="page">
+        <h1 class="chapter-title">BAB VIII: PANDUAN KEPALA SEKOLAH &amp; ADMINISTRATOR</h1>
+        
+        <h2 class="section-title">8.1 Peran Kepala Sekolah (Executive Monitoring)</h2>
+        <p>Kepala Sekolah bertindak sebagai pimpinan pengambil kebijakan mutu sekolah:</p>
+        <ul>
+            <li><strong>Dashboard Eksekutif:</strong> Grafik kehadiran guru dan siswa harian, rasio kedisiplinan, dan statistik capaian akademik.</li>
+            <li><strong>Persetujuan Dokumen:</strong> Nama dan NIP Kepala Sekolah terhubung otomatis pada lembar pengesahan resmi:
+                <div class="figure-box" style="margin: 8px 0;">
+                    <img src="images/tanda_tangan_resmi.png" class="figure-img" style="max-height: 140px;" alt="Tanda Tangan Tripartit Resmi">
+                    <div class="figure-caption">Gambar 8.1: Format Tanda Tangan Resmi: Orang Tua, Menyetujui Kepala Sekolah (Tengah), dan Koordinator BK (Kanan)</div>
+                </div>
+            </li>
+            <li><strong>Disposisi Surat Masuk:</strong> Kepala sekolah dapat membaca surat masuk dan memberikan arahan disposisi secara elektronik.</li>
+        </ul>
+
+        <h2 class="section-title">8.2 Peran Administrator &amp; Tata Usaha</h2>
+        <ul>
+            <li><strong>Manajemen Master Data:</strong> Penambahan data guru baru, siswa baru, rombel kelas, dan setting tahun ajaran aktif.</li>
+            <li><strong>Keamanan Sistem:</strong> Pengaturan hak akses peran (*roles*), reset kata sandi akun, dan pemeliharaan data (*database backup*).</li>
+        </ul>
+    </div>
+
+    <!-- HALAMAN 11: PETUNJUK CETAK & TROUBLESHOOTING -->
+    <div class="page">
+        <h1 class="chapter-title">BAB IX: PETUNJUK CETAK A4 &amp; TROUBLESHOOTING</h1>
+        
+        <h2 class="section-title">9.1 Petunjuk Pengaturan Cetak Browser (Print Dialog Setup)</h2>
+        <p>Agar dokumen resmi (Laporan AKPD, Psikotes 2-Halaman, Rapor, Surat Panggilan) tercetak sempurna dan rapi:</p>
+        <ol>
+            <li>Tekan kombinasi tombol <strong>Ctrl + P</strong> (atau klik tombol cetak pada aplikasi).</li>
+            <li>Pilih printer fisik Anda, atau pilih <strong>"Save as PDF"</strong> untuk menyimpan berkas.</li>
+            <li>Pastikan <strong>Ukuran Kertas (Paper Size)</strong> dipilih: <strong>A4</strong>.</li>
+            <li>Pada bagian <strong>Margins (Batas Tepi)</strong>: Pilih <strong>Default</strong> atau <strong>None</strong> (sistem sudah menyertakan margin resmi CSS).</li>
+            <li><strong>PENTING:</strong> Centang opsi <strong>"Background graphics" (Grafik latar belakang)</strong> agar warna tabel, grafik bar chart, dan lencana kategori tercetak tajam.</li>
+            <li>Hapus centang pada <strong>"Headers and footers"</strong> agar tanggal browser dan URL tidak mencemari bagian atas/bawah dokumen resmi.</li>
+        </ol>
+
+        <h2 class="section-title">9.2 Solusi Masalah Umum (Troubleshooting)</h2>
+        <table class="doc-table">
+            <thead>
+                <tr>
+                    <th width="30%">Kendala Teknis</th>
+                    <th width="35%">Penyebab</th>
+                    <th width="35%">Langkah Solusi</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Siswa Kelas XI/XII tidak melihat menu AKPD</strong></td>
+                    <td>Sistem sengaja membatasi AKPD hanya untuk Kelas X (Fase E).</td>
+                    <td>Bukan error. Siswa Kelas XI/XII diarahkan mengakses menu <em>Tes Psikotes Siswa</em>.</td>
+                </tr>
+                <tr>
+                    <td><strong>Siswa tidak bisa mengisi AKPD untuk kedua kali</strong></td>
+                    <td>Sistem membatasi pengisian 1x (*one-time submission*).</td>
+                    <td>Hubungi Guru BK untuk melakukan <em>Reset Respons Siswa</em> jika ada revisi penting.</td>
+                </tr>
+                <tr>
+                    <td><strong>Tampilan baru belum berubah di browser</strong></td>
+                    <td>Browser menyimpan cache file versi lama.</td>
+                    <td>Tekan tombol <strong>Ctrl + F5</strong> (Hard Refresh) di keyboard laptop Anda.</td>
+                </tr>
+                <tr>
+                    <td><strong>Presensi Selfie gagal: "Di luar radius"</strong></td>
+                    <td>Sinyal GPS belum akurat atau berada di luar area sekolah.</td>
+                    <td>Nyalakan GPS HP dengan mode akurasi tinggi dan pastikan berada di area sekolah.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div style="margin-top: 40px; text-align: center; border-top: 1.5px solid #cbd5e1; padding-top: 20px;">
+            <p style="font-weight: 700; color: #0f172a; margin: 0;">TIM PENGEMBANG SISTEM INFORMASI AKADEMIK SMAN 1 LENGKONG</p>
+            <p style="font-size: 8.5pt; color: #64748b; margin: 3px 0 0 0;">Hubungi Tim Helpdesk BK &amp; IT jika membutuhkan pendampingan teknis lebih lanjut.</p>
+        </div>
+    </div>
+
+</body>
+</html>
