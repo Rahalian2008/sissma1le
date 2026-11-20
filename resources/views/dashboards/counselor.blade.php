@@ -231,7 +231,7 @@
             </div>
 
             <!-- 7. Hafalan Juz 30 (Tahfidz) -->
-            @php $tf = $worshipTahfidzSummary['tahfidz'] ?? ['total_deposits' => 0, 'lulus_deposits' => 0, 'progress_pct' => 0]; @endphp
+            @php $tf = $worshipTahfidzSummary['tahfidz'] ?? ['total_deposits' => 0, 'lulus_deposits' => 0, 'progress_pct' => 0, 'students_with_deposit' => 0, 'students_without_deposit' => 0, 'target_total_students' => 801, 'pass_rate_pct' => 0]; @endphp
             <div class="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col justify-between">
                 <div>
                     <div class="flex items-center justify-between">
@@ -242,14 +242,18 @@
                     </div>
                     <div class="mt-2.5 flex items-baseline gap-2">
                         <span class="text-2xl sm:text-3xl font-black text-emerald-600 dark:text-emerald-400">{{ $tf['progress_pct'] }}%</span>
-                        <span class="text-[11px] text-slate-500 dark:text-slate-400">Kelulusan</span>
+                        <span class="text-[11px] text-slate-500 dark:text-slate-400">Partisipasi Setor</span>
                     </div>
                     <div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden mt-2.5">
                         <div class="bg-emerald-500 h-full rounded-full transition-all duration-500" style="width: {{ min(100, $tf['progress_pct']) }}%"></div>
                     </div>
                     <div class="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 mt-2">
-                        <span>Lulus: {{ $tf['lulus_deposits'] }}</span>
-                        <span>Total Setoran: {{ $tf['total_deposits'] }}</span>
+                        <span>Sudah Setor: <strong class="text-emerald-600 dark:text-emerald-400">{{ $tf['students_with_deposit'] ?? 0 }} Siswa</strong></span>
+                        <span>Target: {{ $tf['target_total_students'] ?? 801 }} Siswa</span>
+                    </div>
+                    <div class="flex items-center justify-between text-[10px] text-slate-400 dark:text-slate-500 mt-1 pt-1 border-t border-slate-100 dark:border-slate-800">
+                        <span>Belum Setor: <strong class="text-rose-500 dark:text-rose-400">{{ $tf['students_without_deposit'] ?? 0 }} Siswa</strong></span>
+                        <span>Lulus Sesi: {{ $tf['lulus_deposits'] ?? 0 }}/{{ $tf['total_deposits'] ?? 0 }} ({{ $tf['pass_rate_pct'] ?? 0 }}%)</span>
                     </div>
                 </div>
                 <div class="pt-3 mt-2 border-t border-slate-100 dark:border-slate-800">

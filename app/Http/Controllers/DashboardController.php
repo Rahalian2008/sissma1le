@@ -1840,10 +1840,26 @@ class DashboardController extends Controller
                 ->count('surah_number');
             $tahfidzProgressPct = $targetSurahsCount > 0 ? round(($completedSurahsCount / $targetSurahsCount) * 100, 1) : 0.0;
             $latestDeposit = (clone $tahfidzQuery)->orderByDesc('deposit_date')->first();
+            $studentsWithDepositCount = 1;
+            $studentsWithoutDepositCount = 0;
+            $passRatePct = $totalTahfidzDeposits > 0 ? round(($lulusTahfidzDeposits / $totalTahfidzDeposits) * 100, 1) : 0.0;
         } else {
+            // Hitung partisipasi riil siswa dari seluruh target populasi siswa
+            $studentsWithDepositCount = (clone $tahfidzQuery)->distinct('student_id')->count('student_id');
+            $studentsWithoutDepositCount = max(0, $targetTotalStudents - $studentsWithDepositCount);
+
+            // Persentase partisipasi siswa riil yang sudah menyetor hafalan
+            $tahfidzProgressPct = $targetTotalStudents > 0
+                ? round(($studentsWithDepositCount / $targetTotalStudents) * 100, 1)
+                : 0.0;
+
+            // Tingkat kelulusan sesi setoran (dari entri setoran yang sudah masuk)
+            $passRatePct = $totalTahfidzDeposits > 0
+                ? round(($lulusTahfidzDeposits / $totalTahfidzDeposits) * 100, 1)
+                : 0.0;
+
             $completedSurahsCount = $lulusTahfidzDeposits;
-            $tahfidzProgressPct = $totalTahfidzDeposits > 0 ? round(($lulusTahfidzDeposits / $totalTahfidzDeposits) * 100, 1) : 0;
-            $latestDeposit = null;
+            $latestDeposit = (clone $tahfidzQuery)->orderByDesc('deposit_date')->orderByDesc('deposit_time')->first();
         }
 
         return [
@@ -1906,6 +1922,10 @@ class DashboardController extends Controller
             'tahfidz' => [
                 'total_deposits' => $totalTahfidzDeposits,
                 'lulus_deposits' => $lulusTahfidzDeposits,
+                'students_with_deposit' => $studentsWithDepositCount,
+                'students_without_deposit' => $studentsWithoutDepositCount,
+                'target_total_students' => $targetTotalStudents,
+                'pass_rate_pct' => $passRatePct,
                 'completed_surahs_count' => $completedSurahsCount,
                 'target_surahs_count' => $targetSurahsCount,
                 'student_grade' => $targetGrade,
