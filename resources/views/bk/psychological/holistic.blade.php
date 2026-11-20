@@ -58,10 +58,10 @@
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
                 <span>Kembali ke Profil 360</span>
             </a>
-            <button onclick="window.print()" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-teal-600 text-white font-bold text-xs shadow-md shadow-teal-600/20 hover:bg-teal-700 transition">
+            <a href="{{ route('bk.psychological.holistic.print', $student->id) }}" target="_blank" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-teal-600 text-white font-bold text-xs shadow-md shadow-teal-600/20 hover:bg-teal-700 transition">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
-                <span>Cetak Grand Laporan</span>
-            </button>
+                <span>🖨️ Cetak Dokumen Resmi Terpadu (A4)</span>
+            </a>
         </div>
     </div>
 
@@ -134,6 +134,66 @@
         </div>
         <div class="text-xs sm:text-sm leading-relaxed text-slate-700 dark:text-slate-200 bg-slate-50/60 dark:bg-slate-800/40 p-4 rounded-2xl border border-slate-100 dark:border-slate-800 whitespace-pre-line">
             {{ $report['ringkasan_eksekutif'] ?? 'Data sintesis asesmen holistik sedang diolah oleh sistem AI.' }}
+        </div>
+    </div>
+
+    <!-- Matriks 3-in-1: Gaya Belajar + Minat Karier + Kecerdasan Majemuk -->
+    <div class="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs space-y-4">
+        <div class="flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2 text-slate-900 dark:text-white font-bold text-sm">
+                <div class="w-7 h-7 rounded-xl bg-indigo-100 dark:bg-indigo-950/60 text-indigo-600 flex items-center justify-center font-black text-xs">
+                    II
+                </div>
+                <span>Matriks Integrasi Tri-Dimensi (Anti-Bingung)</span>
+            </div>
+            <span class="text-[11px] font-medium text-slate-400">Sinergi 3 Instrumen POP-BK</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- Dimensi 1: Gaya Belajar VAK -->
+            <div class="p-4 rounded-2xl bg-teal-50/60 dark:bg-teal-950/20 border border-teal-200/60 dark:border-teal-800/40 space-y-2">
+                <div class="flex items-center justify-between">
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-teal-700 dark:text-teal-300">1. Gaya Belajar (VAK)</span>
+                    <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-teal-600 text-white">Cara Serap</span>
+                </div>
+                <div class="text-base font-black text-slate-900 dark:text-white">
+                    {{ $vak?->dominant_dimension ?? 'VISUAL' }}
+                    @if($vak?->secondary_dimension)
+                        <span class="text-xs font-normal text-slate-500"> - {{ $vak->secondary_dimension }}</span>
+                    @endif
+                </div>
+                <p class="text-[11px] text-slate-600 dark:text-slate-300 leading-relaxed">
+                    Menyerap konsep paling cepat melalui visualisasi skema, warna, bagan grafis, dan dialog terarah.
+                </p>
+            </div>
+
+            <!-- Dimensi 2: Minat Karier Holland -->
+            <div class="p-4 rounded-2xl bg-indigo-50/60 dark:bg-indigo-950/20 border border-indigo-200/60 dark:border-indigo-800/40 space-y-2">
+                <div class="flex items-center justify-between">
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-indigo-700 dark:text-indigo-300">2. Minat Karier (Holland)</span>
+                    <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-indigo-600 text-white">Kode: {{ $riasec?->holland_code ?? 'SEC' }}</span>
+                </div>
+                <div class="text-base font-black text-slate-900 dark:text-white">
+                    {{ $riasec?->dominant_dimension ?? 'SOCIAL' }}
+                </div>
+                <p class="text-[11px] text-slate-600 dark:text-slate-300 leading-relaxed">
+                    Termotivasi pada lingkungan kerja interaktif, edukasi kemanusiaan, kolaborasi tim, dan keteraturan sistem.
+                </p>
+            </div>
+
+            <!-- Dimensi 3: Kecerdasan Majemuk Gardner -->
+            <div class="p-4 rounded-2xl bg-purple-50/60 dark:bg-purple-950/20 border border-purple-200/60 dark:border-purple-800/40 space-y-2">
+                <div class="flex items-center justify-between">
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-purple-700 dark:text-purple-300">3. Kecerdasan Majemuk</span>
+                    <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-purple-600 text-white">Bakat Kognitif</span>
+                </div>
+                <div class="text-base font-black text-slate-900 dark:text-white">
+                    {{ $gardner?->dominant_dimension ?? 'VISUAL SPASIAL' }}
+                </div>
+                <p class="text-[11px] text-slate-600 dark:text-slate-300 leading-relaxed">
+                    Memiliki daya imajinasi visual, kepekaan komposisi estetika, dan kemampuan mengonversi ide abstrak jadi karya nyata.
+                </p>
+            </div>
         </div>
     </div>
 

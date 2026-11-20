@@ -65,9 +65,12 @@
                     </button>
                 </form>
             @endif
+            <a href="{{ route('bk.psychological.holistic', $result->student_id) }}" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 text-white font-bold text-xs shadow-md shadow-indigo-600/20 hover:bg-indigo-700 transition" title="Lihat dan Cetak Laporan Terpadu 3-in-1">
+                <span>📑 Laporan Terpadu 3-in-1</span>
+            </a>
             <a href="{{ route('bk.psychological.print', $result) }}" target="_blank" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-teal-600 text-white font-bold text-xs shadow-md shadow-teal-600/20 hover:bg-teal-700 transition">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
-                <span>Cetak Laporan Resmi (A4)</span>
+                <span>Cetak Laporan Per Tes (A4)</span>
             </a>
             @if(auth()->user()->isCounselor() || auth()->user()->hasRole('admin'))
                 <a href="{{ route('bk.student.profile360', $result->student_id) }}" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs hover:bg-slate-200 transition">
@@ -85,6 +88,30 @@
             <p>{{ session('success') }}</p>
         </div>
     @endif
+
+    <!-- Banner Rekomendasi Laporan Terpadu 3-in-1 (Sintesis Harmonis) -->
+    <div class="p-4 sm:p-5 rounded-3xl bg-linear-to-r from-indigo-950/40 via-purple-950/30 to-teal-950/40 border border-indigo-500/30 dark:border-indigo-500/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
+        <div class="flex items-start gap-3.5">
+            <div class="w-10 h-10 rounded-2xl bg-indigo-600 text-white flex items-center justify-center shrink-0 text-lg shadow-md shadow-indigo-600/30">
+                📑
+            </div>
+            <div>
+                <h4 class="text-sm font-bold text-slate-900 dark:text-white">Laporan Asesmen Terpadu 3-in-1 (Anti-Bingung)</h4>
+                <p class="text-xs text-slate-600 dark:text-slate-300 mt-0.5 max-w-2xl leading-relaxed">
+                    Agar hasil tidak terpisah-pisah seperti puzzle, sistem menyediakan <strong>Laporan Sintesis Komprehensif</strong> yang memadukan <strong>Gaya Belajar (VAK)</strong>, <strong>Minat Karier (Holland)</strong>, dan <strong>Kecerdasan Majemuk (Gardner)</strong> menjadi satu kesatuan profil yang logis, utuh, dan mudah dipahami orang tua & guru.
+                </p>
+            </div>
+        </div>
+        <div class="shrink-0 flex items-center gap-2 w-full sm:w-auto">
+            <a href="{{ route('bk.psychological.holistic', $result->student_id) }}" class="flex-1 sm:flex-none px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-md shadow-indigo-600/20 transition flex items-center justify-center gap-1.5">
+                <span>Lihat Sintesis 3-in-1</span>
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+            </a>
+            <a href="{{ route('bk.psychological.holistic.print', $result->student_id) }}" target="_blank" class="px-3.5 py-2.5 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-indigo-700 dark:text-indigo-300 border border-indigo-300 dark:border-indigo-700 text-xs font-bold transition flex items-center gap-1" title="Cetak langsung dokumen resmi terpadu format A4">
+                <span>🖨️ Cetak A4</span>
+            </a>
+        </div>
+    </div>
 
     <!-- Profile Hero Card (Identitas & Dominansi) -->
     <div class="p-6 sm:p-8 rounded-3xl bg-linear-to-br from-slate-900 via-slate-800 to-teal-950 text-white shadow-xl relative overflow-hidden border border-slate-700">

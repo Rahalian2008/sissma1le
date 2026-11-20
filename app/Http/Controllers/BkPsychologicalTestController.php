@@ -228,6 +228,11 @@ class BkPsychologicalTestController extends Controller
             }
         }
 
+        $student->load(['schoolClass', 'psychologicalResults.test']);
+        $vak = $student->psychologicalResults->first(fn ($r) => $r->test?->slug === 'vak');
+        $riasec = $student->psychologicalResults->first(fn ($r) => $r->test?->slug === 'riasec');
+        $gardner = $student->psychologicalResults->first(fn ($r) => $r->test?->slug === 'gardner');
+
         $synthesis = $aiService->analyzeHolistic360($student);
         $report = $synthesis['report'] ?? [];
         $provider = $synthesis['provider'] ?? 'AI Engine';
@@ -237,7 +242,42 @@ class BkPsychologicalTestController extends Controller
         $headmaster = Teacher::getHeadmaster();
         $counselor = Teacher::getBkCoordinator();
 
-        return view('bk.psychological.holistic', compact('student', 'report', 'provider', 'model', 'school', 'headmaster', 'counselor'));
+        return view('bk.psychological.holistic', compact('student', 'report', 'provider', 'model', 'school', 'headmaster', 'counselor', 'vak', 'riasec', 'gardner'));
+    }
+
+    /**
+     * Cetak Laporan Komprehensif Asesmen Psikologis & Peminatan Terpadu (Format Cetak Formal A4).
+     */
+    public function holisticPrint(Student $student, BkPsychologicalAiAnalysisService $aiService): View
+    {
+        $user = Auth::user();
+        if ($user && $user->isStudent() && $user->student && (int) $user->student->id !== (int) $student->id) {
+            abort(403, 'Akses terbatas untuk profil diri ananda sendiri.');
+        }
+
+        $isHomeroomOnly = $user && $user->hasRole('wali_kelas') && ! $user->hasAnyRole(['admin', 'super_admin', 'koordinator_bk', 'guru_bk', 'bk', 'kepala_sekolah']);
+        if ($isHomeroomOnly) {
+            $homeroomClass = $user->teacher?->homeroomClass ?? $user->getHomeroomClasses()->first();
+            if ($homeroomClass && $student->class_id !== $homeroomClass->id) {
+                abort(403, 'Akses terbatas untuk peserta didik di kelas binaan Anda.');
+            }
+        }
+
+        $student->load(['schoolClass', 'psychologicalResults.test']);
+        $vak = $student->psychologicalResults->first(fn ($r) => $r->test?->slug === 'vak');
+        $riasec = $student->psychologicalResults->first(fn ($r) => $r->test?->slug === 'riasec');
+        $gardner = $student->psychologicalResults->first(fn ($r) => $r->test?->slug === 'gardner');
+
+        $synthesis = $aiService->analyzeHolistic360($student);
+        $report = $synthesis['report'] ?? [];
+        $provider = $synthesis['provider'] ?? 'AI Engine';
+        $model = $synthesis['model'] ?? 'default';
+
+        $school = SchoolIdentity::first();
+        $headmaster = Teacher::getHeadmaster();
+        $counselor = Teacher::getBkCoordinator();
+
+        return view('bk.psychological.holistic_print', compact('student', 'report', 'provider', 'model', 'school', 'headmaster', 'counselor', 'vak', 'riasec', 'gardner'));
     }
 
     /**

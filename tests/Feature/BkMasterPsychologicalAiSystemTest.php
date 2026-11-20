@@ -143,3 +143,14 @@ test('counselor can access grand holistic 360 psychological synthesis for a stud
     $response->assertSee('Sintesis Holistik Potensi');
     $response->assertSee($this->student->name);
 });
+
+test('counselor can access grand holistic 360 official printable document with tripartite signatures', function () {
+    $response = $this->actingAs($this->counselorUser)
+        ->get(route('bk.psychological.holistic.print', $this->student));
+
+    $response->assertStatus(200);
+    $response->assertSee('LAPORAN KOMPREHENSIF ASESMEN PSIKOLOGIS');
+    $response->assertSee('Matriks Integrasi Hasil Pengukuran Tri-Dimensi');
+    $response->assertSee('Guru Bimbingan Konseling');
+    $response->assertSee('Kepala SMA Negeri 1 Lengkong');
+});
