@@ -636,21 +636,31 @@ PROMPT;
             $aiResponse = $this->callGemini($prompt);
 
             if ($aiResponse && ! empty($aiResponse['data']) && is_array($aiResponse['data'])) {
+                $sanitizedReport = $this->sanitizeMasterReportStructure($aiResponse['data'], [
+                    'test_slug' => 'holistic_360',
+                    'test_name' => 'Asesmen Psikologis 360° Siswa',
+                    'dominant' => $riasec?->dominant_dimension ?? ($gardner?->dominant_dimension ?? 'HOLISTIK'),
+                    'secondary' => $vak?->dominant_dimension ?? 'ADAPTIF',
+                    'student_name' => $student->name,
+                    'student_class' => $student->schoolClass?->name ?? 'Fase E/F',
+                    'percentages' => $riasec?->dimension_scores['percentages'] ?? ($gardner?->dimension_scores['percentages'] ?? []),
+                    'raw_scores' => [],
+                ]);
+
+                $sanitizedReport['rekam_jejak_sekolah'] = [
+                    'attendance_rate' => (float) $context['attendance_rate'],
+                    'violation_points' => (int) $context['violation_points'],
+                    'achievement_points' => (int) $context['achievement_points'],
+                    'kategori' => ($context['attendance_rate'] >= 90 && $context['violation_points'] === 0) ? 'Sangat Baik' : 'Baik',
+                    'keterangan' => 'Disinkronkan otomatis dari Rekam Presensi Harian dan Buku Catatan Pelanggaran Kesiswaan/BK (Bukan butir soal psikotes).',
+                ];
+
                 return [
                     'success' => true,
                     'provider' => 'Google Gemini AI ('.$aiResponse['model'].')',
                     'model' => $aiResponse['model'],
                     'is_online_ai' => true,
-                    'report' => $this->sanitizeMasterReportStructure($aiResponse['data'], [
-                        'test_slug' => 'holistic_360',
-                        'test_name' => 'Asesmen Psikologis 360° Siswa',
-                        'dominant' => $riasec?->dominant_dimension ?? ($gardner?->dominant_dimension ?? 'HOLISTIK'),
-                        'secondary' => $vak?->dominant_dimension ?? 'ADAPTIF',
-                        'student_name' => $student->name,
-                        'student_class' => $student->schoolClass?->name ?? 'Fase E/F',
-                        'percentages' => $riasec?->dimension_scores['percentages'] ?? ($gardner?->dimension_scores['percentages'] ?? []),
-                        'raw_scores' => [],
-                    ]),
+                    'report' => $sanitizedReport,
                 ];
             }
         }
@@ -725,19 +735,18 @@ PROMPT;
                 'kategori' => 'Tinggi',
                 'interpretasi' => "Memiliki keunggulan dalam persepsi ruang, komposisi estetika, serta perancangan media komunikasi visual fungsional.",
             ],
-            [
-                'dimensi' => 'Karakter & Presensi Sekolah',
-                'nama_dimensi' => 'Kedisiplinan & Budaya Sekolah',
-                'skor' => (int) $ctx['attendance_rate'],
-                'persentase' => (float) $ctx['attendance_rate'],
-                'kategori' => 'Sangat Baik',
-                'interpretasi' => "Kehadiran presensi {$ctx['attendance_rate']}% dengan catatan pelanggaran nihil/sangat rendah (0 pts), menunjukkan komitmen belajar yang stabil.",
-            ],
         ];
 
         return [
             'ringkasan_eksekutif' => $summary,
             'hasil_penilaian_keseluruhan' => $overall,
+            'rekam_jejak_sekolah' => [
+                'attendance_rate' => (float) $ctx['attendance_rate'],
+                'violation_points' => (int) $ctx['violation_points'],
+                'achievement_points' => (int) $ctx['achievement_points'],
+                'kategori' => ($ctx['attendance_rate'] >= 90 && $ctx['violation_points'] === 0) ? 'Sangat Baik' : 'Baik',
+                'keterangan' => 'Disinkronkan otomatis dari Rekam Presensi Harian dan Buku Catatan Pelanggaran Kesiswaan/BK (Bukan butir soal psikotes).',
+            ],
             'prioritas_keputusan' => [
                 'level' => 'PRIORITAS_2',
                 'label' => 'PENGUATAN KEMAMPUAN TERPADU',
