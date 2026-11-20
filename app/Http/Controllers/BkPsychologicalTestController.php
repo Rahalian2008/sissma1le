@@ -9,6 +9,7 @@ use App\Models\SchoolClass;
 use App\Models\SchoolIdentity;
 use App\Models\Student;
 use App\Models\Teacher;
+use App\Services\BkPsychologicalAiAnalysisService;
 use App\Services\BkPsychologicalTestService;
 use Database\Seeders\BkPsychologicalTestSeeder;
 use Illuminate\Http\RedirectResponse;
@@ -200,13 +201,43 @@ class BkPsychologicalTestController extends Controller
 
         $result->load(['student.schoolClass', 'test']);
 
-        // Jika belum ada analisis AI dan action plan, generate otomatis
-        if (empty($result->action_plan) || empty($result->scientific_sources)) {
+        // Jika belum ada analisis AI master dan action plan, generate otomatis
+        if (empty($result->ai_report) || empty($result->action_plan) || empty($result->scientific_sources)) {
             $this->testService->generateAiAnalysisForResult($result);
             $result->refresh();
         }
 
         return view('bk.psychological.result', compact('result'));
+    }
+
+    /**
+     * Laporan Grand Holistic 360 Asesmen Psikologis & Rekam Jejak Terpadu Siswa
+     */
+    public function holistic360(Student $student, BkPsychologicalAiAnalysisService $aiService): View
+    {
+        $user = Auth::user();
+        if ($user && $user->isStudent() && $user->student && (int) $user->student->id !== (int) $student->id) {
+            abort(403, 'Akses terbatas untuk profil diri ananda sendiri.');
+        }
+
+        $isHomeroomOnly = $user && $user->hasRole('wali_kelas') && ! $user->hasAnyRole(['admin', 'super_admin', 'koordinator_bk', 'guru_bk', 'bk', 'kepala_sekolah']);
+        if ($isHomeroomOnly) {
+            $homeroomClass = $user->teacher?->homeroomClass ?? $user->getHomeroomClasses()->first();
+            if ($homeroomClass && $student->class_id !== $homeroomClass->id) {
+                abort(403, 'Akses terbatas untuk peserta didik di kelas binaan Anda.');
+            }
+        }
+
+        $synthesis = $aiService->analyzeHolistic360($student);
+        $report = $synthesis['report'] ?? [];
+        $provider = $synthesis['provider'] ?? 'AI Engine';
+        $model = $synthesis['model'] ?? 'default';
+
+        $school = SchoolIdentity::first();
+        $headmaster = Teacher::getHeadmaster();
+        $counselor = Teacher::getBkCoordinator();
+
+        return view('bk.psychological.holistic', compact('student', 'report', 'provider', 'model', 'school', 'headmaster', 'counselor'));
     }
 
     /**

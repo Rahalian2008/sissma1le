@@ -371,6 +371,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/psikotes/ambil/{slug}', [BkPsychologicalTestController::class, 'submitTest'])->name('psychological.submit');
         Route::get('/psikotes/hasil/{result}', [BkPsychologicalTestController::class, 'result'])->name('psychological.result');
         Route::get('/psikotes/hasil/{result}/print', [BkPsychologicalTestController::class, 'printResult'])->name('psychological.print');
+        Route::get('/psikotes/holistik/{student}', [BkPsychologicalTestController::class, 'holistic360'])->name('psychological.holistic');
         Route::post('/psikotes/hasil/{result}/ai-analysis', [BkPsychologicalTestController::class, 'generateAi'])->name('psychological.generate-ai');
         Route::delete('/psikotes/hasil/{result}', [BkPsychologicalTestController::class, 'destroyResult'])->name('psychological.destroy');
         Route::post('/psikotes/demo-seed', [BkPsychologicalTestController::class, 'demoSeed'])->name('psychological.demo-seed');

@@ -8,6 +8,12 @@ use App\Models\Student;
 
 class BkPsychologicalTestService
 {
+    public function __construct(
+        protected ?BkPsychologicalAiAnalysisService $aiService = null
+    ) {
+        $this->aiService = $this->aiService ?: new BkPsychologicalAiAnalysisService;
+    }
+
     /**
      * Process student answers and generate comprehensive AI psychometric analysis,
      * item diagnostics, follow-up action plan (RTL BK), and authoritative scientific references.
@@ -15,7 +21,6 @@ class BkPsychologicalTestService
     public function evaluateTest(BkPsychologicalTest $test, Student $student, array $answers): BkPsychologicalTestResult
     {
         $test->load('questions');
-        $questions = $test->questions->keyBy('id');
 
         $dimensionScores = [];
         $dimensionMaxPossible = [];
@@ -50,51 +55,23 @@ class BkPsychologicalTestService
 
         $hollandCode = null;
         $profileLabel = '';
-        $analysisSummary = '';
-        $careerRecommendations = [];
-        $studyRecommendations = '';
-        $actionPlan = [];
-        $scientificSources = [];
 
         if ($test->slug === 'vak') {
             $profileLabel = 'Gaya Belajar '.ucfirst(strtolower($dominant)).' Dominan';
-            if ($secondary && abs($dimensionScores[$dominant] - $dimensionScores[$secondary]) <= 2) {
+            if ($secondary && abs(($dimensionScores[$dominant] ?? 0) - ($dimensionScores[$secondary] ?? 0)) <= 2) {
                 $profileLabel = 'Gaya Belajar Multimodal ('.ucfirst(strtolower($dominant)).'-'.ucfirst(strtolower($secondary)).')';
             }
-
-            $vakData = $this->generateVakAnalysis($dominant, $secondary, $dimensionPercentages, $itemAnalysis, $student);
-            $analysisSummary = $vakData['summary'];
-            $studyRecommendations = $vakData['study_tips'];
-            $careerRecommendations = $vakData['careers'];
-            $actionPlan = $vakData['action_plan'];
-            $scientificSources = $vakData['scientific_sources'];
         } elseif ($test->slug === 'riasec') {
             $hollandCode = substr($dominant.$secondary.$tertiary, 0, 3);
             $profileLabel = "Tipe Karier Holland: {$hollandCode}";
-            $riasecData = $this->generateRiasecAnalysis($hollandCode, $dominant, $secondary, $tertiary, $dimensionPercentages, $itemAnalysis, $student);
-            $analysisSummary = $riasecData['summary'];
-            $studyRecommendations = $riasecData['study_tips'];
-            $careerRecommendations = $riasecData['careers'];
-            $actionPlan = $riasecData['action_plan'];
-            $scientificSources = $riasecData['scientific_sources'];
         } elseif ($test->slug === 'gardner') {
             $profileLabel = 'Kecerdasan Majemuk Dominan: '.str_replace('_', ' ', $dominant);
-            $gardnerData = $this->generateGardnerAnalysis($dominant, $secondary, $tertiary, $dimensionPercentages, $itemAnalysis, $student);
-            $analysisSummary = $gardnerData['summary'];
-            $studyRecommendations = $gardnerData['study_tips'];
-            $careerRecommendations = $gardnerData['careers'];
-            $actionPlan = $gardnerData['action_plan'];
-            $scientificSources = $gardnerData['scientific_sources'];
         } else {
             $profileLabel = 'Hasil Evaluasi Psikotes '.strtoupper($dominant);
-            $analysisSummary = "Siswa menunjukkan dominansi pada aspek {$dominant} dengan capaian persentase {$dimensionPercentages[$dominant]}%.";
-            $studyRecommendations = 'Dianjurkan untuk mengoptimalkan potensi dengan pendampingan guru BK dan wali kelas.';
-            $actionPlan = $this->generateGenericActionPlan($dominant, $student);
-            $scientificSources = $this->getGenericScientificSources();
         }
 
-        // Simpan hasil tes lengkap dengan hasil analisis AI dan tindak lanjut
-        return BkPsychologicalTestResult::create([
+        // Simpan hasil tes awal dengan skor pasti terhitung secara deterministik
+        $result = BkPsychologicalTestResult::create([
             'test_id' => $test->id,
             'student_id' => $student->id,
             'taken_at' => now(),
@@ -108,15 +85,20 @@ class BkPsychologicalTestService
             'tertiary_dimension' => $tertiary,
             'holland_code' => $hollandCode,
             'profile_label' => $profileLabel,
-            'analysis_summary' => $analysisSummary,
+            'analysis_summary' => ! empty($dominant)
+                ? "Evaluasi awal menunjukkan orientasi dominan pada {$dominant} (".($dimensionPercentages[$dominant] ?? 0).'%).'
+                : 'Evaluasi awal asesmen psikotes.',
             'item_analysis' => $itemAnalysis,
-            'career_recommendations' => $careerRecommendations,
-            'study_recommendations' => $studyRecommendations,
-            'action_plan' => $actionPlan,
-            'scientific_sources' => $scientificSources,
+            'career_recommendations' => [],
+            'study_recommendations' => '',
+            'action_plan' => [],
+            'scientific_sources' => $this->resolveScientificSources($test->slug),
             'status' => 'SUBMITTED',
             'ai_analyzed_at' => now(),
         ]);
+
+        // Jalankan sintesis Master AI (Gemini / Heuristik)
+        return $this->generateAiAnalysisForResult($result);
     }
 
     /**
@@ -155,49 +137,47 @@ class BkPsychologicalTestService
         $itemAnalysis = $this->analyzeIndividualItems($test, $answers);
 
         $hollandCode = $result->holland_code;
-        $profileLabel = $result->profile_label;
-        $analysisSummary = '';
-        $careerRecommendations = [];
-        $studyRecommendations = '';
-        $actionPlan = [];
-        $scientificSources = [];
-
-        if ($test->slug === 'vak') {
-            $profileLabel = 'Gaya Belajar '.ucfirst(strtolower($dominant)).' Dominan';
-            if ($secondary && abs(($dimensionScores[$dominant] ?? 0) - ($dimensionScores[$secondary] ?? 0)) <= 2) {
-                $profileLabel = 'Gaya Belajar Multimodal ('.ucfirst(strtolower($dominant)).'-'.ucfirst(strtolower($secondary)).')';
-            }
-
-            $vakData = $this->generateVakAnalysis($dominant, $secondary, $dimensionPercentages, $itemAnalysis, $student);
-            $analysisSummary = $vakData['summary'];
-            $studyRecommendations = $vakData['study_tips'];
-            $careerRecommendations = $vakData['careers'];
-            $actionPlan = $vakData['action_plan'];
-            $scientificSources = $vakData['scientific_sources'];
-        } elseif ($test->slug === 'riasec') {
+        if ($test->slug === 'riasec' && empty($hollandCode)) {
             $hollandCode = substr($dominant.$secondary.$tertiary, 0, 3);
-            $profileLabel = "Tipe Karier Holland: {$hollandCode}";
-            $riasecData = $this->generateRiasecAnalysis($hollandCode, $dominant, $secondary, $tertiary, $dimensionPercentages, $itemAnalysis, $student);
-            $analysisSummary = $riasecData['summary'];
-            $studyRecommendations = $riasecData['study_tips'];
-            $careerRecommendations = $riasecData['careers'];
-            $actionPlan = $riasecData['action_plan'];
-            $scientificSources = $riasecData['scientific_sources'];
-        } elseif ($test->slug === 'gardner') {
-            $profileLabel = 'Kecerdasan Majemuk Dominan: '.str_replace('_', ' ', $dominant);
-            $gardnerData = $this->generateGardnerAnalysis($dominant, $secondary, $tertiary, $dimensionPercentages, $itemAnalysis, $student);
-            $analysisSummary = $gardnerData['summary'];
-            $studyRecommendations = $gardnerData['study_tips'];
-            $careerRecommendations = $gardnerData['careers'];
-            $actionPlan = $gardnerData['action_plan'];
-            $scientificSources = $gardnerData['scientific_sources'];
-        } else {
-            $profileLabel = 'Hasil Evaluasi Psikotes '.strtoupper($dominant);
-            $analysisSummary = "Siswa menunjukkan dominansi pada aspek {$dominant} dengan capaian persentase {$dimensionPercentages[$dominant]}%.";
-            $studyRecommendations = 'Dianjurkan untuk mengoptimalkan potensi dengan pendampingan guru BK dan wali kelas.';
-            $actionPlan = $this->generateGenericActionPlan($dominant, $student);
-            $scientificSources = $this->getGenericScientificSources();
         }
+
+        $profileLabel = $result->profile_label;
+        if (empty($profileLabel)) {
+            if ($test->slug === 'vak') {
+                $profileLabel = 'Gaya Belajar '.ucfirst(strtolower($dominant)).' Dominan';
+                if ($secondary && abs(($dimensionScores[$dominant] ?? 0) - ($dimensionScores[$secondary] ?? 0)) <= 2) {
+                    $profileLabel = 'Gaya Belajar Multimodal ('.ucfirst(strtolower($dominant)).'-'.ucfirst(strtolower($secondary)).')';
+                }
+            } elseif ($test->slug === 'riasec') {
+                $profileLabel = "Tipe Karier Holland: {$hollandCode}";
+            } elseif ($test->slug === 'gardner') {
+                $profileLabel = 'Kecerdasan Majemuk Dominan: '.str_replace('_', ' ', $dominant);
+            } else {
+                $profileLabel = 'Hasil Evaluasi Psikotes '.strtoupper($dominant);
+            }
+        }
+
+        // Panggil Master AI Service (Google Gemini dengan Fallback Heuristik)
+        $aiSynthesis = $this->aiService->analyzeTestResult($result);
+        $masterReport = $aiSynthesis['report'] ?? [];
+
+        // Konversi prodi AI ke format career_recommendations
+        $careerRecommendations = [];
+        if (! empty($masterReport['rekomendasi_perguruan_tinggi_dan_karir']['program_studi'])) {
+            foreach ($masterReport['rekomendasi_perguruan_tinggi_dan_karir']['program_studi'] as $ps) {
+                $careerRecommendations[] = [
+                    'major' => $ps['jurusan'] ?? ($ps['prodi'] ?? 'Program Studi Terkait'),
+                    'field' => $ps['fakultas'] ?? ($ps['bidang'] ?? 'Rumpun Keilmuan'),
+                    'prospect' => $ps['alasan'] ?? 'Peluang karier unggulan sesuai minat bakat.',
+                ];
+            }
+        }
+
+        $studyRecommendations = $masterReport['rekomendasi_pendidikan']['strategi_belajar_efektif']
+            ?? 'Optimalkan cara belajar sesuai modalitas dominan dengan pendampingan guru BK dan wali kelas.';
+
+        $actionPlan = $masterReport['rencana_tindak_lanjut'] ?? [];
+        $scientificSources = $this->resolveScientificSources($test->slug);
 
         $result->update([
             'profile_label' => $profileLabel,
@@ -209,16 +189,74 @@ class BkPsychologicalTestService
                 'raw' => $dimensionScores,
                 'percentages' => $dimensionPercentages,
             ],
-            'analysis_summary' => $analysisSummary,
+            'analysis_summary' => $masterReport['ringkasan_eksekutif'] ?? $result->analysis_summary,
             'item_analysis' => $itemAnalysis,
             'career_recommendations' => $careerRecommendations,
             'study_recommendations' => $studyRecommendations,
             'action_plan' => $actionPlan,
             'scientific_sources' => $scientificSources,
+            'ai_report' => $masterReport,
+            'ai_provider' => $aiSynthesis['provider'] ?? 'Google Gemini AI',
+            'ai_model' => $aiSynthesis['model'] ?? 'gemini-2.5-flash',
+            'priority_level' => $masterReport['prioritas_keputusan']['level'] ?? 'PRIORITAS_1',
+            'priority_label' => $masterReport['prioritas_keputusan']['label'] ?? 'PENGEMBANGAN POTENSI',
+            'executive_summary' => $masterReport['ringkasan_eksekutif'] ?? $result->analysis_summary,
             'ai_analyzed_at' => now(),
         ]);
 
         return $result;
+    }
+
+    /**
+     * Sumber referensi ilmiah teoretis dan regulasi baku untuk setiap instrumen
+     */
+    public function resolveScientificSources(string $slug): array
+    {
+        return match ($slug) {
+            'vak' => [
+                'theory_name' => 'Modalitas Sensorik Pembelajaran VAK / VARK',
+                'pioneers' => 'Walter Burke Barbe (1979) & Neil D. Fleming (1987, 2001).',
+                'primary_literature' => [
+                    'Fleming, N. D., & Mills, C. (1992). Not Another Inventory, Rather a Catalyst for Reflection. To Improve the Academy, 11, 137-155.',
+                    'Barbe, W. B., & Swassing, R. H. (1979). Teaching Through Modality Strengths: Concepts and Practices. Zaner-Bloser.',
+                    'DePorter, B., & Hernacki, M. (1992). Quantum Learning: Unleashing the Genius in You. Dell Publishing.',
+                ],
+                'regulatory_framework' => [
+                    'Panduan Operasional Penyelenggaraan Bimbingan dan Konseling (POP-BK) SMA, Kemendikbud RI (Bidang Bimbingan Belajar).',
+                    'Standar Kompetensi Kemandirian Peserta Didik (SKKPD) Asosiasi Bimbingan dan Konseling Indonesia (ABKIN) - Aspek Kematangan Intelektual.',
+                    'Panduan Pembelajaran dan Asesmen (PPA) Kurikulum Merdeka / Kurikulum Nasional 2025, BSKAP Kemendikbudristek.',
+                ],
+            ],
+            'riasec' => [
+                'theory_name' => 'Teori Tipologi Kepribadian Vokasional & Pilihan Karier Holland RIASEC',
+                'pioneers' => 'Prof. John L. Holland, Ph.D. (Johns Hopkins University, 1959, 1997).',
+                'primary_literature' => [
+                    'Holland, J. L. (1997). Making Vocational Choices: A Theory of Vocational Personalities and Work Environments (3rd ed.). Psychological Assessment Resources.',
+                    'Gottfredson, G. D., & Holland, J. L. (1996). Dictionary of Holland Occupational Codes (3rd ed.). Psychological Assessment Resources.',
+                    'Nauta, M. M. (2010). The Development, Evolution, and Status of Holland’s Theory of Vocational Personalities: 60 Years of Impact. Journal of Career Assessment, 18(1), 11-22.',
+                ],
+                'regulatory_framework' => [
+                    'Panduan Operasional Penyelenggaraan Bimbingan dan Konseling (POP-BK) SMA, Kemendikbud RI (Bidang Bimbingan Karier).',
+                    'Pedoman Peminatan Peserta Didik pada Pendidikan Menengah, Ditjen Dikmen Kemendikbud RI.',
+                    'Standar Kompetensi Kemandirian Peserta Didik (SKKPD) ABKIN - Aspek Wawasan dan Kesiapan Karier.',
+                ],
+            ],
+            'gardner' => [
+                'theory_name' => 'Teori Kecerdasan Majemuk (Multiple Intelligences Theory)',
+                'pioneers' => 'Prof. Howard Gardner, Ph.D. (John H. and Elisabeth A. Hobbs Research Professor of Cognition and Education, Harvard Graduate School of Education, 1983, 1999).',
+                'primary_literature' => [
+                    'Gardner, H. (1983). Frames of Mind: The Theory of Multiple Intelligences. Basic Books.',
+                    'Gardner, H. (1999). Intelligence Reframed: Multiple Intelligences for the 21st Century. Basic Books.',
+                    'Armstrong, T. (2009). Multiple Intelligences in the Classroom (3rd ed.). Association for Supervision and Curriculum Development (ASCD).',
+                ],
+                'regulatory_framework' => [
+                    'Panduan Operasional Penyelenggaraan Bimbingan dan Konseling (POP-BK) SMA, Kemendikbud RI (Bidang Bimbingan Pribadi & Belajar).',
+                    'Standar Kompetensi Kemandirian Peserta Didik (SKKPD) ABKIN - Aspek Pengembangan Diri Holistik.',
+                    'Keputusan Kepala BSKAP Kemendikbudristek No. 009/H/KR/2022 tentang Dimensi Profil Pelajar Pancasila.',
+                ],
+            ],
+            default => $this->getGenericScientificSources(),
+        };
     }
 
     /**

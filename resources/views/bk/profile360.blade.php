@@ -12,6 +12,9 @@
             <span class="text-slate-800 dark:text-white font-bold">Profil 360° Siswa</span>
         </div>
         <div class="flex items-center gap-2">
+            <a href="{{ route('bk.psychological.holistic', $student->id) }}" class="px-3.5 py-1.5 rounded-xl bg-indigo-600 text-white font-bold text-xs hover:bg-indigo-700 transition flex items-center gap-1.5 shadow-sm shadow-indigo-600/20" title="Buka Grand Laporan Asesmen Psikologis 360° AI">
+                <span>🧠 Grand Asesmen 360° AI</span>
+            </a>
             <a href="{{ route('bk.counseling.create', ['student_id' => $student->id]) }}" class="px-3 py-1.5 rounded-xl bg-emerald-600 text-white font-bold text-xs hover:bg-emerald-700 transition">
                 + Tambah Sesi Konseling
             </a>

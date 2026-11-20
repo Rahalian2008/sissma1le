@@ -29,6 +29,12 @@ class BkPsychologicalTestResult extends Model
         'study_recommendations',
         'action_plan',
         'scientific_sources',
+        'ai_report',
+        'ai_provider',
+        'ai_model',
+        'priority_level',
+        'priority_label',
+        'executive_summary',
         'counselor_notes',
         'status',
         'ai_analyzed_at',
@@ -46,6 +52,7 @@ class BkPsychologicalTestResult extends Model
         'career_recommendations' => 'array',
         'action_plan' => 'array',
         'scientific_sources' => 'array',
+        'ai_report' => 'array',
     ];
 
     public function test(): BelongsTo
