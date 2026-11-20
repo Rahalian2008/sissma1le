@@ -235,25 +235,32 @@
         </div>
     </div>
 
-    <!-- Tanda Tangan Resmi 3 Pihak -->
+    @php
+        $headmasterName = data_get($headmaster, 'name', 'Pian Sopian, S.Pd., M.M.Pd');
+        $headmasterNip = data_get($headmaster, 'nip', '198009132008011005');
+        $counselorName = data_get($counselor, 'name', 'Ida Marttin Maolidah SE, SP.,M.Pd.');
+        $counselorNip = data_get($counselor, 'nip', '197803102008012006');
+    @endphp
+
+    <!-- Tanda Tangan Resmi 3 Pihak (Posisi Ditukar Sesuai Permintaan) -->
     <table class="signature-table">
         <tr>
-            <td>
+            <td style="width: 32%;">
                 Mengetahui,<br>
                 Orang Tua / Wali Murid<br><br><br><br>
                 ( .................................................. )
             </td>
-            <td>
-                Lengkong, {{ now()->translatedFormat('d F Y') }}<br>
-                Guru Bimbingan Konseling,<br><br><br><br>
-                <strong>{{ $counselor?->name ?? 'Koordinator BK' }}</strong><br>
-                NIP. {{ $counselor?->nip ?? '..............................' }}
-            </td>
-            <td>
+            <td style="width: 36%;">
                 Menyetujui,<br>
                 Kepala SMA Negeri 1 Lengkong<br><br><br><br>
-                <strong>{{ $headmaster?->name ?? 'Kepala Sekolah' }}</strong><br>
-                NIP. {{ $headmaster?->nip ?? '..............................' }}
+                <strong>{{ $headmasterName }}</strong><br>
+                NIP. {{ $headmasterNip }}
+            </td>
+            <td style="width: 32%;">
+                Lengkong, {{ now()->translatedFormat('d F Y') }}<br>
+                Koordinator BK,<br><br><br><br>
+                <strong>{{ $counselorName }}</strong><br>
+                NIP. {{ $counselorNip }}
             </td>
         </tr>
     </table>

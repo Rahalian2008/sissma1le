@@ -130,7 +130,7 @@ test('print page renders official A4 layout with letterhead and signatures', fun
 
     $response->assertStatus(200);
     $response->assertSee('LAPORAN ASESMEN PSIKOLOGIS');
-    $response->assertSee('Guru Bimbingan Konseling');
+    $response->assertSee('Koordinator BK');
     $response->assertSee('Kepala SMA Negeri 1 Lengkong');
 });
 
@@ -151,6 +151,6 @@ test('counselor can access grand holistic 360 official printable document with t
     $response->assertStatus(200);
     $response->assertSee('LAPORAN KOMPREHENSIF ASESMEN PSIKOLOGIS');
     $response->assertSee('Matriks Integrasi Hasil Pengukuran Tri-Dimensi');
-    $response->assertSee('Guru Bimbingan Konseling');
+    $response->assertSee('Koordinator BK');
     $response->assertSee('Kepala SMA Negeri 1 Lengkong');
 });
