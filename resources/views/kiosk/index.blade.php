@@ -149,6 +149,15 @@
             <button type="button" onclick="goToSlide(8)" id="pill-slide-8" class="slide-nav-pill px-2 py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap text-[11px]">
                 <span>9. Guru &amp; TU</span>
             </button>
+            <button type="button" onclick="goToSlide(9)" id="pill-slide-9" class="slide-nav-pill px-2 py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap text-[11px]">
+                <span>10. Perpus</span>
+            </button>
+            <button type="button" onclick="goToSlide(10)" id="pill-slide-10" class="slide-nav-pill px-2 py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap text-[11px]">
+                <span>11. BK</span>
+            </button>
+            <button type="button" onclick="goToSlide(11)" id="pill-slide-11" class="slide-nav-pill px-2 py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap text-[11px]">
+                <span>12. Tamu</span>
+            </button>
         </div>
 
         <!-- Controls: Play/Pause, Prev/Next, Fullscreen, Clock -->
@@ -1409,6 +1418,453 @@
             </div>
         </section>
 
+        <!-- =========================================================
+             SLIDE 10: PERPUSTAKAAN & LITERASI DIGITAL (INDEX 9)
+             ========================================================= -->
+        <section id="slide-9" class="hidden flex-col h-full min-h-0 overflow-hidden">
+            <!-- Header Slide -->
+            <div class="flex items-center justify-between pb-2 shrink-0">
+                <div class="flex items-center gap-2.5">
+                    <span class="px-2 py-0.5 rounded-md bg-indigo-500/20 text-indigo-400 font-mono font-bold text-xs">10</span>
+                    <div>
+                        <h2 class="text-sm sm:text-base font-black text-white flex items-center gap-2">
+                            <span>Perpustakaan &amp; Literasi Digital</span>
+                            <span class="text-slate-500">&bull;</span>
+                            <span class="text-xs font-semibold text-indigo-300">Pusat Sumber Belajar &amp; Membaca Siswa</span>
+                        </h2>
+                        <p class="text-[10px] text-slate-400">Statistik pengunjung harian, katalog buku terfavorit, dan peminjaman buku aktif</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                        📚 E-Library SMA1LE
+                    </span>
+                    <a href="{{ route('library.guest_book.index') }}" target="_blank" class="px-2.5 py-1 rounded-lg bg-indigo-600/30 hover:bg-indigo-600 text-indigo-200 text-[11px] font-bold transition flex items-center gap-1 border border-indigo-500/30">
+                        <span>Buka Kios Perpus &rarr;</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Content Grid -->
+            <div class="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-3.5 overflow-hidden pt-1">
+                <!-- Left (7 Cols): KPI Cards + Popular Books Collection -->
+                <div class="lg:col-span-7 flex flex-col h-full min-h-0 gap-3">
+                    <!-- KPI Cards (4 Cards) -->
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 shrink-0">
+                        <div class="glass-panel p-2.5 rounded-2xl border border-white/5 flex items-center gap-2.5">
+                            <div class="w-8 h-8 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-base shrink-0 font-bold">
+                                👥
+                            </div>
+                            <div>
+                                <span class="text-[9.5px] text-slate-400 font-bold block">Pengunjung Hari Ini</span>
+                                <span id="libKioskVisitorsToday" class="text-base font-black text-white font-mono leading-none">{{ $data['library']['total_today'] ?? 0 }}</span>
+                                <span class="text-[9px] text-cyan-300 block">Orang</span>
+                            </div>
+                        </div>
+
+                        <div class="glass-panel p-2.5 rounded-2xl border border-white/5 flex items-center gap-2.5">
+                            <div class="w-8 h-8 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-base shrink-0 font-bold">
+                                📚
+                            </div>
+                            <div>
+                                <span class="text-[9.5px] text-slate-400 font-bold block">Total Judul Buku</span>
+                                <span class="text-base font-black text-white font-mono leading-none">{{ number_format($data['library']['total_books'] ?? 0) }}</span>
+                                <span class="text-[9px] text-indigo-300 block">Katalog</span>
+                            </div>
+                        </div>
+
+                        <div class="glass-panel p-2.5 rounded-2xl border border-white/5 flex items-center gap-2.5">
+                            <div class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-base shrink-0 font-bold">
+                                📖
+                            </div>
+                            <div>
+                                <span class="text-[9.5px] text-slate-400 font-bold block">Eksemplar Tersedia</span>
+                                <span class="text-base font-black text-white font-mono leading-none">{{ number_format($data['library']['available_copies'] ?? 0) }}</span>
+                                <span class="text-[9px] text-emerald-300 block">Buku Siap Baca</span>
+                            </div>
+                        </div>
+
+                        <div class="glass-panel p-2.5 rounded-2xl border border-white/5 flex items-center gap-2.5">
+                            <div class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-base shrink-0 font-bold">
+                                🔄
+                            </div>
+                            <div>
+                                <span class="text-[9.5px] text-slate-400 font-bold block">Peminjaman Aktif</span>
+                                <span class="text-base font-black text-white font-mono leading-none">{{ $data['library']['active_loans'] ?? 0 }}</span>
+                                <span class="text-[9px] text-amber-300 block">Sedang Dipinjam</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Koleksi Buku Terpopuler & Paling Banyak Dibaca -->
+                    <div class="flex-1 min-h-0 glass-panel rounded-2xl p-3 sm:p-3.5 border border-white/5 flex flex-col overflow-hidden">
+                        <div class="flex items-center justify-between pb-2 border-b border-white/5 shrink-0">
+                            <h3 class="text-xs sm:text-sm font-black text-white flex items-center gap-2">
+                                <span>⭐</span>
+                                <span>Koleksi Buku Terpopuler &amp; Paling Banyak Dibaca</span>
+                            </h3>
+                            <span class="text-[10px] text-slate-400">Rekomendasi Pemustaka</span>
+                        </div>
+                        <div class="flex-1 min-h-0 grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-2.5 pt-2.5 overflow-y-auto kiosk-scroll">
+                            @forelse($data['library']['popular_books'] ?? [] as $book)
+                                <div class="bg-slate-900/80 rounded-xl p-2.5 border border-white/5 flex flex-col justify-between hover:border-indigo-500/40 transition">
+                                    <div class="space-y-1.5">
+                                        <div class="flex items-start justify-between gap-1.5">
+                                            <span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 truncate">
+                                                {{ $book['category'] }}
+                                            </span>
+                                            <span class="text-[9px] font-mono text-emerald-400 shrink-0 font-bold">
+                                                Sisa: {{ $book['available'] }}
+                                            </span>
+                                        </div>
+                                        <h4 class="text-xs font-bold text-white line-clamp-2 leading-snug" title="{{ $book['title'] }}">
+                                            {{ $book['title'] }}
+                                        </h4>
+                                        <p class="text-[10px] text-slate-400 truncate">{{ $book['author'] }}</p>
+                                    </div>
+                                    <div class="pt-2 mt-1 border-t border-white/5 flex items-center justify-between text-[9.5px] text-slate-500">
+                                        <span>Total: {{ $book['total'] }} Eks</span>
+                                        <span class="text-indigo-400 font-semibold">Tersedia</span>
+                                    </div>
+                                </div>
+                            @empty
+                                <div class="col-span-3 text-center py-8 text-slate-500 text-xs italic">
+                                    Belum ada data buku populer.
+                                </div>
+                            @endforelse
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right (5 Cols): Log Pengunjung Perpustakaan Terkini -->
+                <div class="lg:col-span-5 glass-panel rounded-2xl p-3 sm:p-3.5 border border-white/5 flex flex-col h-full min-h-0 overflow-hidden">
+                    <div class="flex items-center justify-between pb-2 border-b border-white/5 shrink-0">
+                        <div class="flex items-center gap-2">
+                            <span class="p-1.5 rounded-lg bg-emerald-500/20 text-emerald-400 text-xs">📋</span>
+                            <div>
+                                <h3 class="text-xs sm:text-sm font-black text-white">Log Kunjungan Pemustaka</h3>
+                                <p class="text-[10px] text-slate-400">Presensi mandiri perpustakaan terkini</p>
+                            </div>
+                        </div>
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                            Hari Ini: {{ $data['library']['total_today'] ?? 0 }}
+                        </span>
+                    </div>
+
+                    <div class="flex-1 min-h-0 overflow-y-auto kiosk-scroll space-y-2 pt-2.5 pr-1">
+                        @forelse($data['library']['recent_visitors'] ?? [] as $lv)
+                            <div class="p-2.5 rounded-xl bg-slate-900/80 border border-white/5 flex items-center justify-between gap-2.5 hover:border-indigo-500/30 transition">
+                                <div class="flex items-center gap-2.5 min-w-0 flex-1">
+                                    <div class="w-8 h-8 rounded-lg bg-indigo-500/20 text-indigo-300 flex items-center justify-center font-bold text-xs shrink-0">
+                                        {{ $lv['type'] === 'Siswa' ? '🎓' : ($lv['type'] === 'Guru/Tendik' ? '👨‍🏫' : '🏛️') }}
+                                    </div>
+                                    <div class="min-w-0 flex-1">
+                                        <div class="font-extrabold text-xs text-white truncate">{{ $lv['name'] }}</div>
+                                        <div class="text-[10px] text-slate-400 truncate">{{ $lv['class'] }} &bull; <span class="text-indigo-300">{{ $lv['purpose'] }}</span></div>
+                                    </div>
+                                </div>
+                                <span class="font-mono text-[10px] font-bold text-slate-300 bg-slate-950 px-2 py-0.5 rounded border border-white/5 shrink-0">
+                                    {{ $lv['time'] }} WIB
+                                </span>
+                            </div>
+                        @empty
+                            <div class="h-full flex flex-col items-center justify-center text-center py-8 text-slate-500 text-xs space-y-1">
+                                <span class="text-2xl">📖</span>
+                                <span class="font-semibold text-slate-400">Belum ada pengunjung tercatat hari ini.</span>
+                            </div>
+                        @endforelse
+                    </div>
+
+                    <!-- Mini Footer: Info Pojok Baca Digital -->
+                    <div class="pt-2 mt-2 border-t border-white/5 flex items-center justify-between text-[10px] text-slate-400 shrink-0">
+                        <span>💻 Layanan E-Book &amp; OPAC Mandiri</span>
+                        <span class="text-indigo-400 font-semibold">Tersedia di Lab &amp; Kios Perpus</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =========================================================
+             SLIDE 11: BIMBINGAN & KONSELING (BK) (INDEX 10)
+             ========================================================= -->
+        <section id="slide-10" class="hidden flex-col h-full min-h-0 overflow-hidden">
+            <!-- Header Slide -->
+            <div class="flex items-center justify-between pb-2 shrink-0">
+                <div class="flex items-center gap-2.5">
+                    <span class="px-2 py-0.5 rounded-md bg-purple-500/20 text-purple-400 font-mono font-bold text-xs">11</span>
+                    <div>
+                        <h2 class="text-sm sm:text-base font-black text-white flex items-center gap-2">
+                            <span>Bimbingan &amp; Konseling (BK)</span>
+                            <span class="text-slate-500">&bull;</span>
+                            <span class="text-xs font-semibold text-purple-300">Layanan Terpadu &amp; Pengembangan Karir Siswa</span>
+                        </h2>
+                        <p class="text-[10px] text-slate-400">Pusat bimbingan pribadi, sosial, belajar, peminatan karir, dan persiapan masuk perguruan tinggi (SNBP/SNBT)</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                        🤝 Ramah &bull; Aman &bull; Rahasia
+                    </span>
+                </div>
+            </div>
+
+            <!-- Content Grid -->
+            <div class="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-3.5 overflow-hidden pt-1">
+                <!-- Left (7 Cols): 4 Bidang Layanan BK + Alur Layanan Konseling -->
+                <div class="lg:col-span-7 flex flex-col h-full min-h-0 gap-3">
+                    <!-- 4 Bidang Layanan Utama BK Grid -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 shrink-0">
+                        @foreach($data['bk']['fields'] ?? [] as $bf)
+                            <div class="glass-panel p-3 rounded-2xl border border-white/5 space-y-1.5 hover:border-purple-500/40 transition">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-xl">{{ $bf['icon'] }}</span>
+                                        <h3 class="text-xs font-black text-white">{{ $bf['field'] }}</h3>
+                                    </div>
+                                    <span class="px-2 py-0.5 rounded-full text-[9px] font-mono font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                                        {{ $bf['count'] }} Sesi
+                                    </span>
+                                </div>
+                                <p class="text-[10px] text-slate-400 leading-relaxed">{{ $bf['desc'] }}</p>
+                            </div>
+                        @endforeach
+                    </div>
+
+                    <!-- Program Sukses Karir & Kuliah (SNBP, SNBT, Kedinasan) -->
+                    <div class="flex-1 min-h-0 glass-panel rounded-2xl p-3 sm:p-3.5 border border-white/5 flex flex-col justify-between overflow-hidden">
+                        <div class="flex items-center justify-between pb-2 border-b border-white/5 shrink-0">
+                            <h3 class="text-xs sm:text-sm font-black text-white flex items-center gap-2">
+                                <span>🎯</span>
+                                <span>Pendampingan Sukses Studi Lanjut &amp; Karir Masa Depan</span>
+                            </h3>
+                            <span class="text-[10px] font-mono text-purple-300 font-bold">Kelas X, XI, XII</span>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2.5 py-2">
+                            <div class="p-2.5 rounded-xl bg-slate-900/80 border border-white/5 text-center">
+                                <span class="text-lg">🏛️</span>
+                                <h4 class="text-xs font-extrabold text-white mt-1">Jalur SNBP</h4>
+                                <p class="text-[9.5px] text-slate-400 mt-0.5">Pemetaan nilai rapor &amp; portofolio prestasi unggulan</p>
+                            </div>
+                            <div class="p-2.5 rounded-xl bg-slate-900/80 border border-white/5 text-center">
+                                <span class="text-lg">📝</span>
+                                <h4 class="text-xs font-extrabold text-white mt-1">Jalur SNBT-UTBK</h4>
+                                <p class="text-[9.5px] text-slate-400 mt-0.5">Simulasi tes skolastik, penalaran &amp; literasi</p>
+                            </div>
+                            <div class="p-2.5 rounded-xl bg-slate-900/80 border border-white/5 text-center">
+                                <span class="text-lg">👮‍♂️</span>
+                                <h4 class="text-xs font-extrabold text-white mt-1">Kedinasan &amp; Karir</h4>
+                                <p class="text-[9.5px] text-slate-400 mt-0.5">Bimbingan tes fisik, psikotes &amp; peminatan kerja</p>
+                            </div>
+                        </div>
+                        <div class="p-2.5 rounded-xl bg-purple-950/40 border border-purple-500/20 text-purple-200 text-[10px] flex items-center justify-between shrink-0">
+                            <span>💬 Butuh konsultasi pribadi? Siswa dapat mengajukan sesi konsultasi tatap muka atau online melalui SIS-SMA1LE.</span>
+                            <span class="font-bold text-white shrink-0 ml-2">GRATIS &amp; RAHASIA</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right (5 Cols): Tim Guru BK / Konselor & Layanan Curhat Siswa -->
+                <div class="lg:col-span-5 glass-panel rounded-2xl p-3 sm:p-3.5 border border-white/5 flex flex-col h-full min-h-0 justify-between overflow-hidden">
+                    <div class="flex items-center justify-between pb-2 border-b border-white/5 shrink-0">
+                        <div class="flex items-center gap-2">
+                            <span class="p-1.5 rounded-lg bg-purple-500/20 text-purple-400 text-xs">👨‍🏫</span>
+                            <div>
+                                <h3 class="text-xs sm:text-sm font-black text-white">Konselor / Guru BK Sekolah</h3>
+                                <p class="text-[10px] text-slate-400">Siap mendengarkan &amp; mendampingi setiap siswa</p>
+                            </div>
+                        </div>
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                            Ruang BK S1L
+                        </span>
+                    </div>
+
+                    <div class="flex-1 min-h-0 overflow-y-auto kiosk-scroll space-y-2 py-2 pr-1">
+                        @foreach($data['bk']['counselors'] ?? [] as $gc)
+                            <div class="p-2.5 rounded-xl bg-slate-900/80 border border-white/5 flex items-center gap-3 hover:border-purple-500/30 transition">
+                                <div class="w-10 h-10 rounded-xl bg-purple-600/20 border border-purple-500/30 flex items-center justify-center text-purple-300 text-base font-bold shrink-0 overflow-hidden">
+                                    @if(!empty($gc['photo']))
+                                        <img src="{{ $gc['photo'] }}" alt="{{ $gc['name'] }}" class="w-full h-full object-cover">
+                                    @else
+                                        <span>🧑‍🏫</span>
+                                    @endif
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <div class="font-extrabold text-xs text-white truncate">{{ $gc['name'] }}</div>
+                                    <div class="text-[10px] text-purple-300 truncate">{{ $gc['role'] }}</div>
+                                    <div class="text-[9px] text-slate-500 font-mono truncate">NIP: {{ $gc['nip'] }}</div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+
+                    <!-- Prinsip Layanan BK Card -->
+                    <div class="p-2.5 rounded-xl bg-slate-950/80 border border-white/5 space-y-1 shrink-0 mt-2">
+                        <div class="text-[10px] font-extrabold text-purple-300 flex items-center gap-1.5">
+                            <span>🛡️ Asas Kerahasiaan BK Terjamin:</span>
+                        </div>
+                        <p class="text-[9.5px] text-slate-400 leading-snug">
+                            Setiap keluhan, permasalahan, dan hasil konseling dijaga kerahasiaannya dengan standar etika profesi Bimbingan &amp; Konseling.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =========================================================
+             SLIDE 12: BUKU TAMU & KUNJUNGAN SEKOLAH (SIKATAS) (INDEX 11)
+             ========================================================= -->
+        <section id="slide-11" class="hidden flex-col h-full min-h-0 overflow-hidden">
+            <!-- Header Slide -->
+            <div class="flex items-center justify-between pb-2 shrink-0">
+                <div class="flex items-center gap-2.5">
+                    <span class="px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-400 font-mono font-bold text-xs">12</span>
+                    <div>
+                        <h2 class="text-sm sm:text-base font-black text-white flex items-center gap-2">
+                            <span>Buku Tamu Kedinasan &amp; Kunjungan Sekolah</span>
+                            <span class="text-slate-500">&bull;</span>
+                            <span class="text-xs font-semibold text-amber-300">SIKATAS Resepsionis</span>
+                        </h2>
+                        <p class="text-[10px] text-slate-400">Monitoring kehadiran tamu kedinasan, dinas pendidikan, wali murid, dan mitra institusi resmi</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                        👥 Meja Pelayanan Tamu
+                    </span>
+                    <a href="{{ route('guests.kiosk') }}" target="_blank" class="px-2.5 py-1 rounded-lg bg-amber-600/30 hover:bg-amber-600 text-amber-200 text-[11px] font-bold transition flex items-center gap-1 border border-amber-500/30">
+                        <span>Buka Kios Tamu &rarr;</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Content Grid -->
+            <div class="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-3.5 overflow-hidden pt-1">
+                <!-- Left (7 Cols): KPI Cards + SOP Pelayanan Tamu -->
+                <div class="lg:col-span-7 flex flex-col h-full min-h-0 gap-3">
+                    <!-- KPI Cards (3 Cards) -->
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 shrink-0">
+                        <div class="glass-panel p-3 rounded-2xl border border-white/5 flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-lg shrink-0 font-bold">
+                                👥
+                            </div>
+                            <div>
+                                <span class="text-[10px] text-slate-400 font-bold block">Tamu Hari Ini</span>
+                                <span class="text-lg font-black text-white font-mono leading-none">{{ $data['guests']['total_today'] ?? 0 }}</span>
+                                <span class="text-[9.5px] text-amber-300 block">Kunjungan</span>
+                            </div>
+                        </div>
+
+                        <div class="glass-panel p-3 rounded-2xl border border-white/5 flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-teal-500/20 text-teal-400 flex items-center justify-center text-lg shrink-0 font-bold">
+                                📅
+                            </div>
+                            <div>
+                                <span class="text-[10px] text-slate-400 font-bold block">Total Bulan Ini</span>
+                                <span class="text-lg font-black text-white font-mono leading-none">{{ $data['guests']['total_month'] ?? 0 }}</span>
+                                <span class="text-[9.5px] text-teal-300 block">Kunjungan Tamu</span>
+                            </div>
+                        </div>
+
+                        <div class="glass-panel p-3 rounded-2xl border border-white/5 flex items-center gap-3 col-span-2 sm:col-span-1">
+                            <div class="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center text-lg shrink-0 font-bold">
+                                🏛️
+                            </div>
+                            <div>
+                                <span class="text-[10px] text-slate-400 font-bold block">Pelayanan</span>
+                                <span class="text-sm font-black text-white leading-none">Terintegrasi</span>
+                                <span class="text-[9.5px] text-blue-300 block">SOP Gerbang &amp; TU</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SOP Alur Penerimaan Tamu Sekolah -->
+                    <div class="flex-1 min-h-0 glass-panel rounded-2xl p-3 sm:p-3.5 border border-white/5 flex flex-col justify-between overflow-hidden">
+                        <div class="flex items-center justify-between pb-2 border-b border-white/5 shrink-0">
+                            <h3 class="text-xs sm:text-sm font-black text-white flex items-center gap-2">
+                                <span>📋</span>
+                                <span>Alur &amp; Prosedur Operasional Standar (SOP) Tamu Sekolah</span>
+                            </h3>
+                            <span class="text-[10px] text-slate-400">Tertib &bull; Aman &bull; Nyaman</span>
+                        </div>
+
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 py-2">
+                            <div class="p-2.5 rounded-xl bg-slate-900/80 border border-white/5 space-y-1">
+                                <span class="w-6 h-6 rounded-full bg-amber-500/20 text-amber-300 font-mono font-bold text-xs flex items-center justify-center">1</span>
+                                <h4 class="text-xs font-bold text-white">Lapor Gerbang</h4>
+                                <p class="text-[9.5px] text-slate-400 leading-snug">Melapor ke pos satpam dan menukarkan identitas dengan kartu tamu.</p>
+                            </div>
+                            <div class="p-2.5 rounded-xl bg-slate-900/80 border border-white/5 space-y-1">
+                                <span class="w-6 h-6 rounded-full bg-amber-500/20 text-amber-300 font-mono font-bold text-xs flex items-center justify-center">2</span>
+                                <h4 class="text-xs font-bold text-white">Presensi Kios</h4>
+                                <p class="text-[9.5px] text-slate-400 leading-snug">Mengisi presensi mandiri di layar Kios Buku Tamu SIKATAS.</p>
+                            </div>
+                            <div class="p-2.5 rounded-xl bg-slate-900/80 border border-white/5 space-y-1">
+                                <span class="w-6 h-6 rounded-full bg-amber-500/20 text-amber-300 font-mono font-bold text-xs flex items-center justify-center">3</span>
+                                <h4 class="text-xs font-bold text-white">Konfirmasi TU</h4>
+                                <p class="text-[9.5px] text-slate-400 leading-snug">Petugas menghubungkan tamu dengan pihak / pimpinan yang dituju.</p>
+                            </div>
+                            <div class="p-2.5 rounded-xl bg-slate-900/80 border border-white/5 space-y-1">
+                                <span class="w-6 h-6 rounded-full bg-amber-500/20 text-amber-300 font-mono font-bold text-xs flex items-center justify-center">4</span>
+                                <h4 class="text-xs font-bold text-white">Selesai / Pulang</h4>
+                                <p class="text-[9.5px] text-slate-400 leading-snug">Menyerahkan kembali kartu tanda pengenal tamu ke pos keamanan.</p>
+                            </div>
+                        </div>
+
+                        <div class="p-2 rounded-xl bg-slate-950/80 border border-white/5 text-[10px] text-slate-400 flex items-center justify-between shrink-0">
+                            <span>🕒 Jam Pelayanan Tamu Kedinasan: <strong>Senin - Jum'at (07:30 - 15:30 WIB)</strong></span>
+                            <span class="text-amber-300 font-bold">Resepsionis S1L</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right (5 Cols): Daftar Log Kunjungan Tamu Terkini -->
+                <div class="lg:col-span-5 glass-panel rounded-2xl p-3 sm:p-3.5 border border-white/5 flex flex-col h-full min-h-0 overflow-hidden">
+                    <div class="flex items-center justify-between pb-2 border-b border-white/5 shrink-0">
+                        <div class="flex items-center gap-2">
+                            <span class="p-1.5 rounded-lg bg-amber-500/20 text-amber-400 text-xs">👥</span>
+                            <div>
+                                <h3 class="text-xs sm:text-sm font-black text-white">Daftar Kunjungan Tamu Terkini</h3>
+                                <p class="text-[10px] text-slate-400">Log kehadiran tamu resepsionis sekolah</p>
+                            </div>
+                        </div>
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                            Resmi &amp; Tercatat
+                        </span>
+                    </div>
+
+                    <div class="flex-1 min-h-0 overflow-y-auto kiosk-scroll space-y-2 pt-2.5 pr-1">
+                        @forelse($data['guests']['recent'] ?? [] as $gst)
+                            <div class="p-2.5 rounded-xl bg-slate-900/80 border border-white/5 space-y-1.5 hover:border-amber-500/30 transition">
+                                <div class="flex items-start justify-between gap-2">
+                                    <div class="min-w-0 flex-1">
+                                        <div class="font-extrabold text-xs text-white truncate">{{ $gst['name'] }}</div>
+                                        <div class="text-[10px] text-amber-300 truncate font-semibold">{{ $gst['institution'] }}</div>
+                                    </div>
+                                    <span class="font-mono text-[10px] font-bold text-slate-300 bg-slate-950 px-2 py-0.5 rounded border border-white/5 shrink-0">
+                                        {{ $gst['time'] }} WIB
+                                    </span>
+                                </div>
+                                <div class="pt-1.5 border-t border-white/5 flex items-center justify-between text-[10px] text-slate-400">
+                                    <span class="truncate">Bertemu: <strong class="text-slate-200">{{ $gst['destination'] }}</strong></span>
+                                    <span class="px-1.5 py-0.2 rounded text-[9px] font-bold bg-slate-800 text-slate-300 shrink-0">{{ $gst['status'] }}</span>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="h-full flex flex-col items-center justify-center text-center py-8 text-slate-500 text-xs space-y-1">
+                                <span class="text-2xl">👥</span>
+                                <span class="font-semibold text-slate-400">Belum ada catatan tamu kedinasan baru.</span>
+                                <span class="text-[10px] text-slate-500">Tamu yang mengisi formulir resepsionis akan langsung tercatat di sini.</span>
+                            </div>
+                        @endforelse
+                    </div>
+
+                    <div class="pt-2 mt-2 border-t border-white/5 text-[10px] text-slate-500 text-center shrink-0">
+                        Sistem Informasi Kunjungan &amp; Buku Tamu Sekolah (SIKATAS) &bull; SIS-SMA1LE
+                    </div>
+                </div>
+            </div>
+        </section>
+
     </main>
 
     <!-- 4. BOTTOM TICKER FOOTER BAR (Compact ~34px) -->
@@ -1429,7 +1885,7 @@
     <!-- JAVASCRIPT SLIDE CONTROLLER & BACKGROUND REALTIME POLLER -->
     <script>
         // Slide Deck State
-        const TOTAL_SLIDES = 9;
+        const TOTAL_SLIDES = 12;
         const SLIDE_DURATION = 16; // 16 seconds per slide
         let currentSlideIdx = 0;
         let slideRemainingTime = SLIDE_DURATION;
@@ -1720,6 +2176,12 @@
                 if (d.ticker) {
                     const tickerEl = document.getElementById('kioskTicker');
                     if (tickerEl) tickerEl.textContent = d.ticker;
+                }
+
+                // 8. Update Perpustakaan
+                if (d.library) {
+                    const libTot = document.getElementById('libKioskVisitorsToday');
+                    if (libTot) libTot.textContent = d.library.total_today;
                 }
 
             } catch (e) {

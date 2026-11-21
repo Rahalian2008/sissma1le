@@ -4,16 +4,23 @@ namespace App\Http\Controllers;
 
 use App\Models\Achievement;
 use App\Models\Attendance;
+use App\Models\BkConsultation;
+use App\Models\BkCounselingSession;
 use App\Models\EarlyLeaveRequest;
 use App\Models\ExtracurricularAttendance;
+use App\Models\Guest;
 use App\Models\Habit;
 use App\Models\HabitDailyLog;
+use App\Models\LibraryBook;
+use App\Models\LibraryLoan;
+use App\Models\LibraryVisitor;
 use App\Models\PicketSchedule;
 use App\Models\QuranTahfidzRecord;
 use App\Models\SchoolExitPermit;
 use App\Models\SchoolIdentity;
 use App\Models\SchoolSetting;
 use App\Models\Student;
+use App\Models\Teacher;
 use App\Models\WorshipAttendance;
 use App\Services\AttendanceService;
 use Carbon\Carbon;
@@ -411,6 +418,99 @@ class KioskController extends Controller
         // 15. Data Dewan Guru & Tenaga Kependidikan dari Website
         $staffMembers = WebsiteContentController::getLiveStaff();
 
+        // 16. Data Perpustakaan & Literasi Digital
+        $libraryVisitorsToday = LibraryVisitor::whereDate('visited_at', $today)
+            ->orWhereDate('created_at', $today)
+            ->get();
+        $libraryTotalToday = $libraryVisitorsToday->count();
+        $libStudentsCount = $libraryVisitorsToday->where('visitor_type', 'siswa')->count();
+        $libTeachersCount = $libraryVisitorsToday->where('visitor_type', 'guru')->count();
+        $libGeneralCount = $libraryVisitorsToday->where('visitor_type', 'umum')->count();
+
+        $libraryTotalBooks = LibraryBook::where('is_active', true)->count();
+        if ($libraryTotalBooks === 0) {
+            $libraryTotalBooks = LibraryBook::count();
+        }
+        $libraryAvailableCopies = LibraryBook::where('is_active', true)->sum('available_copies');
+        $libraryActiveLoans = LibraryLoan::whereIn('status', ['DIPINJAM', 'BORROWED', 'dipinjam', 'active'])->count();
+
+        $popularBooks = LibraryBook::where('is_active', true)
+            ->orderByDesc('loans_count')
+            ->orderByDesc('views_count')
+            ->limit(6)
+            ->get()
+            ->map(fn ($b) => [
+                'title' => $b->title,
+                'author' => $b->author ?: 'Penulis Perpustakaan',
+                'category' => $b->category_name ?? ($b->category?->name ?? 'Umum'),
+                'available' => (int) ($b->available_copies ?? 1),
+                'total' => (int) ($b->total_copies ?? 1),
+                'cover' => $b->cover_image ? (str_starts_with($b->cover_image, 'http') ? $b->cover_image : asset('storage/'.$b->cover_image)) : null,
+            ]);
+
+        $recentLibraryVisitors = LibraryVisitor::latest('id')
+            ->limit(6)
+            ->get()
+            ->map(fn ($v) => [
+                'name' => $v->name,
+                'type' => $v->visitor_type === 'siswa' ? 'Siswa' : ($v->visitor_type === 'guru' ? 'Guru/Tendik' : 'Tamu Umum'),
+                'class' => $v->class_or_institution ?: '-',
+                'purpose' => $v->purpose,
+                'time' => $v->visited_at ? $v->visited_at->format('H:i') : ($v->created_at ? $v->created_at->format('H:i') : '-'),
+            ]);
+
+        // 17. Layanan Bimbingan & Konseling (BK) Terpadu
+        $bkSessionsCount = BkCounselingSession::count();
+        $bkSessionsToday = BkCounselingSession::whereDate('date', $today)->count();
+        $bkConsultationsCount = BkConsultation::count();
+
+        $bkFields = [
+            ['field' => 'Bimbingan Pribadi', 'icon' => '🧘', 'desc' => 'Pengembangan karakter, kedisiplinan & pemahaman diri', 'count' => BkCounselingSession::where('field_of_service', 'like', '%pribadi%')->count()],
+            ['field' => 'Bimbingan Sosial', 'icon' => '🤝', 'desc' => 'Hubungan pertemanan, anti-perundungan & adaptasi', 'count' => BkCounselingSession::where('field_of_service', 'like', '%sosial%')->count()],
+            ['field' => 'Bimbingan Belajar', 'icon' => '📚', 'desc' => 'Strategi belajar efektif, motivasi & prestasi belajar', 'count' => BkCounselingSession::where('field_of_service', 'like', '%belajar%')->count()],
+            ['field' => 'Bimbingan Karir & Kuliah', 'icon' => '🎓', 'desc' => 'Jalur SNBP, SNBT, Kedinasan & peminatan vokasi', 'count' => BkCounselingSession::where('field_of_service', 'like', '%karir%')->count()],
+        ];
+
+        $bkCounselors = Teacher::where(function ($q) {
+            $q->where('subject', 'like', '%BK%')
+                ->orWhere('subject', 'like', '%Bimbingan%')
+                ->orWhere('position', 'like', '%BK%');
+        })->limit(4)->get()->map(fn ($t) => [
+            'name' => $t->name,
+            'nip' => $t->nip ?: '-',
+            'role' => $t->position ?: 'Guru Bimbingan Konseling',
+            'photo' => $t->photo ? (str_starts_with($t->photo, 'http') ? $t->photo : asset('storage/'.$t->photo)) : null,
+        ]);
+
+        if ($bkCounselors->isEmpty()) {
+            $bkCounselors = collect([
+                ['name' => 'Tim Bimbingan Konseling S1L', 'nip' => '-', 'role' => 'Konselor Sekolah', 'photo' => null],
+            ]);
+        }
+
+        // 18. Buku Tamu Kedinasan & Kunjungan Resmi Sekolah (SIKATAS)
+        $guestsToday = Guest::whereDate('created_at', $today)
+            ->orWhereDate('check_in_at', $today)
+            ->latest('id')
+            ->get();
+        $guestsTotalToday = $guestsToday->count();
+        $guestsTotalMonth = Guest::whereMonth('created_at', $now->month)
+            ->whereYear('created_at', $now->year)
+            ->count();
+
+        $recentGuests = Guest::latest('id')
+            ->limit(6)
+            ->get()
+            ->map(fn ($g) => [
+                'ticket' => $g->ticket_number,
+                'name' => $g->name,
+                'institution' => $g->institution ?: 'Masyarakat Umum',
+                'destination' => $g->destination_department ?: 'Tata Usaha / Kepala Sekolah',
+                'purpose' => $g->purpose ?: 'Kunjungan',
+                'time' => $g->check_in_at ? $g->check_in_at->format('H:i') : ($g->created_at ? $g->created_at->format('H:i') : '-'),
+                'status' => ucfirst($g->status ?? 'menunggu'),
+            ]);
+
         // Running Text Ticker Quotes
         $tickers = [
             "Selamat Datang di Monitor KIOSK TV {$schoolProfile['name']}.",
@@ -423,6 +523,9 @@ class KioskController extends Controller
             "Presensi Ekstrakurikuler: {$extraDaysLabel} ({$extraStart} - {$extraEnd} WIB) untuk seluruh peminat cabang minat & bakat.",
             '7 Kebiasaan Anak Indonesia Hebat (7 KAIH): Laksanakan pembiasaan karakter setiap hari!',
             "Tingkatkan Hafalan Al-Qur'an Juz 30 dan Raih Poin Prestasi Positif Sekolah!",
+            'Literasi Perpustakaan: Kunjungi Kios Perpustakaan Mandiri untuk membaca & meminjam koleksi buku sekolah!',
+            'Layanan BK Terpadu: Konsultasikan pengembangan diri, minat bakat, dan persiapan SNBP/SNBT bersama Guru BK!',
+            'Buku Tamu SIKATAS: Setiap tamu kedinasan & wali murid wajib melapor ke meja resepsionis / kios tamu.',
         ];
 
         if (! empty($newsArticles[0]['title'])) {
@@ -510,6 +613,29 @@ class KioskController extends Controller
             'news' => $newsArticles,
             'agendas' => $agendas,
             'staff' => $staffMembers,
+            'library' => [
+                'total_today' => $libraryTotalToday,
+                'students_today' => $libStudentsCount,
+                'teachers_today' => $libTeachersCount,
+                'general_today' => $libGeneralCount,
+                'total_books' => $libraryTotalBooks,
+                'available_copies' => (int) $libraryAvailableCopies,
+                'active_loans' => $libraryActiveLoans,
+                'popular_books' => $popularBooks,
+                'recent_visitors' => $recentLibraryVisitors,
+            ],
+            'bk' => [
+                'total_sessions' => $bkSessionsCount,
+                'sessions_today' => $bkSessionsToday,
+                'consultations_count' => $bkConsultationsCount,
+                'fields' => $bkFields,
+                'counselors' => $bkCounselors,
+            ],
+            'guests' => [
+                'total_today' => $guestsTotalToday,
+                'total_month' => $guestsTotalMonth,
+                'recent' => $recentGuests,
+            ],
             'ticker' => implode('  •  ', $tickers),
         ];
     }

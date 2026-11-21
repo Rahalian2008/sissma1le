@@ -35,71 +35,79 @@
         }
         .kiosk-scroll::-webkit-scrollbar { width: 4px; }
         .kiosk-scroll::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.4); }
-        .kiosk-scroll::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 9999px; }
+        .kiosk-scroll::-webkit-scrollbar-thumb { background: rgba(20, 184, 166, 0.35); border-radius: 9999px; }
+        .kiosk-scroll::-webkit-scrollbar-thumb:hover { background: rgba(20, 184, 166, 0.65); }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
 <body class="bg-slate-950 text-slate-100 h-screen max-h-screen overflow-hidden flex flex-col justify-between selection:bg-teal-500 selection:text-white">
 
-    <!-- Top Header Bar Kios Satpam -->
-    <header class="bg-slate-900/90 border-b border-slate-800 shrink-0 z-40 backdrop-blur-md px-3 sm:px-6 py-2.5 shadow-xl">
-        <div class="max-w-7xl mx-auto flex flex-wrap sm:flex-nowrap items-center justify-between gap-3">
+    <!-- Top Header Bar Kios Satpam (Clean, unified single-row layout) -->
+    <header class="h-14 shrink-0 bg-slate-900/95 border-b border-slate-800 z-40 backdrop-blur-md px-3 sm:px-6 shadow-xl flex items-center">
+        <div class="max-w-7xl w-full mx-auto flex items-center justify-between gap-3">
+            
+            <!-- Left: Brand Identity -->
             <div class="flex items-center gap-3 shrink-0 min-w-0">
-                <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-teal-600 to-emerald-500 flex items-center justify-center text-white shadow-lg shadow-teal-500/25 shrink-0">
-                    <span class="text-xl">🛡️</span>
+                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-teal-600 to-emerald-500 flex items-center justify-center text-white shadow-lg shadow-teal-500/25 shrink-0">
+                    <span class="text-lg">🛡️</span>
                 </div>
                 <div class="min-w-0">
                     <div class="flex items-center gap-2">
-                        <h1 class="text-sm sm:text-base font-black tracking-wide text-white uppercase flex items-center gap-2 truncate">
-                            <span>Kios Pos Satpam &bull; Perizinan Siswa</span>
+                        <h1 class="text-xs sm:text-sm md:text-base font-black tracking-wide text-white uppercase flex items-center gap-1.5 truncate">
+                            <span>KIOS POS SATPAM</span>
+                            <span class="text-slate-500 hidden sm:inline">&bull;</span>
+                            <span class="text-teal-300 hidden sm:inline">PERIZINAN SISWA</span>
                         </h1>
-                        <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 shrink-0 flex items-center gap-1">
+                        <span class="px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-black bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 shrink-0 flex items-center gap-1">
                             <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
                             <span>LIVE MONITOR</span>
                         </span>
                     </div>
-                    <p class="text-[11px] text-slate-400 truncate">
-                        {{ $school?->name ?? 'SMAN 1 Lengkong' }} &bull; Khusus Petugas Keamanan &amp; Guru Piket
+                    <p class="text-[10px] sm:text-[11px] text-slate-400 truncate">
+                        {{ $school?->name ?? 'SMAN 1 Lengkong' }} &bull; Pengawasan Gerbang &amp; Perizinan Siswa
                     </p>
                 </div>
             </div>
 
-            <div class="flex items-center gap-1.5 sm:gap-2 shrink-0 flex-wrap justify-end">
-                <!-- Unified Kiosk Ecosystem Switcher -->
-                <div class="flex items-center gap-1 bg-slate-950/80 border border-slate-800 rounded-xl p-1 text-[11px] font-bold overflow-x-auto no-scrollbar">
-                    <a href="{{ route('kiosk.index') }}" target="_blank" class="px-2 py-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition flex items-center gap-1 whitespace-nowrap" title="Buka Kios TV Display">
-                        <span>📺 Kios TV</span>
-                    </a>
-                    <a href="{{ route('guests.kiosk') }}" target="_blank" class="px-2 py-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition flex items-center gap-1 whitespace-nowrap" title="Buka Kios Buku Tamu">
-                        <span>👥 Kios Tamu</span>
-                    </a>
-                    <a href="{{ route('library.guest_book.index') }}" target="_blank" class="px-2 py-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition flex items-center gap-1 whitespace-nowrap" title="Buka Kios Perpustakaan">
-                        <span>📚 Kios Perpus</span>
-                    </a>
-                    <a href="{{ route('attendance.kiosk-satpam') }}" class="px-2 py-1 rounded-lg bg-teal-500/20 text-teal-300 border border-teal-500/30 flex items-center gap-1 whitespace-nowrap">
-                        <span>🛡️ Kios Satpam</span>
-                    </a>
-                    <a href="{{ route('school_bell.index') }}" target="_blank" class="hidden md:flex px-2 py-1 rounded-lg text-amber-400 hover:text-amber-300 hover:bg-slate-800 transition items-center gap-1 whitespace-nowrap" title="Buka Bel Sekolah">
-                        <span>🔔 Bel</span>
-                    </a>
-                    <a href="{{ route('website.home') }}" target="_blank" class="hidden lg:flex px-2 py-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition items-center gap-1 whitespace-nowrap" title="Kembali ke Portal Sekolah">
-                        <span>🌐 Web</span>
-                    </a>
-                </div>
+            <!-- Middle: Unified Ecosystem Switcher (Desktop & Tablet) -->
+            <div class="hidden md:flex items-center gap-1 bg-slate-950/80 border border-slate-800 rounded-xl p-1 text-[11px] font-bold overflow-x-auto no-scrollbar shrink-0">
+                <a href="{{ route('kiosk.index') }}" target="_blank" class="px-2 py-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition flex items-center gap-1 whitespace-nowrap" title="Buka Kios TV Display">
+                    <span>📺 Kios TV</span>
+                </a>
+                <a href="{{ route('library.guest_book.index') }}" target="_blank" class="px-2 py-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition flex items-center gap-1 whitespace-nowrap" title="Buka Kios Perpustakaan">
+                    <span>📚 Kios Perpus</span>
+                </a>
+                <a href="{{ route('guests.kiosk') }}" target="_blank" class="px-2 py-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition flex items-center gap-1 whitespace-nowrap" title="Buka Kios Buku Tamu">
+                    <span>👥 Kios Tamu</span>
+                </a>
+                <a href="{{ route('attendance.kiosk-satpam') }}" class="px-2 py-1 rounded-lg bg-teal-500/20 text-teal-300 border border-teal-500/30 flex items-center gap-1 whitespace-nowrap">
+                    <span>🛡️ Kios Satpam</span>
+                </a>
+                <a href="{{ route('school_bell.index') }}" target="_blank" class="hidden lg:flex px-2 py-1 rounded-lg text-amber-400 hover:text-amber-300 hover:bg-slate-800 transition items-center gap-1 whitespace-nowrap" title="Buka Bel Sekolah">
+                    <span>🔔 Bel</span>
+                </a>
+                <a href="{{ route('website.home') }}" target="_blank" class="hidden xl:flex px-2 py-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition items-center gap-1 whitespace-nowrap" title="Kembali ke Portal Sekolah">
+                    <span>🌐 Web</span>
+                </a>
+            </div>
 
+            <!-- Right: Jam Digital & Controls -->
+            <div class="flex items-center gap-2 shrink-0">
                 <!-- Live Jam Digital Realtime -->
                 <div class="px-2.5 sm:px-3 py-1 rounded-xl bg-slate-800/80 border border-slate-700/80 text-right shrink-0">
-                    <div id="live-clock" class="text-xs sm:text-sm font-black font-mono text-teal-400 tracking-wider">--:--:-- WIB</div>
-                    <div id="live-date" class="text-[9px] text-slate-400 font-semibold">{{ $today->translatedFormat('l, d F Y') }}</div>
+                    <div id="live-clock" class="text-xs sm:text-sm font-black font-mono text-teal-400 tracking-wider leading-tight">--:--:-- WIB</div>
+                    <div id="live-date" class="text-[9px] text-slate-400 font-semibold">{{ $today->translatedFormat('d M Y') }}</div>
                 </div>
 
                 <!-- Tombol Fullscreen & Navigasi -->
-                <button type="button" onclick="toggleFullScreen()" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition" title="Layar Penuh (F11)">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
+                <button type="button" onclick="toggleFullScreen()" class="w-8 h-8 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition flex items-center justify-center text-xs" title="Layar Penuh (F11)">
+                    <span id="fullscreen-icon">⛶</span>
                 </button>
-                <button type="button" onclick="window.location.reload()" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-teal-400 hover:text-teal-300 border border-slate-700 transition" title="Segarkan Data Sekarang">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                <button type="button" onclick="window.location.reload()" class="w-8 h-8 rounded-xl bg-slate-800 hover:bg-slate-700 text-teal-400 hover:text-teal-300 border border-slate-700 transition flex items-center justify-center text-xs" title="Segarkan Data Sekarang">
+                    <span>🔄</span>
                 </button>
-                <a href="{{ route('attendance.index') }}" class="px-2 sm:px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 text-xs font-bold transition flex items-center gap-1 shrink-0">
+                <a href="{{ route('attendance.index') }}" class="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 text-xs font-bold transition flex items-center gap-1 shrink-0">
                     <span>&larr; Dashboard</span>
                 </a>
             </div>
@@ -107,53 +115,53 @@
     </header>
 
     <!-- Top KPI & Search Bar Container (Shrink-0) -->
-    <div class="shrink-0 max-w-7xl w-full mx-auto px-4 sm:px-6 pt-2.5 pb-1 space-y-2">
+    <div class="shrink-0 max-w-7xl w-full mx-auto px-3 sm:px-6 pt-2 pb-1 space-y-2">
         <!-- Quick Search & Status Indicators Bar -->
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-            <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 shadow-sm flex items-center gap-2.5">
-                <div class="w-8 h-8 rounded-lg bg-blue-500/15 text-blue-400 flex items-center justify-center text-lg shrink-0 font-bold">
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <div class="p-2 sm:p-2.5 rounded-xl bg-slate-900 border border-slate-800 shadow-sm flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-lg bg-blue-500/15 text-blue-400 flex items-center justify-center text-base shrink-0 font-bold">
                     🏃
                 </div>
                 <div>
-                    <span class="text-[10px] text-slate-400 font-bold block">Pulang Cepat</span>
-                    <span class="text-base font-black text-white font-mono leading-none">{{ $stats['total_approved_early_leaves'] }}</span>
-                    <span class="text-[9px] text-slate-500 block">Disetujui</span>
+                    <span class="text-[9.5px] sm:text-[10px] text-slate-400 font-bold block">Pulang Cepat</span>
+                    <span class="text-sm sm:text-base font-black text-white font-mono leading-tight">{{ $stats['total_approved_early_leaves'] }}</span>
+                    <span class="text-[8.5px] sm:text-[9px] text-slate-500 block">Disetujui</span>
                 </div>
             </div>
 
-            <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 shadow-sm flex items-center gap-2.5">
-                <div class="w-8 h-8 rounded-lg bg-teal-500/15 text-teal-400 flex items-center justify-center text-lg shrink-0 font-bold">
+            <div class="p-2 sm:p-2.5 rounded-xl bg-slate-900 border border-slate-800 shadow-sm flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-lg bg-teal-500/15 text-teal-400 flex items-center justify-center text-base shrink-0 font-bold">
                     🚪
                 </div>
                 <div>
-                    <span class="text-[10px] text-slate-400 font-bold block">Izin Keluar</span>
-                    <span class="text-base font-black text-white font-mono leading-none">{{ $stats['total_approved_exit_permits'] }}</span>
-                    <span class="text-[9px] text-slate-500 block">Surat Rombongan</span>
+                    <span class="text-[9.5px] sm:text-[10px] text-slate-400 font-bold block">Izin Keluar</span>
+                    <span class="text-sm sm:text-base font-black text-white font-mono leading-tight">{{ $stats['total_approved_exit_permits'] }}</span>
+                    <span class="text-[8.5px] sm:text-[9px] text-slate-500 block">Surat Rombongan</span>
                 </div>
             </div>
 
-            <div class="p-2.5 rounded-xl bg-slate-900 border border-amber-500/30 shadow-sm flex items-center gap-2.5 relative overflow-hidden">
-                <div class="w-8 h-8 rounded-lg bg-amber-500/15 text-amber-400 flex items-center justify-center text-lg shrink-0 font-bold">
+            <div class="p-2 sm:p-2.5 rounded-xl bg-slate-900 border border-amber-500/30 shadow-sm flex items-center gap-2.5 relative overflow-hidden">
+                <div class="w-8 h-8 rounded-lg bg-amber-500/15 text-amber-400 flex items-center justify-center text-base shrink-0 font-bold">
                     🔵
                 </div>
                 <div>
-                    <span class="text-[10px] text-amber-400 font-bold block">Sedang di Luar</span>
-                    <span class="text-base font-black text-white font-mono leading-none">{{ $stats['students_currently_outside'] }}</span>
-                    <span class="text-[9px] text-slate-500 block">Belum Kembali</span>
+                    <span class="text-[9.5px] sm:text-[10px] text-amber-400 font-bold block">Sedang di Luar</span>
+                    <span class="text-sm sm:text-base font-black text-white font-mono leading-tight">{{ $stats['students_currently_outside'] }}</span>
+                    <span class="text-[8.5px] sm:text-[9px] text-slate-500 block">Belum Kembali</span>
                 </div>
                 @if($stats['students_currently_outside'] > 0)
                     <span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
                 @endif
             </div>
 
-            <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 shadow-sm flex items-center gap-2.5">
-                <div class="w-8 h-8 rounded-lg bg-emerald-500/15 text-emerald-400 flex items-center justify-center text-lg shrink-0 font-bold">
+            <div class="p-2 sm:p-2.5 rounded-xl bg-slate-900 border border-slate-800 shadow-sm flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-lg bg-emerald-500/15 text-emerald-400 flex items-center justify-center text-base shrink-0 font-bold">
                     ✓
                 </div>
                 <div>
-                    <span class="text-[10px] text-slate-400 font-bold block">Sudah Kembali</span>
-                    <span class="text-base font-black text-white font-mono leading-none">{{ $stats['students_returned'] }}</span>
-                    <span class="text-[9px] text-slate-500 block">Siswa Selesai</span>
+                    <span class="text-[9.5px] sm:text-[10px] text-slate-400 font-bold block">Sudah Kembali</span>
+                    <span class="text-sm sm:text-base font-black text-white font-mono leading-tight">{{ $stats['students_returned'] }}</span>
+                    <span class="text-[8.5px] sm:text-[9px] text-slate-500 block">Siswa Selesai</span>
                 </div>
             </div>
         </div>
@@ -180,7 +188,7 @@
     </div>
 
     <!-- Main Content Container (Strictly 1-Screen Viewport Fit) -->
-    <main class="flex-1 min-h-0 max-w-7xl w-full mx-auto px-4 sm:px-6 py-2 overflow-hidden flex flex-col">
+    <main class="flex-1 min-h-0 max-w-7xl w-full mx-auto px-3 sm:px-6 py-2 overflow-hidden flex flex-col">
 
         <div class="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-2 gap-3.5 overflow-hidden" id="kiosk-sections-grid">
             <!-- Section 1: Izin Keluar Sekolah Sementara (School Pass) -->
@@ -248,67 +256,47 @@
                                 </div>
                                 @if($sp->actual_back_time)
                                     <div class="col-span-2 pt-1 border-t border-slate-800 text-emerald-400 font-bold flex items-center gap-1 text-[10px]">
-                                        <span>↩️ Kembali:</span>
+                                        <span>✓ Kembali Pukul:</span>
                                         <span class="font-mono">{{ $sp->actual_back_time }} WIB</span>
                                     </div>
                                 @endif
                             </div>
 
-                            <!-- Keperluan & Lokasi Tujuan -->
-                            <div class="text-xs">
-                                <span class="text-slate-500 text-[9px] font-bold uppercase block">Keperluan:</span>
-                                <p class="font-bold text-slate-200 text-xs mt-0.5">{{ $sp->purpose }}</p>
-                                @if($sp->destination)
-                                    <p class="text-slate-400 text-[10px] mt-0.5">📍 Lokasi: {{ $sp->destination }}</p>
-                                @endif
-                                <p class="text-slate-400 text-[10px] mt-0.5">
-                                    Pendamping: <strong>{{ $sp->accompanied_by ?: 'Mandiri / Tanpa Pendamping' }}</strong>
-                                </p>
-                            </div>
-
-                            <!-- Daftar Siswa Rombongan -->
+                            <!-- Siswa yang Izin -->
                             <div>
-                                <span class="text-slate-500 text-[9px] font-bold uppercase block mb-1">
-                                    Siswa Izin ({{ $sp->students->count() }} Orang):
+                                <span class="text-slate-500 text-[9px] block font-semibold uppercase tracking-wider mb-1">
+                                    Daftar Siswa ({{ $sp->students->count() }} Orang):
                                 </span>
                                 <div class="flex flex-wrap gap-1">
                                     @foreach($sp->students as $st)
-                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] bg-slate-900 text-slate-200 border border-slate-800 font-semibold">
-                                            <span class="w-1 h-1 rounded-full bg-teal-400"></span>
-                                            <span>{{ $st->name }}</span>
-                                            <span class="text-slate-400 font-mono text-[9px]">({{ $st->schoolClass?->name ?? '-' }})</span>
+                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-slate-900 border border-slate-800 text-[10.5px] text-slate-200">
+                                            <span class="font-semibold text-white">{{ $st->name }}</span>
+                                            <span class="text-teal-400 text-[9.5px]">({{ $st->schoolClass?->name ?? '-' }})</span>
                                         </span>
                                     @endforeach
                                 </div>
                             </div>
 
-                            <!-- Tombol Konfirmasi Satpam -->
-                            @if($isOutside)
-                                <div class="pt-1.5 border-t border-slate-800 flex items-center justify-between gap-2">
-                                    <span class="text-[10px] text-amber-400 font-semibold flex items-center gap-1">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping"></span>
-                                        <span>Menunggu kembali</span>
-                                    </span>
-                                    <form action="{{ route('attendance.kiosk-satpam.return', $sp->id) }}" method="POST" class="inline m-0" onsubmit="return confirm('Konfirmasi bahwa rombongan siswa No. {{ $sp->permit_number }} telah kembali ke lingkungan sekolah?');">
-                                        @csrf
-                                        <button type="submit" class="px-2.5 py-1 rounded-lg bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-[11px] shadow-sm transition cursor-pointer flex items-center gap-1">
-                                            <span>↩️ Konfirmasi Kembali</span>
-                                        </button>
-                                    </form>
-                                </div>
-                            @endif
+                            <!-- Keperluan & Tujuan -->
+                            <div class="text-[11px] text-slate-300">
+                                <span class="text-slate-500 text-[9px] block font-semibold">KEPERLUAN:</span>
+                                <p class="text-slate-200 font-medium">{{ $sp->purpose }}</p>
+                                @if(!empty($sp->destination))
+                                    <p class="text-[10px] text-slate-400 mt-0.5">Tujuan: {{ $sp->destination }}</p>
+                                @endif
+                            </div>
                         </div>
                     @empty
-                        <div class="p-6 text-center bg-slate-950/60 rounded-xl border border-slate-800/80 text-slate-500">
-                            <div class="text-2xl mb-1">🚪</div>
+                        <div class="h-full flex flex-col items-center justify-center text-center py-10 text-slate-500 text-xs space-y-1">
+                            <span class="text-3xl">🚪</span>
                             <p class="font-bold text-slate-400 text-xs">Tidak ada izin keluar lingkungan sekolah yang aktif hari ini.</p>
-                            <p class="text-[10px] text-slate-500 mt-0.5">Semua perizinan resmi yang disetujui guru piket akan otomatis tampil di sini.</p>
+                            <p class="text-[10px] text-slate-500">Semua perizinan resmi yang disetujui guru piket akan otomatis tampil di sini.</p>
                         </div>
                     @endforelse
                 </div>
             </section>
 
-            <!-- Section 2: Izin Pulang Cepat (Early Leave) -->
+            <!-- Section 2: Izin Pulang Cepat Hari Ini -->
             <section id="section-early-leave" class="h-full flex flex-col min-h-0 rounded-2xl bg-slate-900/70 border border-slate-800 p-3 sm:p-4 overflow-hidden">
                 <div class="flex items-center justify-between pb-2 border-b border-slate-800 shrink-0">
                     <div class="flex items-center gap-2">
@@ -323,62 +311,48 @@
 
                 <div class="flex-1 min-h-0 overflow-y-auto kiosk-scroll space-y-2.5 pr-1 mt-2" id="early-leaves-container">
                     @forelse($earlyLeaves as $el)
-                        @php
-                            $st = $el->student;
-                        @endphp
-                        <div class="kiosk-card p-3 sm:p-3.5 rounded-xl bg-slate-950/70 border border-slate-800 space-y-2 hover:border-slate-700 transition"
-                             data-search="{{ strtolower(($st?->name ?? '') . ' ' . ($st?->schoolClass?->name ?? '') . ' ' . ($st?->nis ?? '') . ' ' . $el->letter_number . ' ' . $el->reason_category . ' ' . ($el->pickup_name ?? '')) }}">
+                        <div class="kiosk-card p-3 sm:p-3.5 rounded-xl bg-slate-950/70 border border-slate-800 space-y-2 transition"
+                             data-search="{{ strtolower(($el->student?->name ?? '') . ' ' . ($el->student?->schoolClass?->name ?? '') . ' ' . ($el->student?->nis ?? '') . ' ' . $el->reason_category . ' ' . ($el->reason ?? '')) }}">
                             
-                            <!-- Identitas Siswa -->
-                            <div class="flex items-start gap-2.5">
-                                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-amber-600 to-orange-500 text-white font-black text-xs flex items-center justify-center shrink-0 shadow-sm">
-                                    {{ substr($st?->name ?? 'S', 0, 1) }}
-                                </div>
-                                <div class="min-w-0 flex-1">
-                                    <h3 class="font-bold text-white text-xs truncate leading-tight">{{ $st?->name ?? 'Siswa' }}</h3>
-                                    <div class="text-[10px] text-slate-400 mt-0.5">
-                                        Kelas: <strong class="text-slate-200">{{ $st?->schoolClass?->name ?? '-' }}</strong> &bull; NIS: <span class="font-mono">{{ $st?->nis ?? '-' }}</span>
+                            <div class="flex items-start justify-between gap-2">
+                                <div class="flex items-center gap-2.5 min-w-0">
+                                    <div class="w-8 h-8 rounded-lg bg-blue-500/15 text-blue-400 flex items-center justify-center font-bold text-sm shrink-0">
+                                        {{ substr($el->student?->name ?? 'S', 0, 1) }}
                                     </div>
-                                    <span class="font-mono text-[9px] text-teal-400 block mt-0.5">{{ $el->letter_number }}</span>
+                                    <div class="min-w-0">
+                                        <h3 class="font-extrabold text-xs sm:text-sm text-white truncate">{{ $el->student?->name ?? 'Nama Siswa' }}</h3>
+                                        <p class="text-[10px] text-teal-300 truncate">{{ $el->student?->schoolClass?->name ?? '-' }} &bull; NIS: {{ $el->student?->nis ?? '-' }}</p>
+                                    </div>
+                                </div>
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-blue-500/20 text-blue-300 border border-blue-500/30 shrink-0">
+                                    ✓ PULANG
+                                </span>
+                            </div>
+
+                            <div class="p-2 rounded-lg bg-slate-900/90 border border-slate-800/80 grid grid-cols-2 gap-2 text-xs">
+                                <div>
+                                    <span class="text-slate-500 text-[9px] block font-semibold">WAKTU PULANG</span>
+                                    <span class="font-mono font-bold text-amber-300 text-xs">🏃 {{ substr($el->leave_time ?? '', 0, 5) }} WIB</span>
+                                </div>
+                                <div>
+                                    <span class="text-slate-500 text-[9px] block font-semibold">PENJEMPUT</span>
+                                    <span class="font-semibold text-slate-300 text-xs">{{ $el->picked_up_by ?? 'Mandiri / Keluarga' }}</span>
                                 </div>
                             </div>
 
-                            <!-- Jam Pulang & Alasan -->
-                            <div class="p-2 rounded-lg bg-slate-900/90 border border-slate-800/80 text-xs space-y-1">
-                                <div class="flex items-center justify-between">
-                                    <span class="text-slate-500 text-[9px] font-bold">JAM PULANG RESMI</span>
-                                    <span class="font-mono font-black text-amber-400 text-xs">⏰ {{ $el->leave_time }} WIB</span>
-                                </div>
-                                <div class="text-[10px] font-bold text-slate-300">
-                                    {{ $el->reason_category }}
-                                </div>
-                                <p class="text-[10px] text-slate-400 italic line-clamp-2">"{{ $el->reason }}"</p>
-                            </div>
-
-                            <!-- Info Penjemput & Petugas Penyetuju -->
-                            <div class="text-xs space-y-0.5 pt-0.5">
-                                @if($el->pickup_name)
-                                    <div class="text-[10px] text-slate-300">
-                                        🚗 Dijemput: <strong>{{ $el->pickup_name }}</strong> ({{ $el->pickup_relationship ?? 'Keluarga' }})
-                                        @if($el->pickup_phone)
-                                            <span class="text-[9px] text-slate-400 font-mono">Telp: {{ $el->pickup_phone }}</span>
-                                        @endif
-                                    </div>
-                                @else
-                                    <div class="text-[10px] text-slate-400 italic">
-                                        🚶 Pulang Mandiri (Diizinkan)
-                                    </div>
-                                @endif
-                                <div class="text-[9px] text-slate-500 pt-0.5 border-t border-slate-800">
-                                    Disetujui: <strong class="text-slate-400">{{ $el->approver?->name ?? 'Guru Piket' }}</strong>
-                                </div>
+                            <div class="text-[11px] text-slate-300">
+                                <span class="text-slate-500 text-[9px] block font-semibold">ALASAN PULANG CEPAT:</span>
+                                <span class="px-2 py-0.5 rounded bg-slate-900 text-slate-300 text-[10px] font-semibold border border-slate-800 inline-block mr-1">
+                                    {{ $el->reason_category ?? 'Izin Khusus' }}
+                                </span>
+                                <p class="text-slate-300 text-xs mt-1">{{ $el->reason }}</p>
                             </div>
                         </div>
                     @empty
-                        <div class="p-6 text-center bg-slate-950/60 rounded-xl border border-slate-800/80 text-slate-500">
-                            <div class="text-2xl mb-1">🏃</div>
+                        <div class="h-full flex flex-col items-center justify-center text-center py-10 text-slate-500 text-xs space-y-1">
+                            <span class="text-3xl">🏃</span>
                             <p class="font-bold text-slate-400 text-xs">Belum ada siswa yang diizinkan pulang cepat hari ini.</p>
-                            <p class="text-[10px] text-slate-500 mt-0.5">Surat keterangan pulang cepat resmi akan tampil otomatis saat disetujui guru piket.</p>
+                            <p class="text-[10px] text-slate-500">Surat keterangan pulang cepat resmi akan tampil otomatis saat disetujui guru piket.</p>
                         </div>
                     @endforelse
                 </div>
@@ -386,8 +360,8 @@
         </div>
     </main>
 
-    <!-- Bottom Footer Bar (Compact ~32px) -->
-    <footer class="h-8 shrink-0 bg-slate-900/90 border-t border-slate-800/80 px-4 flex items-center justify-between text-[11px] text-slate-500">
+    <!-- Bottom Footer Bar (Compact ~30px) -->
+    <footer class="h-7 shrink-0 bg-slate-900/95 border-t border-slate-800/80 px-4 flex items-center justify-between text-[10.5px] text-slate-500">
         <span>&copy; {{ date('Y') }} {{ $school?->name ?? 'SMAN 1 Lengkong' }} &bull; Sistem Terpadu Keamanan Gerbang Sekolah</span>
         <span class="text-slate-400 hidden sm:inline">Petugas Satpam memeriksa izin siswa dengan memverifikasi kartu/surat izin resmi.</span>
     </footer>
@@ -473,9 +447,13 @@
         function toggleFullScreen() {
             if (!document.fullscreenElement) {
                 document.documentElement.requestFullscreen().catch(err => {});
+                const icon = document.getElementById('fullscreen-icon');
+                if (icon) icon.textContent = '✕';
             } else {
                 if (document.exitFullscreen) {
-                    document.exitFullscreen();
+                    document.exitFullscreen().catch(err => {});
+                    const icon = document.getElementById('fullscreen-icon');
+                    if (icon) icon.textContent = '⛶';
                 }
             }
         }

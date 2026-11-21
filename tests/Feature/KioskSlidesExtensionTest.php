@@ -5,12 +5,15 @@ test('kiosk index renders slides for berita, agenda, and guru & staf with photos
 
     $response->assertStatus(200);
 
-    // Assert Slide Navigation Pills 1 through 9
+    // Assert Slide Navigation Pills 1 through 12
     $response->assertSee('pill-slide-0', false);
     $response->assertSee('pill-slide-5', false);
     $response->assertSee('pill-slide-6', false);
     $response->assertSee('pill-slide-7', false);
     $response->assertSee('pill-slide-8', false);
+    $response->assertSee('pill-slide-9', false);
+    $response->assertSee('pill-slide-10', false);
+    $response->assertSee('pill-slide-11', false);
 
     // Assert Slide 6: Berita
     $response->assertSee('slide-6', false);
@@ -24,9 +27,21 @@ test('kiosk index renders slides for berita, agenda, and guru & staf with photos
     $response->assertSee('slide-8', false);
     $response->assertSee('Direktori Dewan Guru &amp; Tenaga Kependidikan', false);
     $response->assertSee('staffPageIndicator', false);
+
+    // Assert Slide 9: Perpustakaan & Literasi
+    $response->assertSee('slide-9', false);
+    $response->assertSee('Perpustakaan &amp; Literasi Digital', false);
+
+    // Assert Slide 10: Bimbingan & Konseling
+    $response->assertSee('slide-10', false);
+    $response->assertSee('Bimbingan &amp; Konseling (BK)', false);
+
+    // Assert Slide 11: Buku Tamu & Kunjungan Sekolah
+    $response->assertSee('slide-11', false);
+    $response->assertSee('Buku Tamu Kedinasan &amp; Kunjungan Sekolah', false);
 });
 
-test('kiosk data json endpoint includes news, agendas, and staff directory', function () {
+test('kiosk data json endpoint includes news, agendas, staff directory, library, bk, and guests', function () {
     $response = $this->get(route('kiosk.data'));
 
     $response->assertStatus(200);
@@ -40,6 +55,9 @@ test('kiosk data json endpoint includes news, agendas, and staff directory', fun
         'news',
         'agendas',
         'staff',
+        'library',
+        'bk',
+        'guests',
         'ticker',
     ]);
 
@@ -47,5 +65,30 @@ test('kiosk data json endpoint includes news, agendas, and staff directory', fun
     expect($data['news'])->toBeArray()
         ->and($data['agendas'])->toBeArray()
         ->and($data['staff'])->toBeArray()
-        ->and(count($data['staff']))->toBeGreaterThanOrEqual(1);
+        ->and(count($data['staff']))->toBeGreaterThanOrEqual(1)
+        ->and($data['library'])->toBeArray()
+        ->and($data['bk'])->toBeArray()
+        ->and($data['guests'])->toBeArray();
+});
+
+test('library guest book kiosk loads properly with single-screen responsive layout', function () {
+    $response = $this->get(route('library.guest_book.index'));
+
+    $response->assertStatus(200);
+    $response->assertSee('Buku Tamu Perpustakaan', false);
+    $response->assertSee('h-screen max-h-screen overflow-hidden', false);
+    $response->assertSee('kiosk-guest-form', false);
+    $response->assertSee('btn-type-siswa', false);
+    $response->assertSee('btn-type-guru', false);
+    $response->assertSee('btn-type-umum', false);
+});
+
+test('kios satpam loads properly with single-screen responsive layout and unified header', function () {
+    $response = $this->get(route('attendance.kiosk-satpam'));
+
+    $response->assertStatus(200);
+    $response->assertSee('KIOS POS SATPAM', false);
+    $response->assertSee('h-screen max-h-screen overflow-hidden', false);
+    $response->assertSee('section-exit-permit', false);
+    $response->assertSee('section-early-leave', false);
 });
