@@ -62,7 +62,7 @@
         .kiosk-scroll::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.4); }
         .kiosk-scroll::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 9999px; }
 
-        /* Smooth Marquee Ticker */
+        /* Smooth Marquee Ticker (Slowed down for comfortable reading) */
         @keyframes tickerMove {
             0% { transform: translateX(100%); }
             100% { transform: translateX(-100%); }
@@ -70,10 +70,19 @@
         .animate-ticker-marquee {
             display: inline-block;
             white-space: nowrap;
-            animation: tickerMove 45s linear infinite;
+            animation: tickerMove 85s linear infinite;
         }
         .animate-ticker-marquee:hover {
             animation-play-state: paused;
+        }
+
+        /* Clean Hide Scrollbar */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
         }
     </style>
 </head>
@@ -84,66 +93,66 @@
     <div class="fixed bottom-0 right-1/4 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl pointer-events-none z-0"></div>
 
     <!-- 1. TOP HEADER BAR (Compact ~56px) -->
-    <header class="relative z-30 h-14 sm:h-16 shrink-0 glass-panel border-b border-white/10 px-4 sm:px-6 flex items-center justify-between gap-3 shadow-2xl">
-        <!-- Brand Identity -->
-        <div class="flex items-center gap-3 min-w-0">
-            <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-gradient-to-tr from-teal-500 via-indigo-500 to-sky-400 p-0.5 shadow-lg shadow-teal-500/20 shrink-0">
+    <header class="relative z-30 h-14 sm:h-16 shrink-0 glass-panel border-b border-white/10 px-3 sm:px-5 flex items-center justify-between gap-2.5 sm:gap-4 shadow-2xl overflow-hidden">
+        <!-- Brand Identity (Fixed, never shrinks or wraps into sibling) -->
+        <div class="flex items-center gap-2.5 sm:gap-3 shrink-0">
+            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-gradient-to-tr from-teal-500 via-indigo-500 to-sky-400 p-0.5 shadow-lg shadow-teal-500/20 shrink-0">
                 <div id="kioskLogoContainer" class="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center overflow-hidden">
                     @if(!empty($data['school']['logo']))
-                        <img src="{{ asset('storage/' . $data['school']['logo']) }}" alt="Logo" class="w-7 h-7 sm:w-8 sm:h-8 object-contain">
+                        <img src="{{ asset('storage/' . $data['school']['logo']) }}" alt="Logo" class="w-6 h-6 sm:w-7 sm:h-7 object-contain">
                     @else
-                        <span class="text-base sm:text-lg font-black text-transparent bg-clip-text bg-gradient-to-r from-teal-300 to-sky-300">S1L</span>
+                        <span class="text-xs sm:text-sm font-black text-transparent bg-clip-text bg-gradient-to-r from-teal-300 to-sky-300">S1L</span>
                     @endif
                 </div>
             </div>
-            <div class="min-w-0">
+            <div class="flex flex-col justify-center">
                 <div class="flex items-center gap-2">
-                    <h1 id="kioskSchoolName" class="text-sm sm:text-base font-black tracking-tight text-white uppercase truncate">
+                    <h1 id="kioskSchoolName" class="text-xs sm:text-sm md:text-base font-black tracking-tight text-white uppercase whitespace-nowrap">
                         {{ $data['profile']['name'] ?? ($school['name'] ?? 'SMA NEGERI 1 LENGKONG') }}
                     </h1>
-                    <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 shrink-0 animate-pulse">
-                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> LIVE KIOSK
+                    <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-extrabold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 shrink-0">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> LIVE KIOSK
                     </span>
                 </div>
-                <p class="text-[10px] sm:text-[11px] text-slate-400 font-medium hidden sm:block whitespace-nowrap">
-                    Sistem Slide Informasi Terpadu &bull; Presensi, Ibadah, Tahfidz Juz 30, Piket &amp; Prestasi
+                <p class="text-[9.5px] sm:text-[10px] text-slate-400 font-medium truncate max-w-[200px] sm:max-w-[260px] leading-tight">
+                    Layar Informasi Digital Terpadu &bull; TV Display
                 </p>
             </div>
         </div>
 
         <!-- Slide Switcher Pills (Desktop & Tablet) -->
-        <div class="hidden lg:flex items-center gap-1 bg-slate-950/80 border border-white/10 rounded-xl p-1 text-xs shrink-0 max-w-[56vw] overflow-x-auto no-scrollbar">
-            <button type="button" onclick="goToSlide(0)" id="pill-slide-0" class="slide-nav-pill px-2 py-1 rounded-lg font-bold transition flex items-center gap-1 bg-teal-500 text-slate-950 shadow-sm whitespace-nowrap">
+        <div class="hidden md:flex items-center gap-1 bg-slate-950/80 border border-white/10 rounded-xl p-1 text-xs shrink min-w-0 max-w-[50vw] xl:max-w-none overflow-x-auto no-scrollbar mx-1">
+            <button type="button" onclick="goToSlide(0)" id="pill-slide-0" class="slide-nav-pill px-2 py-1 rounded-lg font-bold transition flex items-center gap-1 bg-teal-500 text-slate-950 shadow-sm whitespace-nowrap text-[11px]">
                 <span>1. Presensi</span>
             </button>
-            <button type="button" onclick="goToSlide(1)" id="pill-slide-1" class="slide-nav-pill px-2 py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap">
-                <span>2. Ibadah &amp; 7 KAIH</span>
+            <button type="button" onclick="goToSlide(1)" id="pill-slide-1" class="slide-nav-pill px-2 py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap text-[11px]">
+                <span>2. Ibadah</span>
             </button>
-            <button type="button" onclick="goToSlide(2)" id="pill-slide-2" class="slide-nav-pill px-2 py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap">
-                <span>3. Tahfidz Juz 30</span>
+            <button type="button" onclick="goToSlide(2)" id="pill-slide-2" class="slide-nav-pill px-2 py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap text-[11px]">
+                <span>3. Tahfidz</span>
             </button>
-            <button type="button" onclick="goToSlide(3)" id="pill-slide-3" class="slide-nav-pill px-2 py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap">
-                <span>4. Top Prestasi</span>
+            <button type="button" onclick="goToSlide(3)" id="pill-slide-3" class="slide-nav-pill px-2 py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap text-[11px]">
+                <span>4. Prestasi</span>
             </button>
-            <button type="button" onclick="goToSlide(4)" id="pill-slide-4" class="slide-nav-pill px-2 py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap">
-                <span>5. Piket &amp; Perizinan</span>
+            <button type="button" onclick="goToSlide(4)" id="pill-slide-4" class="slide-nav-pill px-2 py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap text-[11px]">
+                <span>5. Piket</span>
             </button>
-            <button type="button" onclick="goToSlide(5)" id="pill-slide-5" class="slide-nav-pill px-2 py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap">
-                <span>6. Ekskul &amp; Profil</span>
+            <button type="button" onclick="goToSlide(5)" id="pill-slide-5" class="slide-nav-pill px-2 py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap text-[11px]">
+                <span>6. Profil</span>
             </button>
-            <button type="button" onclick="goToSlide(6)" id="pill-slide-6" class="slide-nav-pill px-2 py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap">
+            <button type="button" onclick="goToSlide(6)" id="pill-slide-6" class="slide-nav-pill px-2 py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap text-[11px]">
                 <span>7. Berita</span>
             </button>
-            <button type="button" onclick="goToSlide(7)" id="pill-slide-7" class="slide-nav-pill px-2 py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap">
+            <button type="button" onclick="goToSlide(7)" id="pill-slide-7" class="slide-nav-pill px-2 py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap text-[11px]">
                 <span>8. Agenda</span>
             </button>
-            <button type="button" onclick="goToSlide(8)" id="pill-slide-8" class="slide-nav-pill px-2 py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap">
-                <span>9. Guru &amp; Staf</span>
+            <button type="button" onclick="goToSlide(8)" id="pill-slide-8" class="slide-nav-pill px-2 py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap text-[11px]">
+                <span>9. Guru &amp; TU</span>
             </button>
         </div>
 
         <!-- Controls: Play/Pause, Prev/Next, Fullscreen, Clock -->
-        <div class="flex items-center gap-2 shrink-0">
+        <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
             <!-- Ekosistem Kios Quick Launch (Layar Besar) -->
             <div class="hidden 2xl:flex items-center gap-1 bg-slate-950/80 border border-white/10 rounded-xl p-1 text-xs">
                 <a href="{{ route('guests.kiosk') }}" target="_blank" class="px-2 py-1 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition flex items-center gap-1" title="Buka Kios Buku Tamu">
@@ -163,14 +172,14 @@
             <!-- Slide Control Buttons -->
             <div class="flex items-center bg-slate-950/80 border border-white/10 rounded-xl p-1 text-xs">
                 <button type="button" onclick="prevSlide()" class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition" title="Slide Sebelumnya (Panah Kiri)">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
+                    <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
                 </button>
                 <button type="button" id="btnPlayPause" onclick="togglePlayPause()" class="px-2 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-white/10 font-bold transition flex items-center gap-1" title="Jeda / Lanjutkan Auto Slide">
                     <span id="playPauseIcon">⏸️</span>
-                    <span id="slideCountdownLabel" class="font-mono text-[11px] text-teal-300">15s</span>
+                    <span id="slideCountdownLabel" class="font-mono text-[11px] text-teal-300">20s</span>
                 </button>
                 <button type="button" onclick="nextSlide()" class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition" title="Slide Berikutnya (Panah Kanan)">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+                    <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
                 </button>
             </div>
 
@@ -182,9 +191,9 @@
             </button>
 
             <!-- Live Digital Clock -->
-            <div class="bg-gradient-to-r from-slate-950 via-slate-900 to-indigo-950/90 border border-indigo-500/30 rounded-xl px-3 py-1 text-right shadow-inner">
+            <div class="bg-gradient-to-r from-slate-950 via-slate-900 to-indigo-950/90 border border-indigo-500/30 rounded-xl px-2.5 sm:px-3 py-1 text-right shadow-inner shrink-0">
                 <div id="liveClock" class="text-xs sm:text-sm font-mono font-black text-teal-300 tracking-wider">--:--:-- WIB</div>
-                <div id="liveDate" class="text-[9px] text-slate-400 font-semibold tracking-wide capitalize truncate max-w-[130px] sm:max-w-none">--</div>
+                <div id="liveDate" class="text-[9px] text-slate-400 font-semibold tracking-wide capitalize truncate max-w-[110px] sm:max-w-[140px]">--</div>
             </div>
         </div>
     </header>
@@ -1307,7 +1316,7 @@
                             &larr;
                         </button>
                         <span id="staffPageIndicator" class="px-2 font-mono text-[11px] font-bold text-teal-300">
-                            Hal 1 / {{ max(1, count(array_chunk($data['staff'] ?? [], 10))) }}
+                            Hal 1 / {{ max(1, count(array_chunk($data['staff'] ?? [], 8))) }}
                         </span>
                         <button type="button" onclick="nextStaffPage()" class="p-1 px-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition" title="Halaman Guru Berikutnya">
                             &rarr;
@@ -1320,15 +1329,15 @@
                 </div>
             </div>
 
-            <!-- Content Area: Chunked Grid of Teachers & Staff with Photos -->
+            <!-- Content Area: Chunked Grid of Teachers & Staff with Enlarged Photos -->
             <div class="flex-1 min-h-0 relative overflow-hidden">
                 @php
                     $allStaff = $data['staff'] ?? [];
-                    $chunkedStaff = array_chunk($allStaff, 10);
+                    $chunkedStaff = array_chunk($allStaff, 8);
                 @endphp
 
                 @forelse($chunkedStaff as $pageIdx => $staffPage)
-                    <div class="staff-page h-full w-full {{ $pageIdx === 0 ? 'grid' : 'hidden' }} grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2.5 sm:gap-3 overflow-y-auto kiosk-scroll content-start" id="staff-page-{{ $pageIdx }}">
+                    <div class="staff-page h-full w-full {{ $pageIdx === 0 ? 'grid' : 'hidden' }} grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-3 sm:gap-4 overflow-y-auto kiosk-scroll content-start" id="staff-page-{{ $pageIdx }}">
                         @foreach($staffPage as $st)
                             @php
                                 $photoUrl = null;
@@ -1344,24 +1353,24 @@
                                 $isHeadmaster = ($st['type'] ?? '') === 'kepala_sekolah' || str_contains(strtolower($st['duty'] ?? ''), 'kepala sekolah');
                                 $isGuru = ($st['type'] ?? '') === 'guru' || !empty($st['mapel']);
                             @endphp
-                            <div class="glass-card rounded-2xl border border-white/10 p-2.5 sm:p-3 flex flex-col items-center text-center justify-between hover:border-teal-500/40 transition duration-300 group relative overflow-hidden {{ $isHeadmaster ? 'glow-gold border-amber-500/30 bg-amber-950/20' : 'glow-teal' }}">
+                            <div class="glass-card rounded-2xl border border-white/10 p-3 sm:p-4 flex flex-col items-center text-center justify-between hover:border-teal-500/40 transition duration-300 group relative overflow-hidden {{ $isHeadmaster ? 'glow-gold border-amber-500/30 bg-amber-950/20' : 'glow-teal' }}">
                                 <!-- Top Status Pill -->
                                 <div class="w-full flex items-center justify-between gap-1 mb-1">
-                                    <span class="px-2 py-0.5 rounded text-[8.5px] font-black uppercase tracking-wider truncate {{ $isHeadmaster ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40' : ($isGuru ? 'bg-teal-500/20 text-teal-300 border border-teal-500/30' : 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30') }}">
+                                    <span class="px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider truncate {{ $isHeadmaster ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40' : ($isGuru ? 'bg-teal-500/20 text-teal-300 border border-teal-500/30' : 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30') }}">
                                         {{ $isHeadmaster ? '👑 Kepala Sekolah' : ($isGuru ? '🎓 Dewan Guru' : '🏢 Staf TU') }}
                                     </span>
-                                    <span class="text-[8px] font-mono text-slate-500 truncate">
+                                    <span class="text-[8.5px] font-mono text-slate-400 truncate">
                                         {{ $st['employment_status'] ?? 'ASN' }}
                                     </span>
                                 </div>
 
-                                <!-- Photo Container with Elegant Ring -->
-                                <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden p-0.5 bg-gradient-to-tr {{ $isHeadmaster ? 'from-amber-400 via-yellow-500 to-amber-600' : 'from-teal-400 via-indigo-500 to-sky-400' }} shadow-md my-1 shrink-0 group-hover:scale-105 transition duration-300">
-                                    <div class="w-full h-full bg-slate-950 rounded-[14px] overflow-hidden flex items-center justify-center">
+                                <!-- Photo Container with Elegant Ring (Enlarged) -->
+                                <div class="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-2xl overflow-hidden p-1 bg-gradient-to-tr {{ $isHeadmaster ? 'from-amber-400 via-yellow-500 to-amber-600' : 'from-teal-400 via-indigo-500 to-sky-400' }} shadow-xl my-1.5 shrink-0 group-hover:scale-105 transition duration-300">
+                                    <div class="w-full h-full bg-slate-950 rounded-[12px] overflow-hidden flex items-center justify-center">
                                         @if($photoUrl)
                                             <img src="{{ $photoUrl }}" alt="{{ $st['name'] }}" class="w-full h-full object-cover">
                                         @else
-                                            <div class="w-full h-full flex flex-col items-center justify-center bg-gradient-to-tr from-slate-900 via-slate-800 to-teal-950 text-teal-300 font-extrabold text-sm sm:text-base">
+                                            <div class="w-full h-full flex flex-col items-center justify-center bg-gradient-to-tr from-slate-900 via-slate-800 to-teal-950 text-teal-300 font-extrabold text-xl sm:text-2xl">
                                                 <span>{{ strtoupper(substr($st['name'], 0, 2)) }}</span>
                                             </div>
                                         @endif
@@ -1369,15 +1378,15 @@
                                 </div>
 
                                 <!-- Staff Name & Academic Degrees -->
-                                <div class="w-full min-w-0 mt-1">
-                                    <h4 class="text-xs sm:text-sm font-extrabold text-white leading-tight line-clamp-2 min-h-[2rem] flex items-center justify-center group-hover:text-teal-300 transition" title="{{ $st['name'] }}">
+                                <div class="w-full min-w-0 mt-1.5">
+                                    <h4 class="text-xs sm:text-sm md:text-base font-extrabold text-white leading-tight line-clamp-2 min-h-[2.25rem] flex items-center justify-center group-hover:text-teal-300 transition" title="{{ $st['name'] }}">
                                         {{ $st['name'] }}
                                     </h4>
-                                    <div class="text-[10px] sm:text-[10.5px] font-semibold text-teal-300 truncate mt-0.5" title="{{ $st['duty'] ?? 'Pendidik' }}">
+                                    <div class="text-[11px] sm:text-xs font-semibold text-teal-300 truncate mt-0.5" title="{{ $st['duty'] ?? 'Pendidik' }}">
                                         {{ $st['duty'] ?? 'Pendidik' }}
                                     </div>
                                     @if(!empty($st['mapel']) && $st['mapel'] !== ($st['duty'] ?? ''))
-                                        <div class="text-[9.5px] text-slate-400 truncate mt-0.5" title="{{ $st['mapel'] }}">
+                                        <div class="text-[10px] text-slate-400 truncate mt-0.5" title="{{ $st['mapel'] }}">
                                             {{ $st['mapel'] }}
                                         </div>
                                     @endif
@@ -1385,7 +1394,7 @@
 
                                 <!-- NIP Badge Footer -->
                                 <div class="w-full pt-1.5 mt-1 border-t border-white/5">
-                                    <span class="inline-block text-[9px] font-mono text-slate-400 bg-slate-900/90 px-2 py-0.5 rounded-full border border-white/5 truncate max-w-full">
+                                    <span class="inline-block text-[9.5px] font-mono text-slate-400 bg-slate-900/90 px-2.5 py-0.5 rounded-full border border-white/5 truncate max-w-full">
                                         {{ !empty($st['nip']) && $st['nip'] !== '-' ? 'NIP ' . $st['nip'] : 'Pendidik Resmi' }}
                                     </span>
                                 </div>
@@ -1421,7 +1430,7 @@
     <script>
         // Slide Deck State
         const TOTAL_SLIDES = 9;
-        const SLIDE_DURATION = 15; // 15 seconds per slide
+        const SLIDE_DURATION = 20; // 20 seconds per slide
         let currentSlideIdx = 0;
         let slideRemainingTime = SLIDE_DURATION;
         let isPaused = false;
@@ -1429,7 +1438,7 @@
 
         // Sub-page Controller for Slide 8 (Guru & Staf)
         let currentStaffPageIdx = 0;
-        const totalStaffPages = {{ max(1, count(array_chunk($data['staff'] ?? [], 10))) }};
+        const totalStaffPages = {{ max(1, count(array_chunk($data['staff'] ?? [], 8))) }};
         let staffCycleInterval = null;
 
         function showStaffPage(page) {
@@ -1471,7 +1480,7 @@
                     if (!isPaused) {
                         nextStaffPage();
                     }
-                }, 5000); // cycle sub-page every 5s while on slide 8
+                }, 4500); // cycle sub-page every 4.5s while on slide 8
             }
         }
 
@@ -1504,9 +1513,9 @@
 
                 if (pillEl) {
                     if (i === currentSlideIdx) {
-                        pillEl.className = 'slide-nav-pill px-2 py-1 rounded-lg font-bold transition flex items-center gap-1 bg-teal-500 text-slate-950 shadow-sm whitespace-nowrap';
+                        pillEl.className = 'slide-nav-pill px-2 py-1 rounded-lg font-bold transition flex items-center gap-1 bg-teal-500 text-slate-950 shadow-sm whitespace-nowrap text-[11px]';
                     } else {
-                        pillEl.className = 'slide-nav-pill px-2 py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap';
+                        pillEl.className = 'slide-nav-pill px-2 py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap text-[11px]';
                     }
                 }
             }
