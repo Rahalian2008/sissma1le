@@ -26,6 +26,7 @@ use App\Services\AttendanceService;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\View\View;
 
 class KioskController extends Controller
@@ -419,68 +420,102 @@ class KioskController extends Controller
         $staffMembers = WebsiteContentController::getLiveStaff();
 
         // 16. Data Perpustakaan & Literasi Digital
-        $libraryVisitorsToday = LibraryVisitor::whereDate('visited_at', $today)
-            ->orWhereDate('created_at', $today)
-            ->get();
-        $libraryTotalToday = $libraryVisitorsToday->count();
-        $libStudentsCount = $libraryVisitorsToday->where('visitor_type', 'siswa')->count();
-        $libTeachersCount = $libraryVisitorsToday->where('visitor_type', 'guru')->count();
-        $libGeneralCount = $libraryVisitorsToday->where('visitor_type', 'umum')->count();
+        $libraryTotalToday = 0;
+        $libStudentsCount = 0;
+        $libTeachersCount = 0;
+        $libGeneralCount = 0;
+        $libraryTotalBooks = 0;
+        $libraryAvailableCopies = 0;
+        $libraryActiveLoans = 0;
+        $popularBooks = collect();
+        $recentLibraryVisitors = collect();
 
-        $libraryTotalBooks = LibraryBook::where('is_active', true)->count();
-        if ($libraryTotalBooks === 0) {
-            $libraryTotalBooks = LibraryBook::count();
+        try {
+            $libraryVisitorsToday = LibraryVisitor::whereDate('visited_at', $today)
+                ->orWhereDate('created_at', $today)
+                ->get();
+            $libraryTotalToday = $libraryVisitorsToday->count();
+            $libStudentsCount = $libraryVisitorsToday->where('visitor_type', 'siswa')->count();
+            $libTeachersCount = $libraryVisitorsToday->where('visitor_type', 'guru')->count();
+            $libGeneralCount = $libraryVisitorsToday->where('visitor_type', 'umum')->count();
+
+            $libraryTotalBooks = LibraryBook::where('is_active', true)->count();
+            if ($libraryTotalBooks === 0) {
+                $libraryTotalBooks = LibraryBook::count();
+            }
+            $libraryAvailableCopies = LibraryBook::where('is_active', true)->sum('available_copies');
+            $libraryActiveLoans = LibraryLoan::whereIn('status', ['DIPINJAM', 'BORROWED', 'dipinjam', 'active'])->count();
+
+            $popularBooks = LibraryBook::where('is_active', true)
+                ->orderByDesc('loans_count')
+                ->orderByDesc('views_count')
+                ->limit(6)
+                ->get()
+                ->map(fn ($b) => [
+                    'title' => $b->title,
+                    'author' => $b->author ?: 'Penulis Perpustakaan',
+                    'category' => $b->category_name ?? ($b->category?->name ?? 'Umum'),
+                    'available' => (int) ($b->available_copies ?? 1),
+                    'total' => (int) ($b->total_copies ?? 1),
+                    'cover' => $b->cover_image ? (str_starts_with($b->cover_image, 'http') ? $b->cover_image : asset('storage/'.$b->cover_image)) : null,
+                ]);
+
+            $recentLibraryVisitors = LibraryVisitor::latest('id')
+                ->limit(6)
+                ->get()
+                ->map(fn ($v) => [
+                    'name' => $v->name,
+                    'type' => $v->visitor_type === 'siswa' ? 'Siswa' : ($v->visitor_type === 'guru' ? 'Guru/Tendik' : 'Tamu Umum'),
+                    'class' => $v->class_or_institution ?: '-',
+                    'purpose' => $v->purpose,
+                    'time' => $v->visited_at ? $v->visited_at->format('H:i') : ($v->created_at ? $v->created_at->format('H:i') : '-'),
+                ]);
+        } catch (\Throwable $e) {
+            // Graceful fallback if any column/table differs
         }
-        $libraryAvailableCopies = LibraryBook::where('is_active', true)->sum('available_copies');
-        $libraryActiveLoans = LibraryLoan::whereIn('status', ['DIPINJAM', 'BORROWED', 'dipinjam', 'active'])->count();
-
-        $popularBooks = LibraryBook::where('is_active', true)
-            ->orderByDesc('loans_count')
-            ->orderByDesc('views_count')
-            ->limit(6)
-            ->get()
-            ->map(fn ($b) => [
-                'title' => $b->title,
-                'author' => $b->author ?: 'Penulis Perpustakaan',
-                'category' => $b->category_name ?? ($b->category?->name ?? 'Umum'),
-                'available' => (int) ($b->available_copies ?? 1),
-                'total' => (int) ($b->total_copies ?? 1),
-                'cover' => $b->cover_image ? (str_starts_with($b->cover_image, 'http') ? $b->cover_image : asset('storage/'.$b->cover_image)) : null,
-            ]);
-
-        $recentLibraryVisitors = LibraryVisitor::latest('id')
-            ->limit(6)
-            ->get()
-            ->map(fn ($v) => [
-                'name' => $v->name,
-                'type' => $v->visitor_type === 'siswa' ? 'Siswa' : ($v->visitor_type === 'guru' ? 'Guru/Tendik' : 'Tamu Umum'),
-                'class' => $v->class_or_institution ?: '-',
-                'purpose' => $v->purpose,
-                'time' => $v->visited_at ? $v->visited_at->format('H:i') : ($v->created_at ? $v->created_at->format('H:i') : '-'),
-            ]);
 
         // 17. Layanan Bimbingan & Konseling (BK) Terpadu
-        $bkSessionsCount = BkCounselingSession::count();
-        $bkSessionsToday = BkCounselingSession::whereDate('date', $today)->count();
-        $bkConsultationsCount = BkConsultation::count();
-
+        $bkSessionsCount = 0;
+        $bkSessionsToday = 0;
+        $bkConsultationsCount = 0;
         $bkFields = [
-            ['field' => 'Bimbingan Pribadi', 'icon' => '🧘', 'desc' => 'Pengembangan karakter, kedisiplinan & pemahaman diri', 'count' => BkCounselingSession::where('field_of_service', 'like', '%pribadi%')->count()],
-            ['field' => 'Bimbingan Sosial', 'icon' => '🤝', 'desc' => 'Hubungan pertemanan, anti-perundungan & adaptasi', 'count' => BkCounselingSession::where('field_of_service', 'like', '%sosial%')->count()],
-            ['field' => 'Bimbingan Belajar', 'icon' => '📚', 'desc' => 'Strategi belajar efektif, motivasi & prestasi belajar', 'count' => BkCounselingSession::where('field_of_service', 'like', '%belajar%')->count()],
-            ['field' => 'Bimbingan Karir & Kuliah', 'icon' => '🎓', 'desc' => 'Jalur SNBP, SNBT, Kedinasan & peminatan vokasi', 'count' => BkCounselingSession::where('field_of_service', 'like', '%karir%')->count()],
+            ['field' => 'Bimbingan Pribadi', 'icon' => '🧘', 'desc' => 'Pengembangan karakter, kedisiplinan & pemahaman diri', 'count' => 0],
+            ['field' => 'Bimbingan Sosial', 'icon' => '🤝', 'desc' => 'Hubungan pertemanan, anti-perundungan & adaptasi', 'count' => 0],
+            ['field' => 'Bimbingan Belajar', 'icon' => '📚', 'desc' => 'Strategi belajar efektif, motivasi & prestasi belajar', 'count' => 0],
+            ['field' => 'Bimbingan Karir & Kuliah', 'icon' => '🎓', 'desc' => 'Jalur SNBP, SNBT, Kedinasan & peminatan vokasi', 'count' => 0],
         ];
+        $bkCounselors = collect();
 
-        $bkCounselors = Teacher::where(function ($q) {
-            $q->where('subject', 'like', '%BK%')
-                ->orWhere('subject', 'like', '%Bimbingan%')
-                ->orWhere('position', 'like', '%BK%');
-        })->limit(4)->get()->map(fn ($t) => [
-            'name' => $t->name,
-            'nip' => $t->nip ?: '-',
-            'role' => $t->position ?: 'Guru Bimbingan Konseling',
-            'photo' => $t->photo ? (str_starts_with($t->photo, 'http') ? $t->photo : asset('storage/'.$t->photo)) : null,
-        ]);
+        try {
+            $bkSessionsCount = BkCounselingSession::count();
+            $bkSessionsToday = BkCounselingSession::whereDate('date', $today)->count();
+            $bkConsultationsCount = BkConsultation::count();
+
+            $bkFields = [
+                ['field' => 'Bimbingan Pribadi', 'icon' => '🧘', 'desc' => 'Pengembangan karakter, kedisiplinan & pemahaman diri', 'count' => BkCounselingSession::where('field_of_service', 'like', '%pribadi%')->count()],
+                ['field' => 'Bimbingan Sosial', 'icon' => '🤝', 'desc' => 'Hubungan pertemanan, anti-perundungan & adaptasi', 'count' => BkCounselingSession::where('field_of_service', 'like', '%sosial%')->count()],
+                ['field' => 'Bimbingan Belajar', 'icon' => '📚', 'desc' => 'Strategi belajar efektif, motivasi & prestasi belajar', 'count' => BkCounselingSession::where('field_of_service', 'like', '%belajar%')->count()],
+                ['field' => 'Bimbingan Karir & Kuliah', 'icon' => '🎓', 'desc' => 'Jalur SNBP, SNBT, Kedinasan & peminatan vokasi', 'count' => BkCounselingSession::where('field_of_service', 'like', '%karir%')->count()],
+            ];
+
+            $bkCounselors = Teacher::where(function ($q) {
+                if (Schema::hasColumn('teachers', 'teaching_subject')) {
+                    $q->where('teaching_subject', 'like', '%BK%')
+                        ->orWhere('teaching_subject', 'like', '%Bimbingan%');
+                }
+                if (Schema::hasColumn('teachers', 'position')) {
+                    $q->orWhere('position', 'like', '%BK%')
+                        ->orWhere('position', 'like', '%Bimbingan%');
+                }
+            })->limit(4)->get()->map(fn ($t) => [
+                'name' => $t->name,
+                'nip' => $t->nip ?: '-',
+                'role' => $t->position ?: ($t->teaching_subject ?? 'Guru Bimbingan Konseling'),
+                'photo' => null,
+            ]);
+        } catch (\Throwable $e) {
+            // Graceful fallback
+        }
 
         if ($bkCounselors->isEmpty()) {
             $bkCounselors = collect([
@@ -489,27 +524,35 @@ class KioskController extends Controller
         }
 
         // 18. Buku Tamu Kedinasan & Kunjungan Resmi Sekolah (SIKATAS)
-        $guestsToday = Guest::whereDate('created_at', $today)
-            ->orWhereDate('check_in_at', $today)
-            ->latest('id')
-            ->get();
-        $guestsTotalToday = $guestsToday->count();
-        $guestsTotalMonth = Guest::whereMonth('created_at', $now->month)
-            ->whereYear('created_at', $now->year)
-            ->count();
+        $guestsTotalToday = 0;
+        $guestsTotalMonth = 0;
+        $recentGuests = collect();
 
-        $recentGuests = Guest::latest('id')
-            ->limit(6)
-            ->get()
-            ->map(fn ($g) => [
-                'ticket' => $g->ticket_number,
-                'name' => $g->name,
-                'institution' => $g->institution ?: 'Masyarakat Umum',
-                'destination' => $g->destination_department ?: 'Tata Usaha / Kepala Sekolah',
-                'purpose' => $g->purpose ?: 'Kunjungan',
-                'time' => $g->check_in_at ? $g->check_in_at->format('H:i') : ($g->created_at ? $g->created_at->format('H:i') : '-'),
-                'status' => ucfirst($g->status ?? 'menunggu'),
-            ]);
+        try {
+            $guestsToday = Guest::whereDate('created_at', $today)
+                ->orWhereDate('check_in_at', $today)
+                ->latest('id')
+                ->get();
+            $guestsTotalToday = $guestsToday->count();
+            $guestsTotalMonth = Guest::whereMonth('created_at', $now->month)
+                ->whereYear('created_at', $now->year)
+                ->count();
+
+            $recentGuests = Guest::latest('id')
+                ->limit(6)
+                ->get()
+                ->map(fn ($g) => [
+                    'ticket' => $g->ticket_number,
+                    'name' => $g->name,
+                    'institution' => $g->institution ?: 'Masyarakat Umum',
+                    'destination' => $g->destination_department ?: 'Tata Usaha / Kepala Sekolah',
+                    'purpose' => $g->purpose ?: 'Kunjungan',
+                    'time' => $g->check_in_at ? $g->check_in_at->format('H:i') : ($g->created_at ? $g->created_at->format('H:i') : '-'),
+                    'status' => ucfirst($g->status ?? 'menunggu'),
+                ]);
+        } catch (\Throwable $e) {
+            // Graceful fallback
+        }
 
         // Running Text Ticker Quotes
         $tickers = [

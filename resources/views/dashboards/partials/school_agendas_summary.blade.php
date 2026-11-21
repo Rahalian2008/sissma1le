@@ -37,8 +37,8 @@
                 <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                 <span>{{ $agendas['is_holiday_today'] ? 'Kegiatan Khusus / Libur' : 'KBM Efektif Aktif' }}</span>
             </span>
-            @if(Route::has('class_learning_agendas.index'))
-                <a href="{{ route('class_learning_agendas.index') }}" class="w-full sm:w-auto justify-center px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white font-extrabold rounded-xl text-xs transition shadow-xs flex items-center gap-1">
+            @if(Route::has('students.learning-agendas.index'))
+                <a href="{{ route('students.learning-agendas.index') }}" class="w-full sm:w-auto justify-center px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white font-extrabold rounded-xl text-xs transition shadow-xs flex items-center gap-1">
                     <span>Semua Agenda KBM &rarr;</span>
                 </a>
             @endif
@@ -200,6 +200,13 @@
                         <span class="text-2xl mb-1 block">📝</span>
                         <div class="text-xs font-bold text-slate-700 dark:text-slate-300">Belum Ada Agenda KBM Tercatat Hari Ini</div>
                         <p class="text-[11px] text-slate-400 mt-0.5">Guru mapel akan mencatat topik pembelajaran dan absensi kelas melalui jurnal KBM digital.</p>
+                        @if(Route::has('students.learning-agendas.index'))
+                            <div class="mt-3">
+                                <a href="{{ route('students.learning-agendas.index') }}" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-extrabold transition shadow-xs">
+                                    <span>✍️ Isi / Tambah Jurnal KBM Sekarang &rarr;</span>
+                                </a>
+                            </div>
+                        @endif
                     </div>
                 @endif
             </div>
