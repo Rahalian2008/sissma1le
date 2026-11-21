@@ -9,13 +9,13 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="msapplication-navbutton-color" content="#4338ca">
     <title>{{ $settings['school_name'] ?? 'SMAN 1 Lengkong' }} - Unggul, Berkarakter & Berprestasi di Era Digital</title>
-    <meta name="description" content="Website Resmi SMAN 1 Lengkong Kabupaten Sukabumi. Portal akademik SIAKAD terpadu, LMS Pembelajaran Permendikdasmen No. 13 Tahun 2025, Presensi 5 Metode, dan Portal Orang Tua.">
-    <meta name="keywords" content="SMAN 1 Lengkong, SMA Negeri 1 Lengkong, Sukabumi, Sekolah Digital, SIAKAD SMAN 1 Lengkong, LMS SMAN 1 Lengkong, Portal Siswa, Kurikulum Nasional 2025">
+    <meta name="description" content="Website Resmi SMAN 1 Lengkong Kabupaten Sukabumi. Portal akademik SIS-SMA1LE terpadu, LMS Pembelajaran Permendikdasmen No. 13 Tahun 2025, Presensi 5 Metode, dan Portal Orang Tua.">
+    <meta name="keywords" content="SMAN 1 Lengkong, SMA Negeri 1 Lengkong, Sukabumi, Sekolah Digital, SIS-SMA1LE SMAN 1 Lengkong, LMS SMAN 1 Lengkong, Portal Siswa, Kurikulum Nasional 2025">
     
     <!-- Open Graph / Meta Sosial (Rich Preview WhatsApp, Facebook, Telegram, Twitter, LinkedIn) -->
     <meta property="og:site_name" content="{{ $settings['school_name'] ?? 'SMAN 1 Lengkong' }}">
     <meta property="og:title" content="{{ $metaTitle ?? (($settings['school_name'] ?? 'SMAN 1 Lengkong') . ' - Sekolah Unggul Berwawasan Digital') }}">
-    <meta property="og:description" content="{{ $metaDescription ?? 'Official Web Portal & SIAKAD Terpadu SMAN 1 Lengkong Sukabumi. Sistem Pembelajaran Modern & Karakter Unggul.' }}">
+    <meta property="og:description" content="{{ $metaDescription ?? ('Official Web Portal & ' . ($settings['app_name'] ?? 'SIS-SMA1LE') . ' Terpadu SMAN 1 Lengkong Sukabumi. Sistem Pembelajaran Modern & Karakter Unggul.') }}">
     <meta property="og:type" content="{{ $metaType ?? 'website' }}">
     <meta property="og:url" content="{{ $metaUrl ?? url('/') }}">
     <meta property="og:image" content="{{ $metaImage ?? asset($settings['website_hero_photo'] ?? 'images/website/hero_school.jpg') }}">
@@ -32,7 +32,7 @@
     <!-- Twitter Card Meta -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="{{ $metaTitle ?? (($settings['school_name'] ?? 'SMAN 1 Lengkong') . ' - Sekolah Unggul Berwawasan Digital') }}">
-    <meta name="twitter:description" content="{{ $metaDescription ?? 'Official Web Portal & SIAKAD Terpadu SMAN 1 Lengkong Sukabumi.' }}">
+    <meta name="twitter:description" content="{{ $metaDescription ?? ('Official Web Portal & ' . ($settings['app_name'] ?? 'SIS-SMA1LE') . ' Terpadu SMAN 1 Lengkong Sukabumi.') }}">
     <meta name="twitter:image" content="{{ $metaImage ?? asset($settings['website_hero_photo'] ?? 'images/website/hero_school.jpg') }}">
 
     <!-- Google Fonts & Tailwind CSS v4 -->
@@ -1474,7 +1474,7 @@
 
             <!-- Modal Footer -->
             <div class="p-4 bg-slate-50 dark:bg-slate-900/90 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs">
-                <span class="text-[11px] text-slate-400">Terintegrasi dengan SIAKAD & Sistem Presensi Ekskul</span>
+                <span class="text-[11px] text-slate-400">Terintegrasi dengan {{ $settings['app_name'] ?? 'SIS-SMA1LE' }} & Sistem Presensi Ekskul</span>
                 <button type="button" onclick="closeEkskulDetailModal()" class="px-5 py-2 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-white font-bold transition">
                     Tutup
                 </button>
@@ -2587,7 +2587,7 @@
             <!-- Bottom Copyright & Back to Top -->
             <div class="pt-6 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left text-slate-500">
                 <p>
-                    &copy; {{ date('Y') }} <strong>{{ $settings['school_name'] ?? 'SMAN 1 Lengkong' }}</strong>. Seluruh Hak Cipta Dilindungi. Terintegrasi SIAKAD SIS-SMA1LE.
+                    &copy; {{ date('Y') }} <strong>{{ $settings['school_name'] ?? 'SMAN 1 Lengkong' }}</strong>. Seluruh Hak Cipta Dilindungi. Terintegrasi {{ $settings['app_name'] ?? 'SIS-SMA1LE' }}.
                 </p>
                 <div class="flex items-center gap-4 text-[11px]">
                     <a href="#hero" class="text-indigo-400 hover:text-indigo-300 font-semibold flex items-center gap-1">
