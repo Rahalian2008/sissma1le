@@ -197,7 +197,7 @@
             <div class="max-w-7xl 2xl:max-w-[1536px] mx-auto flex items-center justify-between gap-2 sm:gap-4">
                 
                 <!-- Left: Identitas Resmi & Info Sekolah (Adaptif Tanpa Terpotong Teks) -->
-                <div class="flex items-center gap-2 min-w-0 shrink-0">
+                <div class="flex items-center gap-1.5 sm:gap-2 min-w-0 shrink-0">
                     <span class="inline-flex items-center gap-1 px-1.5 sm:px-2 py-0.5 rounded-full bg-amber-400 text-slate-950 text-[9px] sm:text-[10px] font-black uppercase tracking-wider shrink-0 shadow-xs">
                         <span class="w-1.5 h-1.5 rounded-full bg-slate-950 animate-ping"></span>
                         Resmi
@@ -213,36 +213,51 @@
                     </div>
                 </div>
 
-                <!-- Right: Quick Utilities & Akses Cepat (Modern Pills, Elegan & Fleksibel) -->
+                <!-- Right: Quick Utilities & Akses Kiosk Digital (Modern Pills, Elegan & Fleksibel) -->
                 <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
-                    <!-- Status Online (Hanya di Layar Ultra-Wide 2xl) -->
+                    <!-- Status Online (Layar 2xl) -->
                     <span class="hidden 2xl:inline-flex items-center gap-1.5 text-[11px] text-emerald-300 font-medium px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-400/25">
                         <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
                         Sistem Online
                     </span>
 
-                    <!-- Bel Sekolah Kiosk Direct Link -->
-                    <a href="{{ route('school_bell.index') }}" target="_blank" class="hidden md:inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-amber-400/15 hover:bg-amber-400/25 text-amber-300 font-bold text-[10px] sm:text-[11px] transition border border-amber-400/30 shadow-2xs">
+                    <!-- Kios TV Display (Layar lg+) -->
+                    <a href="{{ route('kiosk.index') }}" target="_blank" class="hidden lg:inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-sky-400/15 hover:bg-sky-400/25 text-sky-300 font-bold text-[10px] sm:text-[11px] transition border border-sky-400/30 shadow-2xs" title="Layar Display TV Informasi Lobby">
+                        <span>📺 Kios TV</span>
+                    </a>
+
+                    <!-- Bel Sekolah Kiosk Direct Link (Layar md+) -->
+                    <a href="{{ route('school_bell.index') }}" target="_blank" class="hidden md:inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-amber-400/15 hover:bg-amber-400/25 text-amber-300 font-bold text-[10px] sm:text-[11px] transition border border-amber-400/30 shadow-2xs" title="Bel Sekolah Digital & Murottal 114 Surah">
                         <span>🔔 Bel<span class="hidden xl:inline"> Sekolah</span></span>
                     </a>
 
-                    <!-- Kios Tamu Resepsionis (lg+) -->
-                    <a href="{{ route('guests.kiosk') }}" target="_blank" class="hidden lg:inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-white/10 hover:bg-white/20 text-white font-medium text-[10px] sm:text-[11px] transition border border-white/10 shadow-2xs">
+                    <!-- Kios Tamu Resepsionis (Layar lg+) -->
+                    <a href="{{ route('guests.kiosk') }}" target="_blank" class="hidden lg:inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-white/10 hover:bg-white/20 text-white font-medium text-[10px] sm:text-[11px] transition border border-white/10 shadow-2xs" title="Kios Buku Tamu Digital Resepsionis">
                         <span>👥 Kios Tamu</span>
                     </a>
 
-                    <!-- Kios Buku Tamu Perpustakaan (xl+) -->
-                    <a href="{{ route('library.guest_book.index') }}" target="_blank" class="hidden xl:inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-white/10 hover:bg-white/20 text-white font-medium text-[10px] sm:text-[11px] transition border border-white/10 shadow-2xs">
+                    <!-- Kios Buku Tamu Perpustakaan (Layar xl+) -->
+                    <a href="{{ route('library.guest_book.index') }}" target="_blank" class="hidden xl:inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-white/10 hover:bg-white/20 text-white font-medium text-[10px] sm:text-[11px] transition border border-white/10 shadow-2xs" title="Kios Mandiri Perpustakaan">
                         <span>📚 Kios Perpus</span>
                     </a>
 
+                    <!-- Kios Pos Satpam & Gerbang (Layar 2xl+) -->
+                    <a href="{{ route('attendance.kiosk-satpam') }}" target="_blank" class="hidden 2xl:inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-teal-400/15 hover:bg-teal-400/25 text-teal-300 font-bold text-[10px] sm:text-[11px] transition border border-teal-400/30 shadow-2xs" title="Kios Pos Satpam & Perizinan Siswa">
+                        <span>🛡️ Kios Satpam</span>
+                    </a>
+
+                    <!-- Quick Kios Launcher Button (Di Ponsel & Layar Sedang) -->
+                    <button type="button" onclick="openPortalModal()" class="inline-flex lg:hidden items-center gap-1 px-2 py-0.5 sm:py-1 rounded-full bg-white/15 hover:bg-white/25 text-white font-bold text-[10px] sm:text-[11px] transition border border-white/20 shadow-2xs" title="Buka Ekosistem Kios Digital Mandiri">
+                        <span>🏛️ Kios<span class="hidden xs:inline"> (5)</span></span>
+                    </button>
+
                     <!-- Portal Orang Tua (sm+) -->
-                    <a href="{{ route('parent.portal') }}" class="hidden sm:inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-indigo-500/30 hover:bg-indigo-500/50 text-indigo-100 hover:text-white font-semibold text-[10px] sm:text-[11px] transition border border-indigo-400/30 shadow-2xs">
+                    <a href="{{ route('parent.portal') }}" class="hidden sm:inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-indigo-500/30 hover:bg-indigo-500/50 text-indigo-100 hover:text-white font-semibold text-[10px] sm:text-[11px] transition border border-indigo-400/30 shadow-2xs" title="Portal Orang Tua Siswa Tanpa Login">
                         <span>👨‍👩‍👧‍👦 <span class="hidden md:inline">Portal </span>Orang Tua</span>
                     </a>
 
                     <!-- Quick SPMB Registration Pill (Selalu Muncul & Menarik) -->
-                    <a href="{{ route('spmb.public.register') }}" class="px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-300 hover:from-emerald-300 hover:to-teal-200 text-slate-950 font-black text-[10px] sm:text-[11px] shadow-sm transition hover:scale-105 flex items-center gap-1">
+                    <a href="{{ route('spmb.public.register') }}" class="px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-300 hover:from-emerald-300 hover:to-teal-200 text-slate-950 font-black text-[10px] sm:text-[11px] shadow-sm transition hover:scale-105 flex items-center gap-1 shrink-0">
                         <span>🎓 <span class="hidden xs:inline">Daftar </span>SPMB</span>
                     </a>
                 </div>
@@ -2246,7 +2261,11 @@
                     👨‍🏫 Guru & Tenaga Kependidikan
                 </button>
                 <button type="button" onclick="switchRoleHub('tamu', this)" class="role-tab-btn px-4 sm:px-5 py-2.5 rounded-2xl text-xs sm:text-sm font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 transition whitespace-nowrap">
-                    🌐 Alumni & Masyarakat
+                    🌐 Alumni & Tamu
+                </button>
+                <button type="button" onclick="switchRoleHub('kiosk', this)" class="role-tab-btn px-4 sm:px-5 py-2.5 rounded-2xl text-xs sm:text-sm font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 transition whitespace-nowrap flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span>🏛️ Ekosistem Kios Digital (5)</span>
                 </button>
             </div>
 
@@ -2370,6 +2389,124 @@
                     <a href="{{ route('library.index') }}" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold transition shadow-md shadow-amber-600/20">
                         <span>Buka Katalog</span>
                         <span>→</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Role Pane: EKOSISTEM KIOS DIGITAL (5 Kios Terpadu Standalone Tanpa Perlu Login) -->
+            <div id="role-pane-kiosk" class="role-pane hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+                <!-- 1. Kios TV Informasi Display -->
+                <div class="p-5 rounded-3xl glass-card border border-sky-400/30 hover:border-sky-400 text-left hover:shadow-xl hover:shadow-sky-500/10 transition-all duration-300 flex flex-col justify-between group">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-2xl p-2 rounded-2xl bg-sky-500/10 text-sky-400 border border-sky-500/20">📺</span>
+                            <span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-emerald-500/15 text-emerald-400 border border-emerald-500/25 flex items-center gap-1">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span> Live Slide
+                            </span>
+                        </div>
+                        <h4 class="font-heading font-bold text-slate-900 dark:text-white text-sm sm:text-base mb-1 group-hover:text-sky-400 transition">
+                            Display Kios TV
+                        </h4>
+                        <p class="text-[10px] text-sky-500 font-semibold mb-2">Lobby, Aula &amp; Koridor Sekolah</p>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mb-4 leading-relaxed">
+                            Siaran otomatis slide informasi: presensi realtime, 7 KAIH, setoran juz 30, perizinan gerbang &amp; top prestasi.
+                        </p>
+                    </div>
+                    <a href="{{ route('kiosk.index') }}" target="_blank" class="w-full text-center py-2 px-3 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs transition shadow-md shadow-sky-600/20 flex items-center justify-center gap-1">
+                        <span>Buka Layar TV</span>
+                        <span>↗</span>
+                    </a>
+                </div>
+
+                <!-- 2. Kios Buku Tamu Resepsionis -->
+                <div class="p-5 rounded-3xl glass-card border border-emerald-400/30 hover:border-emerald-400 text-left hover:shadow-xl hover:shadow-emerald-500/10 transition-all duration-300 flex flex-col justify-between group">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-2xl p-2 rounded-2xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">👥</span>
+                            <span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-emerald-500/15 text-emerald-400 border border-emerald-500/25">
+                                Webcam &amp; TTD
+                            </span>
+                        </div>
+                        <h4 class="font-heading font-bold text-slate-900 dark:text-white text-sm sm:text-base mb-1 group-hover:text-emerald-400 transition">
+                            Buku Tamu Resepsionis
+                        </h4>
+                        <p class="text-[10px] text-emerald-500 font-semibold mb-2">Meja Lobby Tamu Umum &amp; Dinas</p>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mb-4 leading-relaxed">
+                            Registrasi mandiri tamu sekolah dengan jepretan kamera selfie, tanda tangan digital di layar sentuh, dan cetak ID badge.
+                        </p>
+                    </div>
+                    <a href="{{ route('guests.kiosk') }}" target="_blank" class="w-full text-center py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition shadow-md shadow-emerald-600/20 flex items-center justify-center gap-1">
+                        <span>Buka Kios Tamu</span>
+                        <span>↗</span>
+                    </a>
+                </div>
+
+                <!-- 3. Kios Buku Tamu Perpustakaan -->
+                <div class="p-5 rounded-3xl glass-card border border-amber-400/30 hover:border-amber-400 text-left hover:shadow-xl hover:shadow-amber-500/10 transition-all duration-300 flex flex-col justify-between group">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-2xl p-2 rounded-2xl bg-amber-500/10 text-amber-400 border border-amber-500/20">📚</span>
+                            <span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-amber-500/15 text-amber-400 border border-amber-500/25">
+                                Scan &amp; Presensi
+                            </span>
+                        </div>
+                        <h4 class="font-heading font-bold text-slate-900 dark:text-white text-sm sm:text-base mb-1 group-hover:text-amber-400 transition">
+                            Kios Perpustakaan
+                        </h4>
+                        <p class="text-[10px] text-amber-500 font-semibold mb-2">Ruang Pustaka &amp; Pojok Baca</p>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mb-4 leading-relaxed">
+                            Presensi mandiri pengunjung pustaka cukup ketik NISN / NIP atau scan kartu anggota, terhubung ke log statistik harian.
+                        </p>
+                    </div>
+                    <a href="{{ route('library.guest_book.index') }}" target="_blank" class="w-full text-center py-2 px-3 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs transition shadow-md shadow-amber-600/20 flex items-center justify-center gap-1">
+                        <span>Buka Kios Perpus</span>
+                        <span>↗</span>
+                    </a>
+                </div>
+
+                <!-- 4. Kios Pos Satpam & Gerbang -->
+                <div class="p-5 rounded-3xl glass-card border border-teal-400/30 hover:border-teal-400 text-left hover:shadow-xl hover:shadow-teal-500/10 transition-all duration-300 flex flex-col justify-between group">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-2xl p-2 rounded-2xl bg-teal-500/10 text-teal-400 border border-teal-500/20">🛡️</span>
+                            <span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-teal-500/15 text-teal-400 border border-teal-500/25">
+                                Live Gerbang
+                            </span>
+                        </div>
+                        <h4 class="font-heading font-bold text-slate-900 dark:text-white text-sm sm:text-base mb-1 group-hover:text-teal-400 transition">
+                            Kios Pos Satpam
+                        </h4>
+                        <p class="text-[10px] text-teal-500 font-semibold mb-2">Pos Keamanan &amp; Guru Piket</p>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mb-4 leading-relaxed">
+                            Monitor izin keluar rombongan siswa dan izin pulang cepat terverifikasi guru piket, dengan 1-klik tanda siswa kembali.
+                        </p>
+                    </div>
+                    <a href="{{ route('attendance.kiosk-satpam') }}" target="_blank" class="w-full text-center py-2 px-3 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs transition shadow-md shadow-teal-600/20 flex items-center justify-center gap-1">
+                        <span>Buka Kios Satpam</span>
+                        <span>↗</span>
+                    </a>
+                </div>
+
+                <!-- 5. Kios Bel Sekolah & Murottal -->
+                <div class="p-5 rounded-3xl glass-card border border-orange-400/30 hover:border-orange-400 text-left hover:shadow-xl hover:shadow-orange-500/10 transition-all duration-300 flex flex-col justify-between group">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-2xl p-2 rounded-2xl bg-orange-500/10 text-orange-400 border border-orange-500/20">🔔</span>
+                            <span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-orange-500/15 text-orange-400 border border-orange-500/25">
+                                114 Surah Audio
+                            </span>
+                        </div>
+                        <h4 class="font-heading font-bold text-slate-900 dark:text-white text-sm sm:text-base mb-1 group-hover:text-orange-400 transition">
+                            Bel Sekolah Otomatis
+                        </h4>
+                        <p class="text-[10px] text-orange-500 font-semibold mb-2">Sentral Sound &amp; Jadwal KBM</p>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mb-4 leading-relaxed">
+                            Bunyi lonceng jadwal pelajaran otomatis terhubung pengeras suara, sirine evakuasi bencana, dan murottal Al-Qur'an lengkap.
+                        </p>
+                    </div>
+                    <a href="{{ route('school_bell.index') }}" target="_blank" class="w-full text-center py-2 px-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold text-xs transition shadow-md shadow-orange-500/20 flex items-center justify-center gap-1">
+                        <span>Buka Bel Sekolah</span>
+                        <span>↗</span>
                     </a>
                 </div>
             </div>
@@ -3513,15 +3650,79 @@
                 </div>
             </div>
 
-            <!-- Quick Kiosk Links -->
-            <div class="mt-5 p-3.5 rounded-2xl bg-slate-950/50 border border-slate-800 flex flex-wrap items-center justify-between gap-3 text-xs text-slate-400">
-                <span class="font-semibold text-slate-300">Layanan Kiosk Mandiri:</span>
-                <div class="flex items-center gap-4">
-                    <a href="{{ route('library.guest_book.index') }}" target="_blank" class="text-amber-400 hover:underline flex items-center gap-1">
-                        <span>📖 Buku Tamu Perpustakaan</span>
+            <!-- Ekosistem 5 Kiosk Digital Mandiri (Standalone Tanpa Login) -->
+            <div class="mt-6 p-4 sm:p-5 rounded-3xl bg-slate-950/80 border border-slate-800">
+                <div class="flex items-center justify-between gap-2 mb-3 pb-2 border-b border-slate-800/80">
+                    <span class="text-xs font-black uppercase text-indigo-300 tracking-wider flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                        Ekosistem 5 Kios Digital SIS-SMA1LE (Bebas Akses Standalone)
+                    </span>
+                    <span class="text-[10px] text-slate-400 font-semibold hidden sm:inline">Layar Sentuh &amp; Monitor Display</span>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 text-xs">
+                    <!-- 1. Kios TV -->
+                    <a href="{{ route('kiosk.index') }}" target="_blank" class="p-3 rounded-2xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800 hover:border-sky-500/50 transition flex flex-col justify-between group shadow-sm">
+                        <div>
+                            <div class="flex items-center justify-between mb-1.5">
+                                <span class="text-2xl">📺</span>
+                                <span class="text-[9px] font-black uppercase px-1.5 py-0.5 rounded bg-sky-500/20 text-sky-300 border border-sky-500/30">Lobby TV</span>
+                            </div>
+                            <span class="font-bold text-white group-hover:text-sky-300 block text-xs">Display Kios TV</span>
+                            <p class="text-[11px] text-slate-400 leading-tight mt-1">Slide informasi: presensi realtime, 7 KAIH, juz 30 &amp; prestasi.</p>
+                        </div>
+                        <span class="text-[10px] font-bold text-sky-400 mt-2.5 flex items-center gap-1">Buka Layar TV ↗</span>
                     </a>
-                    <a href="{{ route('guests.kiosk') }}" target="_blank" class="text-emerald-400 hover:underline flex items-center gap-1">
-                        <span>👥 Kios Buku Tamu Resepsionis</span>
+
+                    <!-- 2. Kios Tamu -->
+                    <a href="{{ route('guests.kiosk') }}" target="_blank" class="p-3 rounded-2xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800 hover:border-emerald-500/50 transition flex flex-col justify-between group shadow-sm">
+                        <div>
+                            <div class="flex items-center justify-between mb-1.5">
+                                <span class="text-2xl">👥</span>
+                                <span class="text-[9px] font-black uppercase px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Resepsionis</span>
+                            </div>
+                            <span class="font-bold text-white group-hover:text-emerald-300 block text-xs">Buku Tamu Digital</span>
+                            <p class="text-[11px] text-slate-400 leading-tight mt-1">Selfie webcam, e-signature di layar sentuh &amp; cetak ID card.</p>
+                        </div>
+                        <span class="text-[10px] font-bold text-emerald-400 mt-2.5 flex items-center gap-1">Buka Buku Tamu ↗</span>
+                    </a>
+
+                    <!-- 3. Kios Perpus -->
+                    <a href="{{ route('library.guest_book.index') }}" target="_blank" class="p-3 rounded-2xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800 hover:border-amber-500/50 transition flex flex-col justify-between group shadow-sm">
+                        <div>
+                            <div class="flex items-center justify-between mb-1.5">
+                                <span class="text-2xl">📚</span>
+                                <span class="text-[9px] font-black uppercase px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">Pustaka</span>
+                            </div>
+                            <span class="font-bold text-white group-hover:text-amber-300 block text-xs">Kios Perpustakaan</span>
+                            <p class="text-[11px] text-slate-400 leading-tight mt-1">Presensi mandiri instan via NISN, NIP &amp; scan kartu barcode.</p>
+                        </div>
+                        <span class="text-[10px] font-bold text-amber-400 mt-2.5 flex items-center gap-1">Buka Kios Perpus ↗</span>
+                    </a>
+
+                    <!-- 4. Kios Satpam -->
+                    <a href="{{ route('attendance.kiosk-satpam') }}" target="_blank" class="p-3 rounded-2xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800 hover:border-teal-500/50 transition flex flex-col justify-between group shadow-sm">
+                        <div>
+                            <div class="flex items-center justify-between mb-1.5">
+                                <span class="text-2xl">🛡️</span>
+                                <span class="text-[9px] font-black uppercase px-1.5 py-0.5 rounded bg-teal-500/20 text-teal-300 border border-teal-500/30">Pos Gerbang</span>
+                            </div>
+                            <span class="font-bold text-white group-hover:text-teal-300 block text-xs">Kios Pos Satpam</span>
+                            <p class="text-[11px] text-slate-400 leading-tight mt-1">Live monitor izin keluar sementara &amp; konfirmasi siswa kembali.</p>
+                        </div>
+                        <span class="text-[10px] font-bold text-teal-400 mt-2.5 flex items-center gap-1">Buka Kios Satpam ↗</span>
+                    </a>
+
+                    <!-- 5. Kios Bel -->
+                    <a href="{{ route('school_bell.index') }}" target="_blank" class="p-3 rounded-2xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800 hover:border-orange-500/50 transition flex flex-col justify-between group shadow-sm">
+                        <div>
+                            <div class="flex items-center justify-between mb-1.5">
+                                <span class="text-2xl">🔔</span>
+                                <span class="text-[9px] font-black uppercase px-1.5 py-0.5 rounded bg-orange-500/20 text-orange-300 border border-orange-500/30">Sound Audio</span>
+                            </div>
+                            <span class="font-bold text-white group-hover:text-orange-300 block text-xs">Bel Sekolah Digital</span>
+                            <p class="text-[11px] text-slate-400 leading-tight mt-1">Jadwal nada otomatis, chime pelajaran, &amp; murottal 114 surah.</p>
+                        </div>
+                        <span class="text-[10px] font-bold text-orange-400 mt-2.5 flex items-center gap-1">Buka Bel Sekolah ↗</span>
                     </a>
                 </div>
             </div>

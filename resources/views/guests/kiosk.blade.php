@@ -36,53 +36,64 @@
 <body class="h-full font-sans antialiased text-slate-100 bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 flex flex-col justify-between selection:bg-indigo-500 selection:text-white">
 
     <!-- Top Navigation Header -->
-    <header class="w-full bg-slate-900/80 backdrop-blur-md border-b border-slate-800/80 px-4 sm:px-8 py-3.5 flex items-center justify-between sticky top-0 z-40">
-        <div class="flex items-center space-x-3">
-            @if(!empty($school->logo_url))
-                <img src="{{ $school->logo_url }}" alt="Logo" class="w-10 h-10 object-contain rounded-xl bg-white/10 p-1 shadow-md">
-            @else
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-blue-500 flex items-center justify-center text-white font-extrabold text-xl shadow-lg shadow-indigo-500/20">
-                    {{ substr($school->name ?? 'S', 0, 1) }}
+    <header class="w-full bg-slate-900/90 backdrop-blur-md border-b border-slate-800/80 px-3 sm:px-6 py-2.5 sm:py-3 sticky top-0 z-40 shadow-xl">
+        <div class="max-w-7xl mx-auto flex flex-wrap sm:flex-nowrap items-center justify-between gap-3">
+            <div class="flex items-center space-x-3 shrink-0 min-w-0">
+                @if(!empty($school->logo_url))
+                    <img src="{{ $school->logo_url }}" alt="Logo" class="w-9 h-9 sm:w-10 sm:h-10 object-contain rounded-xl bg-white/10 p-1 shadow-md shrink-0">
+                @else
+                    <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-blue-500 flex items-center justify-center text-white font-extrabold text-lg sm:text-xl shadow-lg shadow-indigo-500/20 shrink-0">
+                        {{ substr($school->name ?? 'S', 0, 1) }}
+                    </div>
+                @endif
+                <div class="min-w-0">
+                    <div class="text-xs sm:text-sm font-extrabold text-white tracking-wide leading-tight truncate">{{ $school->name ?? 'SMA NEGERI 1 LENGKONG' }}</div>
+                    <div class="text-[10px] sm:text-[11px] text-indigo-400 font-semibold tracking-wider uppercase truncate">Buku Tamu Digital &bull; Kiosk Resepsionis</div>
                 </div>
-            @endif
-            <div>
-                <div class="text-sm font-extrabold text-white tracking-wide leading-tight">{{ $school->name ?? 'SMA NEGERI 1 LENGKONG' }}</div>
-                <div class="text-[11px] text-indigo-400 font-semibold tracking-wider uppercase">Buku Tamu Digital &bull; Kiosk Resepsionis</div>
-            </div>
-        </div>
-
-        <div class="flex items-center gap-2">
-            <!-- Kiosk Ecosystem Switcher -->
-            <div class="hidden md:flex items-center gap-1.5 bg-slate-950/80 border border-slate-800 rounded-xl p-1 text-xs">
-                <a href="{{ route('kiosk.index') }}" target="_blank" class="px-2.5 py-1 rounded-lg font-bold text-slate-400 hover:text-white hover:bg-slate-800 transition flex items-center gap-1">
-                    <span>📺 Kios TV</span>
-                </a>
-                <a href="{{ route('library.guest_book.index') }}" target="_blank" class="px-2.5 py-1 rounded-lg font-bold text-slate-400 hover:text-white hover:bg-slate-800 transition flex items-center gap-1">
-                    <span>📚 Kios Perpus</span>
-                </a>
-                <a href="{{ route('guests.kiosk') }}" class="px-2.5 py-1 rounded-lg font-bold bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 flex items-center gap-1">
-                    <span>👥 Kios Tamu</span>
-                </a>
             </div>
 
-            <button onclick="openCheckoutModal()" class="px-3.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white rounded-xl text-xs font-bold border border-slate-700 transition cursor-pointer flex items-center gap-1.5">
-                <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-                Check-Out Tamu
-            </button>
-            <a href="{{ route('login') }}" class="px-3 py-1.5 bg-indigo-600/30 hover:bg-indigo-600 text-indigo-300 hover:text-white rounded-xl text-xs font-semibold border border-indigo-500/30 transition">
-                Masuk Petugas
-            </a>
+            <div class="flex items-center gap-1.5 sm:gap-2 shrink-0 flex-wrap justify-end">
+                <!-- Unified Kiosk Ecosystem Switcher (Lengkap, Rapi & Fleksibel) -->
+                <div class="flex items-center gap-1 bg-slate-950/80 border border-slate-800 rounded-xl p-1 text-[11px] font-bold overflow-x-auto no-scrollbar">
+                    <a href="{{ route('kiosk.index') }}" target="_blank" class="px-2 py-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition flex items-center gap-1 whitespace-nowrap" title="Buka Kios TV Display">
+                        <span>📺 Kios TV</span>
+                    </a>
+                    <a href="{{ route('guests.kiosk') }}" class="px-2 py-1 rounded-lg bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 flex items-center gap-1 whitespace-nowrap">
+                        <span>👥 Kios Tamu</span>
+                    </a>
+                    <a href="{{ route('library.guest_book.index') }}" target="_blank" class="px-2 py-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition flex items-center gap-1 whitespace-nowrap" title="Buka Kios Perpustakaan">
+                        <span>📚 Kios Perpus</span>
+                    </a>
+                    <a href="{{ route('attendance.kiosk-satpam') }}" target="_blank" class="hidden sm:flex px-2 py-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition items-center gap-1 whitespace-nowrap" title="Buka Kios Pos Satpam">
+                        <span>🛡️ Kios Satpam</span>
+                    </a>
+                    <a href="{{ route('school_bell.index') }}" target="_blank" class="hidden md:flex px-2 py-1 rounded-lg text-amber-400 hover:text-amber-300 hover:bg-slate-800 transition items-center gap-1 whitespace-nowrap" title="Buka Bel Sekolah">
+                        <span>🔔 Bel</span>
+                    </a>
+                    <a href="{{ route('website.home') }}" target="_blank" class="hidden lg:flex px-2 py-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition items-center gap-1 whitespace-nowrap" title="Kembali ke Portal Sekolah">
+                        <span>🌐 Web</span>
+                    </a>
+                </div>
+
+                <button type="button" onclick="openCheckoutModal()" class="px-2.5 sm:px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white rounded-xl text-xs font-bold border border-slate-700 transition cursor-pointer flex items-center gap-1.5 shrink-0 whitespace-nowrap shadow-xs">
+                    <svg class="w-3.5 h-3.5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                    <span>Check-Out</span>
+                </button>
+                <a href="{{ route('login') }}" class="px-2.5 sm:px-3 py-1.5 bg-indigo-600/30 hover:bg-indigo-600 text-indigo-300 hover:text-white rounded-xl text-xs font-semibold border border-indigo-500/30 transition shrink-0 whitespace-nowrap">
+                    Petugas
+                </a>
+            </div>
         </div>
     </header>
 
     <!-- Main Content Form -->
-    <main class="flex-1 py-8 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto w-full">
+    <main class="flex-1 py-6 sm:py-8 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto w-full">
         
         <!-- Welcome Hero Banner -->
-        <div class="text-center mb-8">
+        <div class="text-center mb-6 sm:mb-8">
             <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 mb-3">
                 <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                Pelayanan Tamu Terpadu SIKATAS
+                Pelayanan Tamu Terpadu SIS-SMA1LE
             </span>
             <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Selamat Datang di Kampus Sekolah</h1>
             <p class="text-xs sm:text-sm text-slate-400 max-w-xl mx-auto mt-1.5">

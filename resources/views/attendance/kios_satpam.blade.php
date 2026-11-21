@@ -41,9 +41,9 @@
 <body class="bg-slate-950 text-slate-100 h-screen max-h-screen overflow-hidden flex flex-col justify-between selection:bg-teal-500 selection:text-white">
 
     <!-- Top Header Bar Kios Satpam -->
-    <header class="bg-slate-900/90 border-b border-slate-800 shrink-0 z-40 backdrop-blur-md px-4 sm:px-6 py-2.5 shadow-xl">
-        <div class="max-w-7xl mx-auto flex items-center justify-between gap-3">
-            <div class="flex items-center gap-3">
+    <header class="bg-slate-900/90 border-b border-slate-800 shrink-0 z-40 backdrop-blur-md px-3 sm:px-6 py-2.5 shadow-xl">
+        <div class="max-w-7xl mx-auto flex flex-wrap sm:flex-nowrap items-center justify-between gap-3">
+            <div class="flex items-center gap-3 shrink-0 min-w-0">
                 <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-teal-600 to-emerald-500 flex items-center justify-center text-white shadow-lg shadow-teal-500/25 shrink-0">
                     <span class="text-xl">🛡️</span>
                 </div>
@@ -63,9 +63,31 @@
                 </div>
             </div>
 
-            <div class="flex items-center gap-2 shrink-0">
+            <div class="flex items-center gap-1.5 sm:gap-2 shrink-0 flex-wrap justify-end">
+                <!-- Unified Kiosk Ecosystem Switcher -->
+                <div class="flex items-center gap-1 bg-slate-950/80 border border-slate-800 rounded-xl p-1 text-[11px] font-bold overflow-x-auto no-scrollbar">
+                    <a href="{{ route('kiosk.index') }}" target="_blank" class="px-2 py-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition flex items-center gap-1 whitespace-nowrap" title="Buka Kios TV Display">
+                        <span>📺 Kios TV</span>
+                    </a>
+                    <a href="{{ route('guests.kiosk') }}" target="_blank" class="px-2 py-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition flex items-center gap-1 whitespace-nowrap" title="Buka Kios Buku Tamu">
+                        <span>👥 Kios Tamu</span>
+                    </a>
+                    <a href="{{ route('library.guest_book.index') }}" target="_blank" class="px-2 py-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition flex items-center gap-1 whitespace-nowrap" title="Buka Kios Perpustakaan">
+                        <span>📚 Kios Perpus</span>
+                    </a>
+                    <a href="{{ route('attendance.kiosk-satpam') }}" class="px-2 py-1 rounded-lg bg-teal-500/20 text-teal-300 border border-teal-500/30 flex items-center gap-1 whitespace-nowrap">
+                        <span>🛡️ Kios Satpam</span>
+                    </a>
+                    <a href="{{ route('school_bell.index') }}" target="_blank" class="hidden md:flex px-2 py-1 rounded-lg text-amber-400 hover:text-amber-300 hover:bg-slate-800 transition items-center gap-1 whitespace-nowrap" title="Buka Bel Sekolah">
+                        <span>🔔 Bel</span>
+                    </a>
+                    <a href="{{ route('website.home') }}" target="_blank" class="hidden lg:flex px-2 py-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition items-center gap-1 whitespace-nowrap" title="Kembali ke Portal Sekolah">
+                        <span>🌐 Web</span>
+                    </a>
+                </div>
+
                 <!-- Live Jam Digital Realtime -->
-                <div class="px-3 py-1 rounded-xl bg-slate-800/80 border border-slate-700/80 text-right">
+                <div class="px-2.5 sm:px-3 py-1 rounded-xl bg-slate-800/80 border border-slate-700/80 text-right shrink-0">
                     <div id="live-clock" class="text-xs sm:text-sm font-black font-mono text-teal-400 tracking-wider">--:--:-- WIB</div>
                     <div id="live-date" class="text-[9px] text-slate-400 font-semibold">{{ $today->translatedFormat('l, d F Y') }}</div>
                 </div>
@@ -77,7 +99,7 @@
                 <button type="button" onclick="window.location.reload()" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-teal-400 hover:text-teal-300 border border-slate-700 transition" title="Segarkan Data Sekarang">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
                 </button>
-                <a href="{{ route('attendance.index') }}" class="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 text-xs font-bold transition flex items-center gap-1">
+                <a href="{{ route('attendance.index') }}" class="px-2 sm:px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 text-xs font-bold transition flex items-center gap-1 shrink-0">
                     <span>&larr; Dashboard</span>
                 </a>
             </div>

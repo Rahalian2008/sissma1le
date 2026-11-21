@@ -105,7 +105,7 @@
                         <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> LIVE KIOSK
                     </span>
                 </div>
-                <p class="text-[10px] sm:text-[11px] text-slate-400 font-medium truncate">
+                <p class="text-[10px] sm:text-[11px] text-slate-400 font-medium hidden sm:block whitespace-nowrap">
                     Sistem Slide Informasi Terpadu &bull; Presensi, Ibadah, Tahfidz Juz 30, Piket &amp; Prestasi
                 </p>
             </div>
@@ -135,6 +135,22 @@
 
         <!-- Controls: Play/Pause, Prev/Next, Fullscreen, Clock -->
         <div class="flex items-center gap-2 shrink-0">
+            <!-- Ekosistem Kios Quick Launch (Layar Besar) -->
+            <div class="hidden 2xl:flex items-center gap-1 bg-slate-950/80 border border-white/10 rounded-xl p-1 text-xs">
+                <a href="{{ route('guests.kiosk') }}" target="_blank" class="px-2 py-1 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition flex items-center gap-1" title="Buka Kios Buku Tamu">
+                    <span>👥 Tamu</span>
+                </a>
+                <a href="{{ route('library.guest_book.index') }}" target="_blank" class="px-2 py-1 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition flex items-center gap-1" title="Buka Kios Perpustakaan">
+                    <span>📚 Perpus</span>
+                </a>
+                <a href="{{ route('attendance.kiosk-satpam') }}" target="_blank" class="px-2 py-1 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition flex items-center gap-1" title="Buka Kios Satpam">
+                    <span>🛡️ Satpam</span>
+                </a>
+                <a href="{{ route('website.home') }}" target="_blank" class="px-2 py-1 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition flex items-center gap-1" title="Portal Web Utama">
+                    <span>🌐 Web</span>
+                </a>
+            </div>
+
             <!-- Slide Control Buttons -->
             <div class="flex items-center bg-slate-950/80 border border-white/10 rounded-xl p-1 text-xs">
                 <button type="button" onclick="prevSlide()" class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition" title="Slide Sebelumnya (Panah Kiri)">

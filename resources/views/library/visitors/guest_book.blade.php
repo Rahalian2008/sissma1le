@@ -76,41 +76,50 @@
             </div>
 
             <!-- Jam Realtime, Total Pengunjung & Kontrol Kiosk -->
-            <div class="flex items-center gap-3 sm:gap-4 shrink-0 justify-between lg:justify-end w-full lg:w-auto pt-3 lg:pt-0 border-t lg:border-t-0 border-slate-800/80">
+            <div class="flex items-center gap-2.5 sm:gap-3 shrink-0 flex-wrap justify-between lg:justify-end w-full lg:w-auto pt-3 lg:pt-0 border-t lg:border-t-0 border-slate-800/80">
                 
                 <!-- Digital Clock Card -->
-                <div class="text-center sm:text-right px-4 sm:px-5 py-2.5 rounded-2xl bg-slate-950/70 border border-slate-800 shadow-inner">
-                    <div id="live-clock" class="font-mono text-2xl sm:text-3xl font-black text-amber-400 tracking-wider">00:00:00</div>
-                    <div id="live-date" class="text-[11px] text-slate-400 font-semibold">{{ \Carbon\Carbon::now()->translatedFormat('l, d F Y') }}</div>
+                <div class="text-center sm:text-right px-3.5 sm:px-4 py-2 rounded-2xl bg-slate-950/70 border border-slate-800 shadow-inner">
+                    <div id="live-clock" class="font-mono text-xl sm:text-2xl font-black text-amber-400 tracking-wider">00:00:00</div>
+                    <div id="live-date" class="text-[10px] text-slate-400 font-semibold">{{ \Carbon\Carbon::now()->translatedFormat('l, d F Y') }}</div>
                 </div>
 
                 <!-- Pengunjung Counter Badge -->
-                <div class="text-center px-4 sm:px-5 py-2.5 rounded-2xl bg-indigo-600/25 border border-indigo-500/30 shadow-inner min-w-[125px]">
-                    <div id="badge-total-today" class="text-2xl sm:text-3xl font-black text-white font-mono">{{ $todayCount }}</div>
-                    <div class="text-[10px] text-indigo-200 uppercase font-bold tracking-wider">Pengunjung Hari Ini</div>
+                <div class="text-center px-3.5 sm:px-4 py-2 rounded-2xl bg-indigo-600/25 border border-indigo-500/30 shadow-inner min-w-[110px]">
+                    <div id="badge-total-today" class="text-xl sm:text-2xl font-black text-white font-mono">{{ $todayCount }}</div>
+                    <div class="text-[9px] text-indigo-200 uppercase font-bold tracking-wider">Pengunjung Hari Ini</div>
                 </div>
 
-                <!-- Kiosk Ecosystem Switcher -->
-                <div class="hidden xl:flex items-center gap-1.5 bg-slate-950/80 border border-slate-800 rounded-2xl p-1.5 text-xs">
-                    <a href="{{ route('kiosk.index') }}" target="_blank" class="px-2.5 py-1.5 rounded-xl font-bold text-slate-400 hover:text-white hover:bg-slate-800 transition flex items-center gap-1">
+                <!-- Unified Kiosk Ecosystem Switcher -->
+                <div class="flex items-center gap-1 bg-slate-950/80 border border-slate-800 rounded-2xl p-1 text-[11px] font-bold overflow-x-auto no-scrollbar">
+                    <a href="{{ route('kiosk.index') }}" target="_blank" class="px-2 py-1 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition flex items-center gap-1 whitespace-nowrap" title="Buka Kios TV Display">
                         <span>📺 Kios TV</span>
                     </a>
-                    <a href="{{ route('library.guest_book.index') }}" class="px-2.5 py-1.5 rounded-xl font-bold bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 flex items-center gap-1">
+                    <a href="{{ route('library.guest_book.index') }}" class="px-2 py-1 rounded-xl bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 flex items-center gap-1 whitespace-nowrap">
                         <span>📚 Kios Perpus</span>
                     </a>
-                    <a href="{{ route('guests.kiosk') }}" target="_blank" class="px-2.5 py-1.5 rounded-xl font-bold text-slate-400 hover:text-white hover:bg-slate-800 transition flex items-center gap-1">
+                    <a href="{{ route('guests.kiosk') }}" target="_blank" class="px-2 py-1 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition flex items-center gap-1 whitespace-nowrap" title="Buka Kios Resepsionis Tamu">
                         <span>👥 Kios Tamu</span>
+                    </a>
+                    <a href="{{ route('attendance.kiosk-satpam') }}" target="_blank" class="hidden sm:flex px-2 py-1 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition items-center gap-1 whitespace-nowrap" title="Buka Kios Pos Satpam">
+                        <span>🛡️ Kios Satpam</span>
+                    </a>
+                    <a href="{{ route('school_bell.index') }}" target="_blank" class="hidden md:flex px-2 py-1 rounded-xl text-amber-400 hover:text-amber-300 hover:bg-slate-800 transition items-center gap-1 whitespace-nowrap" title="Buka Bel Sekolah">
+                        <span>🔔 Bel</span>
+                    </a>
+                    <a href="{{ route('website.home') }}" target="_blank" class="hidden xl:flex px-2 py-1 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition items-center gap-1 whitespace-nowrap" title="Kembali ke Portal Sekolah">
+                        <span>🌐 Web</span>
                     </a>
                 </div>
 
                 <!-- Tombol Fullscreen & Admin Nav -->
-                <div class="flex items-center gap-1.5">
+                <div class="flex items-center gap-1.5 shrink-0">
                     <button type="button" onclick="toggleKioskFullscreen()" title="Layar Penuh (Fullscreen)" 
-                            class="w-11 h-11 rounded-2xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 hover:text-white transition flex items-center justify-center text-sm cursor-pointer shadow-sm">
+                            class="w-10 h-10 rounded-2xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 hover:text-white transition flex items-center justify-center text-sm cursor-pointer shadow-sm">
                         <span id="fullscreen-icon">⛶</span>
                     </button>
                     <a href="{{ route('library.index') }}" title="Masuk ke Panel Pengelola Perpustakaan" 
-                       class="w-11 h-11 rounded-2xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 hover:text-white transition flex items-center justify-center text-sm cursor-pointer shadow-sm">
+                       class="w-10 h-10 rounded-2xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 hover:text-white transition flex items-center justify-center text-sm cursor-pointer shadow-sm">
                         <span>⚙️</span>
                     </a>
                 </div>
