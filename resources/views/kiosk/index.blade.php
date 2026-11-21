@@ -1678,20 +1678,43 @@
                         </span>
                     </div>
 
-                    <div class="flex-1 min-h-0 overflow-y-auto kiosk-scroll space-y-2 py-2 pr-1">
+                    <div class="flex-1 min-h-0 overflow-y-auto kiosk-scroll space-y-2.5 py-1.5 pr-1">
                         @foreach($data['bk']['counselors'] ?? [] as $gc)
-                            <div class="p-2.5 rounded-xl bg-slate-900/80 border border-white/5 flex items-center gap-3 hover:border-purple-500/30 transition">
-                                <div class="w-10 h-10 rounded-xl bg-purple-600/20 border border-purple-500/30 flex items-center justify-center text-purple-300 text-base font-bold shrink-0 overflow-hidden">
+                            <div class="p-2.5 sm:p-3 rounded-2xl border transition flex items-center gap-3.5 {{ !empty($gc['is_coordinator']) ? 'bg-gradient-to-r from-purple-950/70 via-slate-900/95 to-purple-900/50 border-purple-500/40 shadow-lg shadow-purple-950/40' : 'bg-slate-900/85 border-white/10 hover:border-purple-500/40' }}">
+                                <div class="w-14 sm:w-16 h-18 sm:h-20 rounded-xl overflow-hidden shrink-0 border-2 {{ !empty($gc['is_coordinator']) ? 'border-amber-400/70 ring-2 ring-purple-500/40' : 'border-purple-400/40' }} bg-slate-800 shadow-md flex items-center justify-center">
                                     @if(!empty($gc['photo']))
-                                        <img src="{{ $gc['photo'] }}" alt="{{ $gc['name'] }}" class="w-full h-full object-cover">
+                                        <img src="{{ $gc['photo'] }}" alt="{{ $gc['name'] }}" class="w-full h-full object-cover" style="object-position: top center;">
                                     @else
-                                        <span>🧑‍🏫</span>
+                                        <span class="text-2xl">{{ !empty($gc['is_coordinator']) ? '👑' : '🧑‍🏫' }}</span>
                                     @endif
                                 </div>
-                                <div class="min-w-0 flex-1">
-                                    <div class="font-extrabold text-xs text-white truncate">{{ $gc['name'] }}</div>
-                                    <div class="text-[10px] text-purple-300 truncate">{{ $gc['role'] }}</div>
-                                    <div class="text-[9px] text-slate-500 font-mono truncate">NIP: {{ $gc['nip'] }}</div>
+                                <div class="min-w-0 flex-1 space-y-1">
+                                    <div class="flex items-center gap-1.5 flex-wrap">
+                                        @if(!empty($gc['is_coordinator']))
+                                            <span class="px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider bg-gradient-to-r from-amber-500/25 to-purple-500/25 text-amber-300 border border-amber-500/40 flex items-center gap-1">
+                                                <span>👑</span> KOORDINATOR BK
+                                            </span>
+                                        @else
+                                            <span class="px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider bg-purple-500/20 text-purple-300 border border-purple-500/30 flex items-center gap-1">
+                                                <span>👨‍🏫</span> GURU BK
+                                            </span>
+                                        @endif
+                                        @if(!empty($gc['status']))
+                                            <span class="px-1.5 py-0.5 rounded text-[8.5px] font-bold bg-white/10 text-slate-300 border border-white/5 font-mono">
+                                                {{ $gc['status'] }}
+                                            </span>
+                                        @endif
+                                    </div>
+                                    <div class="font-extrabold text-xs sm:text-sm text-white leading-snug truncate" title="{{ $gc['name'] }}">
+                                        {{ $gc['name'] }}
+                                    </div>
+                                    <div class="text-[10.5px] font-medium text-purple-300 truncate">
+                                        {{ $gc['role'] }}
+                                    </div>
+                                    <div class="text-[9.5px] text-slate-400 font-mono truncate flex items-center gap-1">
+                                        <span class="text-slate-500">NIP:</span>
+                                        <span class="text-slate-300 font-semibold">{{ $gc['nip'] }}</span>
+                                    </div>
                                 </div>
                             </div>
                         @endforeach

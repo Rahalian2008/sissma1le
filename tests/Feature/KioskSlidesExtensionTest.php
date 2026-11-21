@@ -35,6 +35,10 @@ test('kiosk index renders slides for berita, agenda, and guru & staf with photos
     // Assert Slide 10: Bimbingan & Konseling
     $response->assertSee('slide-10', false);
     $response->assertSee('Bimbingan &amp; Konseling (BK)', false);
+    $response->assertSee('Konselor / Guru BK Sekolah', false);
+    $response->assertSee('KOORDINATOR BK', false);
+    $response->assertSee('GURU BK', false);
+    $response->assertSee('Ida Marttin Maolidah', false);
 
     // Assert Slide 11: Buku Tamu & Kunjungan Sekolah
     $response->assertSee('slide-11', false);

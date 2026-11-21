@@ -21,6 +21,7 @@ use App\Models\SchoolIdentity;
 use App\Models\SchoolSetting;
 use App\Models\Student;
 use App\Models\Teacher;
+use App\Models\User;
 use App\Models\WorshipAttendance;
 use App\Services\AttendanceService;
 use Carbon\Carbon;
@@ -498,7 +499,45 @@ class KioskController extends Controller
                 ['field' => 'Bimbingan Karir & Kuliah', 'icon' => '🎓', 'desc' => 'Jalur SNBP, SNBT, Kedinasan & peminatan vokasi', 'count' => BkCounselingSession::where('field_of_service', 'like', '%karir%')->count()],
             ];
 
-            $bkCounselors = Teacher::where(function ($q) {
+            // 17. Koordinator BK & Tim Guru Bimbingan Konseling (BK)
+            $bkCounselors = collect();
+            $staffCollection = collect($staffMembers);
+
+            // A. Ambil dari Akun User & Hak Akses Role (koordinator_bk, guru_bk, bk)
+            $bkUsers = User::all()->filter(function ($u) {
+                return $u->hasRole('koordinator_bk') || $u->hasRole('guru_bk') || $u->hasRole('bk');
+            });
+
+            foreach ($bkUsers as $u) {
+                $staffMatch = $staffCollection->first(function ($s) use ($u) {
+                    return (! empty($u->nip) && ! empty($s['nip']) && $u->nip === $s['nip'])
+                        || (! empty($s['name']) && ! empty($u->name) && (stripos($s['name'], $u->name) !== false || stripos($u->name, $s['name']) !== false));
+                });
+
+                $isCoord = $u->hasRole('koordinator_bk');
+                $roleTitle = $isCoord ? 'Koordinator Bimbingan & Konseling' : 'Guru BK / Konselor Sekolah';
+                $badge = $isCoord ? 'KOORDINATOR BK' : 'GURU BK';
+
+                $photoUrl = null;
+                if ($staffMatch && ! empty($staffMatch['photo'])) {
+                    $photoUrl = str_starts_with($staffMatch['photo'], 'http') ? $staffMatch['photo'] : asset($staffMatch['photo']);
+                } elseif (! empty($u->avatar)) {
+                    $photoUrl = str_starts_with($u->avatar, 'http') ? $u->avatar : asset($u->avatar);
+                }
+
+                $bkCounselors->push([
+                    'name' => $staffMatch['name'] ?? $u->name,
+                    'nip' => $u->nip ?: ($staffMatch['nip'] ?? '-'),
+                    'role' => $roleTitle,
+                    'badge' => $badge,
+                    'is_coordinator' => $isCoord,
+                    'status' => $staffMatch['employment_status'] ?? ($isCoord ? 'PNS / ASN' : 'PPPK'),
+                    'photo' => $photoUrl,
+                ]);
+            }
+
+            // B. Cari juga di tabel Teacher jika ada guru dengan tugas BK yang belum tercakup
+            $extraTeachers = Teacher::where(function ($q) {
                 if (Schema::hasColumn('teachers', 'teaching_subject')) {
                     $q->where('teaching_subject', 'like', '%BK%')
                         ->orWhere('teaching_subject', 'like', '%Bimbingan%');
@@ -507,19 +546,87 @@ class KioskController extends Controller
                     $q->orWhere('position', 'like', '%BK%')
                         ->orWhere('position', 'like', '%Bimbingan%');
                 }
-            })->limit(4)->get()->map(fn ($t) => [
-                'name' => $t->name,
-                'nip' => $t->nip ?: '-',
-                'role' => $t->position ?: ($t->teaching_subject ?? 'Guru Bimbingan Konseling'),
-                'photo' => null,
-            ]);
+            })->get();
+
+            foreach ($extraTeachers as $et) {
+                if (! $bkCounselors->contains(fn ($c) => (! empty($et->nip) && $c['nip'] === $et->nip) || $c['name'] === $et->name)) {
+                    $staffMatch = $staffCollection->first(fn ($s) => (! empty($et->nip) && ! empty($s['nip']) && $et->nip === $s['nip']) || (stripos($s['name'] ?? '', $et->name) !== false));
+                    $photoUrl = null;
+                    if ($staffMatch && ! empty($staffMatch['photo'])) {
+                        $photoUrl = str_starts_with($staffMatch['photo'], 'http') ? $staffMatch['photo'] : asset($staffMatch['photo']);
+                    }
+                    $bkCounselors->push([
+                        'name' => $et->name,
+                        'nip' => $et->nip ?: '-',
+                        'role' => $et->position ?: ($et->teaching_subject ?? 'Guru Bimbingan & Konseling'),
+                        'badge' => 'GURU BK',
+                        'is_coordinator' => false,
+                        'status' => $staffMatch['employment_status'] ?? 'PPPK',
+                        'photo' => $photoUrl,
+                    ]);
+                }
+            }
+
+            // C. Urutkan Koordinator BK selalu tampil paling atas
+            $bkCounselors = $bkCounselors->sortByDesc('is_coordinator')->values();
+
+            // D. Pastikan Koordinator BK selalu hadir di posisi terdepan
+            if (! $bkCounselors->contains('is_coordinator', true)) {
+                $coordStaff = $staffCollection->first(fn ($s) => stripos($s['name'] ?? '', 'Ida Marttin') !== false);
+                $bkCounselors->prepend([
+                    'name' => $coordStaff['name'] ?? 'Ida Marttin Maolidah SE, SP.,M.Pd.',
+                    'nip' => $coordStaff['nip'] ?? '197803102008012006',
+                    'role' => 'Koordinator Bimbingan & Konseling',
+                    'badge' => 'KOORDINATOR BK',
+                    'is_coordinator' => true,
+                    'status' => $coordStaff['employment_status'] ?? 'PNS / ASN',
+                    'photo' => ! empty($coordStaff['photo']) ? (str_starts_with($coordStaff['photo'], 'http') ? $coordStaff['photo'] : asset($coordStaff['photo'])) : asset('images/website/staff/teacher_10_1794366251.png'),
+                ]);
+            }
         } catch (\Throwable $e) {
             // Graceful fallback
         }
 
+        // Fallback resmi jika data master kosong
         if ($bkCounselors->isEmpty()) {
             $bkCounselors = collect([
-                ['name' => 'Tim Bimbingan Konseling S1L', 'nip' => '-', 'role' => 'Konselor Sekolah', 'photo' => null],
+                [
+                    'name' => 'Ida Marttin Maolidah SE, SP.,M.Pd.',
+                    'nip' => '197803102008012006',
+                    'role' => 'Koordinator Bimbingan & Konseling',
+                    'badge' => 'KOORDINATOR BK',
+                    'is_coordinator' => true,
+                    'status' => 'PNS / ASN',
+                    'photo' => asset('images/website/staff/teacher_10_1794366251.png'),
+                ],
+                [
+                    'name' => 'Melisa Irvianti, S.Pd.',
+                    'nip' => '198905162022212015',
+                    'role' => 'Guru BK / Konselor Sekolah',
+                    'badge' => 'GURU BK',
+                    'is_coordinator' => false,
+                    'status' => 'PPPK',
+                    'photo' => asset('images/website/staff/teacher_22_1794103579.png'),
+                ],
+                [
+                    'name' => 'Fajar Wahid Kurniawan, S.Pd.',
+                    'nip' => '199411192022211003',
+                    'role' => 'Guru BK / Konselor Sekolah',
+                    'badge' => 'GURU BK',
+                    'is_coordinator' => false,
+                    'status' => 'PPPK',
+                    'photo' => asset('images/website/staff/teacher_25_1794078022.jpg'),
+                ],
+            ]);
+        } elseif (! $bkCounselors->contains('is_coordinator', true)) {
+            $bkCounselors->prepend([
+                'name' => 'Ida Marttin Maolidah SE, SP.,M.Pd.',
+                'nip' => '197803102008012006',
+                'role' => 'Koordinator Bimbingan & Konseling',
+                'badge' => 'KOORDINATOR BK',
+                'is_coordinator' => true,
+                'status' => 'PNS / ASN',
+                'photo' => asset('images/website/staff/teacher_10_1794366251.png'),
             ]);
         }
 

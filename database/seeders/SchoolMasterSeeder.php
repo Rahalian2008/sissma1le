@@ -257,6 +257,32 @@ class SchoolMasterSeeder extends Seeder
             ]
         );
 
+        // Koordinator BK (Bimbingan Konseling)
+        $nipKoordinatorBk = '197803102008012006';
+        $userKoordinatorBk = User::updateOrCreate(
+            ['email' => 'koordinator_bk@sma1le.sch.id'],
+            [
+                'name' => 'Ida Marttin Maolidah SE, SP.,M.Pd.',
+                'username' => $nipKoordinatorBk,
+                'role' => 'koordinator_bk',
+                'roles' => ['koordinator_bk', 'guru'],
+                'phone' => '081234567895',
+                'password' => Hash::make($nipKoordinatorBk),
+                'is_active' => true,
+            ]
+        );
+        Teacher::updateOrCreate(
+            ['nip' => $nipKoordinatorBk],
+            [
+                'user_id' => $userKoordinatorBk->id,
+                'name' => 'Ida Marttin Maolidah SE, SP.,M.Pd.',
+                'gender' => 'P',
+                'phone' => '081234567895',
+                'title' => 'Koordinator Bimbingan Konseling (BK)',
+                'is_active' => true,
+            ]
+        );
+
         // Guru BK (Bimbingan Konseling)
         $nipBk = '197503102002122002';
         $userBk = User::updateOrCreate(
