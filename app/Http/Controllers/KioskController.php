@@ -396,6 +396,21 @@ class KioskController extends Controller
             'missions' => $missions,
         ];
 
+        // 13. Data Berita & Warta Sekolah dari Konten Website
+        $customNews = SchoolSetting::get('website_news_json');
+        $newsArticles = $customNews ? (json_decode($customNews, true) ?: WebsiteContentController::DEFAULT_NEWS) : WebsiteContentController::DEFAULT_NEWS;
+        if (! is_array($newsArticles) || empty($newsArticles)) {
+            $newsArticles = WebsiteContentController::DEFAULT_NEWS;
+        }
+
+        // 14. Data Agenda & Kalender Kegiatan dari Konten Website
+        $customAgendas = SchoolSetting::get('website_agendas_json');
+        $decodedAgendas = $customAgendas !== null ? json_decode($customAgendas, true) : null;
+        $agendas = is_array($decodedAgendas) && count($decodedAgendas) > 0 ? $decodedAgendas : WebsiteContentController::DEFAULT_AGENDAS;
+
+        // 15. Data Dewan Guru & Tenaga Kependidikan dari Website
+        $staffMembers = WebsiteContentController::getLiveStaff();
+
         // Running Text Ticker Quotes
         $tickers = [
             "Selamat Datang di Monitor KIOSK TV {$schoolProfile['name']}.",
@@ -409,6 +424,13 @@ class KioskController extends Controller
             '7 Kebiasaan Anak Indonesia Hebat (7 KAIH): Laksanakan pembiasaan karakter setiap hari!',
             "Tingkatkan Hafalan Al-Qur'an Juz 30 dan Raih Poin Prestasi Positif Sekolah!",
         ];
+
+        if (! empty($newsArticles[0]['title'])) {
+            $tickers[] = 'Warta Sekolah: '.$newsArticles[0]['title'];
+        }
+        if (! empty($agendas[0]['title'])) {
+            $tickers[] = 'Agenda Terdekat: '.$agendas[0]['title'].' ('.$agendas[0]['date'].')';
+        }
 
         return [
             'school' => [
@@ -485,6 +507,9 @@ class KioskController extends Controller
             ],
             'profile' => $schoolProfile,
             'schedules' => $schedules,
+            'news' => $newsArticles,
+            'agendas' => $agendas,
+            'staff' => $staffMembers,
             'ticker' => implode('  •  ', $tickers),
         ];
     }
