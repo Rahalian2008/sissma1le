@@ -176,7 +176,7 @@
                 </button>
                 <button type="button" id="btnPlayPause" onclick="togglePlayPause()" class="px-2 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-white/10 font-bold transition flex items-center gap-1" title="Jeda / Lanjutkan Auto Slide">
                     <span id="playPauseIcon">⏸️</span>
-                    <span id="slideCountdownLabel" class="font-mono text-[11px] text-teal-300">20s</span>
+                    <span id="slideCountdownLabel" class="font-mono text-[11px] text-teal-300">16s</span>
                 </button>
                 <button type="button" onclick="nextSlide()" class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition" title="Slide Berikutnya (Panah Kanan)">
                     <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
@@ -1364,13 +1364,13 @@
                                     </span>
                                 </div>
 
-                                <!-- Photo Container with Elegant Ring (Enlarged) -->
-                                <div class="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-2xl overflow-hidden p-1 bg-gradient-to-tr {{ $isHeadmaster ? 'from-amber-400 via-yellow-500 to-amber-600' : 'from-teal-400 via-indigo-500 to-sky-400' }} shadow-xl my-1.5 shrink-0 group-hover:scale-105 transition duration-300">
+                                <!-- Photo Container with Elegant Ring (Enlarged Portrait Ratio, No Head Cutoff) -->
+                                <div class="w-28 h-36 sm:w-32 sm:h-40 md:w-36 md:h-44 lg:w-36 lg:h-44 xl:w-40 xl:h-48 rounded-2xl overflow-hidden p-1 bg-gradient-to-tr {{ $isHeadmaster ? 'from-amber-400 via-yellow-500 to-amber-600' : 'from-teal-400 via-indigo-500 to-sky-400' }} shadow-xl my-1.5 shrink-0 group-hover:scale-105 transition duration-300">
                                     <div class="w-full h-full bg-slate-950 rounded-[12px] overflow-hidden flex items-center justify-center">
                                         @if($photoUrl)
-                                            <img src="{{ $photoUrl }}" alt="{{ $st['name'] }}" class="w-full h-full object-cover">
+                                            <img src="{{ $photoUrl }}" alt="{{ $st['name'] }}" class="w-full h-full object-cover object-top" style="object-position: top center;">
                                         @else
-                                            <div class="w-full h-full flex flex-col items-center justify-center bg-gradient-to-tr from-slate-900 via-slate-800 to-teal-950 text-teal-300 font-extrabold text-xl sm:text-2xl">
+                                            <div class="w-full h-full flex flex-col items-center justify-center bg-gradient-to-tr from-slate-900 via-slate-800 to-teal-950 text-teal-300 font-extrabold text-2xl sm:text-3xl">
                                                 <span>{{ strtoupper(substr($st['name'], 0, 2)) }}</span>
                                             </div>
                                         @endif
@@ -1430,7 +1430,7 @@
     <script>
         // Slide Deck State
         const TOTAL_SLIDES = 9;
-        const SLIDE_DURATION = 20; // 20 seconds per slide
+        const SLIDE_DURATION = 16; // 16 seconds per slide
         let currentSlideIdx = 0;
         let slideRemainingTime = SLIDE_DURATION;
         let isPaused = false;
@@ -1480,7 +1480,7 @@
                     if (!isPaused) {
                         nextStaffPage();
                     }
-                }, 4500); // cycle sub-page every 4.5s while on slide 8
+                }, 3000); // cycle sub-page briskly every 3s while on slide 8
             }
         }
 
