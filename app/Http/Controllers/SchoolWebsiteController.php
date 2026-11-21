@@ -26,6 +26,7 @@ use App\Models\WorshipAttendance;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
@@ -278,69 +279,33 @@ class SchoolWebsiteController extends Controller
             $metaDescription = ! empty($targetArticle['excerpt'])
                 ? strip_tags($targetArticle['excerpt'])
                 : Str::limit(strip_tags($targetArticle['content'] ?? ''), 160);
-            $rawImg = ! empty($targetArticle['image'])
-                ? $targetArticle['image']
-                : (! empty($settings['website_hero_photo']) ? $settings['website_hero_photo'] : 'images/website/hero_school.jpg');
-            $metaImage = filter_var($rawImg, FILTER_VALIDATE_URL) ? $rawImg : asset($rawImg);
-            if (! str_starts_with($metaImage, 'http://') && ! str_starts_with($metaImage, 'https://')) {
-                $metaImage = url($metaImage);
-            }
-            if ($forceHttps) {
-                $metaImage = preg_replace('/^http:\/\//i', 'https://', $metaImage);
-            }
-            $metaUrl = url('/?berita='.($targetArticle['slug'] ?? $targetArticle['id']));
-            if ($forceHttps) {
-                $metaUrl = preg_replace('/^http:\/\//i', 'https://', $metaUrl);
-            }
+            $slugKey = $targetArticle['slug'] ?? ($targetArticle['id'] ?? 'berita');
+            $metaImage = url('/og-image/'.$slugKey.'.jpg');
+            $metaUrl = url('/berita/'.$slugKey);
             $metaType = 'article';
         } elseif ($targetAgenda) {
             $metaTitle = ($targetAgenda['title'] ?? 'Agenda Sekolah').' | '.$schoolName;
             $metaDescription = ! empty($targetAgenda['description'])
                 ? strip_tags($targetAgenda['description'])
                 : 'Agenda dan kegiatan resmi '.$schoolName;
-            $rawImg = ! empty($targetAgenda['image'])
-                ? $targetAgenda['image']
-                : (! empty($settings['website_hero_photo']) ? $settings['website_hero_photo'] : 'images/website/hero_school.jpg');
-            $metaImage = filter_var($rawImg, FILTER_VALIDATE_URL) ? $rawImg : asset($rawImg);
-            if (! str_starts_with($metaImage, 'http://') && ! str_starts_with($metaImage, 'https://')) {
-                $metaImage = url($metaImage);
-            }
-            if ($forceHttps) {
-                $metaImage = preg_replace('/^http:\/\//i', 'https://', $metaImage);
-            }
-            $metaUrl = url('/?agenda='.($targetAgenda['id'] ?? ''));
-            if ($forceHttps) {
-                $metaUrl = preg_replace('/^http:\/\//i', 'https://', $metaUrl);
-            }
+            $agendaKey = $targetAgenda['id'] ?? 'agenda';
+            $metaImage = url('/og-image/agenda-'.$agendaKey.'.jpg');
+            $metaUrl = url('/agenda/'.$agendaKey);
             $metaType = 'event';
         } else {
             $metaTitle = $schoolName.' - '.($settings['website_hero_headline'] ?? 'Unggul, Berkarakter & Berprestasi di Era Digital');
             $metaDescription = $settings['website_hero_subheadline'] ?? ('Official Web Portal & SIS-SMA1LE Terpadu '.$schoolName.' Sukabumi. Sistem Pembelajaran Modern & Karakter Unggul.');
-            $rawImg = ! empty($settings['website_hero_photo']) ? $settings['website_hero_photo'] : 'images/website/hero_school.jpg';
-            $metaImage = filter_var($rawImg, FILTER_VALIDATE_URL) ? $rawImg : asset($rawImg);
-            if (! str_starts_with($metaImage, 'http://') && ! str_starts_with($metaImage, 'https://')) {
-                $metaImage = url($metaImage);
-            }
-            if ($forceHttps) {
-                $metaImage = preg_replace('/^http:\/\//i', 'https://', $metaImage);
-            }
+            $metaImage = url('/og-image/school-hero.jpg');
             $metaUrl = url('/');
-            if ($forceHttps) {
-                $metaUrl = preg_replace('/^http:\/\//i', 'https://', $metaUrl);
-            }
             $metaType = 'website';
         }
 
-        $cleanPath = parse_url($metaImage, PHP_URL_PATH) ?? '';
-        $ext = strtolower(pathinfo($cleanPath, PATHINFO_EXTENSION));
-        $metaImageMime = match ($ext) {
-            'png' => 'image/png',
-            'webp' => 'image/webp',
-            'gif' => 'image/gif',
-            'jfif', 'jpe', 'jpg', 'jpeg' => 'image/jpeg',
-            'svg' => 'image/svg+xml',
-            default => 'image/jpeg',
-        };
+        if ($forceHttps) {
+            $metaImage = preg_replace('/^http:\/\//i', 'https://', $metaImage);
+            $metaUrl = preg_replace('/^http:\/\//i', 'https://', $metaUrl);
+        }
+
+        $metaImageMime = 'image/jpeg';
 
         return response()
             ->view('website.index', compact(
@@ -413,5 +378,170 @@ class SchoolWebsiteController extends Controller
             'daily_logs_count' => HabitDailyLog::count(),
             'achievements_count' => Achievement::where('status', 'DIVERIFIKASI')->count(),
         ]);
+    }
+
+    /**
+     * Tampilkan Halaman Berita Spesifik (Clean SEO & Social Friendly URL).
+     */
+    public function showNews(Request $request, string $slug): Response
+    {
+        $request->query->set('berita', $slug);
+
+        return $this->index($request);
+    }
+
+    /**
+     * Tampilkan Halaman Agenda Spesifik (Clean SEO & Social Friendly URL).
+     */
+    public function showAgenda(Request $request, string $id): Response
+    {
+        $request->query->set('agenda', $id);
+
+        return $this->index($request);
+    }
+
+    /**
+     * Generate Optimized Open Graph Image (1200x630 JPEG, < 200KB for WhatsApp & Social Media Preview).
+     */
+    public function ogImage(Request $request, ?string $target = null): \Symfony\Component\HttpFoundation\Response
+    {
+        $cleanTarget = preg_replace('/\.(jpg|jpeg|png|webp|jfif)$/i', '', $target ?? '');
+        $shareNewsParam = $request->query('berita') ?? ($request->query('news') ?? ($request->query('slug') ?? $cleanTarget));
+        $shareAgendaParam = $request->query('agenda') ?? (str_starts_with($cleanTarget, 'agenda-') ? substr($cleanTarget, 7) : null);
+
+        $sourceImagePath = null;
+
+        if ($shareAgendaParam) {
+            $customAgendas = SchoolSetting::get('website_agendas_json');
+            $agendas = $customAgendas ? (json_decode($customAgendas, true) ?: WebsiteContentController::DEFAULT_AGENDAS) : WebsiteContentController::DEFAULT_AGENDAS;
+            $foundAgenda = collect($agendas)->first(function ($a) use ($shareAgendaParam) {
+                return ($a['id'] ?? '') === $shareAgendaParam
+                    || Str::slug($a['title'] ?? '') === Str::slug($shareAgendaParam);
+            });
+            if (! empty($foundAgenda['image'])) {
+                $sourceImagePath = $foundAgenda['image'];
+            }
+        } elseif ($shareNewsParam && $shareNewsParam !== 'school-hero' && $shareNewsParam !== 'default') {
+            $customNews = SchoolSetting::get('website_news_json');
+            $newsArticles = $customNews ? (json_decode($customNews, true) ?: WebsiteContentController::DEFAULT_NEWS) : WebsiteContentController::DEFAULT_NEWS;
+            $foundNews = collect($newsArticles)->first(function ($n) use ($shareNewsParam) {
+                return ($n['slug'] ?? '') === $shareNewsParam
+                    || ($n['id'] ?? '') === $shareNewsParam
+                    || Str::slug($n['title'] ?? '') === Str::slug($shareNewsParam);
+            });
+            if (! empty($foundNews['image'])) {
+                $sourceImagePath = $foundNews['image'];
+            }
+        }
+
+        if (empty($sourceImagePath)) {
+            $settings = SchoolSetting::allAsAssoc();
+            $sourceImagePath = ! empty($settings['website_hero_photo']) ? $settings['website_hero_photo'] : 'images/website/hero_school.jpg';
+        }
+
+        // Clean query parameters from path (e.g. ?v=1795264747)
+        $cleanPath = parse_url($sourceImagePath, PHP_URL_PATH) ?? $sourceImagePath;
+        $cleanPath = ltrim($cleanPath, '/');
+
+        // Locate file on local filesystem
+        $fullPath = null;
+        if (File::exists(public_path($cleanPath))) {
+            $fullPath = public_path($cleanPath);
+        } elseif (str_starts_with($cleanPath, 'storage/') && File::exists(storage_path('app/public/'.substr($cleanPath, 8)))) {
+            $fullPath = storage_path('app/public/'.substr($cleanPath, 8));
+        } elseif (File::exists(storage_path('app/public/'.$cleanPath))) {
+            $fullPath = storage_path('app/public/'.$cleanPath);
+        } else {
+            $fullPath = public_path('images/website/hero_school.jpg');
+        }
+
+        // Cache directory for optimized Open Graph images
+        $cacheDir = public_path('images/cache/og');
+        if (! File::isDirectory($cacheDir)) {
+            File::makeDirectory($cacheDir, 0755, true, true);
+        }
+
+        $fileMtime = File::exists($fullPath) ? File::lastModified($fullPath) : time();
+        $cacheFileName = md5($fullPath.'_'.$fileMtime).'_1200x630.jpg';
+        $cachedFilePath = $cacheDir.'/'.$cacheFileName;
+
+        if (File::exists($cachedFilePath)) {
+            return response()->file($cachedFilePath, [
+                'Content-Type' => 'image/jpeg',
+                'Content-Disposition' => 'inline; filename="preview.jpg"',
+                'Cache-Control' => 'public, max-age=604800, s-maxage=604800',
+                'Vary' => 'Accept-Encoding',
+            ]);
+        }
+
+        // Process image using GD into optimal WhatsApp dimensions (1200x630) and compressed JPEG (< 200KB)
+        if (File::exists($fullPath) && extension_loaded('gd')) {
+            $fileData = @file_get_contents($fullPath);
+            $srcImg = $fileData ? @imagecreatefromstring($fileData) : null;
+
+            if ($srcImg) {
+                $srcW = imagesx($srcImg);
+                $srcH = imagesy($srcImg);
+
+                $targetW = 1200;
+                $targetH = 630;
+
+                $canvas = imagecreatetruecolor($targetW, $targetH);
+                $bgColor = imagecolorallocate($canvas, 15, 23, 42); // #0f172a
+                imagefill($canvas, 0, 0, $bgColor);
+
+                $srcRatio = $srcW / max(1, $srcH);
+                $targetRatio = $targetW / $targetH;
+
+                if ($srcRatio > $targetRatio) {
+                    // Fit height, crop width center
+                    $tempH = $targetH;
+                    $tempW = (int) round($targetH * $srcRatio);
+                    $cropX = (int) round(($tempW - $targetW) / 2);
+
+                    $temp = imagecreatetruecolor($tempW, $tempH);
+                    imagecopyresampled($temp, $srcImg, 0, 0, 0, 0, $tempW, $tempH, $srcW, $srcH);
+                    imagecopy($canvas, $temp, 0, 0, $cropX, 0, $targetW, $targetH);
+                    imagedestroy($temp);
+                } else {
+                    // Fit width, crop height with top bias (25%) so heads/faces aren't cut off
+                    $tempW = $targetW;
+                    $tempH = (int) round($targetW / $srcRatio);
+                    $cropY = (int) round(($tempH - $targetH) * 0.25);
+                    if ($cropY < 0) {
+                        $cropY = 0;
+                    }
+
+                    $temp = imagecreatetruecolor($tempW, $tempH);
+                    imagecopyresampled($temp, $srcImg, 0, 0, 0, 0, $tempW, $tempH, $srcW, $srcH);
+                    imagecopy($canvas, $temp, 0, 0, 0, $cropY, $targetW, $targetH);
+                    imagedestroy($temp);
+                }
+
+                imageinterlace($canvas, 1);
+                imagejpeg($canvas, $cachedFilePath, 84);
+                imagedestroy($canvas);
+                imagedestroy($srcImg);
+
+                if (File::exists($cachedFilePath)) {
+                    return response()->file($cachedFilePath, [
+                        'Content-Type' => 'image/jpeg',
+                        'Content-Disposition' => 'inline; filename="preview.jpg"',
+                        'Cache-Control' => 'public, max-age=604800, s-maxage=604800',
+                        'Vary' => 'Accept-Encoding',
+                    ]);
+                }
+            }
+        }
+
+        // Fallback to hero file if GD failed
+        if (File::exists($fullPath)) {
+            return response()->file($fullPath, [
+                'Content-Type' => 'image/jpeg',
+                'Cache-Control' => 'public, max-age=604800, s-maxage=604800',
+            ]);
+        }
+
+        return response()->noContent(404);
     }
 }

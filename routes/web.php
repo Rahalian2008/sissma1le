@@ -57,6 +57,10 @@ use Illuminate\Support\Facades\Route;
 
 // Website Resmi SMAN 1 Lengkong (Publik, Modern, Edukatif & Responsif)
 Route::get('/', [SchoolWebsiteController::class, 'index'])->name('website.home');
+Route::get('/berita/{slug}', [SchoolWebsiteController::class, 'showNews'])->name('website.news.show');
+Route::get('/agenda/{id}', [SchoolWebsiteController::class, 'showAgenda'])->name('website.agenda.show');
+Route::get('/og-image/{target}.jpg', [SchoolWebsiteController::class, 'ogImage'])->name('website.og_image');
+Route::get('/og-image', [SchoolWebsiteController::class, 'ogImage']);
 Route::get('/api/website/live-stats', [SchoolWebsiteController::class, 'liveStats'])->name('website.live_stats');
 
 // Layar Display KIOSK (Lobby Monitor, Hall Screen & TV Display Real-Time)

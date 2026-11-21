@@ -8,8 +8,8 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="msapplication-navbutton-color" content="#4338ca">
-    <title>{{ $settings['school_name'] ?? 'SMAN 1 Lengkong' }} - Unggul, Berkarakter & Berprestasi di Era Digital</title>
-    <meta name="description" content="Website Resmi SMAN 1 Lengkong Kabupaten Sukabumi. Portal akademik SIS-SMA1LE terpadu, LMS Pembelajaran Permendikdasmen No. 13 Tahun 2025, Presensi 5 Metode, dan Portal Orang Tua.">
+    <title>{{ $metaTitle ?? (($settings['school_name'] ?? 'SMAN 1 Lengkong') . ' - Unggul, Berkarakter & Berprestasi di Era Digital') }}</title>
+    <meta name="description" content="{{ $metaDescription ?? ('Website Resmi SMAN 1 Lengkong Kabupaten Sukabumi. Portal akademik SIS-SMA1LE terpadu, LMS Pembelajaran Permendikdasmen No. 13 Tahun 2025, Presensi 5 Metode, dan Portal Orang Tua.') }}">
     <meta name="keywords" content="SMAN 1 Lengkong, SMA Negeri 1 Lengkong, Sukabumi, Sekolah Digital, SIS-SMA1LE SMAN 1 Lengkong, LMS SMAN 1 Lengkong, Portal Siswa, Kurikulum Nasional 2025">
     
     <!-- Open Graph / Meta Sosial (Rich Preview WhatsApp, Facebook, Telegram, Twitter, LinkedIn) -->
@@ -18,22 +18,22 @@
     <meta property="og:description" content="{{ $metaDescription ?? ('Official Web Portal & ' . ($settings['app_name'] ?? 'SIS-SMA1LE') . ' Terpadu SMAN 1 Lengkong Sukabumi. Sistem Pembelajaran Modern & Karakter Unggul.') }}">
     <meta property="og:type" content="{{ $metaType ?? 'website' }}">
     <meta property="og:url" content="{{ $metaUrl ?? url('/') }}">
-    <meta property="og:image" content="{{ $metaImage ?? asset($settings['website_hero_photo'] ?? 'images/website/hero_school.jpg') }}">
-    <meta property="og:image:url" content="{{ $metaImage ?? asset($settings['website_hero_photo'] ?? 'images/website/hero_school.jpg') }}">
-    <meta property="og:image:secure_url" content="{{ $metaImage ?? asset($settings['website_hero_photo'] ?? 'images/website/hero_school.jpg') }}">
-    <meta property="og:image:type" content="{{ $metaImageMime ?? 'image/jpeg' }}">
+    <meta property="og:image" content="{{ $metaImage ?? url('/og-image/school-hero.jpg') }}">
+    <meta property="og:image:url" content="{{ $metaImage ?? url('/og-image/school-hero.jpg') }}">
+    <meta property="og:image:secure_url" content="{{ $metaImage ?? url('/og-image/school-hero.jpg') }}">
+    <meta property="og:image:type" content="image/jpeg">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:image:alt" content="{{ $metaTitle ?? ($settings['school_name'] ?? 'SMAN 1 Lengkong') }}">
 
     <!-- Link image_src for WhatsApp & legacy crawlers -->
-    <link rel="image_src" href="{{ $metaImage ?? asset($settings['website_hero_photo'] ?? 'images/website/hero_school.jpg') }}">
+    <link rel="image_src" href="{{ $metaImage ?? url('/og-image/school-hero.jpg') }}">
 
     <!-- Twitter Card Meta -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="{{ $metaTitle ?? (($settings['school_name'] ?? 'SMAN 1 Lengkong') . ' - Sekolah Unggul Berwawasan Digital') }}">
     <meta name="twitter:description" content="{{ $metaDescription ?? ('Official Web Portal & ' . ($settings['app_name'] ?? 'SIS-SMA1LE') . ' Terpadu SMAN 1 Lengkong Sukabumi.') }}">
-    <meta name="twitter:image" content="{{ $metaImage ?? asset($settings['website_hero_photo'] ?? 'images/website/hero_school.jpg') }}">
+    <meta name="twitter:image" content="{{ $metaImage ?? url('/og-image/school-hero.jpg') }}">
 
     <!-- Google Fonts & Tailwind CSS v4 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -3281,16 +3281,14 @@
         function shareNewsWhatsApp(article) {
             const item = article || currentNewsArticle;
             if (!item) return;
-            const baseUrl = window.location.origin + window.location.pathname;
             const articleParam = item.slug || item.id || encodeURIComponent(item.title);
-            const shareUrl = `${baseUrl}?berita=${encodeURIComponent(articleParam)}`;
-            const rawImg = item.image || '';
-            const imgUrl = rawImg ? (rawImg.startsWith('http') ? rawImg : (window.location.origin + '/' + rawImg.replace(/^\/+/, ''))) : '';
+            const shareUrl = `${window.location.origin}/berita/${encodeURIComponent(articleParam)}`;
+            const ogImageUrl = `${window.location.origin}/og-image/${encodeURIComponent(articleParam)}.jpg`;
 
             // Format URL di awal teks memicu WhatsApp untuk langsung mengambil thumbnail foto Open Graph
             let message = `${shareUrl}\n\n*${item.title}*\n\n${item.excerpt || ''}`;
-            if (imgUrl) {
-                message += `\n\n📸 Foto: ${imgUrl}`;
+            if (ogImageUrl) {
+                message += `\n\n📸 Foto: ${ogImageUrl}`;
             }
             message += `\n\n📌 Portal Resmi {{ $settings['school_name'] ?? 'SMAN 1 Lengkong' }}`;
 
@@ -3301,11 +3299,9 @@
         function copyNewsLink(article) {
             const item = article || currentNewsArticle;
             if (!item) return;
-            const baseUrl = window.location.origin + window.location.pathname;
             const articleParam = item.slug || item.id || encodeURIComponent(item.title);
-            const shareUrl = `${baseUrl}?berita=${encodeURIComponent(articleParam)}`;
-            const rawImg = item.image || '';
-            const imgUrl = rawImg ? (rawImg.startsWith('http') ? rawImg : (window.location.origin + '/' + rawImg.replace(/^\/+/, ''))) : '';
+            const shareUrl = `${window.location.origin}/berita/${encodeURIComponent(articleParam)}`;
+            const ogImageUrl = `${window.location.origin}/og-image/${encodeURIComponent(articleParam)}.jpg`;
 
             // Gunakan Web Share API jika didukung (di mobile/smartphone langsung membagikan kartu + gambar ke WhatsApp)
             if (navigator.share && window.isSecureContext) {
@@ -3314,10 +3310,10 @@
                     text: item.excerpt || item.title,
                     url: shareUrl,
                 }).catch(() => {
-                    executeClipboardCopy(shareUrl, item, imgUrl);
+                    executeClipboardCopy(shareUrl, item, ogImageUrl);
                 });
             } else {
-                executeClipboardCopy(shareUrl, item, imgUrl);
+                executeClipboardCopy(shareUrl, item, ogImageUrl);
             }
         }
 
@@ -3336,15 +3332,13 @@
 
         function shareAgendaWhatsApp(agenda) {
             if (!agenda) return;
-            const baseUrl = window.location.origin + window.location.pathname;
             const agendaId = agenda.id || '';
-            const shareUrl = `${baseUrl}?agenda=${encodeURIComponent(agendaId)}`;
-            const rawImg = agenda.image || '';
-            const imgUrl = rawImg ? (rawImg.startsWith('http') ? rawImg : (window.location.origin + '/' + rawImg.replace(/^\/+/, ''))) : '';
+            const shareUrl = `${window.location.origin}/agenda/${encodeURIComponent(agendaId)}`;
+            const ogImageUrl = `${window.location.origin}/og-image/agenda-${encodeURIComponent(agendaId)}.jpg`;
 
             let message = `${shareUrl}\n\n*Agenda Sekolah: ${agenda.title}*\n📅 ${agenda.date || ''}\n\n${agenda.description || ''}`;
-            if (imgUrl) {
-                message += `\n\n📸 Poster/Gambar: ${imgUrl}`;
+            if (ogImageUrl) {
+                message += `\n\n📸 Poster/Gambar: ${ogImageUrl}`;
             }
             message += `\n\n📌 Info Resmi {{ $settings['school_name'] ?? 'SMAN 1 Lengkong' }}`;
 

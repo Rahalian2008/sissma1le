@@ -109,8 +109,24 @@ test('school website renders open graph and share buttons with image thumbnail s
     $response->assertSee('property="og:image"', false);
     $response->assertSee('property="og:image:secure_url"', false);
     $response->assertSee('name="twitter:image"', false);
+    $response->assertSee('/og-image/', false);
     $response->assertSee('shareNewsWhatsApp', false);
     $response->assertSee('copyNewsLink', false);
     $response->assertSee('shareAgendaWhatsApp', false);
     $response->assertDontSee('SIAKAD SIS-SMA1LE');
+});
+
+test('og image route serves compressed jpeg for social link previews', function () {
+    $response = $this->get('/og-image/school-hero.jpg');
+
+    $response->assertStatus(200);
+    $response->assertHeader('Content-Type', 'image/jpeg');
+});
+
+test('clean news url loads website with specific article context and open graph tags', function () {
+    $response = $this->get('/berita/implementasi-kurikulum-nasional-permendikdasmen-13-2025-deep-learning');
+
+    $response->assertStatus(200);
+    $response->assertSee('property="og:image"', false);
+    $response->assertSee('/og-image/implementasi-kurikulum-nasional-permendikdasmen-13-2025-deep-learning.jpg', false);
 });

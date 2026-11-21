@@ -1202,7 +1202,11 @@ class WebsiteContentController extends Controller
             if (! File::isDirectory($dir)) {
                 File::makeDirectory($dir, 0755, true, true);
             }
-            $filename = $newsId.'.'.($file->getClientOriginalExtension() ?: 'jpg');
+            $ext = strtolower($file->getClientOriginalExtension() ?: 'jpg');
+            if ($ext === 'jfif' || $ext === 'jpe') {
+                $ext = 'jpg';
+            }
+            $filename = $newsId.'.'.$ext;
             $file->move($dir, $filename);
             $imagePath = 'images/website/news/'.$filename.'?v='.time();
         }
@@ -1289,7 +1293,11 @@ class WebsiteContentController extends Controller
                     if (! File::isDirectory($dir)) {
                         File::makeDirectory($dir, 0755, true, true);
                     }
-                    $filename = $id.'_'.time().'.'.($file->getClientOriginalExtension() ?: 'jpg');
+                    $ext = strtolower($file->getClientOriginalExtension() ?: 'jpg');
+                    if ($ext === 'jfif' || $ext === 'jpe') {
+                        $ext = 'jpg';
+                    }
+                    $filename = $id.'_'.time().'.'.$ext;
                     $file->move($dir, $filename);
                     $article['image'] = 'images/website/news/'.$filename.'?v='.time();
                 }
