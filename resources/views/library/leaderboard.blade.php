@@ -23,7 +23,7 @@
         </div>
 
         <div class="flex flex-wrap items-center gap-2 self-start md:self-auto shrink-0">
-            @if(auth()->user() && (auth()->user()->hasRole('admin') || auth()->user()->hasRole('super_admin') || auth()->user()->hasRole('kepala_perpustakaan') || auth()->user()->hasRole('pengelola_perpustakaan')))
+            @if(auth()->user() && (auth()->user()->hasRole('admin') || auth()->user()->hasRole('super_admin') || auth()->user()->hasRole('kepala_perpustakaan') || auth()->user()->hasRole('pengelola_perpustakaan') || auth()->user()->role === 'admin' || auth()->user()->role === 'super_admin'))
                 <form action="{{ route('library.leaderboard.reset') }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin mereset seluruh data Rapor & Rangking Pengunjung Perpustakaan? Data kunjungan akan direset ke 0.');">
                     @csrf
                     <button type="submit" class="px-3.5 py-2.5 rounded-2xl bg-rose-500/20 hover:bg-rose-500 text-rose-300 hover:text-white border border-rose-500/40 text-xs font-bold transition flex items-center gap-1.5 shadow-lg">
@@ -32,7 +32,7 @@
                     </button>
                 </form>
             @endif
-            @if($currentUserRank)
+            @if($currentUserRank && ($currentUserRank['total_visits'] > 0 || $currentUserRank['literacy_score'] > 0))
                 <div class="px-4 py-2.5 rounded-2xl bg-slate-800/90 border border-amber-500/40 text-center shadow-lg">
                     <div class="text-[10px] font-bold text-amber-400 uppercase tracking-wider">Peringkat Anda</div>
                     <div class="text-lg font-black text-white flex items-center justify-center gap-1">
@@ -79,16 +79,16 @@
                 <span class="w-8 h-8 rounded-xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center text-sm font-bold">🥇</span>
             </div>
             <div class="text-base font-extrabold text-slate-900 dark:text-white mt-2 truncate">
-                {{ $topVisitor ? $topVisitor['member']->name : 'Belum Ada Data' }}
+                {{ ($topVisitor && $totalAllVisits > 0) ? $topVisitor['member']->name : 'Belum Ada Data' }}
             </div>
             <div class="text-[11px] text-amber-600 dark:text-amber-400 font-semibold mt-1">
-                {{ $topVisitor ? $topVisitor['total_visits'] . 'x Kunjungan (' . $topVisitor['literacy_score'] . ' Poin)' : '-' }}
+                {{ ($topVisitor && $totalAllVisits > 0) ? $topVisitor['total_visits'] . 'x Kunjungan (' . $topVisitor['literacy_score'] . ' Poin)' : '-' }}
             </div>
         </div>
     </div>
 
     <!-- PODIUM TOP 3 PEMUSTAKA TELADAN -->
-    @if($leaderboard->count() >= 3 && $totalAllVisits > 0)
+    @if($leaderboard->count() >= 3 && $totalAllVisits > 0 && ($topVisitor['literacy_score'] ?? 0) > 0)
         <div class="p-6 rounded-3xl bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 border border-indigo-800/40 shadow-xl text-white">
             <div class="text-center max-w-md mx-auto mb-6">
                 <span class="px-3 py-1 rounded-full text-[10px] font-extrabold uppercase bg-amber-500/20 text-amber-300 border border-amber-400/30">Podium Kehormatan Literasi</span>
@@ -188,6 +188,12 @@
                 @endif
             </div>
         </div>
+    @elseif($totalAllVisits === 0)
+        <div class="p-6 rounded-3xl bg-slate-900/60 border border-white/5 text-center text-slate-400">
+            <span class="text-3xl block mb-2">📚</span>
+            <h3 class="text-sm font-bold text-white">Data Rapor &amp; Rangking Perpustakaan Telah Bersih (0 Aktivitas)</h3>
+            <p class="text-xs text-slate-400 mt-1 max-w-lg mx-auto">Seluruh data kunjungan offline, pembacaan e-book online, dan skor literasi telah direset. Peringkat &amp; podium Duta Literasi akan terisi otomatis saat pemustaka mulai aktif berkunjung atau meminjam buku.</p>
+        </div>
     @endif
 
     <!-- Filter & Search Toolbar -->
@@ -264,16 +270,16 @@
                     @forelse($paginatedItems as $item)
                         @php
                             $m = $item['member'];
-                            $isTop3 = $item['rank'] <= 3;
+                            $isTop3 = $item['rank'] <= 3 && $item['literacy_score'] > 0;
                         @endphp
                         <tr class="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition {{ $isTop3 ? 'bg-amber-500/5' : '' }}">
                             <!-- Rangking -->
                             <td class="py-3.5 px-4 text-center">
-                                @if($item['rank'] === 1)
+                                @if($item['literacy_score'] > 0 && $item['rank'] === 1)
                                     <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-amber-400 text-slate-950 font-black text-xs shadow-md">1</span>
-                                @elseif($item['rank'] === 2)
+                                @elseif($item['literacy_score'] > 0 && $item['rank'] === 2)
                                     <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-slate-300 text-slate-900 font-black text-xs shadow-md">2</span>
-                                @elseif($item['rank'] === 3)
+                                @elseif($item['literacy_score'] > 0 && $item['rank'] === 3)
                                     <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-amber-700 text-amber-100 font-black text-xs shadow-md">3</span>
                                 @else
                                     <span class="font-bold text-slate-500 font-mono">#{{ $item['rank'] }}</span>

@@ -2155,33 +2155,38 @@ class LibraryController extends Controller
             ->sortByDesc('literacy_score')
             ->values();
 
-        // Beri ranking & predikat
+        // Beri ranking & predikat hanya untuk pemustaka yang memiliki aktivitas riil
         $leaderboard = $leaderboardData->map(function ($item, $index) {
             $rank = $index + 1;
             $item['rank'] = $rank;
 
-            if ($rank === 1) {
-                $item['badge'] = '🥇 Duta Literasi Utama';
-                $item['predicate'] = 'Peringkat I - Duta Literasi Terbaik';
-            } elseif ($rank === 2) {
-                $item['badge'] = '🥈 Pemustaka Teladan';
-                $item['predicate'] = 'Peringkat II - Pemustaka Teladan';
-            } elseif ($rank === 3) {
-                $item['badge'] = '🥉 Sahabat Literasi Utama';
-                $item['predicate'] = 'Peringkat III - Sahabat Literasi';
-            } elseif ($rank <= 10) {
-                $item['badge'] = '⭐ Top 10 Pembaca Berprestasi';
-                $item['predicate'] = 'Top 10 Pemustaka Teraktif';
+            if ($item['literacy_score'] > 0) {
+                if ($rank === 1) {
+                    $item['badge'] = '🥇 Duta Literasi Utama';
+                    $item['predicate'] = 'Peringkat I - Duta Literasi Terbaik';
+                } elseif ($rank === 2) {
+                    $item['badge'] = '🥈 Pemustaka Teladan';
+                    $item['predicate'] = 'Peringkat II - Pemustaka Teladan';
+                } elseif ($rank === 3) {
+                    $item['badge'] = '🥉 Sahabat Literasi Utama';
+                    $item['predicate'] = 'Peringkat III - Sahabat Literasi';
+                } elseif ($rank <= 10) {
+                    $item['badge'] = '⭐ Top 10 Pembaca Berprestasi';
+                    $item['predicate'] = 'Top 10 Pemustaka Teraktif';
+                } else {
+                    $item['badge'] = '📖 Pemustaka Aktif';
+                    $item['predicate'] = 'Pemustaka Aktif';
+                }
             } else {
-                $item['badge'] = '📖 Pemustaka Aktif';
-                $item['predicate'] = 'Pemustaka Aktif';
+                $item['badge'] = '-';
+                $item['predicate'] = 'Belum Ada Aktivitas';
             }
 
             return $item;
         });
 
-        // Metrik Top Stats
-        $topVisitor = $leaderboard->first();
+        // Metrik Top Stats (Hanya ambil pemustaka dengan skor literasi > 0)
+        $topVisitor = $leaderboard->firstWhere('literacy_score', '>', 0);
         $totalOnlineVisits = $leaderboard->sum('online_visits');
         $totalOfflineVisits = $leaderboard->sum('offline_visits');
         $totalAllVisits = $totalOnlineVisits + $totalOfflineVisits;
@@ -2234,11 +2239,13 @@ class LibraryController extends Controller
     public function resetLeaderboard(Request $request): RedirectResponse
     {
         $user = Auth::user();
-        if (! $user || (! $user->hasRole('admin') && ! $user->hasRole('super_admin') && ! $user->hasRole('kepala_perpustakaan') && ! $user->hasRole('pengelola_perpustakaan'))) {
+        if (! $user || (! $user->hasRole('admin') && ! $user->hasRole('super_admin') && ! $user->hasRole('kepala_perpustakaan') && ! $user->hasRole('pengelola_perpustakaan') && $user->role !== 'admin' && $user->role !== 'super_admin')) {
             abort(403, 'Anda tidak memiliki hak akses untuk mereset rapor dan rangking perpustakaan.');
         }
 
+        Schema::disableForeignKeyConstraints();
         LibraryVisitor::truncate();
+        Schema::enableForeignKeyConstraints();
 
         AuditLog::log('RESET_LIBRARY_LEADERBOARD', 'LibraryVisitor', null, null, [
             'reset_by' => $user->name,
