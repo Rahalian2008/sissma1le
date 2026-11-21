@@ -2229,6 +2229,27 @@ class LibraryController extends Controller
     }
 
     /**
+     * Reset Data Rapor & Rangking Pengunjung Perpustakaan (Admin / Pustakawan Only)
+     */
+    public function resetLeaderboard(Request $request): RedirectResponse
+    {
+        $user = Auth::user();
+        if (! $user || (! $user->hasRole('admin') && ! $user->hasRole('super_admin') && ! $user->hasRole('kepala_perpustakaan') && ! $user->hasRole('pengelola_perpustakaan'))) {
+            abort(403, 'Anda tidak memiliki hak akses untuk mereset rapor dan rangking perpustakaan.');
+        }
+
+        LibraryVisitor::truncate();
+
+        AuditLog::log('RESET_LIBRARY_LEADERBOARD', 'LibraryVisitor', null, null, [
+            'reset_by' => $user->name,
+            'role' => $user->role,
+        ]);
+
+        return redirect()->route('library.leaderboard')
+            ->with('success', 'Data Rapor & Rangking Pengunjung Perpustakaan berhasil direset bersih ke 0!');
+    }
+
+    /**
      * Dapatkan data branding resmi sekolah (Kop Surat, Logo, Identitas) dari SchoolSetting
      *
      * @return array<string, mixed>

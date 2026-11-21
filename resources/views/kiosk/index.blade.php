@@ -1648,8 +1648,10 @@
                                     </div>
                                 </div>
                             @empty
-                                <div class="col-span-3 text-center py-2 text-slate-500 text-xs italic">
-                                    Belum ada data duta literasi.
+                                <div class="col-span-3 text-center py-3 px-2 rounded-xl bg-slate-900/60 border border-dashed border-white/10 text-slate-400 text-xs flex flex-col items-center justify-center gap-1">
+                                    <span class="text-base">📚</span>
+                                    <span>Data Rapor &amp; Rangking Duta Literasi baru saja di-reset / belum ada peminjaman baru.</span>
+                                    <span class="text-[10px] text-slate-500">Peringkat akan otomatis terbit dari akumulasi pembaca &amp; peminjaman buku perpustakaan.</span>
                                 </div>
                             @endforelse
                         </div>
@@ -1803,40 +1805,40 @@
                         </span>
                     </div>
 
-                    <div class="flex-1 min-h-0 overflow-y-auto kiosk-scroll space-y-2.5 py-1.5 pr-1">
+                    <div class="flex-1 min-h-0 overflow-y-auto kiosk-scroll space-y-1.5 sm:space-y-2 py-1 pr-1">
                         @foreach($data['bk']['counselors'] ?? [] as $gc)
-                            <div class="p-2.5 sm:p-3 rounded-2xl border transition flex items-center gap-3.5 {{ !empty($gc['is_coordinator']) ? 'bg-gradient-to-r from-purple-950/70 via-slate-900/95 to-purple-900/50 border-purple-500/40 shadow-lg shadow-purple-950/40' : 'bg-slate-900/85 border-white/10 hover:border-purple-500/40' }}">
-                                <div class="w-14 sm:w-16 h-18 sm:h-20 rounded-xl overflow-hidden shrink-0 border-2 {{ !empty($gc['is_coordinator']) ? 'border-amber-400/70 ring-2 ring-purple-500/40' : 'border-purple-400/40' }} bg-slate-800 shadow-md flex items-center justify-center">
+                            <div class="p-2 sm:p-2.5 rounded-xl border transition flex items-center gap-3 {{ !empty($gc['is_coordinator']) ? 'bg-gradient-to-r from-purple-950/70 via-slate-900/95 to-purple-900/50 border-purple-500/40 shadow-md shadow-purple-950/40' : 'bg-slate-900/85 border-white/10 hover:border-purple-500/40' }}">
+                                <div class="w-12 sm:w-14 h-14 sm:h-16 rounded-xl overflow-hidden shrink-0 border-2 {{ !empty($gc['is_coordinator']) ? 'border-amber-400/70 ring-2 ring-purple-500/40' : 'border-purple-400/40' }} bg-slate-800 shadow-md flex items-center justify-center">
                                     @if(!empty($gc['photo']))
                                         <img src="{{ $gc['photo'] }}" alt="{{ $gc['name'] }}" class="w-full h-full object-cover" style="object-position: top center;">
                                     @else
-                                        <span class="text-2xl">{{ !empty($gc['is_coordinator']) ? '👑' : '🧑‍🏫' }}</span>
+                                        <span class="text-xl">{{ !empty($gc['is_coordinator']) ? '👑' : '🧑‍🏫' }}</span>
                                     @endif
                                 </div>
-                                <div class="min-w-0 flex-1 space-y-1">
+                                <div class="min-w-0 flex-1 space-y-0.5">
                                     <div class="flex items-center gap-1.5 flex-wrap">
                                         @if(!empty($gc['is_coordinator']))
-                                            <span class="px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider bg-gradient-to-r from-amber-500/25 to-purple-500/25 text-amber-300 border border-amber-500/40 flex items-center gap-1">
+                                            <span class="px-1.5 py-0.5 rounded-md text-[8.5px] font-black uppercase tracking-wider bg-gradient-to-r from-amber-500/25 to-purple-500/25 text-amber-300 border border-amber-500/40 flex items-center gap-1">
                                                 <span>👑</span> KOORDINATOR BK
                                             </span>
                                         @else
-                                            <span class="px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider bg-purple-500/20 text-purple-300 border border-purple-500/30 flex items-center gap-1">
+                                            <span class="px-1.5 py-0.5 rounded-md text-[8.5px] font-black uppercase tracking-wider bg-purple-500/20 text-purple-300 border border-purple-500/30 flex items-center gap-1">
                                                 <span>👨‍🏫</span> GURU BK
                                             </span>
                                         @endif
                                         @if(!empty($gc['status']))
-                                            <span class="px-1.5 py-0.5 rounded text-[8.5px] font-bold bg-white/10 text-slate-300 border border-white/5 font-mono">
+                                            <span class="px-1.5 py-0.5 rounded text-[8px] font-bold bg-white/10 text-slate-300 border border-white/5 font-mono">
                                                 {{ $gc['status'] }}
                                             </span>
                                         @endif
                                     </div>
-                                    <div class="font-extrabold text-xs sm:text-sm text-white leading-snug truncate" title="{{ $gc['name'] }}">
+                                    <div class="font-extrabold text-xs sm:text-[13px] text-white leading-tight truncate" title="{{ $gc['name'] }}">
                                         {{ $gc['name'] }}
                                     </div>
-                                    <div class="text-[10.5px] font-medium text-purple-300 truncate">
+                                    <div class="text-[10px] font-medium text-purple-300 truncate">
                                         {{ $gc['role'] }}
                                     </div>
-                                    <div class="text-[9.5px] text-slate-400 font-mono truncate flex items-center gap-1">
+                                    <div class="text-[9px] text-slate-400 font-mono truncate flex items-center gap-1">
                                         <span class="text-slate-500">NIP:</span>
                                         <span class="text-slate-300 font-semibold">{{ $gc['nip'] }}</span>
                                     </div>
@@ -1845,14 +1847,12 @@
                         @endforeach
                     </div>
 
-                    <!-- Prinsip Layanan BK Card -->
-                    <div class="p-2.5 rounded-xl bg-slate-950/80 border border-white/5 space-y-1 shrink-0 mt-2">
-                        <div class="text-[10px] font-extrabold text-purple-300 flex items-center gap-1.5">
-                            <span>🛡️ Asas Kerahasiaan BK Terjamin:</span>
-                        </div>
-                        <p class="text-[9.5px] text-slate-400 leading-snug">
-                            Setiap keluhan, permasalahan, dan hasil konseling dijaga kerahasiaannya dengan standar etika profesi Bimbingan &amp; Konseling.
-                        </p>
+                    <!-- Prinsip Layanan BK Bar (Clean, Slim & Non-overlapping) -->
+                    <div class="py-1 px-2.5 rounded-lg bg-slate-950/80 border border-white/5 flex items-center justify-between text-[9px] text-slate-400 shrink-0 mt-1">
+                        <span class="flex items-center gap-1 text-purple-300 font-semibold truncate">
+                            <span>🛡️</span> Asas Kerahasiaan BK Terjamin
+                        </span>
+                        <span class="text-slate-400 text-[8.5px] font-medium shrink-0">Konseling Aman, Ramah &amp; Rahasia</span>
                     </div>
                 </div>
             </div>

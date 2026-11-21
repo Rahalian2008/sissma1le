@@ -934,6 +934,7 @@ Route::middleware('auth')->group(function () {
 
         // Rapor & Rangking Pengunjung (Offline & Online) + Piagam Penghargaan Keren
         Route::get('/leaderboard', [LibraryController::class, 'leaderboard'])->name('leaderboard');
+        Route::post('/leaderboard/reset', [LibraryController::class, 'resetLeaderboard'])->name('leaderboard.reset');
         Route::get('/certificate/{member}', [LibraryController::class, 'certificate'])->name('certificate');
 
         // Laporan Lengkap Inventaris, Sirkulasi & Status Buku

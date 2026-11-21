@@ -524,26 +524,37 @@ class KioskController extends Controller
 
             $libraryManagers = $libraryManagers->sortByDesc('is_head')->values();
 
-            // Rapor & Ranking (Duta Literasi Terpilih)
-            $topStudents = Student::with('schoolClass')->where('is_active', true)->limit(3)->get();
-            $medals = [
-                ['rank' => 1, 'badge' => '🥇 DUTA LITERASI EMAS', 'tier' => 'Juara 1 Duta Literasi', 'color' => 'amber', 'books_read' => 24],
-                ['rank' => 2, 'badge' => '🥈 DUTA LITERASI PERAK', 'tier' => 'Juara 2 Duta Baca', 'color' => 'slate', 'books_read' => 19],
-                ['rank' => 3, 'badge' => '🥉 DUTA LITERASI PERUNGGU', 'tier' => 'Juara 3 Duta Literasi Digital', 'color' => 'orange', 'books_read' => 16],
-            ];
+            // Rapor & Ranking (Duta Literasi Terpilih) - Dimulai dalam kondisi ter-reset (0 / bersih)
+            // Hanya terisi otomatis jika terdapat catatan peminjaman & pembacaan buku riil pemustaka
+            $realBorrowers = LibraryLoan::whereIn('status', ['RETURNED', 'dikembalikan', 'borrowed', 'dipinjam', 'DIPINJAM'])
+                ->where('borrower_type', 'student')
+                ->whereNotNull('borrower_name')
+                ->selectRaw('borrower_name, borrower_class_or_dept, borrower_identifier, count(*) as books_read')
+                ->groupBy('borrower_name', 'borrower_class_or_dept', 'borrower_identifier')
+                ->having('books_read', '>', 0)
+                ->orderByDesc('books_read')
+                ->take(3)
+                ->get();
 
-            foreach ($topStudents as $idx => $ts) {
-                $m = $medals[$idx] ?? $medals[0];
-                $dutaLiterasi->push([
-                    'rank' => $m['rank'],
-                    'badge' => $m['badge'],
-                    'tier' => $m['tier'],
-                    'color' => $m['color'],
-                    'books_read' => $m['books_read'],
-                    'name' => $ts->name,
-                    'class' => $ts->schoolClass?->name ?? 'Kelas X',
-                    'nisn' => $ts->nisn ?: ($ts->nis ?: '-'),
-                ]);
+            if ($realBorrowers->isNotEmpty()) {
+                $medals = [
+                    ['rank' => 1, 'badge' => '🥇 DUTA LITERASI EMAS', 'tier' => 'Juara 1 Duta Literasi', 'color' => 'amber'],
+                    ['rank' => 2, 'badge' => '🥈 DUTA LITERASI PERAK', 'tier' => 'Juara 2 Duta Baca', 'color' => 'slate'],
+                    ['rank' => 3, 'badge' => '🥉 DUTA LITERASI PERUNGGU', 'tier' => 'Juara 3 Duta Literasi Digital', 'color' => 'orange'],
+                ];
+                foreach ($realBorrowers as $idx => $rb) {
+                    $m = $medals[$idx] ?? $medals[0];
+                    $dutaLiterasi->push([
+                        'rank' => $m['rank'],
+                        'badge' => $m['badge'],
+                        'tier' => $m['tier'],
+                        'color' => $m['color'],
+                        'books_read' => (int) $rb->books_read,
+                        'name' => $rb->borrower_name,
+                        'class' => $rb->borrower_class_or_dept ?: 'Siswa',
+                        'nisn' => $rb->borrower_identifier ?: '-',
+                    ]);
+                }
             }
 
             $popularBooks = LibraryBook::where('is_active', true)

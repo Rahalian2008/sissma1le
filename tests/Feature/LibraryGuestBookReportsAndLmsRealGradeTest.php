@@ -340,4 +340,28 @@ class LibraryGuestBookReportsAndLmsRealGradeTest extends TestCase
         $response->assertSeeText('Rerata: 80');
         $response->assertSeeText('Rerata: 90');
     }
+
+    public function test_admin_can_reset_library_leaderboard(): void
+    {
+        LibraryVisitor::create([
+            'name' => 'Pengunjung Uji Coba',
+            'visitor_type' => 'siswa',
+            'visited_at' => now(),
+            'notes' => 'Uji coba',
+        ]);
+
+        $this->assertEquals(1, LibraryVisitor::count());
+
+        $response = $this->actingAs($this->adminUser)->post('/library/leaderboard/reset');
+        $response->assertRedirect(route('library.leaderboard'));
+        $response->assertSessionHas('success');
+
+        $this->assertEquals(0, LibraryVisitor::count());
+    }
+
+    public function test_non_admin_cannot_reset_library_leaderboard(): void
+    {
+        $response = $this->actingAs($this->teacherUser)->post('/library/leaderboard/reset');
+        $response->assertStatus(403);
+    }
 }

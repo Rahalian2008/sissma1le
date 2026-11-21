@@ -23,6 +23,15 @@
         </div>
 
         <div class="flex flex-wrap items-center gap-2 self-start md:self-auto shrink-0">
+            @if(auth()->user() && (auth()->user()->hasRole('admin') || auth()->user()->hasRole('super_admin') || auth()->user()->hasRole('kepala_perpustakaan') || auth()->user()->hasRole('pengelola_perpustakaan')))
+                <form action="{{ route('library.leaderboard.reset') }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin mereset seluruh data Rapor & Rangking Pengunjung Perpustakaan? Data kunjungan akan direset ke 0.');">
+                    @csrf
+                    <button type="submit" class="px-3.5 py-2.5 rounded-2xl bg-rose-500/20 hover:bg-rose-500 text-rose-300 hover:text-white border border-rose-500/40 text-xs font-bold transition flex items-center gap-1.5 shadow-lg">
+                        <span>🔄</span>
+                        <span>Reset Rapor &amp; Rangking</span>
+                    </button>
+                </form>
+            @endif
             @if($currentUserRank)
                 <div class="px-4 py-2.5 rounded-2xl bg-slate-800/90 border border-amber-500/40 text-center shadow-lg">
                     <div class="text-[10px] font-bold text-amber-400 uppercase tracking-wider">Peringkat Anda</div>
@@ -79,7 +88,7 @@
     </div>
 
     <!-- PODIUM TOP 3 PEMUSTAKA TELADAN -->
-    @if($leaderboard->count() >= 3)
+    @if($leaderboard->count() >= 3 && $totalAllVisits > 0)
         <div class="p-6 rounded-3xl bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 border border-indigo-800/40 shadow-xl text-white">
             <div class="text-center max-w-md mx-auto mb-6">
                 <span class="px-3 py-1 rounded-full text-[10px] font-extrabold uppercase bg-amber-500/20 text-amber-300 border border-amber-400/30">Podium Kehormatan Literasi</span>
