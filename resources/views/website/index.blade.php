@@ -192,63 +192,61 @@
 
     <!-- ==================== 1 & 2. STICKY TOP HEADER & NAVIGATION WRAPPER ==================== -->
     <div id="sticky-header-wrapper" class="sticky top-0 z-50 w-full transition-all duration-300 shadow-md bg-gradient-to-r from-indigo-700 via-indigo-600 to-blue-700 dark:from-slate-950 dark:via-indigo-950 dark:to-slate-950">
-        <!-- 1. TOP ANNOUNCEMENT TICKER -->
+        <!-- 1. TOP ANNOUNCEMENT TICKER (Rapih, Fleksibel, Responsif & Tidak Terpotong) -->
         <aside aria-label="Pengumuman Resmi Sekolah" class="bg-gradient-to-r from-indigo-700/95 via-indigo-600/95 to-blue-700/95 dark:from-indigo-950/95 dark:via-slate-900/95 dark:to-indigo-950/95 backdrop-blur-md text-white py-1.5 sm:py-2 px-3 sm:px-4 shadow-xs border-b border-indigo-500/30 dark:border-indigo-900/50 pt-[env(safe-area-inset-top,0px)]">
-            <div class="max-w-7xl 2xl:max-w-[1536px] mx-auto flex items-center justify-between gap-2">
-                <div class="flex items-center gap-1.5 sm:gap-2 min-w-0">
+            <div class="max-w-7xl 2xl:max-w-[1536px] mx-auto flex items-center justify-between gap-2 sm:gap-4">
+                
+                <!-- Left: Identitas Resmi & Info Sekolah (Adaptif Tanpa Terpotong Teks) -->
+                <div class="flex items-center gap-2 min-w-0 shrink-0">
                     <span class="inline-flex items-center gap-1 px-1.5 sm:px-2 py-0.5 rounded-full bg-amber-400 text-slate-950 text-[9px] sm:text-[10px] font-black uppercase tracking-wider shrink-0 shadow-xs">
                         <span class="w-1.5 h-1.5 rounded-full bg-slate-950 animate-ping"></span>
                         Resmi
                     </span>
-                    <!-- Mobile View: Rapih, proporsional, dan tidak terpotong -->
-                    <p class="sm:hidden text-indigo-100 text-[11px] font-semibold truncate">
-                        <span class="font-bold text-white">{{ $settings['school_name'] ?? 'SMAN 1 Lengkong' }}</span> • <span class="text-amber-300 font-bold">Akreditasi A</span>
-                    </p>
-                    <!-- Tablet & Desktop View: Lengkap -->
-                    <p class="hidden sm:block truncate text-indigo-100 text-xs font-medium">
-                        Portal Resmi <span class="font-bold text-white">{{ $settings['school_name'] ?? 'SMA Negeri 1 Lengkong' }}</span> • Terintegrasi Ekosistem <span class="font-bold text-amber-300">{{ $settings['app_name'] ?? 'SIS-SMA1LE' }}</span> • Terakreditasi A • NPSN: {{ $settings['school_npsn'] ?? '20202265' }}
-                    </p>
-                </div>
-                <div class="flex items-center gap-2 shrink-0">
-                    <!-- Mobile Quick SPMB Pill (Rapi & Proporsional di Ponsel) -->
-                    <a href="{{ route('spmb.public.register') }}" class="sm:hidden px-2.5 py-0.5 rounded-full bg-gradient-to-r from-emerald-400 to-teal-300 text-slate-950 font-black text-[10px] shadow-xs flex items-center gap-1 shrink-0">
-                        <span>🎓 SPMB</span>
-                    </a>
-                    <div class="hidden md:flex items-center gap-3 text-[11px] text-indigo-100 shrink-0">
-                        <span class="inline-flex items-center gap-1">
-                            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-                            Sistem Akademik Online
-                        </span>
-                        <span class="text-indigo-400">|</span>
-                        <a href="{{ route('school_bell.index') }}" target="_blank" class="hover:text-amber-300 transition flex items-center gap-1 font-bold text-amber-300">
-                            <span>🔔 Bel Sekolah</span>
-                        </a>
-                        <span class="text-indigo-400">|</span>
-                        <a href="{{ route('guests.kiosk') }}" target="_blank" class="hover:text-amber-300 transition flex items-center gap-1 font-semibold text-white">
-                            <span>👥 Kios Tamu</span>
-                        </a>
-                        <span class="text-indigo-400">|</span>
-                        <a href="{{ route('library.guest_book.index') }}" target="_blank" class="hover:text-amber-300 transition flex items-center gap-1 font-semibold text-white">
-                            <span>📚 Kios Perpus</span>
-                        </a>
-                        <span class="text-indigo-400">|</span>
-                        <a href="#ekosistem-sis" class="hover:text-amber-300 transition flex items-center gap-1 font-semibold text-white">
-                            <span>💻 Ekosistem SIS</span>
-                        </a>
-                        <span class="text-indigo-400">|</span>
-                        <a href="#layanan-peran" class="hover:text-amber-300 transition flex items-center gap-1 font-semibold text-white">
-                            <span>⚡ Pusat Layanan</span>
-                        </a>
-                        <span class="text-indigo-400">|</span>
-                        <a href="{{ route('parent.portal') }}" class="hover:text-amber-300 transition flex items-center gap-1 font-semibold text-white">
-                            <span>👨‍👩‍👧‍👦 Portal Orang Tua</span>
-                        </a>
-                        <span class="text-indigo-400">|</span>
-                        <a href="{{ route('spmb.public.register') }}" class="px-2.5 py-0.5 rounded-full bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-slate-950 font-black text-[11px] shadow-sm transition flex items-center gap-1">
-                            <span>🎓 Daftar SPMB</span>
-                        </a>
+                    <div class="flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs text-indigo-100 font-medium whitespace-nowrap">
+                        <span class="font-bold text-white">{{ $settings['school_name'] ?? 'SMAN 1 Lengkong' }}</span>
+                        <span class="hidden sm:inline text-indigo-300/60">•</span>
+                        <span class="hidden sm:inline-flex items-center px-1.5 py-0.5 rounded-md text-[10px] font-semibold text-emerald-300 bg-emerald-400/15 border border-emerald-300/25">Akreditasi A</span>
+                        <span class="hidden lg:inline text-indigo-300/60">•</span>
+                        <span class="hidden lg:inline text-indigo-200 text-[11px]">NPSN: <span class="font-semibold text-white">{{ $settings['school_npsn'] ?? '20202265' }}</span></span>
+                        <span class="hidden 2xl:inline text-indigo-300/60">•</span>
+                        <span class="hidden 2xl:inline text-indigo-200 text-[11px]">Ekosistem <strong class="text-amber-300 font-bold">{{ $settings['app_name'] ?? 'SIS-SMA1LE' }}</strong></span>
                     </div>
                 </div>
+
+                <!-- Right: Quick Utilities & Akses Cepat (Modern Pills, Elegan & Fleksibel) -->
+                <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+                    <!-- Status Online (Hanya di Layar Ultra-Wide 2xl) -->
+                    <span class="hidden 2xl:inline-flex items-center gap-1.5 text-[11px] text-emerald-300 font-medium px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-400/25">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                        Sistem Online
+                    </span>
+
+                    <!-- Bel Sekolah Kiosk Direct Link -->
+                    <a href="{{ route('school_bell.index') }}" target="_blank" class="hidden md:inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-amber-400/15 hover:bg-amber-400/25 text-amber-300 font-bold text-[10px] sm:text-[11px] transition border border-amber-400/30 shadow-2xs">
+                        <span>🔔 Bel<span class="hidden xl:inline"> Sekolah</span></span>
+                    </a>
+
+                    <!-- Kios Tamu Resepsionis (lg+) -->
+                    <a href="{{ route('guests.kiosk') }}" target="_blank" class="hidden lg:inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-white/10 hover:bg-white/20 text-white font-medium text-[10px] sm:text-[11px] transition border border-white/10 shadow-2xs">
+                        <span>👥 Kios Tamu</span>
+                    </a>
+
+                    <!-- Kios Buku Tamu Perpustakaan (xl+) -->
+                    <a href="{{ route('library.guest_book.index') }}" target="_blank" class="hidden xl:inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-white/10 hover:bg-white/20 text-white font-medium text-[10px] sm:text-[11px] transition border border-white/10 shadow-2xs">
+                        <span>📚 Kios Perpus</span>
+                    </a>
+
+                    <!-- Portal Orang Tua (sm+) -->
+                    <a href="{{ route('parent.portal') }}" class="hidden sm:inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-indigo-500/30 hover:bg-indigo-500/50 text-indigo-100 hover:text-white font-semibold text-[10px] sm:text-[11px] transition border border-indigo-400/30 shadow-2xs">
+                        <span>👨‍👩‍👧‍👦 <span class="hidden md:inline">Portal </span>Orang Tua</span>
+                    </a>
+
+                    <!-- Quick SPMB Registration Pill (Selalu Muncul & Menarik) -->
+                    <a href="{{ route('spmb.public.register') }}" class="px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-300 hover:from-emerald-300 hover:to-teal-200 text-slate-950 font-black text-[10px] sm:text-[11px] shadow-sm transition hover:scale-105 flex items-center gap-1">
+                        <span>🎓 <span class="hidden xs:inline">Daftar </span>SPMB</span>
+                    </a>
+                </div>
+
             </div>
         </aside>
 
