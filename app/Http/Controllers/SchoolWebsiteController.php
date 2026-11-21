@@ -271,6 +271,7 @@ class SchoolWebsiteController extends Controller
         }
 
         $schoolName = $settings['school_name'] ?? 'SMAN 1 Lengkong';
+        $forceHttps = $request->isSecure() || app()->environment('production') || str_contains((string) config('app.url'), 'https://') || str_contains(url('/'), 'sman1lengkong.school');
 
         if ($targetArticle) {
             $metaTitle = ($targetArticle['title'] ?? 'Kabar Sekolah').' | '.$schoolName;
@@ -284,7 +285,13 @@ class SchoolWebsiteController extends Controller
             if (! str_starts_with($metaImage, 'http://') && ! str_starts_with($metaImage, 'https://')) {
                 $metaImage = url($metaImage);
             }
+            if ($forceHttps) {
+                $metaImage = preg_replace('/^http:\/\//i', 'https://', $metaImage);
+            }
             $metaUrl = url('/?berita='.($targetArticle['slug'] ?? $targetArticle['id']));
+            if ($forceHttps) {
+                $metaUrl = preg_replace('/^http:\/\//i', 'https://', $metaUrl);
+            }
             $metaType = 'article';
         } elseif ($targetAgenda) {
             $metaTitle = ($targetAgenda['title'] ?? 'Agenda Sekolah').' | '.$schoolName;
@@ -298,21 +305,34 @@ class SchoolWebsiteController extends Controller
             if (! str_starts_with($metaImage, 'http://') && ! str_starts_with($metaImage, 'https://')) {
                 $metaImage = url($metaImage);
             }
+            if ($forceHttps) {
+                $metaImage = preg_replace('/^http:\/\//i', 'https://', $metaImage);
+            }
             $metaUrl = url('/?agenda='.($targetAgenda['id'] ?? ''));
+            if ($forceHttps) {
+                $metaUrl = preg_replace('/^http:\/\//i', 'https://', $metaUrl);
+            }
             $metaType = 'event';
         } else {
             $metaTitle = $schoolName.' - '.($settings['website_hero_headline'] ?? 'Unggul, Berkarakter & Berprestasi di Era Digital');
-            $metaDescription = $settings['website_hero_subheadline'] ?? ('Official Web Portal & SIAKAD Terpadu '.$schoolName.' Sukabumi. Sistem Pembelajaran Modern & Karakter Unggul.');
+            $metaDescription = $settings['website_hero_subheadline'] ?? ('Official Web Portal & SIS-SMA1LE Terpadu '.$schoolName.' Sukabumi. Sistem Pembelajaran Modern & Karakter Unggul.');
             $rawImg = ! empty($settings['website_hero_photo']) ? $settings['website_hero_photo'] : 'images/website/hero_school.jpg';
             $metaImage = filter_var($rawImg, FILTER_VALIDATE_URL) ? $rawImg : asset($rawImg);
             if (! str_starts_with($metaImage, 'http://') && ! str_starts_with($metaImage, 'https://')) {
                 $metaImage = url($metaImage);
             }
+            if ($forceHttps) {
+                $metaImage = preg_replace('/^http:\/\//i', 'https://', $metaImage);
+            }
             $metaUrl = url('/');
+            if ($forceHttps) {
+                $metaUrl = preg_replace('/^http:\/\//i', 'https://', $metaUrl);
+            }
             $metaType = 'website';
         }
 
-        $ext = strtolower(pathinfo(parse_url($metaImage, PHP_URL_PATH) ?? '', PATHINFO_EXTENSION));
+        $cleanPath = parse_url($metaImage, PHP_URL_PATH) ?? '';
+        $ext = strtolower(pathinfo($cleanPath, PATHINFO_EXTENSION));
         $metaImageMime = match ($ext) {
             'png' => 'image/png',
             'webp' => 'image/webp',
@@ -366,9 +386,8 @@ class SchoolWebsiteController extends Controller
                 'targetArticle',
                 'targetAgenda'
             ))
-            ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0, post-check=0, pre-check=0')
-            ->header('Pragma', 'no-cache')
-            ->header('Expires', 'Sat, 01 Jan 2000 00:00:00 GMT');
+            ->header('Cache-Control', 'public, max-age=120, s-maxage=300')
+            ->header('Vary', 'Accept-Encoding, User-Agent');
     }
 
     /**

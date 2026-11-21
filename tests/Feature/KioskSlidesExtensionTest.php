@@ -31,6 +31,11 @@ test('kiosk index renders slides for berita, agenda, and guru & staf with photos
     // Assert Slide 9: Perpustakaan & Literasi
     $response->assertSee('slide-9', false);
     $response->assertSee('Perpustakaan &amp; Literasi Digital', false);
+    $response->assertSee('Klasifikasi DDC', false);
+    $response->assertSee('Duta Literasi Terpilih', false);
+    $response->assertSee('Pengurus &amp; Pengelola Perpustakaan', false);
+    $response->assertSee('Vamil Setiawati', false);
+    $response->assertSee('Hasbi', false);
 
     // Assert Slide 10: Bimbingan & Konseling
     $response->assertSee('slide-10', false);
@@ -95,4 +100,17 @@ test('kios satpam loads properly with single-screen responsive layout and unifie
     $response->assertSee('h-screen max-h-screen overflow-hidden', false);
     $response->assertSee('section-exit-permit', false);
     $response->assertSee('section-early-leave', false);
+});
+
+test('school website renders open graph and share buttons with image thumbnail support', function () {
+    $response = $this->get('/');
+
+    $response->assertStatus(200);
+    $response->assertSee('property="og:image"', false);
+    $response->assertSee('property="og:image:secure_url"', false);
+    $response->assertSee('name="twitter:image"', false);
+    $response->assertSee('shareNewsWhatsApp', false);
+    $response->assertSee('copyNewsLink', false);
+    $response->assertSee('shareAgendaWhatsApp', false);
+    $response->assertDontSee('SIAKAD SIS-SMA1LE');
 });

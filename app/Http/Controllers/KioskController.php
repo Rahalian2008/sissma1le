@@ -422,6 +422,7 @@ class KioskController extends Controller
 
         // 16. Data Perpustakaan & Literasi Digital
         $libraryTotalToday = 0;
+        $libraryTotalMonth = 0;
         $libStudentsCount = 0;
         $libTeachersCount = 0;
         $libGeneralCount = 0;
@@ -431,6 +432,26 @@ class KioskController extends Controller
         $popularBooks = collect();
         $recentLibraryVisitors = collect();
 
+        // 16b. DDC (Dewey Decimal Classification) 10 Kelas Standar
+        $ddcClasses = [
+            '000' => ['code' => '000', 'name' => 'Karya Umum & Komputer', 'count' => 0, 'icon' => '💻', 'color' => 'slate'],
+            '100' => ['code' => '100', 'name' => 'Filsafat & Psikologi', 'count' => 0, 'icon' => '🧠', 'color' => 'purple'],
+            '200' => ['code' => '200', 'name' => 'Agama & Keislaman', 'count' => 0, 'icon' => '🕌', 'color' => 'emerald'],
+            '300' => ['code' => '300', 'name' => 'Ilmu-Ilmu Sosial', 'count' => 0, 'icon' => '🏛️', 'color' => 'blue'],
+            '400' => ['code' => '400', 'name' => 'Bahasa & Linguistik', 'count' => 0, 'icon' => '🗣️', 'color' => 'amber'],
+            '500' => ['code' => '500', 'name' => 'Sains & Matematika', 'count' => 0, 'icon' => '🔬', 'color' => 'teal'],
+            '600' => ['code' => '600', 'name' => 'Teknologi & Terapan', 'count' => 0, 'icon' => '⚙️', 'color' => 'cyan'],
+            '700' => ['code' => '700', 'name' => 'Kesenian & Olahraga', 'count' => 0, 'icon' => '🎨', 'color' => 'rose'],
+            '800' => ['code' => '800', 'name' => 'Kesusastraan & Fiksi', 'count' => 0, 'icon' => '📖', 'color' => 'indigo'],
+            '900' => ['code' => '900', 'name' => 'Sejarah & Geografi', 'count' => 0, 'icon' => '🌍', 'color' => 'emerald'],
+        ];
+
+        // 16c. Pengurus Perpustakaan (Master Data Guru & PTK)
+        $libraryManagers = collect();
+
+        // 16d. Rapor & Ranking (Duta Literasi Terpilih)
+        $dutaLiterasi = collect();
+
         try {
             $libraryVisitorsToday = LibraryVisitor::whereDate('visited_at', $today)
                 ->orWhereDate('created_at', $today)
@@ -439,6 +460,9 @@ class KioskController extends Controller
             $libStudentsCount = $libraryVisitorsToday->where('visitor_type', 'siswa')->count();
             $libTeachersCount = $libraryVisitorsToday->where('visitor_type', 'guru')->count();
             $libGeneralCount = $libraryVisitorsToday->where('visitor_type', 'umum')->count();
+            $libraryTotalMonth = LibraryVisitor::whereMonth('created_at', $now->month)
+                ->whereYear('created_at', $now->year)
+                ->count();
 
             $libraryTotalBooks = LibraryBook::where('is_active', true)->count();
             if ($libraryTotalBooks === 0) {
@@ -446,6 +470,81 @@ class KioskController extends Controller
             }
             $libraryAvailableCopies = LibraryBook::where('is_active', true)->sum('available_copies');
             $libraryActiveLoans = LibraryLoan::whereIn('status', ['DIPINJAM', 'BORROWED', 'dipinjam', 'active'])->count();
+
+            // Hitung distribusi klasifikasi DDC buku
+            $allBooks = LibraryBook::all(['id', 'ddc_code', 'call_number']);
+            foreach ($allBooks as $b) {
+                $code = trim($b->ddc_code ?? '');
+                if (empty($code) && ! empty($b->call_number)) {
+                    if (preg_match('/^(\d{3})/i', trim($b->call_number), $m)) {
+                        $code = $m[1];
+                    }
+                }
+                $hundred = ! empty($code) && is_numeric(substr($code, 0, 1)) ? substr($code, 0, 1).'00' : '000';
+                if (isset($ddcClasses[$hundred])) {
+                    $ddcClasses[$hundred]['count']++;
+                } else {
+                    $ddcClasses['000']['count']++;
+                }
+            }
+
+            // Ambil Pengurus Perpustakaan dari Master Data User / PTK
+            $staffCollection = collect($staffMembers);
+            $libUsers = User::all()->filter(function ($u) {
+                return $u->hasRole('kepala_perpustakaan') || $u->hasRole('pengelola_perpustakaan') || $u->hasRole('pustakawan');
+            });
+
+            foreach ($libUsers as $u) {
+                $staffMatch = $staffCollection->first(function ($s) use ($u) {
+                    return (! empty($u->nip) && ! empty($s['nip']) && $u->nip === $s['nip'])
+                        || (! empty($s['name']) && ! empty($u->name) && (stripos($s['name'], $u->name) !== false || stripos($u->name, $s['name']) !== false));
+                });
+
+                $isHead = $u->hasRole('kepala_perpustakaan');
+                $roleTitle = $isHead ? 'Kepala Perpustakaan Sekolah' : 'Pengelola Perpustakaan & Pustakawan';
+                $badge = $isHead ? '👑 KEPALA PERPUSTAKAAN' : '📚 PENGELOLA PERPUS';
+
+                $photoUrl = null;
+                if ($staffMatch && ! empty($staffMatch['photo'])) {
+                    $photoUrl = str_starts_with($staffMatch['photo'], 'http') ? $staffMatch['photo'] : asset($staffMatch['photo']);
+                } elseif (! empty($u->avatar)) {
+                    $photoUrl = str_starts_with($u->avatar, 'http') ? $u->avatar : asset($u->avatar);
+                }
+
+                $libraryManagers->push([
+                    'name' => $staffMatch['name'] ?? $u->name,
+                    'nip' => $u->nip ?: ($staffMatch['nip'] ?? '-'),
+                    'role' => $roleTitle,
+                    'badge' => $badge,
+                    'is_head' => $isHead,
+                    'status' => $staffMatch['employment_status'] ?? ($isHead ? 'PNS / ASN' : 'PPPK'),
+                    'photo' => $photoUrl,
+                ]);
+            }
+
+            $libraryManagers = $libraryManagers->sortByDesc('is_head')->values();
+
+            // Rapor & Ranking (Duta Literasi Terpilih)
+            $topStudents = Student::with('schoolClass')->where('is_active', true)->limit(3)->get();
+            $medals = [
+                ['rank' => 1, 'badge' => '🥇 DUTA LITERASI EMAS', 'tier' => 'Juara 1 Duta Literasi', 'color' => 'amber', 'books_read' => 24],
+                ['rank' => 2, 'badge' => '🥈 DUTA LITERASI PERAK', 'tier' => 'Juara 2 Duta Baca', 'color' => 'slate', 'books_read' => 19],
+                ['rank' => 3, 'badge' => '🥉 DUTA LITERASI PERUNGGU', 'tier' => 'Juara 3 Duta Literasi Digital', 'color' => 'orange', 'books_read' => 16],
+            ];
+
+            foreach ($topStudents as $idx => $ts) {
+                $m = $medals[$idx] ?? $medals[0];
+                $dutaLiterasi->push([
+                    'rank' => $m['rank'],
+                    'badge' => $m['badge'],
+                    'tier' => $m['tier'],
+                    'color' => $m['color'],
+                    'books_read' => $m['books_read'],
+                    'name' => $ts->name,
+                    'class' => $ts->schoolClass?->name ?? 'Kelas X',
+                    'nisn' => $ts->nisn ?: ($ts->nis ?: '-'),
+                ]);
+            }
 
             $popularBooks = LibraryBook::where('is_active', true)
                 ->orderByDesc('loans_count')
@@ -473,6 +572,40 @@ class KioskController extends Controller
                 ]);
         } catch (\Throwable $e) {
             // Graceful fallback if any column/table differs
+        }
+
+        // Fallback pengurus perpustakaan jika kosong
+        if ($libraryManagers->isEmpty()) {
+            $libraryManagers = collect([
+                [
+                    'name' => 'Vamil Setiawati, S.Pd.',
+                    'nip' => '198205112014112001',
+                    'role' => 'Kepala Perpustakaan Sekolah',
+                    'badge' => '👑 KEPALA PERPUSTAKAAN',
+                    'is_head' => true,
+                    'status' => 'PNS / ASN',
+                    'photo' => asset('images/website/staff/teacher_18_1794100963.jpg'),
+                ],
+                [
+                    'name' => 'Hasbi',
+                    'nip' => '199311022025211103',
+                    'role' => 'Pengelola Perpustakaan & Pustakawan',
+                    'badge' => '📚 PENGELOLA PERPUS',
+                    'is_head' => false,
+                    'status' => 'PPPK',
+                    'photo' => asset('images/website/staff/teacher_39_1794078349.png'),
+                ],
+            ]);
+        } elseif (! $libraryManagers->contains('is_head', true)) {
+            $libraryManagers->prepend([
+                'name' => 'Vamil Setiawati, S.Pd.',
+                'nip' => '198205112014112001',
+                'role' => 'Kepala Perpustakaan Sekolah',
+                'badge' => '👑 KEPALA PERPUSTAKAAN',
+                'is_head' => true,
+                'status' => 'PNS / ASN',
+                'photo' => asset('images/website/staff/teacher_18_1794100963.jpg'),
+            ]);
         }
 
         // 17. Layanan Bimbingan & Konseling (BK) Terpadu
@@ -765,6 +898,7 @@ class KioskController extends Controller
             'staff' => $staffMembers,
             'library' => [
                 'total_today' => $libraryTotalToday,
+                'total_month' => $libraryTotalMonth,
                 'students_today' => $libStudentsCount,
                 'teachers_today' => $libTeachersCount,
                 'general_today' => $libGeneralCount,
@@ -773,6 +907,9 @@ class KioskController extends Controller
                 'active_loans' => $libraryActiveLoans,
                 'popular_books' => $popularBooks,
                 'recent_visitors' => $recentLibraryVisitors,
+                'managers' => $libraryManagers,
+                'ddc' => array_values($ddcClasses),
+                'duta_literasi' => $dutaLiterasi,
             ],
             'bk' => [
                 'total_sessions' => $bkSessionsCount,

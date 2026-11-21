@@ -114,48 +114,48 @@
                         <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> LIVE KIOSK
                     </span>
                 </div>
-                <p class="text-[9.5px] sm:text-[10px] text-slate-400 font-medium truncate max-w-[200px] sm:max-w-[260px] leading-tight">
+                <p class="text-[9.5px] sm:text-[10px] text-slate-400 font-medium truncate max-w-[200px] sm:max-w-[260px] hidden 2xl:block leading-tight">
                     Layar Informasi Digital Terpadu &bull; TV Display
                 </p>
             </div>
         </div>
 
-        <!-- Slide Switcher Pills (Desktop & Tablet) -->
-        <div class="hidden md:flex items-center gap-1 bg-slate-950/80 border border-white/10 rounded-xl p-1 text-xs shrink min-w-0 max-w-[50vw] xl:max-w-none overflow-x-auto no-scrollbar mx-1">
-            <button type="button" onclick="goToSlide(0)" id="pill-slide-0" class="slide-nav-pill px-2 py-1 rounded-lg font-bold transition flex items-center gap-1 bg-teal-500 text-slate-950 shadow-sm whitespace-nowrap text-[11px]">
+        <!-- Slide Switcher Pills (Desktop & Tablet) - Responsif tanpa terpotong -->
+        <div id="slidePillsContainer" class="hidden md:flex items-center gap-0.5 lg:gap-1 bg-slate-950/80 border border-white/10 rounded-xl p-1 text-xs shrink min-w-0 flex-1 max-w-fit overflow-x-auto no-scrollbar mx-1 scroll-smooth">
+            <button type="button" onclick="goToSlide(0)" id="pill-slide-0" class="slide-nav-pill px-1.5 lg:px-2 py-0.5 sm:py-1 rounded-lg font-bold transition flex items-center gap-1 bg-teal-500 text-slate-950 shadow-sm whitespace-nowrap text-[10.5px] lg:text-[11px]">
                 <span>1. Presensi</span>
             </button>
-            <button type="button" onclick="goToSlide(1)" id="pill-slide-1" class="slide-nav-pill px-2 py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap text-[11px]">
+            <button type="button" onclick="goToSlide(1)" id="pill-slide-1" class="slide-nav-pill px-1.5 lg:px-2 py-0.5 sm:py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap text-[10.5px] lg:text-[11px]">
                 <span>2. Ibadah</span>
             </button>
-            <button type="button" onclick="goToSlide(2)" id="pill-slide-2" class="slide-nav-pill px-2 py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap text-[11px]">
+            <button type="button" onclick="goToSlide(2)" id="pill-slide-2" class="slide-nav-pill px-1.5 lg:px-2 py-0.5 sm:py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap text-[10.5px] lg:text-[11px]">
                 <span>3. Tahfidz</span>
             </button>
-            <button type="button" onclick="goToSlide(3)" id="pill-slide-3" class="slide-nav-pill px-2 py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap text-[11px]">
+            <button type="button" onclick="goToSlide(3)" id="pill-slide-3" class="slide-nav-pill px-1.5 lg:px-2 py-0.5 sm:py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap text-[10.5px] lg:text-[11px]">
                 <span>4. Prestasi</span>
             </button>
-            <button type="button" onclick="goToSlide(4)" id="pill-slide-4" class="slide-nav-pill px-2 py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap text-[11px]">
+            <button type="button" onclick="goToSlide(4)" id="pill-slide-4" class="slide-nav-pill px-1.5 lg:px-2 py-0.5 sm:py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap text-[10.5px] lg:text-[11px]">
                 <span>5. Piket</span>
             </button>
-            <button type="button" onclick="goToSlide(5)" id="pill-slide-5" class="slide-nav-pill px-2 py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap text-[11px]">
+            <button type="button" onclick="goToSlide(5)" id="pill-slide-5" class="slide-nav-pill px-1.5 lg:px-2 py-0.5 sm:py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap text-[10.5px] lg:text-[11px]">
                 <span>6. Profil</span>
             </button>
-            <button type="button" onclick="goToSlide(6)" id="pill-slide-6" class="slide-nav-pill px-2 py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap text-[11px]">
+            <button type="button" onclick="goToSlide(6)" id="pill-slide-6" class="slide-nav-pill px-1.5 lg:px-2 py-0.5 sm:py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap text-[10.5px] lg:text-[11px]">
                 <span>7. Berita</span>
             </button>
-            <button type="button" onclick="goToSlide(7)" id="pill-slide-7" class="slide-nav-pill px-2 py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap text-[11px]">
+            <button type="button" onclick="goToSlide(7)" id="pill-slide-7" class="slide-nav-pill px-1.5 lg:px-2 py-0.5 sm:py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap text-[10.5px] lg:text-[11px]">
                 <span>8. Agenda</span>
             </button>
-            <button type="button" onclick="goToSlide(8)" id="pill-slide-8" class="slide-nav-pill px-2 py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap text-[11px]">
+            <button type="button" onclick="goToSlide(8)" id="pill-slide-8" class="slide-nav-pill px-1.5 lg:px-2 py-0.5 sm:py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap text-[10.5px] lg:text-[11px]">
                 <span>9. Guru &amp; TU</span>
             </button>
-            <button type="button" onclick="goToSlide(9)" id="pill-slide-9" class="slide-nav-pill px-2 py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap text-[11px]">
+            <button type="button" onclick="goToSlide(9)" id="pill-slide-9" class="slide-nav-pill px-1.5 lg:px-2 py-0.5 sm:py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap text-[10.5px] lg:text-[11px]">
                 <span>10. Perpus</span>
             </button>
-            <button type="button" onclick="goToSlide(10)" id="pill-slide-10" class="slide-nav-pill px-2 py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap text-[11px]">
+            <button type="button" onclick="goToSlide(10)" id="pill-slide-10" class="slide-nav-pill px-1.5 lg:px-2 py-0.5 sm:py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap text-[10.5px] lg:text-[11px]">
                 <span>11. BK</span>
             </button>
-            <button type="button" onclick="goToSlide(11)" id="pill-slide-11" class="slide-nav-pill px-2 py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap text-[11px]">
+            <button type="button" onclick="goToSlide(11)" id="pill-slide-11" class="slide-nav-pill px-1.5 lg:px-2 py-0.5 sm:py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap text-[10.5px] lg:text-[11px]">
                 <span>12. Tamu</span>
             </button>
         </div>
@@ -1432,7 +1432,7 @@
                             <span class="text-slate-500">&bull;</span>
                             <span class="text-xs font-semibold text-indigo-300">Pusat Sumber Belajar &amp; Membaca Siswa</span>
                         </h2>
-                        <p class="text-[10px] text-slate-400">Statistik pengunjung harian, katalog buku terfavorit, dan peminjaman buku aktif</p>
+                        <p class="text-[10px] text-slate-400">Statistik pengunjung harian, klasifikasi DDC, duta literasi, pengurus perpustakaan &amp; peminjaman buku aktif</p>
                     </div>
                 </div>
                 <div class="flex items-center gap-2">
@@ -1446,19 +1446,19 @@
             </div>
 
             <!-- Content Grid -->
-            <div class="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-3.5 overflow-hidden pt-1">
-                <!-- Left (7 Cols): KPI Cards + Popular Books Collection -->
-                <div class="lg:col-span-7 flex flex-col h-full min-h-0 gap-3">
+            <div class="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-3 overflow-hidden pt-1">
+                <!-- Left (7 Cols): KPI + DDC Dewey Classes + Popular Books -->
+                <div class="lg:col-span-7 flex flex-col h-full min-h-0 gap-2.5 overflow-hidden">
                     <!-- KPI Cards (4 Cards) -->
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 shrink-0">
                         <div class="glass-panel p-2.5 rounded-2xl border border-white/5 flex items-center gap-2.5">
                             <div class="w-8 h-8 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-base shrink-0 font-bold">
                                 👥
                             </div>
-                            <div>
-                                <span class="text-[9.5px] text-slate-400 font-bold block">Pengunjung Hari Ini</span>
+                            <div class="min-w-0">
+                                <span class="text-[9.5px] text-slate-400 font-bold block truncate">Pengunjung Hari Ini</span>
                                 <span id="libKioskVisitorsToday" class="text-base font-black text-white font-mono leading-none">{{ $data['library']['total_today'] ?? 0 }}</span>
-                                <span class="text-[9px] text-cyan-300 block">Orang</span>
+                                <span class="text-[8.5px] text-cyan-300 block truncate">S: {{ $data['library']['students_today'] ?? 0 }} | G: {{ $data['library']['teachers_today'] ?? 0 }} | U: {{ $data['library']['general_today'] ?? 0 }}</span>
                             </div>
                         </div>
 
@@ -1466,10 +1466,10 @@
                             <div class="w-8 h-8 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-base shrink-0 font-bold">
                                 📚
                             </div>
-                            <div>
-                                <span class="text-[9.5px] text-slate-400 font-bold block">Total Judul Buku</span>
+                            <div class="min-w-0">
+                                <span class="text-[9.5px] text-slate-400 font-bold block truncate">Total Judul Buku</span>
                                 <span class="text-base font-black text-white font-mono leading-none">{{ number_format($data['library']['total_books'] ?? 0) }}</span>
-                                <span class="text-[9px] text-indigo-300 block">Katalog</span>
+                                <span class="text-[8.5px] text-indigo-300 block truncate">10 Kelas DDC</span>
                             </div>
                         </div>
 
@@ -1477,10 +1477,10 @@
                             <div class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-base shrink-0 font-bold">
                                 📖
                             </div>
-                            <div>
-                                <span class="text-[9.5px] text-slate-400 font-bold block">Eksemplar Tersedia</span>
+                            <div class="min-w-0">
+                                <span class="text-[9.5px] text-slate-400 font-bold block truncate">Eksemplar Siap Baca</span>
                                 <span class="text-base font-black text-white font-mono leading-none">{{ number_format($data['library']['available_copies'] ?? 0) }}</span>
-                                <span class="text-[9px] text-emerald-300 block">Buku Siap Baca</span>
+                                <span class="text-[8.5px] text-emerald-300 block truncate">Buku Fisik &amp; Digital</span>
                             </div>
                         </div>
 
@@ -1488,47 +1488,80 @@
                             <div class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-base shrink-0 font-bold">
                                 🔄
                             </div>
-                            <div>
-                                <span class="text-[9.5px] text-slate-400 font-bold block">Peminjaman Aktif</span>
+                            <div class="min-w-0">
+                                <span class="text-[9.5px] text-slate-400 font-bold block truncate">Peminjaman Aktif</span>
                                 <span class="text-base font-black text-white font-mono leading-none">{{ $data['library']['active_loans'] ?? 0 }}</span>
-                                <span class="text-[9px] text-amber-300 block">Sedang Dipinjam</span>
+                                <span class="text-[8.5px] text-amber-300 block truncate">Sedang Dipinjam</span>
                             </div>
                         </div>
                     </div>
 
+                    <!-- 10 Kelas Klasifikasi DDC (Dewey Decimal Classification) -->
+                    <div class="glass-panel rounded-2xl p-2.5 sm:p-3 border border-white/5 flex flex-col shrink-0">
+                        <div class="flex items-center justify-between pb-1.5 border-b border-white/5 shrink-0">
+                            <h3 class="text-xs sm:text-sm font-black text-white flex items-center gap-2">
+                                <span>📚</span>
+                                <span>Koleksi Berdasarkan Klasifikasi DDC (Dewey Decimal Classification)</span>
+                            </h3>
+                            <span class="text-[9.5px] px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-semibold">
+                                10 Kelas Standar Perpusnas
+                            </span>
+                        </div>
+                        <div class="grid grid-cols-2 sm:grid-cols-5 gap-1.5 pt-2">
+                            @foreach($data['library']['ddc'] ?? [] as $ddc)
+                                <div class="bg-slate-900/90 rounded-xl p-1.5 sm:p-2 border border-white/5 flex flex-col justify-between hover:border-indigo-500/40 transition">
+                                    <div class="flex items-center justify-between gap-1">
+                                        <span class="text-xs">{{ $ddc['icon'] }}</span>
+                                        <span class="px-1.5 py-0.2 rounded text-[8.5px] font-mono font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                                            {{ $ddc['code'] }}
+                                        </span>
+                                    </div>
+                                    <div class="mt-1">
+                                        <div class="text-[9.5px] font-bold text-white truncate" title="{{ $ddc['name'] }}">
+                                            {{ $ddc['name'] }}
+                                        </div>
+                                        <div class="text-[8.5px] font-mono text-emerald-400 font-semibold mt-0.5">
+                                            {{ number_format($ddc['count']) }} Judul
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+
                     <!-- Koleksi Buku Terpopuler & Paling Banyak Dibaca -->
-                    <div class="flex-1 min-h-0 glass-panel rounded-2xl p-3 sm:p-3.5 border border-white/5 flex flex-col overflow-hidden">
-                        <div class="flex items-center justify-between pb-2 border-b border-white/5 shrink-0">
+                    <div class="flex-1 min-h-0 glass-panel rounded-2xl p-2.5 sm:p-3 border border-white/5 flex flex-col overflow-hidden">
+                        <div class="flex items-center justify-between pb-1.5 border-b border-white/5 shrink-0">
                             <h3 class="text-xs sm:text-sm font-black text-white flex items-center gap-2">
                                 <span>⭐</span>
-                                <span>Koleksi Buku Terpopuler &amp; Paling Banyak Dibaca</span>
+                                <span>Koleksi Rekomendasi &amp; Paling Banyak Dibaca</span>
                             </h3>
-                            <span class="text-[10px] text-slate-400">Rekomendasi Pemustaka</span>
+                            <span class="text-[10px] text-slate-400">Favorit Pemustaka S1L</span>
                         </div>
-                        <div class="flex-1 min-h-0 grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-2.5 pt-2.5 overflow-y-auto kiosk-scroll">
-                            @forelse($data['library']['popular_books'] ?? [] as $book)
-                                <div class="bg-slate-900/80 rounded-xl p-2.5 border border-white/5 flex flex-col justify-between hover:border-indigo-500/40 transition">
-                                    <div class="space-y-1.5">
-                                        <div class="flex items-start justify-between gap-1.5">
-                                            <span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 truncate">
+                        <div class="flex-1 min-h-0 grid grid-cols-2 sm:grid-cols-3 gap-2 pt-2 overflow-y-auto kiosk-scroll">
+                            @forelse(collect($data['library']['popular_books'] ?? [])->take(3) as $book)
+                                <div class="bg-slate-900/80 rounded-xl p-2 border border-white/5 flex flex-col justify-between hover:border-indigo-500/40 transition">
+                                    <div class="space-y-1">
+                                        <div class="flex items-start justify-between gap-1">
+                                            <span class="px-1.5 py-0.5 rounded text-[8.5px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 truncate">
                                                 {{ $book['category'] }}
                                             </span>
-                                            <span class="text-[9px] font-mono text-emerald-400 shrink-0 font-bold">
+                                            <span class="text-[8.5px] font-mono text-emerald-400 shrink-0 font-bold">
                                                 Sisa: {{ $book['available'] }}
                                             </span>
                                         </div>
-                                        <h4 class="text-xs font-bold text-white line-clamp-2 leading-snug" title="{{ $book['title'] }}">
+                                        <h4 class="text-[11px] font-bold text-white line-clamp-2 leading-tight" title="{{ $book['title'] }}">
                                             {{ $book['title'] }}
                                         </h4>
-                                        <p class="text-[10px] text-slate-400 truncate">{{ $book['author'] }}</p>
+                                        <p class="text-[9.5px] text-slate-400 truncate">{{ $book['author'] }}</p>
                                     </div>
-                                    <div class="pt-2 mt-1 border-t border-white/5 flex items-center justify-between text-[9.5px] text-slate-500">
+                                    <div class="pt-1 mt-1 border-t border-white/5 flex items-center justify-between text-[8.5px] text-slate-500">
                                         <span>Total: {{ $book['total'] }} Eks</span>
                                         <span class="text-indigo-400 font-semibold">Tersedia</span>
                                     </div>
                                 </div>
                             @empty
-                                <div class="col-span-3 text-center py-8 text-slate-500 text-xs italic">
+                                <div class="col-span-3 text-center py-4 text-slate-500 text-xs italic">
                                     Belum ada data buku populer.
                                 </div>
                             @endforelse
@@ -1536,49 +1569,141 @@
                     </div>
                 </div>
 
-                <!-- Right (5 Cols): Log Pengunjung Perpustakaan Terkini -->
-                <div class="lg:col-span-5 glass-panel rounded-2xl p-3 sm:p-3.5 border border-white/5 flex flex-col h-full min-h-0 overflow-hidden">
-                    <div class="flex items-center justify-between pb-2 border-b border-white/5 shrink-0">
-                        <div class="flex items-center gap-2">
-                            <span class="p-1.5 rounded-lg bg-emerald-500/20 text-emerald-400 text-xs">📋</span>
-                            <div>
-                                <h3 class="text-xs sm:text-sm font-black text-white">Log Kunjungan Pemustaka</h3>
-                                <p class="text-[10px] text-slate-400">Presensi mandiri perpustakaan terkini</p>
+                <!-- Right (5 Cols): Pengurus Perpustakaan + Duta Literasi + Log Kunjungan Pemustaka -->
+                <div class="lg:col-span-5 flex flex-col h-full min-h-0 gap-2.5 overflow-hidden">
+                    <!-- Pengurus Perpustakaan (Master Data Guru & PTK) -->
+                    <div class="glass-panel rounded-2xl p-2.5 sm:p-3 border border-white/5 flex flex-col shrink-0">
+                        <div class="flex items-center justify-between pb-1.5 border-b border-white/5 shrink-0">
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-xs">👥</span>
+                                <h3 class="text-xs sm:text-sm font-black text-white">Pengurus &amp; Pengelola Perpustakaan</h3>
                             </div>
+                            <span class="text-[9.5px] text-slate-400">Master Data PTK S1L</span>
                         </div>
-                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                            Hari Ini: {{ $data['library']['total_today'] ?? 0 }}
-                        </span>
-                    </div>
-
-                    <div class="flex-1 min-h-0 overflow-y-auto kiosk-scroll space-y-2 pt-2.5 pr-1">
-                        @forelse($data['library']['recent_visitors'] ?? [] as $lv)
-                            <div class="p-2.5 rounded-xl bg-slate-900/80 border border-white/5 flex items-center justify-between gap-2.5 hover:border-indigo-500/30 transition">
-                                <div class="flex items-center gap-2.5 min-w-0 flex-1">
-                                    <div class="w-8 h-8 rounded-lg bg-indigo-500/20 text-indigo-300 flex items-center justify-center font-bold text-xs shrink-0">
-                                        {{ $lv['type'] === 'Siswa' ? '🎓' : ($lv['type'] === 'Guru/Tendik' ? '👨‍🏫' : '🏛️') }}
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2">
+                            @forelse($data['library']['managers'] ?? [] as $mgr)
+                                <div class="p-2 rounded-xl border transition flex items-center gap-2.5 {{ !empty($mgr['is_head']) ? 'bg-gradient-to-r from-indigo-950/70 via-slate-900/95 to-indigo-900/50 border-indigo-500/40 shadow-sm' : 'bg-slate-900/85 border-white/10 hover:border-indigo-500/40' }}">
+                                    <div class="w-12 h-14 sm:w-13 sm:h-16 rounded-xl overflow-hidden shrink-0 border-2 {{ !empty($mgr['is_head']) ? 'border-amber-400/80 ring-2 ring-indigo-500/40' : 'border-indigo-400/40' }} bg-slate-800 shadow-md flex items-center justify-center">
+                                        @if(!empty($mgr['photo']))
+                                            <img src="{{ $mgr['photo'] }}" alt="{{ $mgr['name'] }}" class="w-full h-full object-cover" style="object-position: top center;">
+                                        @else
+                                            <span class="text-xl">{{ !empty($mgr['is_head']) ? '👑' : '📚' }}</span>
+                                        @endif
                                     </div>
-                                    <div class="min-w-0 flex-1">
-                                        <div class="font-extrabold text-xs text-white truncate">{{ $lv['name'] }}</div>
-                                        <div class="text-[10px] text-slate-400 truncate">{{ $lv['class'] }} &bull; <span class="text-indigo-300">{{ $lv['purpose'] }}</span></div>
+                                    <div class="min-w-0 flex-1 space-y-0.5">
+                                        <div class="flex items-center gap-1 flex-wrap">
+                                            <span class="px-1.5 py-0.5 rounded text-[8.5px] font-black uppercase tracking-wider {{ !empty($mgr['is_head']) ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40' : 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30' }}">
+                                                {{ !empty($mgr['is_head']) ? '👑 Kepala Perpus' : '📖 Pengelola' }}
+                                            </span>
+                                            @if(!empty($mgr['status']))
+                                                <span class="px-1 py-0.5 rounded text-[8px] font-mono font-bold bg-white/10 text-slate-300">
+                                                    {{ $mgr['status'] }}
+                                                </span>
+                                            @endif
+                                        </div>
+                                        <div class="font-extrabold text-[11px] sm:text-xs text-white leading-snug truncate" title="{{ $mgr['name'] }}">
+                                            {{ $mgr['name'] }}
+                                        </div>
+                                        <div class="text-[9px] text-slate-400 font-mono truncate">
+                                            NIP: {{ $mgr['nip'] }}
+                                        </div>
                                     </div>
                                 </div>
-                                <span class="font-mono text-[10px] font-bold text-slate-300 bg-slate-950 px-2 py-0.5 rounded border border-white/5 shrink-0">
-                                    {{ $lv['time'] }} WIB
-                                </span>
-                            </div>
-                        @empty
-                            <div class="h-full flex flex-col items-center justify-center text-center py-8 text-slate-500 text-xs space-y-1">
-                                <span class="text-2xl">📖</span>
-                                <span class="font-semibold text-slate-400">Belum ada pengunjung tercatat hari ini.</span>
-                            </div>
-                        @endforelse
+                            @empty
+                                <div class="col-span-2 text-center py-2 text-slate-500 text-xs italic">
+                                    Data pengurus perpustakaan belum dimuat.
+                                </div>
+                            @endforelse
+                        </div>
                     </div>
 
-                    <!-- Mini Footer: Info Pojok Baca Digital -->
-                    <div class="pt-2 mt-2 border-t border-white/5 flex items-center justify-between text-[10px] text-slate-400 shrink-0">
-                        <span>💻 Layanan E-Book &amp; OPAC Mandiri</span>
-                        <span class="text-indigo-400 font-semibold">Tersedia di Lab &amp; Kios Perpus</span>
+                    <!-- Rapor & Ranking (Duta Literasi Terpilih) -->
+                    <div class="glass-panel rounded-2xl p-2.5 sm:p-3 border border-white/5 flex flex-col shrink-0">
+                        <div class="flex items-center justify-between pb-1.5 border-b border-white/5 shrink-0">
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-xs">🏆</span>
+                                <h3 class="text-xs sm:text-sm font-black text-white">Rapor &amp; Ranking: Duta Literasi Terpilih</h3>
+                            </div>
+                            <span class="text-[9.5px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 font-semibold">
+                                Siswa Teraktif
+                            </span>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2 pt-2">
+                            @forelse($data['library']['duta_literasi'] ?? [] as $duta)
+                                <div class="p-2 rounded-xl border flex flex-col justify-between text-center relative overflow-hidden {{ $duta['rank'] === 1 ? 'bg-gradient-to-b from-amber-500/20 to-slate-900 border-amber-500/40 shadow-sm' : ($duta['rank'] === 2 ? 'bg-gradient-to-b from-slate-300/20 to-slate-900 border-slate-400/40' : 'bg-gradient-to-b from-amber-700/20 to-slate-900 border-amber-600/40') }}">
+                                    <div class="text-base sm:text-lg">{{ $duta['badge'] }}</div>
+                                    <div class="mt-0.5 min-w-0">
+                                        <span class="text-[8px] font-black uppercase tracking-wider block {{ $duta['rank'] === 1 ? 'text-amber-300' : ($duta['rank'] === 2 ? 'text-slate-300' : 'text-amber-400') }}">
+                                            {{ $duta['rank'] === 1 ? 'Juara 1 Emas' : ($duta['rank'] === 2 ? 'Juara 2 Perak' : 'Juara 3 Perunggu') }}
+                                        </span>
+                                        <div class="font-bold text-[10.5px] sm:text-[11px] text-white truncate mt-0.5" title="{{ $duta['name'] }}">
+                                            {{ $duta['name'] }}
+                                        </div>
+                                        <div class="text-[8.5px] text-slate-400 truncate">
+                                            {{ $duta['class'] }}
+                                        </div>
+                                    </div>
+                                    <div class="mt-1 pt-1 border-t border-white/10 text-[8.5px] font-mono font-bold text-emerald-400">
+                                        {{ $duta['books_read'] }} Buku Dibaca
+                                    </div>
+                                </div>
+                            @empty
+                                <div class="col-span-3 text-center py-2 text-slate-500 text-xs italic">
+                                    Belum ada data duta literasi.
+                                </div>
+                            @endforelse
+                        </div>
+                    </div>
+
+                    <!-- Log Kunjungan Pemustaka Terkini (Laporan Buku Tamu) -->
+                    <div class="flex-1 min-h-0 glass-panel rounded-2xl p-2.5 sm:p-3 border border-white/5 flex flex-col overflow-hidden">
+                        <div class="flex items-center justify-between pb-1.5 border-b border-white/5 shrink-0">
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-xs">📋</span>
+                                <div>
+                                    <h3 class="text-xs sm:text-sm font-black text-white">Laporan Buku Tamu Pengunjung</h3>
+                                    <p class="text-[9.5px] text-slate-400">Presensi mandiri pemustaka terkini</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                <span class="px-2 py-0.5 rounded-full text-[9.5px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                                    Hari Ini: {{ $data['library']['total_today'] ?? 0 }}
+                                </span>
+                                <span class="px-2 py-0.5 rounded-full text-[9.5px] font-mono text-slate-300 bg-slate-800/80 border border-white/5">
+                                    Bln Ini: {{ $data['library']['total_month'] ?? 0 }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="flex-1 min-h-0 overflow-y-auto kiosk-scroll space-y-1.5 pt-2 pr-1">
+                            @forelse($data['library']['recent_visitors'] ?? [] as $lv)
+                                <div class="p-2 rounded-xl bg-slate-900/80 border border-white/5 flex items-center justify-between gap-2 hover:border-indigo-500/30 transition">
+                                    <div class="flex items-center gap-2 min-w-0 flex-1">
+                                        <div class="w-7 h-7 rounded-lg bg-indigo-500/20 text-indigo-300 flex items-center justify-center font-bold text-xs shrink-0">
+                                            {{ $lv['type'] === 'Siswa' ? '🎓' : ($lv['type'] === 'Guru/Tendik' ? '👨‍🏫' : '🏛️') }}
+                                        </div>
+                                        <div class="min-w-0 flex-1">
+                                            <div class="font-extrabold text-[11px] text-white truncate">{{ $lv['name'] }}</div>
+                                            <div class="text-[9.5px] text-slate-400 truncate">{{ $lv['class'] }} &bull; <span class="text-indigo-300">{{ $lv['purpose'] }}</span></div>
+                                        </div>
+                                    </div>
+                                    <span class="font-mono text-[9px] font-bold text-slate-300 bg-slate-950 px-1.5 py-0.5 rounded border border-white/5 shrink-0">
+                                        {{ $lv['time'] }} WIB
+                                    </span>
+                                </div>
+                            @empty
+                                <div class="h-full flex flex-col items-center justify-center text-center py-4 text-slate-500 text-xs space-y-1">
+                                    <span class="text-xl">📖</span>
+                                    <span class="font-semibold text-slate-400 text-[11px]">Belum ada pengunjung tercatat hari ini.</span>
+                                </div>
+                            @endforelse
+                        </div>
+
+                        <!-- Mini Footer: Info Pojok Baca Digital -->
+                        <div class="pt-1.5 mt-1 border-t border-white/5 flex items-center justify-between text-[9.5px] text-slate-400 shrink-0">
+                            <span>💻 Layanan E-Book &amp; OPAC Mandiri</span>
+                            <span class="text-indigo-400 font-semibold">Tersedia di Lab &amp; Kios Perpus</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1992,9 +2117,12 @@
 
                 if (pillEl) {
                     if (i === currentSlideIdx) {
-                        pillEl.className = 'slide-nav-pill px-2 py-1 rounded-lg font-bold transition flex items-center gap-1 bg-teal-500 text-slate-950 shadow-sm whitespace-nowrap text-[11px]';
+                        pillEl.className = 'slide-nav-pill px-1.5 lg:px-2 py-0.5 sm:py-1 rounded-lg font-bold transition flex items-center gap-1 bg-teal-500 text-slate-950 shadow-sm whitespace-nowrap text-[10.5px] lg:text-[11px]';
+                        if (typeof pillEl.scrollIntoView === 'function') {
+                            pillEl.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+                        }
                     } else {
-                        pillEl.className = 'slide-nav-pill px-2 py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap text-[11px]';
+                        pillEl.className = 'slide-nav-pill px-1.5 lg:px-2 py-0.5 sm:py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap text-[10.5px] lg:text-[11px]';
                     }
                 }
             }

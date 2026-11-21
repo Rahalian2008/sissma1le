@@ -3284,7 +3284,17 @@
             const baseUrl = window.location.origin + window.location.pathname;
             const articleParam = item.slug || item.id || encodeURIComponent(item.title);
             const shareUrl = `${baseUrl}?berita=${encodeURIComponent(articleParam)}`;
-            const text = encodeURIComponent(`*${item.title}*\n\n${item.excerpt || ''}\n\nBaca selengkapnya di Portal Resmi {{ $settings['school_name'] ?? 'SMAN 1 Lengkong' }}:\n${shareUrl}`);
+            const rawImg = item.image || '';
+            const imgUrl = rawImg ? (rawImg.startsWith('http') ? rawImg : (window.location.origin + '/' + rawImg.replace(/^\/+/, ''))) : '';
+
+            // Format URL di awal teks memicu WhatsApp untuk langsung mengambil thumbnail foto Open Graph
+            let message = `${shareUrl}\n\n*${item.title}*\n\n${item.excerpt || ''}`;
+            if (imgUrl) {
+                message += `\n\n📸 Foto: ${imgUrl}`;
+            }
+            message += `\n\n📌 Portal Resmi {{ $settings['school_name'] ?? 'SMAN 1 Lengkong' }}`;
+
+            const text = encodeURIComponent(message);
             window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
         }
 
@@ -3294,12 +3304,33 @@
             const baseUrl = window.location.origin + window.location.pathname;
             const articleParam = item.slug || item.id || encodeURIComponent(item.title);
             const shareUrl = `${baseUrl}?berita=${encodeURIComponent(articleParam)}`;
-            navigator.clipboard.writeText(shareUrl).then(() => {
+            const rawImg = item.image || '';
+            const imgUrl = rawImg ? (rawImg.startsWith('http') ? rawImg : (window.location.origin + '/' + rawImg.replace(/^\/+/, ''))) : '';
+
+            // Gunakan Web Share API jika didukung (di mobile/smartphone langsung membagikan kartu + gambar ke WhatsApp)
+            if (navigator.share && window.isSecureContext) {
+                navigator.share({
+                    title: item.title,
+                    text: item.excerpt || item.title,
+                    url: shareUrl,
+                }).catch(() => {
+                    executeClipboardCopy(shareUrl, item, imgUrl);
+                });
+            } else {
+                executeClipboardCopy(shareUrl, item, imgUrl);
+            }
+        }
+
+        function executeClipboardCopy(shareUrl, item, imgUrl) {
+            const textToCopy = `${shareUrl}\n\n*${item.title}*\n${item.excerpt || ''}` + (imgUrl ? `\n📸 ${imgUrl}` : '');
+            navigator.clipboard.writeText(textToCopy).then(() => {
                 const text = document.getElementById('copy-link-text');
                 if (text) {
-                    text.innerText = 'Tersalin! ✅';
+                    text.innerText = 'Tersalin Lengkap! ✅';
                     setTimeout(() => { text.innerText = 'Salin Tautan'; }, 2000);
                 }
+            }).catch(() => {
+                navigator.clipboard.writeText(shareUrl);
             });
         }
 
@@ -3308,7 +3339,16 @@
             const baseUrl = window.location.origin + window.location.pathname;
             const agendaId = agenda.id || '';
             const shareUrl = `${baseUrl}?agenda=${encodeURIComponent(agendaId)}`;
-            const text = encodeURIComponent(`*Agenda Sekolah: ${agenda.title}*\n📅 ${agenda.date || ''}\n\n${agenda.description || ''}\n\nInfo selengkapnya di Website Resmi {{ $settings['school_name'] ?? 'SMAN 1 Lengkong' }}:\n${shareUrl}`);
+            const rawImg = agenda.image || '';
+            const imgUrl = rawImg ? (rawImg.startsWith('http') ? rawImg : (window.location.origin + '/' + rawImg.replace(/^\/+/, ''))) : '';
+
+            let message = `${shareUrl}\n\n*Agenda Sekolah: ${agenda.title}*\n📅 ${agenda.date || ''}\n\n${agenda.description || ''}`;
+            if (imgUrl) {
+                message += `\n\n📸 Poster/Gambar: ${imgUrl}`;
+            }
+            message += `\n\n📌 Info Resmi {{ $settings['school_name'] ?? 'SMAN 1 Lengkong' }}`;
+
+            const text = encodeURIComponent(message);
             window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
         }
 
