@@ -1353,24 +1353,24 @@
                                 $isHeadmaster = ($st['type'] ?? '') === 'kepala_sekolah' || str_contains(strtolower($st['duty'] ?? ''), 'kepala sekolah');
                                 $isGuru = ($st['type'] ?? '') === 'guru' || !empty($st['mapel']);
                             @endphp
-                            <div class="glass-card rounded-2xl border border-white/10 p-3 sm:p-4 flex flex-col items-center text-center justify-between hover:border-teal-500/40 transition duration-300 group relative overflow-hidden {{ $isHeadmaster ? 'glow-gold border-amber-500/30 bg-amber-950/20' : 'glow-teal' }}">
+                            <div class="glass-card rounded-2xl border border-white/10 p-2.5 sm:p-3 flex flex-col items-center text-center justify-between hover:border-teal-500/40 transition duration-300 group relative overflow-hidden {{ $isHeadmaster ? 'glow-gold border-amber-500/30 bg-amber-950/20' : 'glow-teal' }}">
                                 <!-- Top Status Pill -->
-                                <div class="w-full flex items-center justify-between gap-1 mb-1">
-                                    <span class="px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider truncate {{ $isHeadmaster ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40' : ($isGuru ? 'bg-teal-500/20 text-teal-300 border border-teal-500/30' : 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30') }}">
+                                <div class="w-full flex items-center justify-between gap-1 mb-1 shrink-0">
+                                    <span class="px-2 py-0.5 rounded text-[8.5px] font-black uppercase tracking-wider truncate {{ $isHeadmaster ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40' : ($isGuru ? 'bg-teal-500/20 text-teal-300 border border-teal-500/30' : 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30') }}">
                                         {{ $isHeadmaster ? '👑 Kepala Sekolah' : ($isGuru ? '🎓 Dewan Guru' : '🏢 Staf TU') }}
                                     </span>
-                                    <span class="text-[8.5px] font-mono text-slate-400 truncate">
+                                    <span class="text-[8px] font-mono text-slate-400 truncate">
                                         {{ $st['employment_status'] ?? 'ASN' }}
                                     </span>
                                 </div>
 
-                                <!-- Photo Container with Elegant Ring (Enlarged Portrait Ratio, No Head Cutoff) -->
-                                <div class="w-28 h-36 sm:w-32 sm:h-40 md:w-36 md:h-44 lg:w-36 lg:h-44 xl:w-40 xl:h-48 rounded-2xl overflow-hidden p-1 bg-gradient-to-tr {{ $isHeadmaster ? 'from-amber-400 via-yellow-500 to-amber-600' : 'from-teal-400 via-indigo-500 to-sky-400' }} shadow-xl my-1.5 shrink-0 group-hover:scale-105 transition duration-300">
+                                <!-- Photo Container with Elegant Ring (Portrait Ratio, No Head Cutoff) -->
+                                <div class="w-24 h-28 sm:w-28 sm:h-32 md:w-30 md:h-36 rounded-2xl overflow-hidden p-1 bg-gradient-to-tr {{ $isHeadmaster ? 'from-amber-400 via-yellow-500 to-amber-600' : 'from-teal-400 via-indigo-500 to-sky-400' }} shadow-lg my-1 shrink-0 group-hover:scale-105 transition duration-300">
                                     <div class="w-full h-full bg-slate-950 rounded-[12px] overflow-hidden flex items-center justify-center">
                                         @if($photoUrl)
                                             <img src="{{ $photoUrl }}" alt="{{ $st['name'] }}" class="w-full h-full object-cover object-top" style="object-position: top center;">
                                         @else
-                                            <div class="w-full h-full flex flex-col items-center justify-center bg-gradient-to-tr from-slate-900 via-slate-800 to-teal-950 text-teal-300 font-extrabold text-2xl sm:text-3xl">
+                                            <div class="w-full h-full flex flex-col items-center justify-center bg-gradient-to-tr from-slate-900 via-slate-800 to-teal-950 text-teal-300 font-extrabold text-xl sm:text-2xl">
                                                 <span>{{ strtoupper(substr($st['name'], 0, 2)) }}</span>
                                             </div>
                                         @endif
@@ -1378,23 +1378,23 @@
                                 </div>
 
                                 <!-- Staff Name & Academic Degrees -->
-                                <div class="w-full min-w-0 mt-1.5">
-                                    <h4 class="text-xs sm:text-sm md:text-base font-extrabold text-white leading-tight line-clamp-2 min-h-[2.25rem] flex items-center justify-center group-hover:text-teal-300 transition" title="{{ $st['name'] }}">
+                                <div class="w-full min-w-0 mt-0.5 shrink-0">
+                                    <h4 class="text-xs sm:text-sm font-extrabold text-white leading-tight truncate group-hover:text-teal-300 transition" title="{{ $st['name'] }}">
                                         {{ $st['name'] }}
                                     </h4>
-                                    <div class="text-[11px] sm:text-xs font-semibold text-teal-300 truncate mt-0.5" title="{{ $st['duty'] ?? 'Pendidik' }}">
+                                    <div class="text-[10px] sm:text-[10.5px] font-semibold text-teal-300 truncate mt-0.5" title="{{ $st['duty'] ?? 'Pendidik' }}">
                                         {{ $st['duty'] ?? 'Pendidik' }}
                                     </div>
                                     @if(!empty($st['mapel']) && $st['mapel'] !== ($st['duty'] ?? ''))
-                                        <div class="text-[10px] text-slate-400 truncate mt-0.5" title="{{ $st['mapel'] }}">
+                                        <div class="text-[9.5px] text-slate-400 truncate mt-0.5" title="{{ $st['mapel'] }}">
                                             {{ $st['mapel'] }}
                                         </div>
                                     @endif
                                 </div>
 
                                 <!-- NIP Badge Footer -->
-                                <div class="w-full pt-1.5 mt-1 border-t border-white/5">
-                                    <span class="inline-block text-[9.5px] font-mono text-slate-400 bg-slate-900/90 px-2.5 py-0.5 rounded-full border border-white/5 truncate max-w-full">
+                                <div class="w-full pt-1 mt-0.5 border-t border-white/5 shrink-0">
+                                    <span class="inline-block text-[9px] font-mono text-slate-400 bg-slate-900/90 px-2 py-0.5 rounded-full border border-white/5 truncate max-w-full">
                                         {{ !empty($st['nip']) && $st['nip'] !== '-' ? 'NIP ' . $st['nip'] : 'Pendidik Resmi' }}
                                     </span>
                                 </div>
