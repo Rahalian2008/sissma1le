@@ -289,7 +289,7 @@
                 </button>
                 <button type="button" id="btnPlayPause" onclick="togglePlayPause()" class="px-2 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-white/10 font-bold transition flex items-center gap-1" title="Jeda / Lanjutkan Auto Slide">
                     <span id="playPauseIcon">⏸️</span>
-                    <span id="slideCountdownLabel" class="font-mono text-[11px] text-teal-300">16s</span>
+                    <span id="slideCountdownLabel" class="font-mono text-[11px] text-teal-300">18s</span>
                 </button>
                 <button type="button" onclick="nextSlide()" class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition" title="Slide Berikutnya (Panah Kanan)">
                     <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
@@ -407,15 +407,15 @@
                     </div>
 
                     <!-- Kepala Sekolah Card (Cukup Photo, Nama, NIP dari Master Data - Identitas Sekolah) -->
-                    <div class="glass-panel rounded-2xl border border-amber-500/30 p-3 sm:p-3.5 shadow-xl bg-gradient-to-r from-slate-900/90 via-slate-900/95 to-amber-950/20 glow-gold shrink-0">
-                        <div class="flex items-center gap-3.5">
+                    <div class="glass-panel rounded-2xl border border-amber-500/30 p-3 sm:p-3.5 xl:p-4 shadow-xl bg-gradient-to-r from-slate-900/90 via-slate-900/95 to-amber-950/20 glow-gold shrink-0">
+                        <div class="flex items-center gap-3.5 xl:gap-4">
                             <!-- Photo Portrait (object-position: top center, head NOT cut off) -->
-                            <div class="w-20 h-24 sm:w-24 sm:h-28 rounded-2xl overflow-hidden p-1 bg-gradient-to-tr from-amber-400 via-yellow-500 to-amber-600 shadow-xl shrink-0">
+                            <div class="w-20 h-24 sm:w-24 sm:h-28 xl:w-26 xl:h-32 rounded-2xl overflow-hidden p-1 bg-gradient-to-tr from-amber-400 via-yellow-500 to-amber-600 shadow-xl shrink-0">
                                 <div class="w-full h-full bg-slate-950 rounded-[12px] overflow-hidden flex items-center justify-center">
                                     @if(!empty($data['profile']['principal_photo']))
                                         <img src="{{ $data['profile']['principal_photo'] }}" alt="{{ $data['profile']['principal_name'] }}" class="w-full h-full object-cover" style="object-position: top center;">
                                     @else
-                                        <div class="w-full h-full flex items-center justify-center bg-gradient-to-tr from-slate-900 to-amber-950 text-amber-300 font-extrabold text-xl">
+                                        <div class="w-full h-full flex items-center justify-center bg-gradient-to-tr from-slate-900 to-amber-950 text-amber-300 font-extrabold text-xl xl:text-2xl">
                                             PS
                                         </div>
                                     @endif
@@ -423,17 +423,20 @@
                             </div>
 
                             <div class="min-w-0 flex-1">
-                                <span class="px-2 py-0.5 rounded-full text-[8.5px] font-black uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/40 inline-flex items-center gap-1 mb-1">
+                                <span class="px-2 py-0.5 rounded-full text-[8.5px] xl:text-[9.5px] font-black uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/40 inline-flex items-center gap-1 mb-1">
                                     <span>👑</span> PIMPINAN SEKOLAH
                                 </span>
-                                <h3 class="text-sm sm:text-base font-black text-white leading-tight truncate" title="{{ $data['profile']['principal_name'] }}">
+                                <h3 class="text-sm sm:text-base xl:text-lg font-black text-white leading-tight truncate" title="{{ $data['profile']['principal_name'] }}">
                                     {{ $data['profile']['principal_name'] }}
                                 </h3>
-                                <div class="text-[11px] font-bold text-amber-300 mt-0.5">
+                                <div class="text-[11px] xl:text-xs font-bold text-amber-300 mt-0.5">
                                     {{ $data['profile']['principal_title'] ?? 'Kepala SMAN 1 Lengkong' }}
                                 </div>
-                                <div class="mt-1.5 inline-block px-2.5 py-0.5 rounded-md bg-slate-900/90 border border-white/10 text-[10px] font-mono font-bold text-slate-200">
+                                <div class="mt-1.5 inline-block px-2.5 py-0.5 rounded-md bg-slate-900/90 border border-white/10 text-[10px] xl:text-[11px] font-mono font-bold text-slate-200">
                                     NIP {{ $data['profile']['principal_nip'] }}
+                                </div>
+                                <div class="mt-2 text-[10px] xl:text-[11px] text-slate-300 italic flex items-center gap-1.5 border-t border-amber-500/20 pt-1.5 truncate">
+                                    <span>💬</span> "Maju Bersama, Hebat Semua! Menuju S1L Berkarakter & Unggul"
                                 </div>
                             </div>
                         </div>
@@ -441,46 +444,46 @@
                 </div>
 
                 <!-- Right Column (7 Cols): VISI & MISI SEKOLAH (Harus Terbaca Jelas & Terbuka) -->
-                <div class="lg:col-span-7 flex flex-col h-full min-h-0 glass-panel rounded-2xl border border-white/10 p-3.5 sm:p-4 justify-between overflow-hidden shadow-lg">
+                <div class="lg:col-span-7 flex flex-col h-full min-h-0 glass-panel rounded-2xl border border-white/10 p-3.5 sm:p-4 xl:p-5 justify-between overflow-hidden shadow-lg">
                     <!-- Visi Section (Prominent Banner) -->
-                    <div class="p-3 sm:p-3.5 rounded-xl bg-gradient-to-r from-teal-950/60 via-slate-900/80 to-indigo-950/60 border border-teal-500/30 shrink-0 shadow-md">
+                    <div class="p-3 sm:p-3.5 xl:p-4 rounded-xl bg-gradient-to-r from-teal-950/60 via-slate-900/80 to-indigo-950/60 border border-teal-500/30 shrink-0 shadow-md">
                         <div class="flex items-center justify-between mb-1.5">
-                            <span class="text-[10px] font-black text-teal-400 uppercase tracking-wider flex items-center gap-1.5">
+                            <span class="text-[10px] xl:text-xs font-black text-teal-400 uppercase tracking-wider flex items-center gap-1.5">
                                 <span>🌟</span> VISI SEKOLAH RESMI
                             </span>
-                            <span class="text-[9.5px] text-slate-400 font-mono">SMAN 1 Lengkong</span>
+                            <span class="text-[9.5px] xl:text-[11px] text-slate-400 font-mono">SMAN 1 Lengkong</span>
                         </div>
-                        <p class="text-xs sm:text-sm md:text-base text-white font-bold italic leading-relaxed">
+                        <p class="text-xs sm:text-sm md:text-base xl:text-lg text-white font-bold italic leading-relaxed">
                             "{{ $data['profile']['vision'] }}"
                         </p>
                         @if(!empty($data['profile']['vision_sub']))
-                            <p class="text-[11px] sm:text-xs text-teal-300 font-semibold mt-1">
+                            <p class="text-[11px] sm:text-xs xl:text-sm text-teal-300 font-semibold mt-1">
                                 {{ $data['profile']['vision_sub'] }}
                             </p>
                         @endif
                     </div>
 
-                    <!-- Misi Section (2x2 Grid, Legible, No Cutoff) -->
+                    <!-- Misi Section (2x2 Grid, Legible, No Cutoff, Fills Height) -->
                     <div class="flex-1 min-h-0 flex flex-col justify-between my-2 overflow-hidden">
                         <div class="flex items-center justify-between pb-1.5 mb-1.5 border-b border-white/10 shrink-0">
-                            <span class="text-[10px] font-black text-indigo-400 uppercase tracking-wider flex items-center gap-1.5">
+                            <span class="text-[10px] xl:text-xs font-black text-indigo-400 uppercase tracking-wider flex items-center gap-1.5">
                                 <span>🎯</span> MISI SEKOLAH
                             </span>
-                            <span class="text-[9.5px] text-slate-400 font-mono">{{ count($data['profile']['missions'] ?? []) }} Misi Unggulan</span>
+                            <span class="text-[9.5px] xl:text-[11px] text-slate-400 font-mono">{{ count($data['profile']['missions'] ?? []) }} Misi Unggulan</span>
                         </div>
 
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 flex-1 min-h-0 content-start overflow-y-auto kiosk-scroll pr-1">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 grid-rows-2 gap-2.5 xl:gap-3.5 flex-1 min-h-0 overflow-hidden">
                             @forelse($data['profile']['missions'] ?? [] as $misi)
-                                <div class="p-2.5 sm:p-3 rounded-xl bg-slate-900/80 border border-white/10 hover:border-indigo-500/30 transition flex items-start gap-2.5">
-                                    <div class="w-6 h-6 rounded-lg bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 flex items-center justify-center font-black text-[10px] shrink-0 font-mono mt-0.5">
-                                        {{ $misi['number'] ?? '01' }}
+                                <div class="p-3 xl:p-3.5 rounded-xl bg-slate-900/80 border border-white/10 hover:border-indigo-500/30 transition flex flex-col justify-center h-full">
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <div class="w-6 h-6 xl:w-7 xl:h-7 rounded-lg bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 flex items-center justify-center font-black text-[10px] xl:text-xs shrink-0 font-mono">
+                                            {{ $misi['number'] ?? '01' }}
+                                        </div>
+                                        <h4 class="text-xs sm:text-sm xl:text-base font-extrabold text-white leading-tight truncate">{{ $misi['title'] ?? '' }}</h4>
                                     </div>
-                                    <div class="min-w-0 flex-1">
-                                        <h4 class="text-xs font-bold text-white leading-tight">{{ $misi['title'] ?? '' }}</h4>
-                                        <p class="text-[11px] sm:text-xs text-slate-300 leading-relaxed mt-1">
-                                            {{ $misi['desc'] ?? '' }}
-                                        </p>
-                                    </div>
+                                    <p class="text-[11px] sm:text-xs xl:text-sm text-slate-300 leading-relaxed">
+                                        {{ $misi['desc'] ?? '' }}
+                                    </p>
                                 </div>
                             @empty
                                 <div class="col-span-2 text-center text-slate-500 text-xs italic py-4">
@@ -491,8 +494,10 @@
                     </div>
 
                     <!-- Bottom Tagline -->
-                    <div class="pt-2 border-t border-white/5 flex items-center justify-between text-[10px] text-slate-400 shrink-0">
+                    <div class="pt-2 border-t border-white/5 flex items-center justify-between text-[10px] xl:text-xs text-slate-400 shrink-0">
                         <span>Mewujudkan Generasi Berakhlak Mulia, Cerdas, Terampil &amp; Berwawasan Global</span>
+                        <span class="font-mono text-teal-400 font-bold hidden sm:inline">SIS-SMA1LE &bull; TV KIOSK</span>
+                    </div>
                         <span class="text-teal-400 font-semibold font-mono">SIS-SMA1LE</span>
                     </div>
                 </div>
@@ -547,7 +552,7 @@
                 @endphp
 
                 @forelse($chunkedStaff as $pageIdx => $staffPage)
-                    <div class="staff-page h-full w-full {{ $pageIdx === 0 ? 'grid' : 'hidden' }} grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-2.5 sm:gap-3 overflow-y-auto kiosk-scroll content-start" id="staff-page-{{ $pageIdx }}">
+                    <div class="staff-page h-full w-full {{ $pageIdx === 0 ? 'grid' : 'hidden' }} grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 grid-rows-2 gap-2.5 sm:gap-3 xl:gap-3.5 overflow-y-auto kiosk-scroll" id="staff-page-{{ $pageIdx }}">
                         @foreach($staffPage as $st)
                             @php
                                 $photoUrl = null;
@@ -563,19 +568,19 @@
                                 $isHeadmaster = ($st['type'] ?? ($st['category'] ?? '')) === 'kepala_sekolah' || str_contains(strtolower($st['duty'] ?? ''), 'kepala sekolah');
                                 $isGuru = ($st['type'] ?? ($st['category'] ?? '')) === 'guru' || !empty($st['mapel']);
                             @endphp
-                            <div class="glass-card rounded-2xl border border-white/10 p-2 sm:p-2.5 flex flex-col items-center text-center justify-between hover:border-teal-500/40 transition duration-300 group relative min-h-0 {{ $isHeadmaster ? 'glow-gold border-amber-500/30 bg-amber-950/20' : 'glow-teal' }}">
+                            <div class="glass-card rounded-2xl border border-white/10 p-2 sm:p-2.5 xl:p-3 flex flex-col items-center text-center justify-between hover:border-teal-500/40 transition duration-300 group relative min-h-0 h-full {{ $isHeadmaster ? 'glow-gold border-amber-500/30 bg-amber-950/20' : 'glow-teal' }}">
                                 <!-- Top Status Pill -->
                                 <div class="w-full flex items-center justify-between gap-1 mb-1 shrink-0">
-                                    <span class="px-1.5 py-0.5 rounded text-[8px] sm:text-[8.5px] font-black uppercase tracking-wider truncate {{ $isHeadmaster ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40' : ($isGuru ? 'bg-teal-500/20 text-teal-300 border border-teal-500/30' : 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30') }}">
+                                    <span class="px-1.5 py-0.5 rounded text-[8px] sm:text-[8.5px] xl:text-[9.5px] font-black uppercase tracking-wider truncate {{ $isHeadmaster ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40' : ($isGuru ? 'bg-teal-500/20 text-teal-300 border border-teal-500/30' : 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30') }}">
                                         {{ $isHeadmaster ? '👑 Kepala Sekolah' : ($isGuru ? '🎓 Dewan Guru' : '🏢 Staf TU') }}
                                     </span>
-                                    <span class="text-[7.5px] sm:text-[8px] font-mono text-slate-400 truncate">
+                                    <span class="text-[7.5px] sm:text-[8px] xl:text-[9px] font-mono text-slate-400 truncate">
                                         {{ $st['employment_status'] ?? 'ASN' }}
                                     </span>
                                 </div>
 
                                 <!-- Photo Container with Elegant Ring (Portrait Ratio, No Head Cutoff) -->
-                                <div class="staff-card-photo w-14 h-16 sm:w-16 sm:h-20 md:w-18 md:h-22 lg:w-20 lg:h-24 xl:w-22 xl:h-26 rounded-xl overflow-hidden p-0.5 sm:p-1 bg-gradient-to-tr {{ $isHeadmaster ? 'from-amber-400 via-yellow-500 to-amber-600' : 'from-teal-400 via-indigo-500 to-sky-400' }} shadow-md my-0.5 sm:my-1 shrink-0 group-hover:scale-105 transition duration-300">
+                                <div class="staff-card-photo w-14 h-16 sm:w-16 sm:h-20 md:w-18 md:h-22 lg:w-20 lg:h-24 xl:w-24 xl:h-28 2xl:w-26 2xl:h-30 rounded-xl overflow-hidden p-0.5 sm:p-1 bg-gradient-to-tr {{ $isHeadmaster ? 'from-amber-400 via-yellow-500 to-amber-600' : 'from-teal-400 via-indigo-500 to-sky-400' }} shadow-md my-0.5 sm:my-1 shrink-0 group-hover:scale-105 transition duration-300">
                                     <div class="w-full h-full bg-slate-950 rounded-[9px] overflow-hidden flex items-center justify-center">
                                         @if($photoUrl)
                                             <img src="{{ $photoUrl }}" alt="{{ $st['name'] }}" class="w-full h-full object-cover object-top" style="object-position: top center;">
@@ -729,9 +734,9 @@
                     @endphp
 
                     @forelse($chunkedRombels as $rIdx => $rombelPage)
-                        <div class="rombel-page h-full w-full {{ $rIdx === 0 ? 'grid' : 'hidden' }} grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 content-start overflow-y-auto kiosk-scroll" id="rombel-page-{{ $rIdx }}">
+                        <div class="rombel-page h-full w-full {{ $rIdx === 0 ? 'grid' : 'hidden' }} grid-cols-1 md:grid-cols-2 lg:grid-cols-3 grid-rows-2 gap-3 xl:gap-4 overflow-y-auto kiosk-scroll" id="rombel-page-{{ $rIdx }}">
                             @foreach($rombelPage as $r)
-                                <div class="glass-card rounded-2xl border border-white/10 p-3 flex flex-col justify-between hover:border-sky-500/40 transition duration-300 group glow-teal relative overflow-hidden shadow-lg">
+                                <div class="glass-card rounded-2xl border border-white/10 p-3 sm:p-3.5 xl:p-4 flex flex-col justify-between hover:border-sky-500/40 transition duration-300 group glow-teal relative overflow-hidden shadow-lg h-full">
                                     <!-- Class Title & Grade Badge -->
                                     <div>
                                         <div class="flex items-center justify-between pb-1.5 border-b border-white/5 mb-1.5">
@@ -1182,7 +1187,7 @@
                 </div>
 
                 <!-- Right (5 Cols): Tim Guru BK / Konselor & Layanan Curhat Siswa -->
-                <div class="lg:col-span-5 glass-panel rounded-2xl p-3 sm:p-3.5 border border-white/5 flex flex-col h-full min-h-0 justify-between overflow-hidden">
+                <div class="lg:col-span-5 glass-panel rounded-2xl p-3 sm:p-3.5 xl:p-4 border border-white/5 flex flex-col h-full min-h-0 justify-between overflow-hidden gap-2">
                     <div class="flex items-center justify-between pb-2 border-b border-white/5 shrink-0">
                         <div class="flex items-center gap-2">
                             <span class="p-1.5 rounded-lg bg-purple-500/20 text-purple-400 text-xs">👨‍🏫</span>
@@ -1196,54 +1201,89 @@
                         </span>
                     </div>
 
-                    <div class="flex-1 min-h-0 overflow-y-auto kiosk-scroll space-y-1.5 sm:space-y-2 py-1 pr-1">
-                        @foreach($data['bk']['counselors'] ?? [] as $gc)
-                            <div class="p-2 sm:p-2.5 rounded-xl border transition flex items-center gap-3 {{ !empty($gc['is_coordinator']) ? 'bg-gradient-to-r from-purple-950/70 via-slate-900/95 to-purple-900/50 border-purple-500/40 shadow-md shadow-purple-950/40' : 'bg-slate-900/85 border-white/10 hover:border-purple-500/40' }}">
-                                <div class="w-12 sm:w-14 h-14 sm:h-16 rounded-xl overflow-hidden shrink-0 border-2 {{ !empty($gc['is_coordinator']) ? 'border-amber-400/70 ring-2 ring-purple-500/40' : 'border-purple-400/40' }} bg-slate-800 shadow-md flex items-center justify-center">
-                                    @if(!empty($gc['photo']))
-                                        <img src="{{ $gc['photo'] }}" alt="{{ $gc['name'] }}" class="w-full h-full object-cover" style="object-position: top center;">
-                                    @else
-                                        <span class="text-xl">{{ !empty($gc['is_coordinator']) ? '👑' : '🧑‍🏫' }}</span>
-                                    @endif
-                                </div>
-                                <div class="min-w-0 flex-1 space-y-0.5">
-                                    <div class="flex items-center gap-1.5 flex-wrap">
-                                        @if(!empty($gc['is_coordinator']))
-                                            <span class="px-1.5 py-0.5 rounded-md text-[8.5px] font-black uppercase tracking-wider bg-gradient-to-r from-amber-500/25 to-purple-500/25 text-amber-300 border border-amber-500/40 flex items-center gap-1">
-                                                <span>👑</span> KOORDINATOR BK
-                                            </span>
+                    <div class="flex-1 min-h-0 flex flex-col justify-between space-y-2 py-0.5 overflow-hidden">
+                        <!-- Counselor Cards Stack -->
+                        <div class="space-y-2">
+                            @foreach($data['bk']['counselors'] ?? [] as $gc)
+                                <div class="p-2 sm:p-2.5 xl:p-3 rounded-xl border transition flex items-center gap-3 {{ !empty($gc['is_coordinator']) ? 'bg-gradient-to-r from-purple-950/70 via-slate-900/95 to-purple-900/50 border-purple-500/40 shadow-md shadow-purple-950/40' : 'bg-slate-900/85 border-white/10 hover:border-purple-500/40' }}">
+                                    <div class="w-12 sm:w-14 xl:w-16 h-14 sm:h-16 xl:h-20 rounded-xl overflow-hidden shrink-0 border-2 {{ !empty($gc['is_coordinator']) ? 'border-amber-400/70 ring-2 ring-purple-500/40' : 'border-purple-400/40' }} bg-slate-800 shadow-md flex items-center justify-center">
+                                        @if(!empty($gc['photo']))
+                                            <img src="{{ $gc['photo'] }}" alt="{{ $gc['name'] }}" class="w-full h-full object-cover" style="object-position: top center;">
                                         @else
-                                            <span class="px-1.5 py-0.5 rounded-md text-[8.5px] font-black uppercase tracking-wider bg-purple-500/20 text-purple-300 border border-purple-500/30 flex items-center gap-1">
-                                                <span>👨‍🏫</span> GURU BK
-                                            </span>
-                                        @endif
-                                        @if(!empty($gc['status']))
-                                            <span class="px-1.5 py-0.5 rounded text-[8px] font-bold bg-white/10 text-slate-300 border border-white/5 font-mono">
-                                                {{ $gc['status'] }}
-                                            </span>
+                                            <span class="text-xl">{{ !empty($gc['is_coordinator']) ? '👑' : '🧑‍🏫' }}</span>
                                         @endif
                                     </div>
-                                    <div class="font-extrabold text-xs sm:text-[13px] text-white leading-tight truncate" title="{{ $gc['name'] }}">
-                                        {{ $gc['name'] }}
+                                    <div class="min-w-0 flex-1 space-y-0.5">
+                                        <div class="flex items-center gap-1.5 flex-wrap">
+                                            @if(!empty($gc['is_coordinator']))
+                                                <span class="px-1.5 py-0.5 rounded-md text-[8.5px] font-black uppercase tracking-wider bg-gradient-to-r from-amber-500/25 to-purple-500/25 text-amber-300 border border-amber-500/40 flex items-center gap-1">
+                                                    <span>👑</span> KOORDINATOR BK
+                                                </span>
+                                            @else
+                                                <span class="px-1.5 py-0.5 rounded-md text-[8.5px] font-black uppercase tracking-wider bg-purple-500/20 text-purple-300 border border-purple-500/30 flex items-center gap-1">
+                                                    <span>👨‍🏫</span> GURU BK
+                                                </span>
+                                            @endif
+                                            @if(!empty($gc['status']))
+                                                <span class="px-1.5 py-0.5 rounded text-[8px] font-bold bg-white/10 text-slate-300 border border-white/5 font-mono">
+                                                    {{ $gc['status'] }}
+                                                </span>
+                                            @endif
+                                        </div>
+                                        <div class="font-extrabold text-xs sm:text-[13px] xl:text-sm text-white leading-tight truncate" title="{{ $gc['name'] }}">
+                                            {{ $gc['name'] }}
+                                        </div>
+                                        <div class="text-[10px] xl:text-[11px] font-medium text-purple-300 truncate">
+                                            {{ $gc['role'] }}
+                                        </div>
+                                        <div class="text-[9px] xl:text-[9.5px] text-slate-400 font-mono truncate flex items-center gap-1">
+                                            <span class="text-slate-500">NIP:</span>
+                                            <span class="text-slate-300 font-semibold">{{ $gc['nip'] }}</span>
+                                        </div>
                                     </div>
-                                    <div class="text-[10px] font-medium text-purple-300 truncate">
-                                        {{ $gc['role'] }}
-                                    </div>
-                                    <div class="text-[9px] text-slate-400 font-mono truncate flex items-center gap-1">
-                                        <span class="text-slate-500">NIP:</span>
-                                        <span class="text-slate-300 font-semibold">{{ $gc['nip'] }}</span>
-                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+
+                        <!-- 4 Pilar Layanan Konseling Unggulan (Fills space gracefully in Fullscreen) -->
+                        <div class="grid grid-cols-2 gap-2 p-2.5 rounded-xl bg-slate-900/90 border border-white/5 shrink-0">
+                            <div class="flex items-start gap-2">
+                                <span class="text-sm shrink-0">🤝</span>
+                                <div>
+                                    <div class="text-[10.5px] font-bold text-white">Konseling Pribadi</div>
+                                    <div class="text-[8.5px] text-slate-400 leading-tight">Solusi masalah emosional &amp; pertemanan</div>
                                 </div>
                             </div>
-                        @endforeach
+                            <div class="flex items-start gap-2">
+                                <span class="text-sm shrink-0">🎓</span>
+                                <div>
+                                    <div class="text-[10.5px] font-bold text-white">Bimbingan Karir</div>
+                                    <div class="text-[8.5px] text-slate-400 leading-tight">PTN, Kedinasan &amp; Minat Profesi</div>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-2">
+                                <span class="text-sm shrink-0">📖</span>
+                                <div>
+                                    <div class="text-[10.5px] font-bold text-white">Bimbingan Belajar</div>
+                                    <div class="text-[8.5px] text-slate-400 leading-tight">Gaya belajar &amp; motivasi prestasi</div>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-2">
+                                <span class="text-sm shrink-0">👨‍👩‍👧</span>
+                                <div>
+                                    <div class="text-[10.5px] font-bold text-white">Konsultasi Wali</div>
+                                    <div class="text-[8.5px] text-slate-400 leading-tight">Sinergi bersama orang tua siswa</div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Prinsip Layanan BK Bar (Clean, Slim & Non-overlapping) -->
-                    <div class="py-1 px-2.5 rounded-lg bg-slate-950/80 border border-white/5 flex items-center justify-between text-[9px] text-slate-400 shrink-0 mt-1">
-                        <span class="flex items-center gap-1 text-purple-300 font-semibold truncate">
+                    <div class="py-1.5 px-3 rounded-lg bg-slate-950/80 border border-white/5 flex items-center justify-between text-[9px] text-slate-400 shrink-0">
+                        <span class="flex items-center gap-1.5 text-purple-300 font-semibold truncate">
                             <span>🛡️</span> Asas Kerahasiaan BK Terjamin
                         </span>
-                        <span class="text-slate-400 text-[8.5px] font-medium shrink-0">Konseling Aman, Ramah &amp; Rahasia</span>
+                        <span class="text-slate-400 text-[8.5px] font-medium shrink-0">Konseling Aman, Ramah &amp; Bebas Biaya</span>
                     </div>
                 </div>
             </div>
@@ -1266,7 +1306,7 @@
                 </div>
                 <div class="text-[11px] text-slate-400 font-mono hidden sm:flex items-center gap-1.5">
                     <span class="w-2 h-2 rounded-full bg-teal-400 animate-ping"></span>
-                    <span>Sinkronisasi Otomatis 15s</span>
+                    <span>Sinkronisasi Otomatis 20s</span>
                 </div>
             </div>
 
@@ -1631,9 +1671,9 @@
                         @endphp
 
                         @forelse($chunkedClubs as $pIdx => $clubPage)
-                            <div class="extra-page h-full w-full {{ $pIdx === 0 ? 'grid' : 'hidden' }} grid-cols-1 sm:grid-cols-2 gap-2.5 content-start overflow-y-auto kiosk-scroll" id="extra-page-{{ $pIdx }}">
+                            <div class="extra-page h-full w-full {{ $pIdx === 0 ? 'grid' : 'hidden' }} grid-cols-1 sm:grid-cols-2 grid-rows-2 gap-2.5 xl:gap-3.5 overflow-hidden" id="extra-page-{{ $pIdx }}">
                                 @foreach($clubPage as $club)
-                                    <div class="p-3 rounded-2xl bg-slate-900/80 border border-white/10 hover:border-purple-500/40 transition flex flex-col justify-between group shadow-md">
+                                    <div class="p-2.5 sm:p-3 xl:p-3.5 rounded-2xl bg-slate-900/80 border border-white/10 hover:border-purple-500/40 transition flex flex-col justify-between group shadow-md h-full">
                                         <!-- Club Name & Category Badge -->
                                         <div>
                                             <div class="flex items-start justify-between gap-2">
@@ -1657,7 +1697,7 @@
 
                                         <!-- Pembina Box with Photo from Master Data - Data Guru & PTK -->
                                         <div class="mt-2 pt-2 border-t border-white/10 flex items-center gap-2.5 bg-slate-950/70 p-2 rounded-xl">
-                                            <div class="w-11 h-14 rounded-lg overflow-hidden p-0.5 bg-gradient-to-tr from-purple-400 to-indigo-500 shadow-md shrink-0">
+                                            <div class="w-11 sm:w-12 xl:w-14 h-14 sm:h-16 xl:h-18 rounded-lg overflow-hidden p-0.5 bg-gradient-to-tr from-purple-400 to-indigo-500 shadow-md shrink-0">
                                                 <div class="w-full h-full bg-slate-900 rounded-[6px] overflow-hidden flex items-center justify-center">
                                                     @if(!empty($club['pembina']['photo']))
                                                         <img src="{{ $club['pembina']['photo'] }}" alt="{{ $club['pembina']['name'] }}" class="w-full h-full object-cover" style="object-position: top center;">
@@ -2160,7 +2200,7 @@
                                     : asset('storage/' . $featuredNews['image']);
                             }
                         @endphp
-                        <div class="relative w-full h-44 sm:h-52 md:h-60 rounded-xl overflow-hidden shrink-0 border border-white/10 bg-slate-900 shadow-lg">
+                        <div class="relative w-full h-48 sm:h-56 md:h-64 lg:h-72 xl:h-80 2xl:h-96 rounded-xl overflow-hidden shrink-0 border border-white/10 bg-slate-900 shadow-lg">
                             @if($imgSrc)
                                 <img src="{{ $imgSrc }}" alt="{{ $featuredNews['title'] }}" class="w-full h-full object-cover">
                             @else
@@ -2189,11 +2229,11 @@
                         <!-- Featured Body -->
                         <div class="flex-1 min-h-0 flex flex-col justify-between mt-3 overflow-hidden">
                             <div>
-                                <h3 class="text-base sm:text-lg font-black text-white leading-snug line-clamp-2 hover:text-teal-300 transition">
+                                <h3 class="text-base sm:text-lg xl:text-xl font-black text-white leading-snug line-clamp-2 hover:text-teal-300 transition">
                                     {{ $featuredNews['title'] }}
                                 </h3>
-                                <p class="text-xs sm:text-sm text-slate-300 mt-2 leading-relaxed line-clamp-3 sm:line-clamp-4 font-normal">
-                                    {{ $featuredNews['excerpt'] ?? Str::limit(strip_tags($featuredNews['content'] ?? ''), 220) }}
+                                <p class="text-xs sm:text-sm text-slate-300 mt-2 leading-relaxed line-clamp-3 sm:line-clamp-4 xl:line-clamp-6 font-normal">
+                                    {{ $featuredNews['excerpt'] ?? Str::limit(strip_tags($featuredNews['content'] ?? ''), 360) }}
                                 </p>
                             </div>
                             
@@ -2561,7 +2601,7 @@
     <script>
         // Slide Deck State
         const TOTAL_SLIDES = 14;
-        const SLIDE_DURATION = 16; // 16 seconds per slide
+        const SLIDE_DURATION = 18; // 18 seconds per slide
         let currentSlideIdx = 0;
         let slideRemainingTime = SLIDE_DURATION;
         let isPaused = false;
@@ -2639,7 +2679,7 @@
                     if (!isPaused) {
                         nextStaffPage();
                     }
-                }, 3500); // cycle sub-page briskly every 3.5s while on staff slide
+                }, 3600); // cycle sub-page briskly every 3.6s while on staff slide
             }
         }
 
@@ -2689,7 +2729,7 @@
                     if (!isPaused) {
                         nextExtraPage();
                     }
-                }, 4000); // cycle ekskul page every 4s while on ekskul slide
+                }, 4500); // cycle ekskul page every 4.5s while on ekskul slide
             }
         }
 
@@ -2739,7 +2779,7 @@
                     if (!isPaused) {
                         nextRombelPage();
                     }
-                }, 4000); // cycle rombel page every 4s while on rombel slide
+                }, 4500); // cycle rombel page every 4.5s while on rombel slide
             }
         }
 
@@ -3020,8 +3060,8 @@
             el.innerHTML = items.map(templateFn).join('');
         }
 
-        // Auto Poll every 15s
-        setInterval(fetchKioskData, 15000);
+        // Auto Poll every 20s
+        setInterval(fetchKioskData, 20000);
 
         // Run on load
         document.addEventListener('DOMContentLoaded', initSlideDeck);
