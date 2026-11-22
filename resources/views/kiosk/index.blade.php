@@ -93,6 +93,14 @@
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
+
+        /* Adaptive sizing for compact screens / laptop heights */
+        @media (max-height: 720px) {
+            .staff-card-photo {
+                height: 4.25rem !important; /* ~68px */
+                width: 3.5rem !important;   /* ~56px */
+            }
+        }
         /* Light Theme Styling for Kiosk */
         html.light, html.light body {
             background-color: #f8fafc;
@@ -539,7 +547,7 @@
                 @endphp
 
                 @forelse($chunkedStaff as $pageIdx => $staffPage)
-                    <div class="staff-page h-full w-full {{ $pageIdx === 0 ? 'grid' : 'hidden' }} grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-3 sm:gap-4 overflow-y-auto kiosk-scroll content-start" id="staff-page-{{ $pageIdx }}">
+                    <div class="staff-page h-full w-full {{ $pageIdx === 0 ? 'grid' : 'hidden' }} grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-2.5 sm:gap-3 overflow-y-auto kiosk-scroll content-start" id="staff-page-{{ $pageIdx }}">
                         @foreach($staffPage as $st)
                             @php
                                 $photoUrl = null;
@@ -552,46 +560,46 @@
                                         $photoUrl = asset('storage/' . $st['photo']);
                                     }
                                 }
-                                $isHeadmaster = ($st['type'] ?? '') === 'kepala_sekolah' || str_contains(strtolower($st['duty'] ?? ''), 'kepala sekolah');
-                                $isGuru = ($st['type'] ?? '') === 'guru' || !empty($st['mapel']);
+                                $isHeadmaster = ($st['type'] ?? ($st['category'] ?? '')) === 'kepala_sekolah' || str_contains(strtolower($st['duty'] ?? ''), 'kepala sekolah');
+                                $isGuru = ($st['type'] ?? ($st['category'] ?? '')) === 'guru' || !empty($st['mapel']);
                             @endphp
-                            <div class="glass-card rounded-2xl border border-white/10 p-2.5 sm:p-3 flex flex-col items-center text-center justify-between hover:border-teal-500/40 transition duration-300 group relative overflow-hidden {{ $isHeadmaster ? 'glow-gold border-amber-500/30 bg-amber-950/20' : 'glow-teal' }}">
+                            <div class="glass-card rounded-2xl border border-white/10 p-2 sm:p-2.5 flex flex-col items-center text-center justify-between hover:border-teal-500/40 transition duration-300 group relative min-h-0 {{ $isHeadmaster ? 'glow-gold border-amber-500/30 bg-amber-950/20' : 'glow-teal' }}">
                                 <!-- Top Status Pill -->
                                 <div class="w-full flex items-center justify-between gap-1 mb-1 shrink-0">
-                                    <span class="px-2 py-0.5 rounded text-[8.5px] font-black uppercase tracking-wider truncate {{ $isHeadmaster ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40' : ($isGuru ? 'bg-teal-500/20 text-teal-300 border border-teal-500/30' : 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30') }}">
+                                    <span class="px-1.5 py-0.5 rounded text-[8px] sm:text-[8.5px] font-black uppercase tracking-wider truncate {{ $isHeadmaster ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40' : ($isGuru ? 'bg-teal-500/20 text-teal-300 border border-teal-500/30' : 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30') }}">
                                         {{ $isHeadmaster ? '👑 Kepala Sekolah' : ($isGuru ? '🎓 Dewan Guru' : '🏢 Staf TU') }}
                                     </span>
-                                    <span class="text-[8px] font-mono text-slate-400 truncate">
+                                    <span class="text-[7.5px] sm:text-[8px] font-mono text-slate-400 truncate">
                                         {{ $st['employment_status'] ?? 'ASN' }}
                                     </span>
                                 </div>
 
                                 <!-- Photo Container with Elegant Ring (Portrait Ratio, No Head Cutoff) -->
-                                <div class="w-24 h-28 sm:w-28 sm:h-32 md:w-30 md:h-36 rounded-2xl overflow-hidden p-1 bg-gradient-to-tr {{ $isHeadmaster ? 'from-amber-400 via-yellow-500 to-amber-600' : 'from-teal-400 via-indigo-500 to-sky-400' }} shadow-lg my-1 shrink-0 group-hover:scale-105 transition duration-300">
-                                    <div class="w-full h-full bg-slate-950 rounded-[12px] overflow-hidden flex items-center justify-center">
+                                <div class="staff-card-photo w-14 h-16 sm:w-16 sm:h-20 md:w-18 md:h-22 lg:w-20 lg:h-24 xl:w-22 xl:h-26 rounded-xl overflow-hidden p-0.5 sm:p-1 bg-gradient-to-tr {{ $isHeadmaster ? 'from-amber-400 via-yellow-500 to-amber-600' : 'from-teal-400 via-indigo-500 to-sky-400' }} shadow-md my-0.5 sm:my-1 shrink-0 group-hover:scale-105 transition duration-300">
+                                    <div class="w-full h-full bg-slate-950 rounded-[9px] overflow-hidden flex items-center justify-center">
                                         @if($photoUrl)
                                             <img src="{{ $photoUrl }}" alt="{{ $st['name'] }}" class="w-full h-full object-cover object-top" style="object-position: top center;">
                                         @else
-                                            <div class="w-full h-full flex flex-col items-center justify-center bg-gradient-to-tr from-slate-900 via-slate-800 to-teal-950 text-teal-300 font-extrabold text-xl sm:text-2xl">
+                                            <div class="w-full h-full flex flex-col items-center justify-center bg-gradient-to-tr from-slate-900 via-slate-800 to-teal-950 text-teal-300 font-extrabold text-sm sm:text-base">
                                                 <span>{{ strtoupper(substr($st['name'], 0, 2)) }}</span>
                                             </div>
                                         @endif
                                     </div>
                                 </div>
 
-                                                                <!-- Staff Name & Academic Degrees -->
-                                <div class="w-full min-w-0 mt-0.5 shrink-0">
-                                    <h4 class="text-xs sm:text-[13px] font-black text-white leading-tight truncate group-hover:text-teal-300 transition" title="{{ $st['name'] }}">
+                                <!-- Staff Name & Details -->
+                                <div class="w-full min-w-0 mt-0.5 flex-1 flex flex-col justify-between">
+                                    <h4 class="text-[11px] sm:text-xs md:text-[13px] font-black text-white leading-tight truncate group-hover:text-teal-300 transition" title="{{ $st['name'] }}">
                                         {{ $st['name'] }}
                                     </h4>
                                     <!-- NIP -->
-                                    <div class="mt-0.5">
-                                        <span class="inline-block text-[9px] font-mono text-slate-300 bg-slate-900/90 px-2 py-0.5 rounded-md border border-white/10 truncate max-w-full">
+                                    <div class="my-0.5">
+                                        <span class="inline-block text-[8px] sm:text-[8.5px] md:text-[9px] font-mono text-slate-300 bg-slate-900/90 px-1.5 py-0.5 rounded border border-white/10 truncate max-w-full">
                                             NIP: {{ !empty($st['nip']) && $st['nip'] !== '-' ? $st['nip'] : '-' }}
                                         </span>
                                     </div>
                                     <!-- Tugas Tambahan & Mata Pelajaran -->
-                                    <div class="w-full mt-1 pt-1 border-t border-white/5 space-y-0.5 text-left text-[9.5px]">
+                                    <div class="w-full pt-1 border-t border-white/5 space-y-0.5 text-left text-[8px] sm:text-[8.5px] md:text-[9px] leading-tight">
                                         @if($isGuru)
                                             <div class="truncate text-slate-300 flex items-center gap-1" title="Mata Pelajaran: {{ $st['mapel'] ?? '-' }}">
                                                 <span class="text-teal-400 font-bold shrink-0">📚 Mapel:</span>
@@ -599,7 +607,7 @@
                                             </div>
                                             <div class="truncate text-slate-300 flex items-center gap-1" title="Tugas Tambahan: {{ $st['duty'] ?? '-' }}">
                                                 <span class="text-indigo-400 font-bold shrink-0">⭐ Tugas:</span>
-                                                <span class="truncate font-medium text-teal-200">{{ !empty($st['duty']) && $st['duty'] !== 'Guru Pengajar' ? $st['duty'] : '-' }}</span>
+                                                <span class="truncate font-medium text-teal-200">{{ !empty($st['duty']) && $st['duty'] !== 'Guru Pengajar' ? $st['duty'] : ($isHeadmaster ? 'Kepala Sekolah' : 'Guru Pengajar') }}</span>
                                             </div>
                                         @else
                                             <div class="truncate text-slate-300 flex items-center gap-1" title="Tugas: {{ $st['duty'] ?? 'Staf Administrasi' }}">
@@ -608,7 +616,7 @@
                                             </div>
                                             <div class="truncate text-slate-400 flex items-center gap-1" title="Bidang: {{ !empty($st['tu_duty']) ? $st['tu_duty'] : '-' }}">
                                                 <span class="text-teal-400 font-bold shrink-0">📋 Bidang:</span>
-                                                <span class="truncate font-medium text-slate-300">{{ !empty($st['tu_duty']) ? $st['tu_duty'] : '-' }}</span>
+                                                <span class="truncate font-medium text-slate-300">{{ !empty($st['tu_duty']) && $st['tu_duty'] !== ($st['duty'] ?? '') ? $st['tu_duty'] : 'Layanan Ketatausahaan' }}</span>
                                             </div>
                                         @endif
                                     </div>
