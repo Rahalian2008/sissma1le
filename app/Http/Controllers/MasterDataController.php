@@ -415,6 +415,23 @@ class MasterDataController extends Controller
             SchoolSetting::set($key, $val, 'general');
         }
 
+        // Sinkronisasi dengan tabel school_identities agar seluruh modul selaras
+        $identity = SchoolIdentity::first();
+        if ($identity) {
+            $identity->update([
+                'name' => $validated['school_name'],
+                'npsn' => $validated['school_npsn'],
+                'nss' => $validated['school_nss'] ?? $identity->nss,
+                'accreditation' => $validated['school_accreditation'],
+                'headmaster_name' => $validated['headmaster_name'],
+                'headmaster_nip' => $validated['headmaster_nip'],
+                'address' => $validated['school_address'],
+                'phone' => $validated['school_phone'] ?? $identity->phone,
+                'email' => $validated['school_email'],
+                'website' => $validated['school_website'] ?? $identity->website,
+            ]);
+        }
+
         AuditLog::log('UPDATE_SCHOOL_PROFILE', 'SchoolSetting', null, null, $validated);
 
         return back()->with('success', 'Identitas resmi SMA Negeri 1 Lengkong berhasil diperbarui.');

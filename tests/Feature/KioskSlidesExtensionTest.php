@@ -17,7 +17,10 @@ test('kiosk index renders all 14 slides including profile pimpinan, extracurricu
     // Assert Slide 0: Profil Resmi Kelembagaan & Pimpinan
     $response->assertSee('slide-0', false);
     $response->assertSee('Profil Resmi Kelembagaan &amp; Kepemimpinan Sekolah', false);
-    $response->assertSee('Pian Sopian', false);
+    $response->assertSee('Pian Sopian, S.Pd., M.M.Pd', false);
+    $response->assertDontSee('Pian Sopian, S.Pd.. Mm.pd.', false);
+    $response->assertSee('sman1lengkong@gmail.com', false);
+    $response->assertDontSee('info@sman1lengkong.sch.id', false);
     $response->assertSee('198009132008011005', false);
     $response->assertSee('PIMPINAN SEKOLAH', false);
     $response->assertSee('VISI SEKOLAH', false);

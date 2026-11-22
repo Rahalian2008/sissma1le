@@ -358,7 +358,7 @@
                                     </div>
                                 </div>
                                 <span class="px-2 py-0.5 rounded-full text-[9.5px] font-extrabold bg-teal-500/20 text-teal-300 border border-teal-500/30">
-                                    Akreditasi {{ $data['profile']['accreditation'] }}
+                                    {{ str_starts_with($data['profile']['accreditation'], 'Akreditasi') ? $data['profile']['accreditation'] : 'Akreditasi ' . $data['profile']['accreditation'] }}
                                 </span>
                             </div>
 

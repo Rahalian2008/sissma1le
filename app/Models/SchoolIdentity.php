@@ -21,22 +21,22 @@ class SchoolIdentity extends Model
             $data = [
                 'name' => 'SMA Negeri 1 Lengkong',
                 'npsn' => '20202265',
-                'nss' => '301020304050',
+                'nss' => '301020613045',
                 'status' => 'Negeri',
-                'accreditation' => 'A',
-                'address' => 'Jl. Raya Lengkong No. 1, Desa Lengkong',
+                'accreditation' => 'A (Unggul)',
+                'address' => 'Jalan Raya Tegalega, Kecamatan Lengkong, Kabupaten Sukabumi, Provinsi Jawa Barat',
                 'district' => 'Kecamatan Lengkong',
                 'city' => 'Kabupaten Sukabumi',
                 'province' => 'Jawa Barat',
                 'postal_code' => '43174',
-                'phone' => '(0266) 6491001',
-                'email' => 'info@sman1lengkong.sch.id',
-                'website' => 'https://sman1lengkong.sch.id',
-                'headmaster_name' => 'PIAN SOPIAN, S.PD',
+                'phone' => '-',
+                'email' => 'sman1lengkong@gmail.com',
+                'website' => 'https://sman1lengkong.school',
+                'headmaster_name' => 'Pian Sopian, S.Pd., M.M.Pd',
                 'headmaster_nip' => '198009132008011005',
                 'committee_head' => 'ADE',
-                'operator_name' => 'AHMAD RIFA\'I, S.KOM.',
-                'treasurer_name' => 'RIYAN',
+                'operator_name' => 'Rachmat Sugiarto, A.Md.',
+                'treasurer_name' => 'RIAN HADIANSYAH, S.PD.',
             ];
 
             if (Schema::hasColumn('school_identities', 'branch_office')) {
@@ -47,16 +47,6 @@ class SchoolIdentity extends Model
         }
 
         return $school;
-    }
-
-    public function getHeadmasterNameAttribute(?string $value): ?string
-    {
-        return $value ? mb_strtoupper($value) : null;
-    }
-
-    public function setHeadmasterNameAttribute(?string $value): void
-    {
-        $this->attributes['headmaster_name'] = $value ? mb_strtoupper(trim($value)) : null;
     }
 
     public function getLogoUrlAttribute(): ?string
@@ -97,7 +87,7 @@ class SchoolIdentity extends Model
 
     public function getPrincipalNameAttribute(): string
     {
-        return $this->headmaster_name ?? 'Pian Sopian, S.Pd';
+        return $this->headmaster_name ?? 'Pian Sopian, S.Pd., M.M.Pd';
     }
 
     public function getPrincipalNipAttribute(): string

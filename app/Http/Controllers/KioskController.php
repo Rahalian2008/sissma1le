@@ -564,38 +564,73 @@ class KioskController extends Controller
             $principalPhoto = asset('images/website/headmaster.jpg');
         }
 
-        // Format nama kepala sekolah dari Master Data - Identitas Sekolah
-        $rawPrincipalName = $schoolIdentity->headmaster_name ?: 'Pian Sopian, S.Pd., M.M.Pd.';
-        if ($rawPrincipalName === mb_strtoupper($rawPrincipalName)) {
-            $rawPrincipalName = ucwords(mb_strtolower($rawPrincipalName));
-            $rawPrincipalName = str_replace(
-                ['S.pd', 'M.pd', 'M.m.pd', 'S.sos', 'S.kom', 'A.md', 'Se', 'Sp'],
-                ['S.Pd.', 'M.Pd.', 'M.M.Pd.', 'S.Sos.', 'S.Kom.', 'A.Md.', 'SE', 'SP.'],
-                $rawPrincipalName
+        // Ambil data identitas sekolah secara konsisten dari Master Data - Identitas Sekolah (SchoolSetting dengan fallback SchoolIdentity)
+        $schoolName = SchoolSetting::get('school_name') ?: ($schoolIdentity->name ?? 'SMA Negeri 1 Lengkong');
+        $schoolNpsn = SchoolSetting::get('school_npsn') ?: ($schoolIdentity->npsn ?? '20202265');
+        $schoolNss = SchoolSetting::get('school_nss') ?: ($schoolIdentity->nss ?? '301020613045');
+        $schoolAccreditation = SchoolSetting::get('school_accreditation') ?: ($schoolIdentity->accreditation ?? 'A (Unggul)');
+        $schoolEducationForm = SchoolSetting::get('school_education_form') ?: 'Sekolah Menengah Atas (SMA)';
+        $schoolAddress = SchoolSetting::get('school_address') ?: ($schoolIdentity->address ?? 'Jalan Raya Tegalega, Kecamatan Lengkong, Kabupaten Sukabumi, Provinsi Jawa Barat');
+        $schoolPhone = SchoolSetting::get('school_phone') ?: ($schoolIdentity->phone ?? '-');
+        $schoolEmail = SchoolSetting::get('school_email') ?: ($schoolIdentity->email ?? 'sman1lengkong@gmail.com');
+        $schoolWebsite = SchoolSetting::get('school_website') ?: ($schoolIdentity->website ?? 'https://sman1lengkong.school');
+        $branchOffice = SchoolSetting::get('school_branch') ?: ($schoolIdentity->branch_office ?? 'Cabang Dinas Pendidikan Wilayah V');
+
+        // Pimpinan & NIP dari Master Data - Identitas Sekolah
+        $rawPrincipalName = SchoolSetting::get('headmaster_name') ?: ($schoolIdentity->headmaster_name ?: 'Pian Sopian, S.Pd., M.M.Pd');
+        if (in_array(trim($rawPrincipalName), ['Pian Sopian, S.Pd', 'PIAN SOPIAN, S.PD', 'Pian Sopian, S.Pd.', 'PIAN SOPIAN, S.PD.'], true)) {
+            $rawPrincipalName = 'Pian Sopian, S.Pd., M.M.Pd';
+        }
+        $principalNip = SchoolSetting::get('headmaster_nip') ?: ($schoolIdentity->headmaster_nip ?: '198009132008011005');
+
+        // Pastikan nama kepala sekolah diformat rapi (bebas dari double dot atau huruf kecil yang salah)
+        $cleanPrincipalName = trim($rawPrincipalName);
+        if ($cleanPrincipalName === mb_strtoupper($cleanPrincipalName)) {
+            $cleanPrincipalName = ucwords(mb_strtolower($cleanPrincipalName));
+            $cleanPrincipalName = str_replace(
+                ['S.pd', 'M.pd', 'Mm.pd', 'M.m.pd', 'S.sos', 'S.kom', 'A.md', 'Se', 'Sp'],
+                ['S.Pd.', 'M.Pd.', 'M.M.Pd.', 'M.M.Pd.', 'S.Sos.', 'S.Kom.', 'A.Md.', 'SE', 'SP.'],
+                $cleanPrincipalName
             );
+        } else {
+            $cleanPrincipalName = str_replace(
+                ['S.Pd..', 'Mm.pd', 'M.m.pd', 's.pd', 'm.pd'],
+                ['S.Pd.', 'M.M.Pd.', 'M.M.Pd.', 'S.Pd.', 'M.Pd.'],
+                $cleanPrincipalName
+            );
+        }
+        $cleanPrincipalName = preg_replace('/\.{2,}/', '.', $cleanPrincipalName);
+
+        // Kepala Tata Usaha dari Master Data
+        $rawHeadOfAdmin = $schoolIdentity->operator_name ?? 'Rachmat Sugiarto, A.Md.';
+        if ($rawHeadOfAdmin === mb_strtoupper($rawHeadOfAdmin)) {
+            $headOfAdmin = ucwords(mb_strtolower($rawHeadOfAdmin));
+            $headOfAdmin = str_replace(['A.md.', 'A.md', 'A.MD.'], 'A.Md.', $headOfAdmin);
+        } else {
+            $headOfAdmin = $rawHeadOfAdmin;
         }
 
         $schoolProfile = [
-            'name' => $schoolIdentity->name ?? 'SMA Negeri 1 Lengkong',
-            'npsn' => $schoolIdentity->npsn ?? '20202265',
-            'nss' => $schoolIdentity->nss ?? '301020304050',
-            'status' => $schoolIdentity->status ?? 'Negeri',
-            'accreditation' => $schoolIdentity->accreditation ?? 'A',
-            'branch_office' => $schoolIdentity->branch_office ?? 'Cabang Dinas Pendidikan Wilayah V',
+            'name' => $schoolName,
+            'npsn' => $schoolNpsn,
+            'nss' => $schoolNss,
+            'status' => 'Negeri',
+            'accreditation' => $schoolAccreditation,
+            'branch_office' => $branchOffice,
             'province_dept' => 'Dinas Pendidikan Provinsi Jawa Barat',
             'curriculum' => 'Kurikulum Merdeka / Nasional (Permendikdasmen 13/2025)',
-            'address' => $schoolIdentity->address ?? 'Jalan Raya Lengkong No. 1, Desa Lengkong, Kec. Lengkong, Kab. Sukabumi, Jawa Barat 43174',
-            'district' => $schoolIdentity->district ?? 'Kecamatan Lengkong',
-            'city' => $schoolIdentity->city ?? 'Kabupaten Sukabumi',
-            'province' => $schoolIdentity->province ?? 'Jawa Barat',
-            'postal_code' => $schoolIdentity->postal_code ?? '43174',
-            'phone' => $schoolIdentity->phone ?? '(0266) 6491001',
-            'email' => $schoolIdentity->email ?? 'info@sman1lengkong.sch.id',
-            'website' => $schoolIdentity->website ?? 'https://sman1lengkong.school',
+            'address' => $schoolAddress,
+            'district' => 'Kecamatan Lengkong',
+            'city' => 'Kabupaten Sukabumi',
+            'province' => 'Jawa Barat',
+            'postal_code' => '43174',
+            'phone' => ! empty($schoolPhone) && $schoolPhone !== '-' ? $schoolPhone : '-',
+            'email' => $schoolEmail,
+            'website' => $schoolWebsite,
             'committee_head' => $schoolIdentity->committee_head ?? 'ADE',
-            'head_of_admin' => $schoolIdentity->operator_name ?? 'Rachmat Sugiarto, A.Md.',
-            'principal_name' => $rawPrincipalName,
-            'principal_nip' => $schoolIdentity->headmaster_nip ?? '198009132008011005',
+            'head_of_admin' => $headOfAdmin,
+            'principal_name' => $cleanPrincipalName,
+            'principal_nip' => $principalNip,
             'principal_title' => 'Kepala SMAN 1 Lengkong',
             'principal_photo' => $principalPhoto,
             'vision' => $vision,
