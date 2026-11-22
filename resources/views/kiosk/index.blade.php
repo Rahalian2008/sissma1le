@@ -902,182 +902,156 @@
                 </div>
             </div>
 
-            <!-- Main Grid: Left 7 Cols (Identitas Lengkap + Visi & Misi), Right 5 Cols (Pimpinan / Kepala Sekolah) -->
+            <!-- Main Grid: Left 5 Cols (Identitas Lengkap & Kepala Sekolah), Right 7 Cols (Visi & Misi Terbaca Jelas) -->
             <div class="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-3 lg:gap-4 overflow-hidden">
-                <!-- Left Column (7 Cols): Identitas Sekolah & Visi Misi -->
-                <div class="lg:col-span-7 flex flex-col h-full min-h-0 gap-3 overflow-hidden">
-                    <!-- School Identity Specs Card -->
-                    <div class="glass-panel rounded-2xl border border-white/10 p-3 sm:p-4 shrink-0 shadow-lg">
-                        <div class="flex items-center justify-between pb-2.5 mb-2.5 border-b border-white/10">
-                            <div class="flex items-center gap-2.5">
-                                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-teal-500 to-indigo-600 p-0.5 shadow-md shrink-0">
-                                    <div class="w-full h-full bg-slate-900 rounded-[10px] flex items-center justify-center font-black text-white text-sm">
-                                        1LE
+                <!-- Left Column (5 Cols): Identitas Sekolah & Kepala Sekolah -->
+                <div class="lg:col-span-5 flex flex-col h-full min-h-0 gap-3 justify-between overflow-hidden">
+                    <!-- School Identity Specs Card (Data dari Master Data - Identitas Sekolah) -->
+                    <div class="glass-panel rounded-2xl border border-white/10 p-3 sm:p-3.5 shadow-lg flex-1 min-h-0 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between pb-2 mb-2 border-b border-white/10">
+                                <div class="flex items-center gap-2.5">
+                                    <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-teal-500 to-indigo-600 p-0.5 shadow-md shrink-0">
+                                        <div class="w-full h-full bg-slate-900 rounded-[10px] flex items-center justify-center font-black text-white text-xs">
+                                            1LE
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-xs sm:text-sm font-black text-white leading-tight">{{ $data['profile']['name'] }}</h3>
+                                        <div class="text-[10px] text-slate-400 mt-0.5 truncate">
+                                            {{ $data['profile']['province_dept'] }} &bull; {{ $data['profile']['branch_office'] }}
+                                        </div>
                                     </div>
                                 </div>
-                                <div>
-                                    <h3 class="text-sm sm:text-base font-black text-white leading-tight">{{ $data['profile']['name'] }}</h3>
-                                    <div class="text-[10.5px] text-slate-400 mt-0.5">
-                                        {{ $data['profile']['province_dept'] }} &bull; {{ $data['profile']['branch_office'] }}
-                                    </div>
-                                </div>
+                                <span class="px-2 py-0.5 rounded-full text-[9.5px] font-extrabold bg-teal-500/20 text-teal-300 border border-teal-500/30">
+                                    Akreditasi {{ $data['profile']['accreditation'] }}
+                                </span>
                             </div>
-                            <span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-teal-500/20 text-teal-300 border border-teal-500/30">
-                                Akreditasi {{ $data['profile']['accreditation'] }}
-                            </span>
-                        </div>
 
-                        <!-- 6-Grid School Meta Details -->
-                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
-                            <div class="p-2 rounded-xl bg-slate-900/70 border border-white/5">
-                                <div class="text-[9.5px] text-slate-400 uppercase tracking-wider font-semibold">NPSN</div>
-                                <div class="font-mono font-bold text-white text-[12px] mt-0.5">{{ $data['profile']['npsn'] }}</div>
-                            </div>
-                            <div class="p-2 rounded-xl bg-slate-900/70 border border-white/5">
-                                <div class="text-[9.5px] text-slate-400 uppercase tracking-wider font-semibold">NSS</div>
-                                <div class="font-mono font-bold text-white text-[12px] mt-0.5">{{ $data['profile']['nss'] }}</div>
-                            </div>
-                            <div class="p-2 rounded-xl bg-slate-900/70 border border-white/5">
-                                <div class="text-[9.5px] text-slate-400 uppercase tracking-wider font-semibold">Status / Kurikulum</div>
-                                <div class="font-bold text-teal-300 text-[11px] truncate mt-0.5">{{ $data['profile']['status'] }} &bull; {{ $data['profile']['curriculum'] }}</div>
-                            </div>
-                            <div class="p-2 rounded-xl bg-slate-900/70 border border-white/5">
-                                <div class="text-[9.5px] text-slate-400 uppercase tracking-wider font-semibold">Telepon / Kontak</div>
-                                <div class="font-mono text-slate-200 text-[11px] mt-0.5 truncate">{{ $data['profile']['phone'] }}</div>
-                            </div>
-                            <div class="p-2 rounded-xl bg-slate-900/70 border border-white/5">
-                                <div class="text-[9.5px] text-slate-400 uppercase tracking-wider font-semibold">Email Resmi</div>
-                                <div class="font-mono text-slate-200 text-[11px] mt-0.5 truncate">{{ $data['profile']['email'] }}</div>
-                            </div>
-                            <div class="p-2 rounded-xl bg-slate-900/70 border border-white/5">
-                                <div class="text-[9.5px] text-slate-400 uppercase tracking-wider font-semibold">Kepala Tata Usaha</div>
-                                <div class="font-bold text-indigo-300 text-[11px] mt-0.5 truncate">{{ $data['profile']['head_of_admin'] }}</div>
+                            <!-- 6-Grid School Meta Details -->
+                            <div class="grid grid-cols-2 gap-2 text-xs">
+                                <div class="p-2 rounded-xl bg-slate-900/70 border border-white/5">
+                                    <div class="text-[9px] text-slate-400 uppercase tracking-wider font-semibold">NPSN</div>
+                                    <div class="font-mono font-bold text-white text-[11px] mt-0.5">{{ $data['profile']['npsn'] }}</div>
+                                </div>
+                                <div class="p-2 rounded-xl bg-slate-900/70 border border-white/5">
+                                    <div class="text-[9px] text-slate-400 uppercase tracking-wider font-semibold">NSS</div>
+                                    <div class="font-mono font-bold text-white text-[11px] mt-0.5">{{ $data['profile']['nss'] }}</div>
+                                </div>
+                                <div class="p-2 rounded-xl bg-slate-900/70 border border-white/5">
+                                    <div class="text-[9px] text-slate-400 uppercase tracking-wider font-semibold">Status / Kurikulum</div>
+                                    <div class="font-bold text-teal-300 text-[10.5px] truncate mt-0.5">{{ $data['profile']['status'] }} &bull; Merdeka</div>
+                                </div>
+                                <div class="p-2 rounded-xl bg-slate-900/70 border border-white/5">
+                                    <div class="text-[9px] text-slate-400 uppercase tracking-wider font-semibold">Telepon / Kontak</div>
+                                    <div class="font-mono text-slate-200 text-[10.5px] mt-0.5 truncate">{{ $data['profile']['phone'] }}</div>
+                                </div>
+                                <div class="p-2 rounded-xl bg-slate-900/70 border border-white/5">
+                                    <div class="text-[9px] text-slate-400 uppercase tracking-wider font-semibold">Email Resmi</div>
+                                    <div class="font-mono text-slate-200 text-[10.5px] mt-0.5 truncate">{{ $data['profile']['email'] }}</div>
+                                </div>
+                                <div class="p-2 rounded-xl bg-slate-900/70 border border-white/5">
+                                    <div class="text-[9px] text-slate-400 uppercase tracking-wider font-semibold">Kepala Tata Usaha</div>
+                                    <div class="font-bold text-indigo-300 text-[10.5px] mt-0.5 truncate">{{ $data['profile']['head_of_admin'] }}</div>
+                                </div>
                             </div>
                         </div>
 
                         <!-- Address bar -->
-                        <div class="mt-2 pt-2 border-t border-white/5 flex items-center justify-between text-[10.5px] text-slate-300">
+                        <div class="mt-2 pt-2 border-t border-white/5 flex items-center justify-between text-[10px] text-slate-300">
                             <span class="truncate">📍 {{ $data['profile']['address'] }}</span>
                             <span class="font-mono text-teal-300 shrink-0 ml-2">{{ $data['profile']['website'] }}</span>
                         </div>
                     </div>
 
-                    <!-- Visi & Misi Card -->
-                    <div class="flex-1 min-h-0 glass-panel rounded-2xl border border-white/10 p-3 sm:p-4 flex flex-col justify-between overflow-hidden shadow-lg">
-                        <!-- Visi Highlight -->
-                        <div class="p-2.5 rounded-xl bg-slate-900/80 border border-teal-500/20 shrink-0">
-                            <div class="flex items-center justify-between mb-1">
-                                <span class="text-[10px] font-black text-teal-400 uppercase tracking-wider flex items-center gap-1.5">
-                                    <span>🌟</span> VISI SEKOLAH
-                                </span>
-                                <span class="text-[9.5px] text-slate-400 font-mono">SMAN 1 Lengkong</span>
-                            </div>
-                            <p class="text-xs sm:text-sm text-white font-medium italic leading-snug">
-                                "{{ $data['profile']['vision'] }}"
-                            </p>
-                            @if(!empty($data['profile']['vision_sub']))
-                                <p class="text-[10.5px] text-teal-300 font-semibold mt-1">
-                                    {{ $data['profile']['vision_sub'] }}
-                                </p>
-                            @endif
-                        </div>
-
-                        <!-- Misi List -->
-                        <div class="flex-1 min-h-0 flex flex-col overflow-hidden my-2">
-                            <div class="flex items-center justify-between pb-1.5 mb-1.5 border-b border-white/10 shrink-0">
-                                <span class="text-[10px] font-black text-indigo-400 uppercase tracking-wider flex items-center gap-1.5">
-                                    <span>🎯</span> MISI SEKOLAH
-                                </span>
-                                <span class="text-[9.5px] text-slate-400 font-mono">{{ count($data['profile']['missions'] ?? []) }} Misi Unggulan</span>
-                            </div>
-
-                            <div class="flex-1 min-h-0 overflow-y-auto kiosk-scroll grid grid-cols-1 sm:grid-cols-2 gap-2 pr-1">
-                                @forelse($data['profile']['missions'] ?? [] as $misi)
-                                    <div class="p-2 rounded-xl bg-slate-900/70 border border-white/5 flex items-start gap-2">
-                                        <div class="w-5 h-5 rounded-lg bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 flex items-center justify-center font-black text-[9px] shrink-0 font-mono mt-0.5">
-                                            {{ $misi['number'] ?? '01' }}
+                    <!-- Kepala Sekolah Card (Cukup Photo, Nama, NIP dari Master Data - Identitas Sekolah) -->
+                    <div class="glass-panel rounded-2xl border border-amber-500/30 p-3 sm:p-3.5 shadow-xl bg-gradient-to-r from-slate-900/90 via-slate-900/95 to-amber-950/20 glow-gold shrink-0">
+                        <div class="flex items-center gap-3.5">
+                            <!-- Photo Portrait (object-position: top center, head NOT cut off) -->
+                            <div class="w-20 h-24 sm:w-24 sm:h-28 rounded-2xl overflow-hidden p-1 bg-gradient-to-tr from-amber-400 via-yellow-500 to-amber-600 shadow-xl shrink-0">
+                                <div class="w-full h-full bg-slate-950 rounded-[12px] overflow-hidden flex items-center justify-center">
+                                    @if(!empty($data['profile']['principal_photo']))
+                                        <img src="{{ $data['profile']['principal_photo'] }}" alt="{{ $data['profile']['principal_name'] }}" class="w-full h-full object-cover" style="object-position: top center;">
+                                    @else
+                                        <div class="w-full h-full flex items-center justify-center bg-gradient-to-tr from-slate-900 to-amber-950 text-amber-300 font-extrabold text-xl">
+                                            PS
                                         </div>
-                                        <div class="min-w-0 flex-1">
-                                            <h4 class="text-[11px] font-bold text-white truncate">{{ $misi['title'] ?? '' }}</h4>
-                                            <p class="text-[9.5px] text-slate-300 leading-snug mt-0.5 line-clamp-2">
-                                                {{ $misi['desc'] ?? '' }}
-                                            </p>
-                                        </div>
-                                    </div>
-                                @empty
-                                    <div class="col-span-2 text-center text-slate-500 text-xs italic py-3">
-                                        Data misi sekolah belum dikonfigurasi.
-                                    </div>
-                                @endforelse
+                                    @endif
+                                </div>
                             </div>
-                        </div>
 
-                        <!-- Bottom Tagline -->
-                        <div class="pt-1.5 border-t border-white/5 flex items-center justify-between text-[10px] text-slate-400 shrink-0">
-                            <span>Mewujudkan Generasi Berakhlak Mulia, Cerdas, Terampil &amp; Berwawasan Global</span>
-                            <span class="text-teal-400 font-semibold font-mono">SIS-SMA1LE</span>
+                            <div class="min-w-0 flex-1">
+                                <span class="px-2 py-0.5 rounded-full text-[8.5px] font-black uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/40 inline-flex items-center gap-1 mb-1">
+                                    <span>👑</span> PIMPINAN SEKOLAH
+                                </span>
+                                <h3 class="text-sm sm:text-base font-black text-white leading-tight truncate" title="{{ $data['profile']['principal_name'] }}">
+                                    {{ $data['profile']['principal_name'] }}
+                                </h3>
+                                <div class="text-[11px] font-bold text-amber-300 mt-0.5">
+                                    {{ $data['profile']['principal_title'] ?? 'Kepala SMAN 1 Lengkong' }}
+                                </div>
+                                <div class="mt-1.5 inline-block px-2.5 py-0.5 rounded-md bg-slate-900/90 border border-white/10 text-[10px] font-mono font-bold text-slate-200">
+                                    NIP {{ $data['profile']['principal_nip'] }}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Right Column (5 Cols): Pimpinan / Kepala Sekolah Profile -->
-                <div class="lg:col-span-5 glass-panel rounded-2xl border border-amber-500/30 p-3 sm:p-5 flex flex-col justify-between overflow-hidden shadow-2xl bg-gradient-to-b from-slate-900/90 via-slate-900/95 to-amber-950/20 glow-gold">
-                    <!-- Top Card Header -->
-                    <div class="flex items-center justify-between pb-2 border-b border-white/10 shrink-0">
-                        <div class="flex items-center gap-2">
-                            <span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/40">
-                                👑 PIMPINAN SEKOLAH
+                <!-- Right Column (7 Cols): VISI & MISI SEKOLAH (Harus Terbaca Jelas & Terbuka) -->
+                <div class="lg:col-span-7 flex flex-col h-full min-h-0 glass-panel rounded-2xl border border-white/10 p-3.5 sm:p-4 justify-between overflow-hidden shadow-lg">
+                    <!-- Visi Section (Prominent Banner) -->
+                    <div class="p-3 sm:p-3.5 rounded-xl bg-gradient-to-r from-teal-950/60 via-slate-900/80 to-indigo-950/60 border border-teal-500/30 shrink-0 shadow-md">
+                        <div class="flex items-center justify-between mb-1.5">
+                            <span class="text-[10px] font-black text-teal-400 uppercase tracking-wider flex items-center gap-1.5">
+                                <span>🌟</span> VISI SEKOLAH RESMI
                             </span>
+                            <span class="text-[9.5px] text-slate-400 font-mono">SMAN 1 Lengkong</span>
                         </div>
-                        <span class="text-[10px] font-mono text-slate-400">Kepemimpinan Resmi</span>
-                    </div>
-
-                    <!-- Principal Photo & Identity -->
-                    <div class="flex flex-col items-center text-center my-2 shrink-0">
-                        <!-- Photo with Portrait Frame (Head NOT cut off) -->
-                        <div class="w-32 h-40 sm:w-36 sm:h-44 rounded-2xl overflow-hidden p-1 bg-gradient-to-tr from-amber-400 via-yellow-500 to-amber-600 shadow-2xl shadow-amber-500/20 mb-2.5">
-                            <div class="w-full h-full bg-slate-950 rounded-[14px] overflow-hidden flex items-center justify-center">
-                                @if(!empty($data['profile']['principal_photo']))
-                                    <img src="{{ $data['profile']['principal_photo'] }}" alt="{{ $data['profile']['principal_name'] }}" class="w-full h-full object-cover" style="object-position: top center;">
-                                @else
-                                    <div class="w-full h-full flex flex-col items-center justify-center bg-gradient-to-tr from-slate-900 to-amber-950 text-amber-300 font-extrabold text-3xl">
-                                        PS
-                                    </div>
-                                @endif
-                            </div>
-                        </div>
-
-                        <!-- Name & Titles -->
-                        <h3 class="text-base sm:text-lg font-black text-white leading-tight">
-                            {{ $data['profile']['principal_name'] }}
-                        </h3>
-                        <div class="text-xs font-bold text-amber-300 mt-1">
-                            {{ $data['profile']['principal_title'] }}
-                        </div>
-                        <div class="flex flex-wrap items-center justify-center gap-1.5 mt-1.5">
-                            <span class="px-2 py-0.5 rounded-md bg-slate-900 border border-white/10 text-[9.5px] font-mono text-slate-300">
-                                NIP {{ $data['profile']['principal_nip'] }}
-                            </span>
-                            <span class="px-2 py-0.5 rounded-md bg-amber-500/20 border border-amber-500/30 text-[9.5px] font-semibold text-amber-200">
-                                {{ $data['profile']['principal_rank'] }}
-                            </span>
-                        </div>
-                    </div>
-
-                    <!-- Quote Box -->
-                    <div class="flex-1 min-h-0 p-3 rounded-xl bg-slate-950/80 border border-amber-500/20 flex flex-col justify-center my-1">
-                        <div class="text-[9.5px] text-amber-400 font-bold uppercase tracking-wider mb-1 flex items-center gap-1">
-                            <span>💬</span> Amanat &amp; Sambutan Kepala Sekolah:
-                        </div>
-                        <p class="text-xs text-slate-200 italic leading-relaxed line-clamp-4">
-                            "{{ $data['profile']['principal_quote'] }}"
+                        <p class="text-xs sm:text-sm md:text-base text-white font-bold italic leading-relaxed">
+                            "{{ $data['profile']['vision'] }}"
                         </p>
+                        @if(!empty($data['profile']['vision_sub']))
+                            <p class="text-[11px] sm:text-xs text-teal-300 font-semibold mt-1">
+                                {{ $data['profile']['vision_sub'] }}
+                            </p>
+                        @endif
                     </div>
 
-                    <!-- Bottom Commitment Bar -->
-                    <div class="pt-2 mt-1 border-t border-white/5 flex items-center justify-between text-[10px] text-slate-400 shrink-0">
-                        <span class="text-teal-300 font-medium truncate">Maju Bersama, Hebat Semua!</span>
-                        <span class="font-mono text-amber-300/80 shrink-0">SMA Negeri 1 Lengkong</span>
+                    <!-- Misi Section (2x2 Grid, Legible, No Cutoff) -->
+                    <div class="flex-1 min-h-0 flex flex-col justify-between my-2 overflow-hidden">
+                        <div class="flex items-center justify-between pb-1.5 mb-1.5 border-b border-white/10 shrink-0">
+                            <span class="text-[10px] font-black text-indigo-400 uppercase tracking-wider flex items-center gap-1.5">
+                                <span>🎯</span> MISI SEKOLAH
+                            </span>
+                            <span class="text-[9.5px] text-slate-400 font-mono">{{ count($data['profile']['missions'] ?? []) }} Misi Unggulan</span>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 flex-1 min-h-0 content-start overflow-y-auto kiosk-scroll pr-1">
+                            @forelse($data['profile']['missions'] ?? [] as $misi)
+                                <div class="p-2.5 sm:p-3 rounded-xl bg-slate-900/80 border border-white/10 hover:border-indigo-500/30 transition flex items-start gap-2.5">
+                                    <div class="w-6 h-6 rounded-lg bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 flex items-center justify-center font-black text-[10px] shrink-0 font-mono mt-0.5">
+                                        {{ $misi['number'] ?? '01' }}
+                                    </div>
+                                    <div class="min-w-0 flex-1">
+                                        <h4 class="text-xs font-bold text-white leading-tight">{{ $misi['title'] ?? '' }}</h4>
+                                        <p class="text-[11px] sm:text-xs text-slate-300 leading-relaxed mt-1">
+                                            {{ $misi['desc'] ?? '' }}
+                                        </p>
+                                    </div>
+                                </div>
+                            @empty
+                                <div class="col-span-2 text-center text-slate-500 text-xs italic py-4">
+                                    Data misi sekolah belum dikonfigurasi.
+                                </div>
+                            @endforelse
+                        </div>
+                    </div>
+
+                    <!-- Bottom Tagline -->
+                    <div class="pt-2 border-t border-white/5 flex items-center justify-between text-[10px] text-slate-400 shrink-0">
+                        <span>Mewujudkan Generasi Berakhlak Mulia, Cerdas, Terampil &amp; Berwawasan Global</span>
+                        <span class="text-teal-400 font-semibold font-mono">SIS-SMA1LE</span>
                     </div>
                 </div>
             </div>
@@ -1095,66 +1069,107 @@
                         <h2 class="text-sm sm:text-base font-extrabold text-white flex items-center gap-2">
                             <span>Presensi &amp; Pembinaan Ekstrakurikuler Siswa</span>
                         </h2>
-                        <p class="text-[11px] text-slate-400">Pengembangan minat, bakat, kepemimpinan, dan prestasi non-akademik siswa SMAN 1 Lengkong</p>
+                        <p class="text-[11px] text-slate-400">Pengembangan minat, bakat, kepemimpinan, dan pembinaan karakter siswa SMAN 1 Lengkong</p>
                     </div>
                 </div>
                 <div class="flex items-center gap-2">
+                    <!-- Sub-page Navigation for Ekskul (1/2 Layar Slide) -->
+                    <div class="flex items-center gap-1 bg-purple-950/60 border border-purple-500/30 rounded-xl p-0.5 text-xs">
+                        <button type="button" onclick="prevExtraPage()" class="p-1 px-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition" title="Halaman Ekskul Sebelumnya">
+                            &larr;
+                        </button>
+                        <span id="extraPageIndicator" class="px-2 font-mono text-[11px] font-bold text-purple-300">
+                            Hal 1 / {{ max(1, count(array_chunk(collect($data['extracurricular']['clubs'] ?? [])->all(), 4))) }}
+                        </span>
+                        <button type="button" onclick="nextExtraPage()" class="p-1 px-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition" title="Halaman Ekskul Berikutnya">
+                            &rarr;
+                        </button>
+                    </div>
                     <span class="px-2.5 py-1 rounded-full text-[10px] font-black bg-purple-500/20 text-purple-300 border border-purple-500/30 flex items-center gap-1">
                         <span>🎯</span> {{ $data['extracurricular']['total_clubs'] ?? count($data['extracurricular']['clubs'] ?? []) }} CABANG EKSKUL
                     </span>
                 </div>
             </div>
 
-            <!-- Content Area: Left 7 Cols (Cabang Ekstrakurikuler & Pembina), Right 5 Cols (Presensi Hari Ini & Pilar Karakter) -->
+            <!-- Content Area: Left 7 Cols (1/2 Layar Sistem Slide Cabang & Pembina Foto), Right 5 Cols (Presensi Hari Ini & Pilar Karakter) -->
             <div class="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-3 lg:gap-4 overflow-hidden">
-                <!-- Left Column (7 Cols): Daftar Cabang Ekstrakurikuler & Pembina -->
-                <div class="lg:col-span-7 flex flex-col h-full min-h-0 gap-3 overflow-hidden">
+                <!-- Left Column (7 Cols): 1/2 Layar Sistem Slide Ekskul & Foto Pembina Guru & PTK -->
+                <div class="lg:col-span-7 flex flex-col h-full min-h-0 gap-3 justify-between overflow-hidden">
                     <!-- Ribbon: Jadwal Latihan & Keterangan -->
-                    <div class="p-2.5 sm:p-3 rounded-xl bg-purple-950/40 border border-purple-500/20 flex flex-wrap items-center justify-between gap-2 shrink-0">
-                        <div class="flex items-center gap-2.5">
-                            <span class="text-xl">🏆</span>
+                    <div class="p-2 sm:p-2.5 rounded-xl bg-purple-950/40 border border-purple-500/20 flex flex-wrap items-center justify-between gap-2 shrink-0">
+                        <div class="flex items-center gap-2">
+                            <span class="text-lg">🏆</span>
                             <div>
                                 <div class="text-xs sm:text-sm font-bold text-white">Cabang Peminatan Minat &amp; Bakat Aktif</div>
                                 <div class="text-[10px] text-purple-300">Wadah aktualisasi diri, sportivitas, kreativitas, dan kepanduan</div>
                             </div>
                         </div>
                         <div class="text-right">
-                            <div class="text-[9.5px] text-slate-400">Jadwal Latihan Mingguan</div>
-                            <div class="text-xs font-mono font-bold text-white">{{ $data['extracurricular']['schedule'] ?? 'Jum\'at & Sabtu' }}</div>
+                            <div class="text-[9px] text-slate-400">Jadwal Latihan Mingguan</div>
+                            <div class="text-xs font-mono font-bold text-white">{{ $data['extracurricular']['schedule'] ?? 'Senin - Sabtu' }}</div>
                         </div>
                     </div>
 
-                    <!-- Grid of Ekstrakurikuler Clubs -->
-                    <div class="flex-1 min-h-0 overflow-y-auto kiosk-scroll grid grid-cols-1 sm:grid-cols-2 gap-2.5 pr-1">
-                        @forelse($data['extracurricular']['clubs'] ?? [] as $club)
-                            <div class="p-3 rounded-2xl bg-slate-900/80 border border-white/10 hover:border-purple-500/40 transition flex flex-col justify-between group shadow-md">
-                                <div class="flex items-start justify-between gap-2">
-                                    <div class="flex items-center gap-2.5">
-                                        <div class="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-300 flex items-center justify-center text-lg font-bold shrink-0 border border-purple-500/30">
-                                            {{ $club['icon'] ?? '🎯' }}
-                                        </div>
-                                        <div>
-                                            <h4 class="text-xs sm:text-sm font-black text-white group-hover:text-purple-300 transition truncate">{{ $club['name'] }}</h4>
-                                            <span class="px-1.5 py-0.5 rounded text-[8.5px] font-black uppercase tracking-wider bg-purple-500/10 text-purple-300 border border-purple-500/20 inline-block mt-0.5">
-                                                {{ $club['category'] ?? 'Ekstrakurikuler' }}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
+                    <!-- Paginated Sliding Grid: 4 Clubs Per Screen (2x2) with Teacher Photo -->
+                    <div class="flex-1 min-h-0 relative overflow-hidden">
+                        @php
+                            $allClubs = collect($data['extracurricular']['clubs'] ?? [])->all();
+                            $chunkedClubs = array_chunk($allClubs, 4);
+                        @endphp
 
-                                <div class="mt-2 pt-2 border-t border-white/5 space-y-1 text-[10px]">
-                                    <div class="flex items-center justify-between text-slate-300">
-                                        <span class="text-slate-400">Pembina:</span>
-                                        <span class="font-bold text-white truncate ml-2">{{ $club['teacher'] ?? 'Dewan Guru' }}</span>
+                        @forelse($chunkedClubs as $pIdx => $clubPage)
+                            <div class="extra-page h-full w-full {{ $pIdx === 0 ? 'grid' : 'hidden' }} grid-cols-1 sm:grid-cols-2 gap-2.5 content-start overflow-y-auto kiosk-scroll" id="extra-page-{{ $pIdx }}">
+                                @foreach($clubPage as $club)
+                                    <div class="p-3 rounded-2xl bg-slate-900/80 border border-white/10 hover:border-purple-500/40 transition flex flex-col justify-between group shadow-md">
+                                        <!-- Club Name & Category Badge -->
+                                        <div>
+                                            <div class="flex items-start justify-between gap-2">
+                                                <div class="flex items-center gap-2.5">
+                                                    <div class="w-9 h-9 rounded-xl bg-purple-500/20 text-purple-300 flex items-center justify-center text-lg font-bold shrink-0 border border-purple-500/30">
+                                                        {{ $club['icon'] ?? '🎯' }}
+                                                    </div>
+                                                    <div>
+                                                        <h4 class="text-xs sm:text-sm font-black text-white group-hover:text-purple-300 transition truncate">{{ $club['name'] }}</h4>
+                                                        <span class="px-1.5 py-0.5 rounded text-[8.5px] font-black uppercase tracking-wider bg-purple-500/10 text-purple-300 border border-purple-500/20 inline-block mt-0.5">
+                                                            {{ $club['category'] ?? 'Ekstrakurikuler' }}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="mt-2 text-[10px] text-slate-400">
+                                                <span class="font-mono text-purple-300">{{ $club['schedule'] ?? 'Sore Hari' }}</span> &bull; <span>{{ $club['location'] ?? 'Kampus S1L' }}</span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Pembina Box with Photo from Master Data - Data Guru & PTK -->
+                                        <div class="mt-2 pt-2 border-t border-white/10 flex items-center gap-2.5 bg-slate-950/70 p-2 rounded-xl">
+                                            <div class="w-11 h-14 rounded-lg overflow-hidden p-0.5 bg-gradient-to-tr from-purple-400 to-indigo-500 shadow-md shrink-0">
+                                                <div class="w-full h-full bg-slate-900 rounded-[6px] overflow-hidden flex items-center justify-center">
+                                                    @if(!empty($club['pembina']['photo']))
+                                                        <img src="{{ $club['pembina']['photo'] }}" alt="{{ $club['pembina']['name'] }}" class="w-full h-full object-cover" style="object-position: top center;">
+                                                    @else
+                                                        <div class="w-full h-full flex items-center justify-center bg-slate-900 text-purple-300 font-extrabold text-xs">
+                                                            {{ strtoupper(substr($club['pembina']['name'] ?? 'PB', 0, 2)) }}
+                                                        </div>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                            <div class="min-w-0 flex-1">
+                                                <div class="text-[9px] font-bold text-purple-400 uppercase tracking-wider">Pembina Ekskul</div>
+                                                <div class="text-xs font-extrabold text-white truncate group-hover:text-purple-300 transition" title="{{ $club['pembina']['name'] ?? $club['teacher'] ?? 'Dewan Guru' }}">
+                                                    {{ $club['pembina']['name'] ?? $club['teacher'] ?? 'Dewan Guru' }}
+                                                </div>
+                                                <div class="text-[9.5px] font-mono text-slate-400 truncate">
+                                                    {{ !empty($club['pembina']['nip']) && $club['pembina']['nip'] !== '-' ? 'NIP ' . $club['pembina']['nip'] : 'Guru Pembina Terverifikasi' }}
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="flex items-center justify-between text-slate-400">
-                                        <span>Jadwal / Lokasi:</span>
-                                        <span class="font-mono text-purple-300 truncate ml-2">{{ $club['schedule'] ?? 'Sore Hari' }} &bull; {{ $club['location'] ?? 'Kampus S1L' }}</span>
-                                    </div>
-                                </div>
+                                @endforeach
                             </div>
                         @empty
-                            <div class="col-span-2 text-center text-slate-500 text-xs italic py-6">
+                            <div class="h-full flex items-center justify-center text-slate-500 text-xs italic py-6">
                                 Belum ada data cabang ekstrakurikuler terdaftar.
                             </div>
                         @endforelse
@@ -1168,7 +1183,7 @@
                 </div>
 
                 <!-- Right Column (5 Cols): Log Presensi Ekskul Hari Ini & 4 Pilar Karakter -->
-                <div class="lg:col-span-5 flex flex-col h-full min-h-0 gap-3 overflow-hidden">
+                <div class="lg:col-span-5 flex flex-col h-full min-h-0 gap-3 justify-between overflow-hidden">
                     <!-- Presensi Ekstrakurikuler Card -->
                     <div class="flex-1 min-h-0 glass-panel rounded-2xl border border-white/10 p-3 sm:p-4 flex flex-col justify-between overflow-hidden shadow-xl">
                         <div class="flex items-center justify-between pb-2 border-b border-white/10 shrink-0">
@@ -1248,7 +1263,7 @@
         </section>
 
         <!-- ========================================================================= -->
-        <!-- SLIDE 7: DATA ROMBEL (L/P) & DIREKTORI WALI KELAS                         -->
+        <!-- SLIDE 7: DATA ROMBEL (L/P) & DIREKTORI WALI KELAS (1-4 LAYAR SLIDE)      -->
         <!-- ========================================================================= -->
         <section id="slide-7" class="kiosk-slide hidden h-full w-full flex-col justify-between overflow-hidden gap-3">
             <!-- Slide Title Header -->
@@ -1263,136 +1278,157 @@
                     </div>
                 </div>
                 <div class="flex items-center gap-2">
+                    <!-- Sub-page Navigation for Rombel (1-4 Layar Sistem Slide) -->
+                    <div class="flex items-center gap-1 bg-sky-950/60 border border-sky-500/30 rounded-xl p-0.5 text-xs">
+                        <button type="button" onclick="prevRombelPage()" class="p-1 px-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition" title="Halaman Rombel Sebelumnya">
+                            &larr;
+                        </button>
+                        <span id="rombelPageIndicator" class="px-2 font-mono text-[11px] font-bold text-sky-300">
+                            Hal 1 / {{ max(1, count(array_chunk(collect($data['rombels']['list'] ?? [])->all(), 6))) }}
+                        </span>
+                        <button type="button" onclick="nextRombelPage()" class="p-1 px-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition" title="Halaman Rombel Berikutnya">
+                            &rarr;
+                        </button>
+                    </div>
                     <span class="px-2.5 py-1 rounded-full text-[10px] font-black bg-sky-500/20 text-sky-300 border border-sky-500/30 flex items-center gap-1">
                         <span>🏫</span> {{ $data['rombels']['total_rombels'] ?? 0 }} ROMBEL BELAJAR
                     </span>
                 </div>
             </div>
 
-            <!-- Content Area: Top KPI Ribbon + Rombel Cards Grid -->
-            <div class="flex-1 min-h-0 flex flex-col gap-3 overflow-hidden">
+            <!-- Content Area: Top KPI Ribbon + Paginated 1-4 Screen Rombel Cards Grid -->
+            <div class="flex-1 min-h-0 flex flex-col gap-3 justify-between overflow-hidden">
                 <!-- Top Summary Ribbon: Total Siswa, L, P, Rombel, Avg -->
-                <div class="p-2.5 sm:p-3 rounded-2xl bg-gradient-to-r from-sky-950/70 via-slate-900/80 to-indigo-950/70 border border-sky-500/20 grid grid-cols-2 sm:grid-cols-5 gap-2 shrink-0 shadow-lg">
+                <div class="p-2 sm:p-2.5 rounded-2xl bg-gradient-to-r from-sky-950/70 via-slate-900/80 to-indigo-950/70 border border-sky-500/20 grid grid-cols-2 sm:grid-cols-5 gap-2 shrink-0 shadow-lg">
                     <div class="p-2 rounded-xl bg-slate-900/70 border border-white/5 flex items-center gap-2.5">
-                        <div class="w-9 h-9 rounded-xl bg-sky-500/20 text-sky-300 flex items-center justify-center text-base font-bold shrink-0">
+                        <div class="w-8 h-8 rounded-xl bg-sky-500/20 text-sky-300 flex items-center justify-center text-sm font-bold shrink-0">
                             👥
                         </div>
                         <div>
-                            <div class="text-[9.5px] text-slate-400 uppercase font-bold">Total Seluruh Siswa</div>
-                            <div class="text-base font-black text-white font-mono leading-none mt-0.5">{{ $data['rombels']['total_students'] ?? 0 }} <span class="text-[10px] font-normal text-slate-400">Orang</span></div>
+                            <div class="text-[9px] text-slate-400 uppercase font-bold">Total Seluruh Siswa</div>
+                            <div class="text-sm sm:text-base font-black text-white font-mono leading-none mt-0.5">{{ $data['rombels']['total_students'] ?? 0 }} <span class="text-[9.5px] font-normal text-slate-400">Orang</span></div>
                         </div>
                     </div>
 
                     <div class="p-2 rounded-xl bg-slate-900/70 border border-white/5 flex items-center gap-2.5">
-                        <div class="w-9 h-9 rounded-xl bg-teal-500/20 text-teal-300 flex items-center justify-center text-base font-bold shrink-0">
+                        <div class="w-8 h-8 rounded-xl bg-teal-500/20 text-teal-300 flex items-center justify-center text-sm font-bold shrink-0">
                             👦
                         </div>
                         <div>
-                            <div class="text-[9.5px] text-teal-400 uppercase font-bold">Laki-Laki (L)</div>
-                            <div class="text-base font-black text-teal-300 font-mono leading-none mt-0.5">{{ $data['rombels']['total_male'] ?? 0 }} <span class="text-[10px] font-normal text-slate-400">Siswa</span></div>
+                            <div class="text-[9px] text-teal-400 uppercase font-bold">Laki-Laki (L)</div>
+                            <div class="text-sm sm:text-base font-black text-teal-300 font-mono leading-none mt-0.5">{{ $data['rombels']['total_male'] ?? 0 }} <span class="text-[9.5px] font-normal text-slate-400">Siswa</span></div>
                         </div>
                     </div>
 
                     <div class="p-2 rounded-xl bg-slate-900/70 border border-white/5 flex items-center gap-2.5">
-                        <div class="w-9 h-9 rounded-xl bg-rose-500/20 text-rose-300 flex items-center justify-center text-base font-bold shrink-0">
+                        <div class="w-8 h-8 rounded-xl bg-rose-500/20 text-rose-300 flex items-center justify-center text-sm font-bold shrink-0">
                             👧
                         </div>
                         <div>
-                            <div class="text-[9.5px] text-rose-400 uppercase font-bold">Perempuan (P)</div>
-                            <div class="text-base font-black text-rose-300 font-mono leading-none mt-0.5">{{ $data['rombels']['total_female'] ?? 0 }} <span class="text-[10px] font-normal text-slate-400">Siswi</span></div>
+                            <div class="text-[9px] text-rose-400 uppercase font-bold">Perempuan (P)</div>
+                            <div class="text-sm sm:text-base font-black text-rose-300 font-mono leading-none mt-0.5">{{ $data['rombels']['total_female'] ?? 0 }} <span class="text-[9.5px] font-normal text-slate-400">Siswi</span></div>
                         </div>
                     </div>
 
                     <div class="p-2 rounded-xl bg-slate-900/70 border border-white/5 flex items-center gap-2.5">
-                        <div class="w-9 h-9 rounded-xl bg-indigo-500/20 text-indigo-300 flex items-center justify-center text-base font-bold shrink-0">
+                        <div class="w-8 h-8 rounded-xl bg-indigo-500/20 text-indigo-300 flex items-center justify-center text-sm font-bold shrink-0">
                             🏫
                         </div>
                         <div>
-                            <div class="text-[9.5px] text-indigo-400 uppercase font-bold">Total Rombel</div>
-                            <div class="text-base font-black text-indigo-300 font-mono leading-none mt-0.5">{{ $data['rombels']['total_rombels'] ?? 0 }} <span class="text-[10px] font-normal text-slate-400">Kelas</span></div>
+                            <div class="text-[9px] text-indigo-400 uppercase font-bold">Total Rombel</div>
+                            <div class="text-sm sm:text-base font-black text-indigo-300 font-mono leading-none mt-0.5">{{ $data['rombels']['total_rombels'] ?? 0 }} <span class="text-[9.5px] font-normal text-slate-400">Kelas</span></div>
                         </div>
                     </div>
 
                     <div class="p-2 rounded-xl bg-slate-900/70 border border-white/5 flex items-center gap-2.5 col-span-2 sm:col-span-1">
-                        <div class="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-300 flex items-center justify-center text-base font-bold shrink-0">
+                        <div class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-300 flex items-center justify-center text-sm font-bold shrink-0">
                             📊
                         </div>
                         <div>
-                            <div class="text-[9.5px] text-amber-400 uppercase font-bold">Rata-Rata Kelas</div>
-                            <div class="text-base font-black text-amber-300 font-mono leading-none mt-0.5">{{ $data['rombels']['avg_per_rombel'] ?? 0 }} <span class="text-[10px] font-normal text-slate-400">Siswa/Kls</span></div>
+                            <div class="text-[9px] text-amber-400 uppercase font-bold">Rata-Rata Kelas</div>
+                            <div class="text-sm sm:text-base font-black text-amber-300 font-mono leading-none mt-0.5">{{ $data['rombels']['avg_per_rombel'] ?? 0 }} <span class="text-[9.5px] font-normal text-slate-400">Siswa/Kls</span></div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Grid of Rombel Cards with Teacher Photo -->
-                <div class="flex-1 min-h-0 overflow-y-auto kiosk-scroll grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 pr-1">
-                    @forelse($data['rombels']['list'] ?? [] as $r)
-                        <div class="glass-card rounded-2xl border border-white/10 p-3 flex flex-col justify-between hover:border-sky-500/40 transition duration-300 group glow-teal relative overflow-hidden shadow-lg">
-                            <!-- Class Title & Grade Badge -->
-                            <div>
-                                <div class="flex items-center justify-between pb-2 border-b border-white/5 mb-2">
-                                    <div class="flex items-center gap-2">
-                                        <div class="w-7 h-7 rounded-lg bg-sky-500/20 text-sky-300 flex items-center justify-center font-black text-xs font-mono">
-                                            {{ $r['grade'] ?? 'X' }}
-                                        </div>
-                                        <div>
-                                            <h4 class="text-xs sm:text-sm font-black text-white group-hover:text-sky-300 transition truncate">{{ $r['name'] }}</h4>
-                                            <span class="text-[9.5px] text-slate-400 block">{{ $r['major'] ?? 'Kurikulum Merdeka' }}</span>
-                                        </div>
-                                    </div>
-                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-black font-mono bg-sky-500/20 text-sky-300 border border-sky-500/30">
-                                        {{ $r['total_count'] }} Siswa
-                                    </span>
-                                </div>
+                <!-- Paginated Sliding Grid: 6 Rombels Per Screen (3 Cols x 2 Rows) with Homeroom Teacher Photo -->
+                <div class="flex-1 min-h-0 relative overflow-hidden">
+                    @php
+                        $allRombels = collect($data['rombels']['list'] ?? [])->all();
+                        $chunkedRombels = array_chunk($allRombels, 6);
+                    @endphp
 
-                                <!-- Gender L / P Metrics & Split Bar -->
-                                <div class="space-y-1.5 my-2">
-                                    <div class="flex items-center justify-between text-xs">
-                                        <div class="flex items-center gap-1.5 text-teal-300 font-bold">
-                                            <span>👦 L:</span>
-                                            <span class="font-mono text-white">{{ $r['male_count'] }}</span>
-                                            <span class="text-[10px] text-slate-400">({{ $r['male_pct'] }}%)</span>
-                                        </div>
-                                        <div class="flex items-center gap-1.5 text-rose-300 font-bold">
-                                            <span>👧 P:</span>
-                                            <span class="font-mono text-white">{{ $r['female_count'] }}</span>
-                                            <span class="text-[10px] text-slate-400">({{ $r['female_pct'] }}%)</span>
-                                        </div>
-                                    </div>
-
-                                    <!-- Bi-color split progress bar -->
-                                    <div class="w-full h-2 rounded-full bg-slate-900 overflow-hidden flex border border-white/5">
-                                        <div class="h-full bg-teal-400 transition-all duration-500" style="width: {{ $r['male_pct'] }}%"></div>
-                                        <div class="h-full bg-rose-400 transition-all duration-500" style="width: {{ $r['female_pct'] }}%"></div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Homeroom Teacher Profile Box with Photo -->
-                            <div class="mt-2 pt-2 border-t border-white/10 flex items-center gap-2.5 bg-slate-950/60 p-2 rounded-xl">
-                                <!-- Photo Container (Portrait ratio, head not cut off) -->
-                                <div class="w-11 h-14 rounded-lg overflow-hidden p-0.5 bg-gradient-to-tr from-sky-400 to-indigo-500 shadow-md shrink-0">
-                                    <div class="w-full h-full bg-slate-900 rounded-[6px] overflow-hidden flex items-center justify-center">
-                                        @if(!empty($r['homeroom_teacher']['photo']))
-                                            <img src="{{ $r['homeroom_teacher']['photo'] }}" alt="{{ $r['homeroom_teacher']['name'] }}" class="w-full h-full object-cover" style="object-position: top center;">
-                                        @else
-                                            <div class="w-full h-full flex items-center justify-center bg-slate-900 text-sky-300 font-extrabold text-xs">
-                                                {{ strtoupper(substr($r['homeroom_teacher']['name'] ?? 'WK', 0, 2)) }}
+                    @forelse($chunkedRombels as $rIdx => $rombelPage)
+                        <div class="rombel-page h-full w-full {{ $rIdx === 0 ? 'grid' : 'hidden' }} grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 content-start overflow-y-auto kiosk-scroll" id="rombel-page-{{ $rIdx }}">
+                            @foreach($rombelPage as $r)
+                                <div class="glass-card rounded-2xl border border-white/10 p-3 flex flex-col justify-between hover:border-sky-500/40 transition duration-300 group glow-teal relative overflow-hidden shadow-lg">
+                                    <!-- Class Title & Grade Badge -->
+                                    <div>
+                                        <div class="flex items-center justify-between pb-1.5 border-b border-white/5 mb-1.5">
+                                            <div class="flex items-center gap-2">
+                                                <div class="w-7 h-7 rounded-lg bg-sky-500/20 text-sky-300 flex items-center justify-center font-black text-xs font-mono">
+                                                    {{ $r['grade'] ?? 'X' }}
+                                                </div>
+                                                <div>
+                                                    <h4 class="text-xs sm:text-sm font-black text-white group-hover:text-sky-300 transition truncate">{{ $r['name'] }}</h4>
+                                                    <span class="text-[9px] text-slate-400 block">{{ $r['major'] ?? 'Kurikulum Merdeka' }}</span>
+                                                </div>
                                             </div>
-                                        @endif
-                                    </div>
-                                </div>
+                                            <span class="px-2 py-0.5 rounded-full text-[9.5px] font-black font-mono bg-sky-500/20 text-sky-300 border border-sky-500/30">
+                                                {{ $r['total_count'] }} Siswa
+                                            </span>
+                                        </div>
 
-                                <div class="min-w-0 flex-1">
-                                    <div class="text-[9px] font-bold text-sky-400 uppercase tracking-wider">Wali Kelas</div>
-                                    <div class="text-xs font-extrabold text-white truncate group-hover:text-sky-300 transition" title="{{ $r['homeroom_teacher']['name'] }}">
-                                        {{ $r['homeroom_teacher']['name'] }}
+                                        <!-- Gender L / P Metrics & Split Bar -->
+                                        <div class="space-y-1 my-1.5">
+                                            <div class="flex items-center justify-between text-[11px]">
+                                                <div class="flex items-center gap-1 text-teal-300 font-bold">
+                                                    <span>👦 L:</span>
+                                                    <span class="font-mono text-white">{{ $r['male_count'] }}</span>
+                                                    <span class="text-[9.5px] text-slate-400">({{ $r['male_pct'] }}%)</span>
+                                                </div>
+                                                <div class="flex items-center gap-1 text-rose-300 font-bold">
+                                                    <span>👧 P:</span>
+                                                    <span class="font-mono text-white">{{ $r['female_count'] }}</span>
+                                                    <span class="text-[9.5px] text-slate-400">({{ $r['female_pct'] }}%)</span>
+                                                </div>
+                                            </div>
+
+                                            <!-- Bi-color split progress bar -->
+                                            <div class="w-full h-1.5 rounded-full bg-slate-900 overflow-hidden flex border border-white/5">
+                                                <div class="h-full bg-teal-400 transition-all duration-500" style="width: {{ $r['male_pct'] }}%"></div>
+                                                <div class="h-full bg-rose-400 transition-all duration-500" style="width: {{ $r['female_pct'] }}%"></div>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="text-[9.5px] font-mono text-slate-400 truncate">
-                                        {{ !empty($r['homeroom_teacher']['nip']) && $r['homeroom_teacher']['nip'] !== '-' ? 'NIP ' . $r['homeroom_teacher']['nip'] : 'Pendidik Resmi' }}
+
+                                    <!-- Homeroom Teacher Profile Box with Photo from Master Data - Data Guru & PTK -->
+                                    <div class="mt-1.5 pt-1.5 border-t border-white/10 flex items-center gap-2.5 bg-slate-950/60 p-2 rounded-xl">
+                                        <!-- Photo Container (Portrait ratio, head not cut off) -->
+                                        <div class="w-11 h-14 rounded-lg overflow-hidden p-0.5 bg-gradient-to-tr from-sky-400 to-indigo-500 shadow-md shrink-0">
+                                            <div class="w-full h-full bg-slate-900 rounded-[6px] overflow-hidden flex items-center justify-center">
+                                                @if(!empty($r['homeroom_teacher']['photo']))
+                                                    <img src="{{ $r['homeroom_teacher']['photo'] }}" alt="{{ $r['homeroom_teacher']['name'] }}" class="w-full h-full object-cover" style="object-position: top center;">
+                                                @else
+                                                    <div class="w-full h-full flex items-center justify-center bg-slate-900 text-sky-300 font-extrabold text-xs">
+                                                        {{ strtoupper(substr($r['homeroom_teacher']['name'] ?? 'WK', 0, 2)) }}
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        </div>
+
+                                        <div class="min-w-0 flex-1">
+                                            <div class="text-[9px] font-bold text-sky-400 uppercase tracking-wider">Wali Kelas</div>
+                                            <div class="text-xs font-extrabold text-white truncate group-hover:text-sky-300 transition" title="{{ $r['homeroom_teacher']['name'] }}">
+                                                {{ $r['homeroom_teacher']['name'] }}
+                                            </div>
+                                            <div class="text-[9.5px] font-mono text-slate-400 truncate">
+                                                {{ !empty($r['homeroom_teacher']['nip']) && $r['homeroom_teacher']['nip'] !== '-' ? 'NIP ' . $r['homeroom_teacher']['nip'] : 'Pendidik Resmi S1L' }}
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                            @endforeach
                         </div>
                     @empty
                         <div class="col-span-full h-full flex items-center justify-center text-slate-500 text-xs italic py-10">
@@ -2461,7 +2497,107 @@
                     if (!isPaused) {
                         nextStaffPage();
                     }
-                }, 3000); // cycle sub-page briskly every 3s while on staff slide
+                }, 3500); // cycle sub-page briskly every 3.5s while on staff slide
+            }
+        }
+
+        // Sub-page Controller for Ekstrakurikuler (1/2 Layar Slide)
+        let currentExtraPageIdx = 0;
+        const totalExtraPages = {{ max(1, count(array_chunk(collect($data['extracurricular']['clubs'] ?? [])->all(), 4))) }};
+        let extraCycleInterval = null;
+
+        function showExtraPage(page) {
+            if (totalExtraPages <= 1) return;
+            currentExtraPageIdx = (page + totalExtraPages) % totalExtraPages;
+            for (let i = 0; i < totalExtraPages; i++) {
+                const pageEl = document.getElementById(`extra-page-${i}`);
+                if (pageEl) {
+                    if (i === currentExtraPageIdx) {
+                        pageEl.classList.remove('hidden');
+                        pageEl.classList.add('grid');
+                    } else {
+                        pageEl.classList.add('hidden');
+                        pageEl.classList.remove('grid');
+                    }
+                }
+            }
+            const indEl = document.getElementById('extraPageIndicator');
+            if (indEl) {
+                indEl.textContent = `Hal ${currentExtraPageIdx + 1} / ${totalExtraPages}`;
+            }
+        }
+
+        function nextExtraPage() {
+            showExtraPage(currentExtraPageIdx + 1);
+        }
+
+        function prevExtraPage() {
+            showExtraPage(currentExtraPageIdx - 1);
+        }
+
+        function checkExtraSlideAutoCycle() {
+            if (extraCycleInterval) {
+                clearInterval(extraCycleInterval);
+                extraCycleInterval = null;
+            }
+            const activeSlideEl = document.getElementById(`slide-${currentSlideIdx}`);
+            const hasExtraPages = activeSlideEl && activeSlideEl.querySelector('.extra-page');
+            if (hasExtraPages && totalExtraPages > 1) {
+                extraCycleInterval = setInterval(() => {
+                    if (!isPaused) {
+                        nextExtraPage();
+                    }
+                }, 4000); // cycle ekskul page every 4s while on ekskul slide
+            }
+        }
+
+        // Sub-page Controller for Rombel (1-4 Layar Slide)
+        let currentRombelPageIdx = 0;
+        const totalRombelPages = {{ max(1, count(array_chunk(collect($data['rombels']['list'] ?? [])->all(), 6))) }};
+        let rombelCycleInterval = null;
+
+        function showRombelPage(page) {
+            if (totalRombelPages <= 1) return;
+            currentRombelPageIdx = (page + totalRombelPages) % totalRombelPages;
+            for (let i = 0; i < totalRombelPages; i++) {
+                const pageEl = document.getElementById(`rombel-page-${i}`);
+                if (pageEl) {
+                    if (i === currentRombelPageIdx) {
+                        pageEl.classList.remove('hidden');
+                        pageEl.classList.add('grid');
+                    } else {
+                        pageEl.classList.add('hidden');
+                        pageEl.classList.remove('grid');
+                    }
+                }
+            }
+            const indEl = document.getElementById('rombelPageIndicator');
+            if (indEl) {
+                indEl.textContent = `Hal ${currentRombelPageIdx + 1} / ${totalRombelPages}`;
+            }
+        }
+
+        function nextRombelPage() {
+            showRombelPage(currentRombelPageIdx + 1);
+        }
+
+        function prevRombelPage() {
+            showRombelPage(currentRombelPageIdx - 1);
+        }
+
+        function checkRombelSlideAutoCycle() {
+            if (rombelCycleInterval) {
+                clearInterval(rombelCycleInterval);
+                rombelCycleInterval = null;
+            }
+            const activeSlideEl = document.getElementById(`slide-${currentSlideIdx}`);
+            const hasRombelPages = activeSlideEl && activeSlideEl.querySelector('.rombel-page');
+            if (hasRombelPages && totalRombelPages > 1) {
+                rombelCycleInterval = setInterval(() => {
+                    if (!isPaused) {
+                        nextRombelPage();
+                    }
+                }, 4000); // cycle rombel page every 4s while on rombel slide
             }
         }
 
@@ -2504,8 +2640,10 @@
                 }
             }
 
-            // Check staff slide sub-page cycle
+            // Check sub-page auto cycles
             checkStaffSlideAutoCycle();
+            checkExtraSlideAutoCycle();
+            checkRombelSlideAutoCycle();
 
             // Reset countdown for this slide
             slideRemainingTime = SLIDE_DURATION;

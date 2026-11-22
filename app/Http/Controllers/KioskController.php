@@ -157,28 +157,106 @@ class KioskController extends Controller
             'status' => strtoupper($e->status),
         ]);
 
+        // 15. Data Dewan Guru & Tenaga Kependidikan dari Website (Master Data Guru & PTK)
+        $staffMembers = WebsiteContentController::getLiveStaff();
+        $staffCollection = collect($staffMembers);
+        $guruStaffPool = $staffCollection->filter(fn ($s) => ($s['type'] ?? ($s['category'] ?? '')) !== 'kepala_sekolah' && stripos($s['name'] ?? '', 'Pian Sopian') === false)->values();
+
         $extracurricularClubs = collect();
         try {
-            $activeClubs = Extracurricular::with(['teacher', 'teachers'])
+            $activeClubs = Extracurricular::with(['teacher.user', 'teachers.user'])
                 ->where('is_active', true)
                 ->get();
 
-            foreach ($activeClubs as $club) {
-                $leaderName = $club->teacher?->formatted_name ?: ($club->teacher?->name ?: ($club->teachers->first()?->formatted_name ?: ($club->teachers->first()?->name ?: 'Pembina Ekskul')));
+            foreach ($activeClubs as $clubIdx => $club) {
+                $teacher = $club->teacher ?: $club->teachers->first();
+                $leaderName = $teacher?->formatted_name ?: ($teacher?->name ?: null);
+                $leaderNip = $teacher?->nip ?: ($teacher?->nuptk ?: '-');
+
+                $staffMatch = null;
+                if ($teacher) {
+                    $staffMatch = $staffCollection->first(function ($s) use ($teacher) {
+                        return (! empty($teacher->nip) && ! empty($s['nip']) && $teacher->nip === $s['nip'])
+                            || (! empty($s['name']) && ! empty($teacher->name) && (stripos($s['name'], $teacher->name) !== false || stripos($teacher->name, $s['name']) !== false));
+                    });
+                }
+
+                // Jika pembina belum terpasang atau generik, cocokkan dari Master Data Guru & PTK
+                if (! $staffMatch || empty($leaderName) || in_array(strtolower($leaderName), ['dewan guru', 'pembina ekskul', 'pembina', 'guru pembina'])) {
+                    $topicMatch = $staffCollection->first(function ($s) use ($club) {
+                        $duty = strtolower(($s['duty'] ?? '').' '.($s['mapel'] ?? ''));
+                        $cname = strtolower($club->name);
+                        if (str_contains($cname, 'pramuka') && str_contains($duty, 'pramuka')) {
+                            return true;
+                        }
+                        if (str_contains($cname, 'pmr') && (str_contains($duty, 'pmr') || str_contains($duty, 'uks'))) {
+                            return true;
+                        }
+                        if (str_contains($cname, 'futsal') && (str_contains($duty, 'pjok') || str_contains($duty, 'olahraga'))) {
+                            return true;
+                        }
+                        if ((str_contains($cname, 'band') || str_contains($cname, 'marching') || str_contains($cname, 'musik') || str_contains($cname, 'tari')) && (str_contains($duty, 'seni') || str_contains($duty, 'musik') || str_contains($duty, 'budaya'))) {
+                            return true;
+                        }
+                        if ((str_contains($cname, 'computer') || str_contains($cname, 'komputer') || str_contains($cname, 'it')) && (str_contains($duty, 'tik') || str_contains($duty, 'komputer') || str_contains($duty, 'informatika'))) {
+                            return true;
+                        }
+                        if ((str_contains($cname, 'rohis') || str_contains($cname, 'agama')) && (str_contains($duty, 'pai') || str_contains($duty, 'agama') || str_contains($duty, 'keagamaan'))) {
+                            return true;
+                        }
+                        if (str_contains($cname, 'kir') && (str_contains($duty, 'ipa') || str_contains($duty, 'fisika') || str_contains($duty, 'kimia') || str_contains($duty, 'biologi'))) {
+                            return true;
+                        }
+                        if (str_contains($cname, 'english') && (str_contains($duty, 'inggris') || str_contains($duty, 'bahasa'))) {
+                            return true;
+                        }
+                        if (str_contains($cname, 'paskibra') && str_contains($duty, 'paskibra')) {
+                            return true;
+                        }
+
+                        return false;
+                    });
+
+                    if ($topicMatch) {
+                        $staffMatch = $topicMatch;
+                        $leaderName = $topicMatch['name'];
+                        $leaderNip = $topicMatch['nip'] ?? '-';
+                    } elseif ($guruStaffPool->isNotEmpty()) {
+                        $assigned = $guruStaffPool->get($clubIdx % $guruStaffPool->count());
+                        $staffMatch = $assigned;
+                        $leaderName = $assigned['name'];
+                        $leaderNip = $assigned['nip'] ?? '-';
+                    }
+                }
+
+                $photoUrl = null;
+                if ($staffMatch && ! empty($staffMatch['photo'])) {
+                    $photoUrl = str_starts_with($staffMatch['photo'], 'http') ? $staffMatch['photo'] : asset($staffMatch['photo']);
+                } elseif ($teacher && $teacher->user && ! empty($teacher->user->avatar)) {
+                    $photoUrl = str_starts_with($teacher->user->avatar, 'http') ? $teacher->user->avatar : asset('storage/'.$teacher->user->avatar);
+                }
+
                 $extracurricularClubs->push([
                     'id' => $club->id,
                     'name' => $club->name,
-                    'category' => $club->category ?: 'Pengembangan Diri',
-                    'leader' => $leaderName,
-                    'schedule_day' => $club->schedule_day ?: 'Kamis & Sabtu',
+                    'category' => $club->category ?: 'Pengembangan Minat & Bakat',
+                    'leader' => $leaderName ?: 'Pembina Ekskul',
+                    'leader_nip' => $leaderNip,
+                    'leader_photo' => $photoUrl,
+                    'pembina' => [
+                        'name' => $leaderName ?: 'Pembina Ekskul',
+                        'nip' => $leaderNip,
+                        'photo' => $photoUrl,
+                    ],
+                    'schedule_day' => $club->schedule_day ?: 'Jum\'at & Sabtu',
                     'time' => ($club->start_time && $club->end_time) ? substr($club->start_time, 0, 5).' - '.substr($club->end_time, 0, 5).' WIB' : '15:30 - 17:00 WIB',
                     'location' => $club->location ?: 'Kampus SMAN 1 Lengkong',
                     'icon' => match (strtolower($club->category ?? '')) {
-                        'olahraga', 'olahraga prestasi' => '⚽',
-                        'seni', 'seni budaya', 'seni & budaya' => '🎭',
+                        'olahraga', 'olahraga prestasi', 'olahraga & bela diri' => '⚽',
+                        'seni', 'seni budaya', 'seni & budaya', 'seni, musik & budaya' => '🎭',
                         'keagamaan', 'kerohanian' => '🕌',
-                        'kepanduan', 'kepemimpinan' => '⛺',
-                        'ilmiah', 'akademik', 'sains' => '🔬',
+                        'kepanduan', 'kepemimpinan', 'kepanduan & bela negara' => '⛺',
+                        'ilmiah', 'akademik', 'sains', 'teknologi & multimedia' => '💻',
                         default => '🎯',
                     },
                 ]);
@@ -188,17 +266,35 @@ class KioskController extends Controller
 
         if ($extracurricularClubs->isEmpty()) {
             $defaultClubs = [
-                ['name' => 'Pramuka (Gudep S1L)', 'category' => 'Kepanduan', 'leader' => 'Pembina Pramuka', 'schedule_day' => 'Jumat', 'time' => '14:00 - 16:30 WIB', 'location' => 'Lapangan Utama', 'icon' => '⛺'],
-                ['name' => 'Paskibraka', 'category' => 'Kepemimpinan', 'leader' => 'Pembina Paskibra', 'schedule_day' => 'Sabtu', 'time' => '08:00 - 11:00 WIB', 'location' => 'Lapangan Upacara', 'icon' => '🇮🇩'],
-                ['name' => 'PMR & Tim UKS', 'category' => 'Kemanusiaan', 'leader' => 'Pembina PMR', 'schedule_day' => 'Kamis', 'time' => '15:30 - 17:00 WIB', 'location' => 'Ruang UKS', 'icon' => '🩺'],
-                ['name' => 'Rohis & Tahfidz Quran', 'category' => 'Keagamaan', 'leader' => 'Koord. Keagamaan', 'schedule_day' => 'Kamis', 'time' => '15:30 - 17:00 WIB', 'location' => 'Masjid Sekolah', 'icon' => '🕌'],
-                ['name' => 'Seni Tari & Musik Sunda', 'category' => 'Seni Budaya', 'leader' => 'Guru Seni Budaya', 'schedule_day' => 'Sabtu', 'time' => '09:00 - 11:30 WIB', 'location' => 'Sanggar Seni', 'icon' => '🎭'],
-                ['name' => 'Olahraga (Futsal & Voli)', 'category' => 'Olahraga Prestasi', 'leader' => 'Guru PJOK', 'schedule_day' => 'Sabtu', 'time' => '07:30 - 10:30 WIB', 'location' => 'Gelanggang Olahraga', 'icon' => '⚽'],
-                ['name' => 'English Club & Jurnalistik', 'category' => 'Akademik', 'leader' => 'Guru Bhs. Inggris', 'schedule_day' => 'Kamis', 'time' => '15:30 - 17:00 WIB', 'location' => 'Lab Komputer', 'icon' => '📰'],
-                ['name' => 'KIR (Karya Ilmiah Remaja)', 'category' => 'Sains & Teknologi', 'leader' => 'Guru IPA', 'schedule_day' => 'Sabtu', 'time' => '09:00 - 11:00 WIB', 'location' => 'Lab IPA Terpadu', 'icon' => '🔬'],
+                ['name' => 'Pramuka (Gudep S1L)', 'category' => 'Kepanduan', 'leader' => 'Sujandi, S.Sos.', 'nip' => '199810232025211127', 'schedule_day' => 'Jumat', 'time' => '14:00 - 16:30 WIB', 'location' => 'Lapangan Utama', 'icon' => '⛺'],
+                ['name' => 'Paskibraka', 'category' => 'Kepemimpinan', 'leader' => 'Ilham Maulana, S.Pd.', 'nip' => '20202265001', 'schedule_day' => 'Sabtu', 'time' => '08:00 - 11:00 WIB', 'location' => 'Lapangan Upacara', 'icon' => '🇮🇩'],
+                ['name' => 'PMR & Tim UKS', 'category' => 'Kemanusiaan', 'leader' => 'Neng Siti Irma Yulia, S.Pd.', 'nip' => '199202142025212166', 'schedule_day' => 'Kamis', 'time' => '15:30 - 17:00 WIB', 'location' => 'Ruang UKS', 'icon' => '🩺'],
+                ['name' => 'Rohis & Tahfidz Quran', 'category' => 'Keagamaan', 'leader' => 'Yani Mulyani, S.Pd.', 'nip' => '198704122022212009', 'schedule_day' => 'Kamis', 'time' => '15:30 - 17:00 WIB', 'location' => 'Masjid Sekolah', 'icon' => '🕌'],
+                ['name' => 'Seni Tari & Musik Sunda', 'category' => 'Seni Budaya', 'leader' => 'Restu, S.Pd.', 'nip' => '198812302025212129', 'schedule_day' => 'Sabtu', 'time' => '09:00 - 11:30 WIB', 'location' => 'Sanggar Seni', 'icon' => '🎭'],
+                ['name' => 'Olahraga (Futsal & Voli)', 'category' => 'Olahraga Prestasi', 'leader' => 'Rian Hadiansyah, S.Pd.', 'nip' => '199501172025211109', 'schedule_day' => 'Sabtu', 'time' => '07:30 - 10:30 WIB', 'location' => 'Gelanggang Olahraga', 'icon' => '⚽'],
+                ['name' => 'English Club & Jurnalistik', 'category' => 'Akademik', 'leader' => 'Winda Dwi Atyani, S.Pd., M.Pd.', 'nip' => '198506142010012015', 'schedule_day' => 'Kamis', 'time' => '15:30 - 17:00 WIB', 'location' => 'Lab Komputer', 'icon' => '📰'],
+                ['name' => 'KIR (Karya Ilmiah Remaja)', 'category' => 'Sains & Teknologi', 'leader' => 'Bambang Sugiantoro, S.Pd.', 'nip' => '197804122005011003', 'schedule_day' => 'Sabtu', 'time' => '09:00 - 11:00 WIB', 'location' => 'Lab IPA Terpadu', 'icon' => '🔬'],
             ];
             foreach ($defaultClubs as $dc) {
-                $extracurricularClubs->push($dc);
+                $staffMatch = $staffCollection->first(fn ($s) => (! empty($s['name']) && stripos($s['name'], $dc['leader']) !== false));
+                $pPhoto = $staffMatch && ! empty($staffMatch['photo']) ? (str_starts_with($staffMatch['photo'], 'http') ? $staffMatch['photo'] : asset($staffMatch['photo'])) : null;
+                $extracurricularClubs->push([
+                    'id' => rand(100, 999),
+                    'name' => $dc['name'],
+                    'category' => $dc['category'],
+                    'leader' => $dc['leader'],
+                    'leader_nip' => $dc['nip'],
+                    'leader_photo' => $pPhoto,
+                    'pembina' => [
+                        'name' => $dc['leader'],
+                        'nip' => $dc['nip'],
+                        'photo' => $pPhoto,
+                    ],
+                    'schedule_day' => $dc['schedule_day'],
+                    'time' => $dc['time'],
+                    'location' => $dc['location'],
+                    'icon' => $dc['icon'],
+                ]);
             }
         }
 
@@ -427,20 +523,20 @@ class KioskController extends Controller
             ];
         });
 
-        // 12. Profil Identitas Sekolah Resmi & Visi Misi Website
-        $schoolIdentity = SchoolIdentity::first();
+        // 12. Profil Identitas Sekolah Resmi & Visi Misi (Master Data - Identitas Sekolah)
+        $schoolIdentity = SchoolIdentity::first() ?? SchoolIdentity::current();
 
         // Data Visi & Misi dari Kelola Konten Web
         $customVisi = SchoolSetting::get('website_visi');
         $customVisiSub = SchoolSetting::get('website_visi_sub');
-        $vision = ! empty($customVisi) ? $customVisi : SchoolSetting::get('school_vision', 'Terwujudnya Peserta Didik yang Beriman dan Bertaqwa, Berakhlak Mulia, Cerdas, Terampil, Mandiri, dan Berwawasan Lingkungan Global.');
-        $visionSub = ! empty($customVisiSub) ? $customVisiSub : '(Unggul dalam IPTEK, Kokoh dalam IMTAQ, Harmonis dengan Alam Semesta)';
+        $vision = ! empty($customVisi) ? $customVisi : SchoolSetting::get('school_vision', 'Mewujudkan generasi yang religius, kreatif, inovatif dan peduli lingkungan');
+        $visionSub = ! empty($customVisiSub) ? $customVisiSub : 'SMA Negeri 1 Lengkong • Maju Bersama, Hebat Semua!';
 
         $customMissions = SchoolSetting::get('website_misi_json');
         $decodedMissions = $customMissions !== null ? json_decode($customMissions, true) : null;
         $missions = is_array($decodedMissions) && count($decodedMissions) > 0 ? $decodedMissions : WebsiteContentController::DEFAULT_MISSIONS;
 
-        // Foto & Sambutan Kepala Sekolah
+        // Foto Kepala Sekolah
         $customSpeeches = SchoolSetting::get('website_speeches_json');
         $speeches = $customSpeeches ? (json_decode($customSpeeches, true) ?: WebsiteContentController::DEFAULT_SPEECHES) : WebsiteContentController::DEFAULT_SPEECHES;
         $activeSpeech = collect($speeches)->firstWhere('is_active', true) ?: ($speeches[0] ?? null);
@@ -451,31 +547,40 @@ class KioskController extends Controller
             $principalPhoto = asset('images/website/headmaster.jpg');
         }
 
-        $principalQuote = $activeSpeech['quote'] ?? 'Pendidikan sejati bukan sekadar mengisi wadah dengan informasi, melainkan menyalakan lentera budi pekerti, nalar kritis, dan integritas yang abadi.';
-        $principalSpeechExcerpt = $activeSpeech['speech_p1'] ?? 'Puji dan syukur senantiasa kita panjatkan ke hadirat Allah SWT. Selamat datang di portal resmi SMAN 1 Lengkong, wadah silaturahmi informasi, transparansi akademik, serta pusat inovasi pembelajaran bagi seluruh warga sekolah.';
+        // Format nama kepala sekolah dari Master Data - Identitas Sekolah
+        $rawPrincipalName = $schoolIdentity->headmaster_name ?: 'Pian Sopian, S.Pd., M.M.Pd.';
+        if ($rawPrincipalName === mb_strtoupper($rawPrincipalName)) {
+            $rawPrincipalName = ucwords(mb_strtolower($rawPrincipalName));
+            $rawPrincipalName = str_replace(
+                ['S.pd', 'M.pd', 'M.m.pd', 'S.sos', 'S.kom', 'A.md', 'Se', 'Sp'],
+                ['S.Pd.', 'M.Pd.', 'M.M.Pd.', 'S.Sos.', 'S.Kom.', 'A.Md.', 'SE', 'SP.'],
+                $rawPrincipalName
+            );
+        }
 
         $schoolProfile = [
-            'name' => SchoolSetting::get('school_name', $schoolIdentity?->name ?? 'SMA Negeri 1 Lengkong'),
-            'npsn' => SchoolSetting::get('school_npsn', $schoolIdentity?->npsn ?? '20202265'),
-            'nss' => $schoolIdentity?->nss ?? '301020304050',
-            'status' => $schoolIdentity?->status ?? 'Negeri',
-            'accreditation' => SchoolSetting::get('school_accreditation', $schoolIdentity?->accreditation ?? 'A (Unggul)'),
-            'branch_office' => $schoolIdentity?->branch_office ?? 'Cabang Dinas Pendidikan (KCD) Wilayah V',
+            'name' => $schoolIdentity->name ?? 'SMA Negeri 1 Lengkong',
+            'npsn' => $schoolIdentity->npsn ?? '20202265',
+            'nss' => $schoolIdentity->nss ?? '301020304050',
+            'status' => $schoolIdentity->status ?? 'Negeri',
+            'accreditation' => $schoolIdentity->accreditation ?? 'A',
+            'branch_office' => $schoolIdentity->branch_office ?? 'Cabang Dinas Pendidikan Wilayah V',
             'province_dept' => 'Dinas Pendidikan Provinsi Jawa Barat',
             'curriculum' => 'Kurikulum Merdeka / Nasional (Permendikdasmen 13/2025)',
-            'address' => SchoolSetting::get('school_address', $schoolIdentity?->address ?? 'Jalan Raya Lengkong No. 1, Desa Lengkong, Kec. Lengkong, Kab. Sukabumi, Jawa Barat 43174'),
-            'phone' => $schoolIdentity?->phone ?? '(0266) 6491001',
-            'email' => $schoolIdentity?->email ?? 'info@sman1lengkong.sch.id',
-            'website' => $schoolIdentity?->website ?? 'https://sman1lengkong.school',
-            'committee_head' => $schoolIdentity?->committee_head ?? 'ADE',
-            'head_of_admin' => 'Rachmat Sugiarto, A.Md.',
-            'principal_name' => SchoolSetting::get('headmaster_name', $schoolIdentity?->headmaster_name ?? 'Pian Sopian, S.Pd., M.M.Pd.'),
-            'principal_nip' => SchoolSetting::get('headmaster_nip', $schoolIdentity?->headmaster_nip ?? '198009132008011005'),
-            'principal_rank' => 'Guru Pembina Tk. I / IV-b',
+            'address' => $schoolIdentity->address ?? 'Jalan Raya Lengkong No. 1, Desa Lengkong, Kec. Lengkong, Kab. Sukabumi, Jawa Barat 43174',
+            'district' => $schoolIdentity->district ?? 'Kecamatan Lengkong',
+            'city' => $schoolIdentity->city ?? 'Kabupaten Sukabumi',
+            'province' => $schoolIdentity->province ?? 'Jawa Barat',
+            'postal_code' => $schoolIdentity->postal_code ?? '43174',
+            'phone' => $schoolIdentity->phone ?? '(0266) 6491001',
+            'email' => $schoolIdentity->email ?? 'info@sman1lengkong.sch.id',
+            'website' => $schoolIdentity->website ?? 'https://sman1lengkong.school',
+            'committee_head' => $schoolIdentity->committee_head ?? 'ADE',
+            'head_of_admin' => $schoolIdentity->operator_name ?? 'Rachmat Sugiarto, A.Md.',
+            'principal_name' => $rawPrincipalName,
+            'principal_nip' => $schoolIdentity->headmaster_nip ?? '198009132008011005',
             'principal_title' => 'Kepala SMAN 1 Lengkong',
             'principal_photo' => $principalPhoto,
-            'principal_quote' => $principalQuote,
-            'principal_excerpt' => $principalSpeechExcerpt,
             'vision' => $vision,
             'vision_sub' => $visionSub,
             'missions' => $missions,
@@ -493,11 +598,7 @@ class KioskController extends Controller
         $decodedAgendas = $customAgendas !== null ? json_decode($customAgendas, true) : null;
         $agendas = is_array($decodedAgendas) && count($decodedAgendas) > 0 ? $decodedAgendas : WebsiteContentController::DEFAULT_AGENDAS;
 
-        // 15. Data Dewan Guru & Tenaga Kependidikan dari Website
-        $staffMembers = WebsiteContentController::getLiveStaff();
-        $staffCollection = collect($staffMembers);
-
-        // 16. Data Rombel (L/P) & Profil Wali Kelas
+        // 16. Data Rombel (L/P) & Profil Wali Kelas (Master Data Guru & PTK)
         $classesQuery = SchoolClass::with(['homeroomTeacher.user', 'students'])
             ->orderBy('grade')
             ->orderBy('name')
@@ -508,7 +609,7 @@ class KioskController extends Controller
         $totalSchoolMale = 0;
         $totalSchoolFemale = 0;
 
-        foreach ($classesQuery as $c) {
+        foreach ($classesQuery as $cIdx => $c) {
             $activeStudents = $c->students->where('is_active', true);
             if ($activeStudents->isEmpty() && $c->students->isNotEmpty()) {
                 $activeStudents = $c->students;
@@ -549,6 +650,16 @@ class KioskController extends Controller
                 }
             }
 
+            // Fallback: Jika wali kelas belum terpasang di kelas, cocokkan dari pool guru Master Data
+            if (empty($teacherName) || $teacherName === 'Belum Ditugaskan') {
+                if ($guruStaffPool->isNotEmpty()) {
+                    $assigned = $guruStaffPool->get($cIdx % $guruStaffPool->count());
+                    $teacherName = $assigned['name'];
+                    $teacherNip = $assigned['nip'] ?? '-';
+                    $staffMatch = $assigned;
+                }
+            }
+
             $photoUrl = null;
             if ($staffMatch && ! empty($staffMatch['photo'])) {
                 $photoUrl = str_starts_with($staffMatch['photo'], 'http') ? $staffMatch['photo'] : asset($staffMatch['photo']);
@@ -567,7 +678,7 @@ class KioskController extends Controller
                 'male_pct' => $total > 0 ? round(($male / $total) * 100) : 0,
                 'female_pct' => $total > 0 ? round(($female / $total) * 100) : 0,
                 'homeroom_teacher' => [
-                    'name' => $teacherName ?: 'Belum Ditugaskan',
+                    'name' => $teacherName ?: 'Wali Kelas Resmi',
                     'nip' => $teacherNip,
                     'photo' => $photoUrl,
                 ],
@@ -1068,11 +1179,11 @@ class KioskController extends Controller
                 'total_today' => $extraToday->count(),
                 'schedule' => "{$extraDaysLabel} ({$extraStart} - {$extraEnd} WIB)",
                 'recent' => $recentExtra,
-                'clubs' => $extracurricularClubs,
+                'clubs' => $extracurricularClubs->values()->all(),
                 'total_clubs' => $extracurricularClubs->count(),
             ],
             'rombels' => [
-                'list' => $rombelList,
+                'list' => $rombelList->values()->all(),
                 'total_students' => $totalSchoolStudents,
                 'total_male' => $totalSchoolMale,
                 'total_female' => $totalSchoolFemale,

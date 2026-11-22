@@ -23,12 +23,17 @@ test('kiosk index renders all 14 slides including profile pimpinan, extracurricu
     $response->assertSee('slide-6', false);
     $response->assertSee('Presensi &amp; Pembinaan Ekstrakurikuler Siswa', false);
     $response->assertSee('CABANG EKSKUL', false);
+    $response->assertSee('extraPageIndicator', false);
+    $response->assertSee('extra-page', false);
+    $response->assertSee('Pembina Ekskul', false);
     $response->assertSee('Log Presensi Ekskul Hari Ini', false);
     $response->assertSee('4 PILAR PEMBINAAN KARAKTER EKSKUL', false);
 
     // Assert Slide 7: Data Rombel (L/P) & Wali Kelas
     $response->assertSee('slide-7', false);
     $response->assertSee('Data Rombongan Belajar (Rombel) &amp; Direktori Wali Kelas', false);
+    $response->assertSee('rombelPageIndicator', false);
+    $response->assertSee('rombel-page', false);
     $response->assertSee('Total Seluruh Siswa', false);
     $response->assertSee('Laki-Laki (L)', false);
     $response->assertSee('Perempuan (P)', false);
