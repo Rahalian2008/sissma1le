@@ -10,8 +10,12 @@ test('kiosk index renders all 14 slides including profile pimpinan, extracurricu
         $response->assertSee("pill-slide-{$i}", false);
     }
 
-    // Assert Slide 5: Profil Resmi Kelembagaan & Pimpinan
-    $response->assertSee('slide-5', false);
+    // Assert Theme Toggle Button
+    $response->assertSee('themeToggleBtn', false);
+    $response->assertSee('toggleKioskTheme()', false);
+
+    // Assert Slide 0: Profil Resmi Kelembagaan & Pimpinan
+    $response->assertSee('slide-0', false);
     $response->assertSee('Profil Resmi Kelembagaan &amp; Kepemimpinan Sekolah', false);
     $response->assertSee('Pian Sopian', false);
     $response->assertSee('198009132008011005', false);
@@ -19,18 +23,16 @@ test('kiosk index renders all 14 slides including profile pimpinan, extracurricu
     $response->assertSee('VISI SEKOLAH', false);
     $response->assertSee('MISI SEKOLAH', false);
 
-    // Assert Slide 6: Presensi & Pembinaan Ekstrakurikuler
-    $response->assertSee('slide-6', false);
-    $response->assertSee('Presensi &amp; Pembinaan Ekstrakurikuler Siswa', false);
-    $response->assertSee('CABANG EKSKUL', false);
-    $response->assertSee('extraPageIndicator', false);
-    $response->assertSee('extra-page', false);
-    $response->assertSee('Pembina Ekskul', false);
-    $response->assertSee('Log Presensi Ekskul Hari Ini', false);
-    $response->assertSee('4 PILAR PEMBINAAN KARAKTER EKSKUL', false);
+    // Assert Slide 1: Guru & Staf
+    $response->assertSee('slide-1', false);
+    $response->assertSee('Direktori Dewan Guru &amp; Tenaga Kependidikan', false);
+    $response->assertSee('staffPageIndicator', false);
+    $response->assertSee('NIP:', false);
+    $response->assertSee('Mapel:', false);
+    $response->assertSee('Tugas:', false);
 
-    // Assert Slide 7: Data Rombel (L/P) & Wali Kelas
-    $response->assertSee('slide-7', false);
+    // Assert Slide 2: Data Rombel (L/P) & Wali Kelas
+    $response->assertSee('slide-2', false);
     $response->assertSee('Data Rombongan Belajar (Rombel) &amp; Direktori Wali Kelas', false);
     $response->assertSee('rombelPageIndicator', false);
     $response->assertSee('rombel-page', false);
@@ -40,21 +42,8 @@ test('kiosk index renders all 14 slides including profile pimpinan, extracurricu
     $response->assertSee('Total Rombel', false);
     $response->assertSee('Wali Kelas', false);
 
-    // Assert Slide 8: Berita
-    $response->assertSee('slide-8', false);
-    $response->assertSee('Warta &amp; Publikasi Resmi Sekolah', false);
-
-    // Assert Slide 9: Agenda
-    $response->assertSee('slide-9', false);
-    $response->assertSee('Agenda &amp; Kalender Kegiatan Akademik', false);
-
-    // Assert Slide 10: Guru & Staf
-    $response->assertSee('slide-10', false);
-    $response->assertSee('Direktori Dewan Guru &amp; Tenaga Kependidikan', false);
-    $response->assertSee('staffPageIndicator', false);
-
-    // Assert Slide 11: Perpustakaan & Literasi
-    $response->assertSee('slide-11', false);
+    // Assert Slide 3: Perpustakaan & Literasi
+    $response->assertSee('slide-3', false);
     $response->assertSee('Perpustakaan &amp; Literasi Digital', false);
     $response->assertSee('Klasifikasi DDC', false);
     $response->assertSee('Duta Literasi Terpilih', false);
@@ -62,13 +51,51 @@ test('kiosk index renders all 14 slides including profile pimpinan, extracurricu
     $response->assertSee('Vamil Setiawati', false);
     $response->assertSee('Hasbi', false);
 
-    // Assert Slide 12: Bimbingan & Konseling
-    $response->assertSee('slide-12', false);
+    // Assert Slide 4: Bimbingan & Konseling
+    $response->assertSee('slide-4', false);
     $response->assertSee('Bimbingan &amp; Konseling (BK)', false);
     $response->assertSee('Konselor / Guru BK Sekolah', false);
     $response->assertSee('KOORDINATOR BK', false);
     $response->assertSee('GURU BK', false);
     $response->assertSee('Ida Marttin Maolidah', false);
+
+    // Assert Slide 5: Presensi Kehadiran Siswa
+    $response->assertSee('slide-5', false);
+    $response->assertSee('Presensi Kehadiran Harian &amp; Jadwal Sekolah', false);
+
+    // Assert Slide 6: Ibadah
+    $response->assertSee('slide-6', false);
+    $response->assertSee('Presensi Ibadah Berjamaah', false);
+
+    // Assert Slide 7: Presensi & Pembinaan Ekstrakurikuler
+    $response->assertSee('slide-7', false);
+    $response->assertSee('Presensi &amp; Pembinaan Ekstrakurikuler Siswa', false);
+    $response->assertSee('CABANG EKSKUL', false);
+    $response->assertSee('extraPageIndicator', false);
+    $response->assertSee('extra-page', false);
+    $response->assertSee('Pembina Ekskul', false);
+    $response->assertSee('Log Presensi Ekskul Hari Ini', false);
+    $response->assertSee('4 PILAR PEMBINAAN KARAKTER EKSKUL', false);
+
+    // Assert Slide 8: Tahfidz
+    $response->assertSee('slide-8', false);
+    $response->assertSee('Buku Kontrol Digital: Setor Hafalan Juz 30 Al-Qur\'an', false);
+
+    // Assert Slide 9: Prestasi
+    $response->assertSee('slide-9', false);
+    $response->assertSee('Hall of Fame: Ranking Poin Prestasi Positif Siswa', false);
+
+    // Assert Slide 10: Piket & Satpam
+    $response->assertSee('slide-10', false);
+    $response->assertSee('Ketertiban Sekolah, Petugas Piket &amp; Monitoring Pos Satpam', false);
+
+    // Assert Slide 11: Berita
+    $response->assertSee('slide-11', false);
+    $response->assertSee('Warta &amp; Publikasi Resmi Sekolah', false);
+
+    // Assert Slide 12: Agenda
+    $response->assertSee('slide-12', false);
+    $response->assertSee('Agenda &amp; Kalender Kegiatan Akademik', false);
 
     // Assert Slide 13: Buku Tamu & Kunjungan Sekolah
     $response->assertSee('slide-13', false);

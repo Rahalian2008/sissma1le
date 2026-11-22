@@ -11,6 +11,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
     
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+        <script>
+        if (localStorage.getItem('kiosk_theme') === 'light') {
+            document.documentElement.classList.remove('dark');
+            document.documentElement.classList.add('light');
+        } else {
+            document.documentElement.classList.add('dark');
+            document.documentElement.classList.remove('light');
+        }
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -84,6 +93,87 @@
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
+        /* Light Theme Styling for Kiosk */
+        html.light, html.light body {
+            background-color: #f8fafc;
+            background: radial-gradient(circle at top right, #e2e8f0, #f8fafc 40%, #f1f5f9 100%);
+            color: #0f172a;
+        }
+        html.light .glass-panel {
+            background: rgba(255, 255, 255, 0.90) !important;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 0, 0, 0.08) !important;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.06);
+            color: #0f172a !important;
+        }
+        html.light .glass-card {
+            background: rgba(255, 255, 255, 0.82) !important;
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 0, 0, 0.06) !important;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03);
+            color: #1e293b !important;
+        }
+        html.light .text-white {
+            color: #0f172a !important;
+        }
+        html.light .text-slate-100 {
+            color: #0f172a !important;
+        }
+        html.light .text-slate-200 {
+            color: #1e293b !important;
+        }
+        html.light .text-slate-300 {
+            color: #334155 !important;
+        }
+        html.light .text-slate-400 {
+            color: #64748b !important;
+        }
+        html.light .text-slate-500 {
+            color: #64748b !important;
+        }
+        html.light .bg-slate-900\/50,
+        html.light .bg-slate-900\/60,
+        html.light .bg-slate-900\/70,
+        html.light .bg-slate-900\/80,
+        html.light .bg-slate-900\/90,
+        html.light .bg-slate-900,
+        html.light .bg-slate-950\/50,
+        html.light .bg-slate-950\/60,
+        html.light .bg-slate-950\/70,
+        html.light .bg-slate-950\/80,
+        html.light .bg-slate-950\/90,
+        html.light .bg-slate-950 {
+            background-color: rgba(241, 245, 249, 0.90) !important;
+        }
+        html.light .border-white\/10,
+        html.light .border-white\/5 {
+            border-color: rgba(0, 0, 0, 0.08) !important;
+        }
+        html.light .kiosk-scroll::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+        }
+        html.light .kiosk-scroll::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.2);
+        }
+        html.light #slidePillsContainer {
+            background-color: rgba(255, 255, 255, 0.95) !important;
+            border-color: rgba(0, 0, 0, 0.08) !important;
+        }
+        html.light .slide-nav-pill:not(.bg-teal-500) {
+            color: #475569 !important;
+        }
+        html.light .slide-nav-pill:not(.bg-teal-500):hover {
+            color: #0f172a !important;
+            background-color: rgba(0, 0, 0, 0.05) !important;
+        }
+        html.light footer {
+            background-color: rgba(255, 255, 255, 0.95) !important;
+            border-color: rgba(0, 0, 0, 0.08) !important;
+        }
+        html.light #kioskTicker {
+            color: #1e293b !important;
+        }
     </style>
 </head>
 <body class="h-screen max-h-screen overflow-hidden flex flex-col justify-between text-slate-100 antialiased selection:bg-teal-500 selection:text-white">
@@ -120,46 +210,46 @@
             </div>
         </div>
 
-        <!-- Slide Switcher Pills (Desktop & Tablet) - Responsif tanpa terpotong -->
+                <!-- Slide Switcher Pills (Desktop & Tablet) - Responsif tanpa terpotong -->
         <div id="slidePillsContainer" class="hidden md:flex items-center gap-0.5 lg:gap-1 bg-slate-950/80 border border-white/10 rounded-xl p-1 text-xs shrink min-w-0 flex-1 max-w-fit overflow-x-auto no-scrollbar mx-1 scroll-smooth">
             <button type="button" onclick="goToSlide(0)" id="pill-slide-0" class="slide-nav-pill px-1.5 lg:px-2 py-0.5 sm:py-1 rounded-lg font-bold transition flex items-center gap-1 bg-teal-500 text-slate-950 shadow-sm whitespace-nowrap text-[10.5px] lg:text-[11px]">
-                <span>1. Presensi</span>
+                <span>1. Profil</span>
             </button>
             <button type="button" onclick="goToSlide(1)" id="pill-slide-1" class="slide-nav-pill px-1.5 lg:px-2 py-0.5 sm:py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap text-[10.5px] lg:text-[11px]">
-                <span>2. Ibadah</span>
+                <span>2. Guru &amp; TU</span>
             </button>
             <button type="button" onclick="goToSlide(2)" id="pill-slide-2" class="slide-nav-pill px-1.5 lg:px-2 py-0.5 sm:py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap text-[10.5px] lg:text-[11px]">
-                <span>3. Tahfidz</span>
+                <span>3. Rombel</span>
             </button>
             <button type="button" onclick="goToSlide(3)" id="pill-slide-3" class="slide-nav-pill px-1.5 lg:px-2 py-0.5 sm:py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap text-[10.5px] lg:text-[11px]">
-                <span>4. Prestasi</span>
+                <span>4. Perpus</span>
             </button>
             <button type="button" onclick="goToSlide(4)" id="pill-slide-4" class="slide-nav-pill px-1.5 lg:px-2 py-0.5 sm:py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap text-[10.5px] lg:text-[11px]">
-                <span>5. Piket</span>
+                <span>5. BK</span>
             </button>
             <button type="button" onclick="goToSlide(5)" id="pill-slide-5" class="slide-nav-pill px-1.5 lg:px-2 py-0.5 sm:py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap text-[10.5px] lg:text-[11px]">
-                <span>6. Profil</span>
+                <span>6. Presensi</span>
             </button>
             <button type="button" onclick="goToSlide(6)" id="pill-slide-6" class="slide-nav-pill px-1.5 lg:px-2 py-0.5 sm:py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap text-[10.5px] lg:text-[11px]">
-                <span>7. Ekskul</span>
+                <span>7. Ibadah</span>
             </button>
             <button type="button" onclick="goToSlide(7)" id="pill-slide-7" class="slide-nav-pill px-1.5 lg:px-2 py-0.5 sm:py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap text-[10.5px] lg:text-[11px]">
-                <span>8. Rombel</span>
+                <span>8. Ekskul</span>
             </button>
             <button type="button" onclick="goToSlide(8)" id="pill-slide-8" class="slide-nav-pill px-1.5 lg:px-2 py-0.5 sm:py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap text-[10.5px] lg:text-[11px]">
-                <span>9. Berita</span>
+                <span>9. Tahfidz</span>
             </button>
             <button type="button" onclick="goToSlide(9)" id="pill-slide-9" class="slide-nav-pill px-1.5 lg:px-2 py-0.5 sm:py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap text-[10.5px] lg:text-[11px]">
-                <span>10. Agenda</span>
+                <span>10. Prestasi</span>
             </button>
             <button type="button" onclick="goToSlide(10)" id="pill-slide-10" class="slide-nav-pill px-1.5 lg:px-2 py-0.5 sm:py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap text-[10.5px] lg:text-[11px]">
-                <span>11. Guru &amp; TU</span>
+                <span>11. Piket</span>
             </button>
             <button type="button" onclick="goToSlide(11)" id="pill-slide-11" class="slide-nav-pill px-1.5 lg:px-2 py-0.5 sm:py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap text-[10.5px] lg:text-[11px]">
-                <span>12. Perpus</span>
+                <span>12. Berita</span>
             </button>
             <button type="button" onclick="goToSlide(12)" id="pill-slide-12" class="slide-nav-pill px-1.5 lg:px-2 py-0.5 sm:py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap text-[10.5px] lg:text-[11px]">
-                <span>13. BK</span>
+                <span>13. Agenda</span>
             </button>
             <button type="button" onclick="goToSlide(13)" id="pill-slide-13" class="slide-nav-pill px-1.5 lg:px-2 py-0.5 sm:py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap text-[10.5px] lg:text-[11px]">
                 <span>14. Tamu</span>
@@ -198,6 +288,11 @@
                 </button>
             </div>
 
+                        <!-- Theme Toggle Button (Dark / Light) -->
+            <button type="button" id="themeToggleBtn" onclick="toggleKioskTheme()" class="p-2 rounded-xl bg-slate-900/90 border border-white/10 hover:border-teal-500/50 text-slate-300 hover:text-white transition" title="Ganti Tema (Gelap / Terang)">
+                <span id="themeToggleIcon" class="text-sm">🌙</span>
+            </button>
+
             <!-- Fullscreen Button -->
             <button type="button" onclick="toggleFullscreen()" class="p-2 rounded-xl bg-slate-900/90 border border-white/10 hover:border-teal-500/50 text-slate-300 hover:text-white transition" title="Layar Penuh (F11)">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -222,674 +317,13 @@
     <main class="relative z-10 flex-1 min-h-0 w-full overflow-hidden p-2.5 sm:p-4 lg:p-5">
 
         <!-- ========================================================================= -->
-        <!-- SLIDE 0: PRESENSI KEHADIRAN SISWA TERPADU & JADWAL HARI INI              -->
+        <!-- SLIDE 0: PROFIL RESMI KELEMBAGAAN & KEPEMIMPINAN SMAN 1 LENGKONG -->
         <!-- ========================================================================= -->
-        <section id="slide-0" class="kiosk-slide h-full w-full flex flex-col justify-between overflow-hidden gap-3">
+        <section id="slide-0" class="kiosk-slide  h-full w-full flex-col justify-between overflow-hidden gap-3">
             <!-- Slide Title Header -->
             <div class="flex items-center justify-between shrink-0 pb-1 border-b border-white/5">
                 <div class="flex items-center gap-2">
                     <div class="w-7 h-7 rounded-lg bg-teal-500/20 text-teal-300 flex items-center justify-center font-black text-sm">01</div>
-                    <div>
-                        <h2 class="text-sm sm:text-base font-extrabold text-white flex items-center gap-2">
-                            <span>Presensi Kehadiran Harian &amp; Jadwal Sekolah</span>
-                        </h2>
-                        <p class="text-[11px] text-slate-400">Ringkasan kehadiran siswa real-time dan jadwal bel masuk-pulang hari ini</p>
-                    </div>
-                </div>
-                <div class="text-[11px] text-slate-400 font-mono hidden sm:flex items-center gap-1.5">
-                    <span class="w-2 h-2 rounded-full bg-teal-400 animate-ping"></span>
-                    <span>Sinkronisasi Otomatis 15s</span>
-                </div>
-            </div>
-
-            <!-- Slide Main Grid: Left Statistics & Schedule, Right Live Tap Feed -->
-            <div class="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-3 lg:gap-4 overflow-hidden">
-                <!-- Left Column: KPI Gauge & Status Breakdown & Bell Schedule (7 Cols) -->
-                <div class="lg:col-span-7 flex flex-col justify-between gap-3 min-h-0 overflow-hidden">
-                    <!-- Top Metric Cards Grid -->
-                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 shrink-0">
-                        <!-- Percentage Big Card -->
-                        <div class="col-span-2 sm:col-span-1 p-3 rounded-2xl glass-card border border-teal-500/30 flex flex-col justify-between glow-teal">
-                            <span class="text-[10px] font-bold text-teal-400 uppercase tracking-wider">Persentase Kehadiran</span>
-                            <div class="my-1 flex items-baseline gap-2">
-                                <span id="dailyPercentage" class="text-3xl sm:text-4xl font-black text-white font-mono">{{ $data['daily']['percentage'] }}%</span>
-                            </div>
-                            <div class="w-full bg-slate-900/80 rounded-full h-2 overflow-hidden border border-white/5">
-                                <div id="dailyPercentageBar" class="bg-gradient-to-r from-teal-400 to-emerald-400 h-full rounded-full transition-all duration-500" style="width: {{ $data['daily']['percentage'] }}%"></div>
-                            </div>
-                            <span class="text-[10px] text-slate-400 mt-1">Total <strong id="dailyTotalStudents" class="text-white">{{ $data['daily']['total_students'] }}</strong> Siswa Aktif</span>
-                        </div>
-
-                        <!-- Hadir & Terlambat -->
-                        <div class="p-3 rounded-2xl glass-card border border-emerald-500/20 flex flex-col justify-between">
-                            <div class="flex items-center justify-between">
-                                <span class="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">Hadir Tepat</span>
-                                <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-                            </div>
-                            <div class="my-1">
-                                <span id="countHadir" class="text-2xl sm:text-3xl font-black text-white font-mono">{{ $data['daily']['hadir'] }}</span>
-                                <span class="text-xs text-slate-400 font-sans">Siswa</span>
-                            </div>
-                            <span class="text-[10px] text-emerald-300/80 font-medium">Tepat Waktu</span>
-                        </div>
-
-                        <div class="p-3 rounded-2xl glass-card border border-amber-500/20 flex flex-col justify-between">
-                            <div class="flex items-center justify-between">
-                                <span class="text-[10px] font-bold text-amber-400 uppercase tracking-wider">Terlambat</span>
-                                <span class="w-2 h-2 rounded-full bg-amber-400"></span>
-                            </div>
-                            <div class="my-1">
-                                <span id="countTerlambat" class="text-2xl sm:text-3xl font-black text-amber-300 font-mono">{{ $data['daily']['terlambat'] }}</span>
-                                <span class="text-xs text-slate-400 font-sans">Siswa</span>
-                            </div>
-                            <span class="text-[10px] text-amber-300/80 font-medium">Dalam Batas Toleransi</span>
-                        </div>
-
-                        <!-- Izin, Sakit, Alpa -->
-                        <div class="p-2.5 rounded-xl glass-card border border-sky-500/20 flex items-center justify-between">
-                            <div>
-                                <span class="text-[10px] font-bold text-sky-400 uppercase block">Izin</span>
-                                <span id="countIzin" class="text-lg font-black text-white font-mono">{{ $data['daily']['izin'] }}</span>
-                            </div>
-                            <span class="text-lg">📄</span>
-                        </div>
-
-                        <div class="p-2.5 rounded-xl glass-card border border-indigo-500/20 flex items-center justify-between">
-                            <div>
-                                <span class="text-[10px] font-bold text-indigo-400 uppercase block">Sakit</span>
-                                <span id="countSakit" class="text-lg font-black text-white font-mono">{{ $data['daily']['sakit'] }}</span>
-                            </div>
-                            <span class="text-lg">💊</span>
-                        </div>
-
-                        <div class="p-2.5 rounded-xl glass-card border border-rose-500/20 flex items-center justify-between">
-                            <div>
-                                <span class="text-[10px] font-bold text-rose-400 uppercase block">Tanpa Keterangan (Alpa)</span>
-                                <span id="countAlpa" class="text-lg font-black text-rose-400 font-mono">{{ $data['daily']['alpa'] }}</span>
-                            </div>
-                            <span class="text-lg">⚠️</span>
-                        </div>
-                    </div>
-
-                    <!-- Bottom Schedule Information Card -->
-                    <div class="flex-1 min-h-0 p-3 sm:p-4 rounded-2xl glass-card border border-white/10 flex flex-col justify-between">
-                        <div class="flex items-center justify-between mb-2 pb-1.5 border-b border-white/5">
-                            <div class="flex items-center gap-2">
-                                <span class="text-base">⏰</span>
-                                <span class="text-xs font-bold text-white uppercase tracking-wider">Jadwal Presensi &amp; Jam Bel Hari Ini</span>
-                            </div>
-                            <span class="px-2 py-0.5 rounded-md text-[10px] font-bold {{ ($data['schedules']['presensi_utama']['is_holiday'] ?? false) ? 'bg-rose-500/20 text-rose-300' : 'bg-emerald-500/20 text-emerald-300' }}">
-                                {{ ($data['schedules']['presensi_utama']['is_holiday'] ?? false) ? 'HARI LIBUR' : 'HARI AKTIF SEKOLAH' }}
-                            </span>
-                        </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs">
-                            <div class="p-2 rounded-xl bg-slate-900/60 border border-white/5">
-                                <span class="text-[10px] text-slate-400 block font-bold">WAKTU MASUK</span>
-                                <span class="font-mono font-bold text-teal-300 text-sm">s.d. 06:30 WIB</span>
-                                <span class="text-[9px] text-slate-500 block mt-0.5">Tepat waktu</span>
-                            </div>
-                            <div class="p-2 rounded-xl bg-slate-900/60 border border-white/5">
-                                <span class="text-[10px] text-slate-400 block font-bold">BATAS TERLAMBAT</span>
-                                <span class="font-mono font-bold text-amber-300 text-sm">11:00 WIB</span>
-                                <span class="text-[9px] text-slate-500 block mt-0.5">Melewati batas = Alpa</span>
-                            </div>
-                            <div class="p-2 rounded-xl bg-slate-900/60 border border-white/5">
-                                <span class="text-[10px] text-slate-400 block font-bold">WAKTU PULANG</span>
-                                <span class="font-mono font-bold text-indigo-300 text-sm">15:00 - 21:00 WIB</span>
-                                <span class="text-[9px] text-slate-500 block mt-0.5">Presensi kepulangan siswa</span>
-                            </div>
-                        </div>
-
-                        <div class="mt-2 p-2 rounded-xl bg-teal-500/10 border border-teal-500/20 flex items-center justify-between text-[11px] text-teal-200">
-                            <span class="flex items-center gap-1.5 font-medium">
-                                <span>💡 Siswa belum tap presensi hingga batas waktu otomatis tersinkronisasi sebagai Alpa.</span>
-                            </span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Right Column: Live Tap Feed (5 Cols) -->
-                <div class="lg:col-span-5 flex flex-col h-full min-h-0 rounded-2xl glass-panel border border-white/10 p-3 sm:p-4 overflow-hidden shadow-xl">
-                    <div class="flex items-center justify-between pb-2 mb-2 border-b border-white/10 shrink-0">
-                        <div class="flex items-center gap-2">
-                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-                            <span class="text-xs font-black text-white uppercase tracking-wider">Aktivitas Presensi Terkini</span>
-                        </div>
-                        <span class="text-[10px] text-slate-400 font-mono">Live Tap Log</span>
-                    </div>
-
-                    <div id="dailyRecentLogs" class="flex-1 min-h-0 overflow-y-auto kiosk-scroll space-y-2 pr-1">
-                        @forelse($data['daily']['recent'] as $rec)
-                            <div class="bg-slate-900/70 border border-white/5 rounded-xl px-3 py-2 flex items-center justify-between hover:border-teal-500/30 transition">
-                                <div class="flex items-center gap-2.5 truncate mr-2">
-                                    <div class="w-7 h-7 rounded-lg bg-teal-500/20 text-teal-300 flex items-center justify-center font-bold text-xs shrink-0">
-                                        {{ substr($rec['name'], 0, 1) }}
-                                    </div>
-                                    <div class="truncate">
-                                        <div class="font-bold text-xs text-white truncate">{{ $rec['name'] }}</div>
-                                        <div class="text-[10px] text-slate-400 truncate">{{ $rec['class'] }} &bull; {{ $rec['method'] }}</div>
-                                    </div>
-                                </div>
-                                <div class="flex items-center gap-2 shrink-0">
-                                    <span class="px-2 py-0.5 rounded text-[10px] font-black {{ $rec['status'] === 'HADIR' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-amber-500/20 text-amber-300 border border-amber-500/30' }}">
-                                        {{ $rec['status'] }}
-                                    </span>
-                                    <span class="text-[11px] font-mono font-bold text-slate-300">{{ $rec['time'] }}</span>
-                                </div>
-                            </div>
-                        @empty
-                            <div class="h-full flex items-center justify-center text-slate-500 text-xs italic">
-                                Belum ada aktivitas presensi masuk hari ini.
-                            </div>
-                        @endforelse
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ========================================================================= -->
-        <!-- SLIDE 1: PRESENSI IBADAH BERJAMAAH & KARAKTER 7 KAIH                       -->
-        <!-- ========================================================================= -->
-        <section id="slide-1" class="kiosk-slide hidden h-full w-full flex flex-col justify-between overflow-hidden gap-3">
-            <!-- Slide Title Header -->
-            <div class="flex items-center justify-between shrink-0 pb-1 border-b border-white/5">
-                <div class="flex items-center gap-2">
-                    <div class="w-7 h-7 rounded-lg bg-indigo-500/20 text-indigo-300 flex items-center justify-center font-black text-sm">02</div>
-                    <div>
-                        <h2 class="text-sm sm:text-base font-extrabold text-white flex items-center gap-2">
-                            <span>Presensi Ibadah Berjamaah &amp; 7 Kebiasaan Anak Indonesia Hebat</span>
-                        </h2>
-                        <p class="text-[11px] text-slate-400">Monitoring Shalat Dhuha, Shalat Dzuhur, Presensi Keputrian, dan pembiasaan karakter 7 KAIH</p>
-                    </div>
-                </div>
-                <div class="text-[11px] text-slate-400 font-mono hidden sm:flex items-center gap-1.5">
-                    <span class="w-2 h-2 rounded-full bg-indigo-400 animate-ping"></span>
-                    <span>Sesi Ibadah Terjadwal</span>
-                </div>
-            </div>
-
-            <!-- Top Grid: 3 Worship Panels (Dhuha, Dzuhur, Keputrian) -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 shrink-0">
-                <!-- Card 1: Shalat Dhuha Bersama -->
-                <div class="p-3 sm:p-3.5 rounded-2xl glass-card border border-teal-500/30 flex flex-col justify-between">
-                    <div class="flex items-center justify-between mb-1.5">
-                        <div class="flex items-center gap-2">
-                            <span class="text-base">🕌</span>
-                            <h3 class="text-xs font-bold text-white uppercase tracking-wider">Shalat Dhuha Bersama</h3>
-                        </div>
-                        <span id="dhuhaStatusBadge" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black {{ $data['dhuha']['is_open'] ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 animate-pulse' : 'bg-slate-800 text-slate-400 border border-white/10' }}">
-                            {{ $data['dhuha']['is_open'] ? 'SESI BUKA' : 'SESI TUTUP' }}
-                        </span>
-                    </div>
-                    <div class="flex items-baseline justify-between my-1">
-                        <span class="text-[10px] text-slate-400">{{ $data['dhuha']['schedule'] }}</span>
-                        <div class="text-right">
-                            <span id="dhuhaTotalToday" class="text-xl sm:text-2xl font-black text-teal-300 font-mono">{{ $data['dhuha']['total_today'] }}</span>
-                            <span class="text-[10px] text-slate-400">Jamaah</span>
-                        </div>
-                    </div>
-                    <div id="dhuhaRecentLogs" class="max-h-24 overflow-y-auto kiosk-scroll space-y-1.5 mt-1 border-t border-white/5 pt-1.5">
-                        @forelse(collect($data['dhuha']['recent'])->take(3) as $dw)
-                            <div class="text-[11px] flex items-center justify-between text-slate-300 bg-slate-900/50 px-2 py-1 rounded-lg">
-                                <span class="truncate mr-2 font-medium">{{ $dw['name'] }} <span class="text-slate-500">({{ $dw['class'] }})</span></span>
-                                <span class="font-mono text-teal-400 shrink-0">{{ $dw['time'] }}</span>
-                            </div>
-                        @empty
-                            <div class="text-slate-500 text-[10px] italic py-1">Belum ada jamaah dhuha yang tercatat.</div>
-                        @endforelse
-                    </div>
-                </div>
-
-                <!-- Card 2: Shalat Dzuhur / Jum'at Berjamaah -->
-                <div class="p-3 sm:p-3.5 rounded-2xl glass-card border border-indigo-500/30 flex flex-col justify-between">
-                    <div class="flex items-center justify-between mb-1.5">
-                        <div class="flex items-center gap-2">
-                            <span class="text-base">🕌</span>
-                            <h3 class="text-xs font-bold text-white uppercase tracking-wider">Shalat Dzuhur / Jum'at</h3>
-                        </div>
-                        <span id="dzuhurStatusBadge" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black {{ $data['dzuhur']['is_open'] ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 animate-pulse' : 'bg-slate-800 text-slate-400 border border-white/10' }}">
-                            {{ $data['dzuhur']['is_open'] ? 'SESI BUKA' : 'SESI TUTUP' }}
-                        </span>
-                    </div>
-                    <div class="flex items-baseline justify-between my-1">
-                        <span class="text-[10px] text-slate-400">{{ $data['dzuhur']['schedule'] }}</span>
-                        <div class="text-right">
-                            <span id="dzuhurTotalToday" class="text-xl sm:text-2xl font-black text-indigo-300 font-mono">{{ $data['dzuhur']['total_today'] }}</span>
-                            <span class="text-[10px] text-slate-400">Jamaah</span>
-                        </div>
-                    </div>
-                    <div id="dzuhurRecentLogs" class="max-h-24 overflow-y-auto kiosk-scroll space-y-1.5 mt-1 border-t border-white/5 pt-1.5">
-                        @forelse(collect($data['dzuhur']['recent'])->take(3) as $dz)
-                            <div class="text-[11px] flex items-center justify-between text-slate-300 bg-slate-900/50 px-2 py-1 rounded-lg">
-                                <span class="truncate mr-2 font-medium">{{ $dz['name'] }} <span class="text-slate-500">({{ $dz['class'] }})</span></span>
-                                <span class="font-mono text-indigo-400 shrink-0">{{ $dz['time'] }}</span>
-                            </div>
-                        @empty
-                            <div class="text-slate-500 text-[10px] italic py-1">Belum ada jamaah dzuhur yang tercatat.</div>
-                        @endforelse
-                    </div>
-                </div>
-
-                <!-- Card 3: Presensi Keputrian -->
-                <div class="p-3 sm:p-3.5 rounded-2xl glass-card border border-rose-500/30 flex flex-col justify-between">
-                    <div class="flex items-center justify-between mb-1.5">
-                        <div class="flex items-center gap-2">
-                            <span class="text-base">✨</span>
-                            <h3 class="text-xs font-bold text-white uppercase tracking-wider">Presensi Keputrian</h3>
-                        </div>
-                        <span id="keputrianStatusBadge" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black {{ $data['keputrian']['is_open'] ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 animate-pulse' : 'bg-slate-800 text-slate-400 border border-white/10' }}">
-                            {{ $data['keputrian']['is_open'] ? 'SESI BUKA' : 'SESI TUTUP' }}
-                        </span>
-                    </div>
-                    <div class="flex items-baseline justify-between my-1">
-                        <span class="text-[10px] text-slate-400">{{ $data['keputrian']['schedule'] }}</span>
-                        <div class="text-right">
-                            <span id="keputrianTotalToday" class="text-xl sm:text-2xl font-black text-rose-300 font-mono">{{ $data['keputrian']['total_today'] }}</span>
-                            <span class="text-[10px] text-slate-400">Siswi</span>
-                        </div>
-                    </div>
-                    <div id="keputrianRecentLogs" class="max-h-24 overflow-y-auto kiosk-scroll space-y-1.5 mt-1 border-t border-white/5 pt-1.5">
-                        @forelse(collect($data['keputrian']['recent'])->take(3) as $kp)
-                            <div class="text-[11px] flex items-center justify-between text-slate-300 bg-slate-900/50 px-2 py-1 rounded-lg">
-                                <span class="truncate mr-2 font-medium">{{ $kp['name'] }} <span class="text-slate-500">({{ $kp['class'] }})</span></span>
-                                <span class="font-mono text-rose-400 shrink-0">{{ $kp['time'] }}</span>
-                            </div>
-                        @empty
-                            <div class="text-slate-500 text-[10px] italic py-1">Belum ada kehadiran keputrian yang tercatat.</div>
-                        @endforelse
-                    </div>
-                </div>
-            </div>
-
-            <!-- Bottom Panel: 7 Kebiasaan Anak Indonesia Hebat (7 KAIH) -->
-            <div class="flex-1 min-h-0 rounded-2xl glass-panel border border-white/10 p-3 sm:p-4 flex flex-col justify-between overflow-hidden shadow-xl">
-                <div class="flex items-center justify-between pb-2 mb-2 border-b border-white/10 shrink-0">
-                    <div class="flex items-center gap-2">
-                        <span class="text-lg">🌟</span>
-                        <div>
-                            <h3 class="text-xs sm:text-sm font-extrabold text-white uppercase tracking-wider">
-                                Pembiasaan Karakter &bull; 7 Kebiasaan Anak Indonesia Hebat (7 KAIH)
-                            </h3>
-                            <p class="text-[10px] text-slate-400">Pencatatan pembiasaan harian siswa untuk membangun profil pelajar berintegritas</p>
-                        </div>
-                    </div>
-                    <div class="text-right">
-                        <span id="habitsCompletedToday" class="text-sm font-black text-emerald-400 font-mono">{{ $data['habits']['completed_today'] ?? 0 }}</span>
-                        <span class="text-[10px] text-slate-400 block">Aktivitas Terisi Hari Ini</span>
-                    </div>
-                </div>
-
-                <!-- 7 Habits Horizontal Cards Grid -->
-                <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2.5 flex-1 min-h-0 overflow-y-auto kiosk-scroll">
-                    @foreach($data['habits']['list'] as $hb)
-                        <div class="p-2.5 rounded-xl bg-slate-900/70 border border-white/5 flex flex-col justify-between hover:border-teal-500/40 transition">
-                            <div class="flex items-center justify-between">
-                                <span class="text-lg">{{ $hb['icon'] }}</span>
-                                <span class="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-white/5 text-slate-400">#{{ $hb['order'] }}</span>
-                            </div>
-                            <div class="my-1">
-                                <h4 class="text-xs font-bold text-white truncate">{{ $hb['name'] }}</h4>
-                                <p class="text-[9px] text-slate-400 line-clamp-1">{{ $hb['tagline'] }}</p>
-                            </div>
-                            <div class="pt-1.5 border-t border-white/5 flex items-center justify-between text-[10px]">
-                                <span class="text-slate-500">Hari ini:</span>
-                                <span class="font-bold text-emerald-400 font-mono">+{{ $hb['completed'] }}</span>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-        </section>
-
-        <!-- ========================================================================= -->
-        <!-- SLIDE 2: BUKU KONTROL DIGITAL TAHFIDZ AL-QUR'AN JUZ 30                    -->
-        <!-- ========================================================================= -->
-        <section id="slide-2" class="kiosk-slide hidden h-full w-full flex flex-col justify-between overflow-hidden gap-3">
-            <!-- Slide Title Header -->
-            <div class="flex items-center justify-between shrink-0 pb-1 border-b border-white/5">
-                <div class="flex items-center gap-2">
-                    <div class="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-300 flex items-center justify-center font-black text-sm">03</div>
-                    <div>
-                        <h2 class="text-sm sm:text-base font-extrabold text-white flex items-center gap-2">
-                            <span>Buku Kontrol Digital: Setor Hafalan Juz 30 Al-Qur'an</span>
-                        </h2>
-                        <p class="text-[11px] text-slate-400">Target kelulusan surat per jenjang kelas X, XI, XII dan santri dengan capaian terbaik</p>
-                    </div>
-                </div>
-                <div class="flex items-center gap-3 text-xs font-mono">
-                    <span class="px-2.5 py-1 rounded-lg bg-slate-900 border border-white/10 text-slate-300">
-                        Setoran Hari Ini: <strong id="tahfidzTotalToday" class="text-emerald-400">{{ $data['tahfidz']['total_today'] }}</strong>
-                    </span>
-                    <span class="px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-300">
-                        Lulus Hari Ini: <strong id="tahfidzPassedToday" class="text-white">{{ $data['tahfidz']['passed_today'] }}</strong>
-                    </span>
-                </div>
-            </div>
-
-            <!-- Main Content: Left 3 Grade Target & Top Students Columns, Right Recent Feed -->
-            <div class="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-3 lg:gap-4 overflow-hidden">
-                <!-- Left 3 Grade Cards (8 Cols) -->
-                <div class="lg:col-span-8 grid grid-cols-1 md:grid-cols-3 gap-3 min-h-0 overflow-hidden">
-                    @foreach(['X' => ['target' => 'An-Nas s.d At-Takatsur (13 Surat)', 'color' => 'teal'], 'XI' => ['target' => 'Al-Qari\'ah s.d An-Nazi\'at (23 Surat)', 'color' => 'indigo'], 'XII' => ['target' => 'Surat An-Naba\' (Target Utama)', 'color' => 'emerald']] as $grd => $gcfg)
-                        <div class="rounded-2xl glass-panel border border-{{ $gcfg['color'] }}-500/30 p-3 sm:p-3.5 flex flex-col justify-between overflow-hidden shadow-lg">
-                            <div class="pb-2 border-b border-white/10 shrink-0">
-                                <div class="flex items-center justify-between">
-                                    <span class="px-2 py-0.5 rounded-md text-[10px] font-black bg-{{ $gcfg['color'] }}-500/20 text-{{ $gcfg['color'] }}-300 border border-{{ $gcfg['color'] }}-500/40">
-                                        KELAS {{ $grd }}
-                                    </span>
-                                    <span class="text-[10px] text-slate-400 font-mono">Target {{ $data['tahfidz']['rankings'][$grd]['total_target'] ?? 0 }} Surat</span>
-                                </div>
-                                <div class="text-[11px] text-slate-300 font-semibold mt-1 truncate">{{ $gcfg['target'] }}</div>
-                            </div>
-
-                            <!-- Top Students List per Grade -->
-                            <div id="tahfidzRankList{{ $grd }}" class="flex-1 min-h-0 overflow-y-auto kiosk-scroll space-y-2 my-2 pr-1">
-                                @forelse($data['tahfidz']['rankings'][$grd]['students'] ?? [] as $st)
-                                    <div class="rounded-xl px-2.5 py-2 flex items-center justify-between border {{ $st['rank'] === 1 ? 'bg-emerald-500/10 border-emerald-500/40 text-emerald-200' : 'bg-slate-900/60 border-white/5 text-slate-200' }}">
-                                        <div class="flex items-center gap-2 truncate mr-2">
-                                            <span class="w-5 h-5 rounded-md flex items-center justify-center text-[10px] font-black {{ $st['rank'] === 1 ? 'bg-emerald-500 text-slate-950' : 'bg-slate-800 text-slate-400' }}">
-                                                {{ $st['rank'] }}
-                                            </span>
-                                            <div class="truncate">
-                                                <div class="font-bold text-xs text-white truncate">{{ $st['name'] }}</div>
-                                                <div class="text-[9px] text-slate-400 truncate">{{ $st['class'] }} &bull; {{ $st['badge'] }}</div>
-                                            </div>
-                                        </div>
-                                        <div class="text-right shrink-0">
-                                            <span class="text-xs font-black text-emerald-300 font-mono">{{ $st['lulus_count'] }} <span class="text-[9px] font-sans text-slate-400">/ {{ $st['total_target'] }}</span></span>
-                                            <div class="text-[9px] text-emerald-400 font-bold">{{ $st['pct'] }}%</div>
-                                        </div>
-                                    </div>
-                                @empty
-                                    <div class="h-full flex items-center justify-center text-center text-slate-500 text-xs italic py-4">
-                                        Belum ada data capaian hafalan kelas {{ $grd }}.
-                                    </div>
-                                @endforelse
-                            </div>
-
-                            <div class="text-[10px] text-slate-400 text-center pt-1 border-t border-white/5 shrink-0">
-                                Evaluasi Tajwid, Makhraj &amp; Kelancaran
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-
-                <!-- Right Recent Setoran Tahfidz Feed (4 Cols) -->
-                <div class="lg:col-span-4 rounded-2xl glass-panel border border-white/10 p-3 sm:p-4 flex flex-col justify-between overflow-hidden shadow-xl">
-                    <div class="flex items-center justify-between pb-2 mb-2 border-b border-white/10 shrink-0">
-                        <div class="flex items-center gap-2">
-                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-                            <span class="text-xs font-black text-white uppercase tracking-wider">Setoran Hafalan Terkini</span>
-                        </div>
-                        <span class="text-[10px] text-slate-400 font-mono">Buku Kontrol</span>
-                    </div>
-
-                    <div id="tahfidzRecentLogs" class="flex-1 min-h-0 overflow-y-auto kiosk-scroll space-y-2 pr-1">
-                        @forelse($data['tahfidz']['recent'] as $rec)
-                            <div class="bg-slate-900/70 border border-white/5 rounded-xl px-3 py-2 flex items-center justify-between hover:border-emerald-500/30 transition">
-                                <div class="truncate mr-2">
-                                    <div class="font-bold text-xs text-white truncate">{{ $rec['name'] }} <span class="text-slate-400 font-normal">({{ $rec['class'] }})</span></div>
-                                    <div class="text-[10px] text-emerald-300 font-semibold">{{ $rec['surah'] }}</div>
-                                    <div class="text-[9px] text-slate-400">Tajwid: {{ $rec['tajwid'] }} &bull; Kelancaran: {{ $rec['kelancaran'] }}</div>
-                                </div>
-                                <div class="text-right shrink-0">
-                                    <span class="px-2 py-0.5 rounded text-[10px] font-black {{ $rec['grade'] === 'Lulus' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-amber-500/20 text-amber-300 border border-amber-500/30' }}">
-                                        {{ $rec['grade'] }}
-                                    </span>
-                                    <div class="text-[10px] text-slate-400 mt-1 font-mono">{{ $rec['time'] }}</div>
-                                </div>
-                            </div>
-                        @empty
-                            <div class="h-full flex items-center justify-center text-slate-500 text-xs italic">
-                                Belum ada riwayat setoran hafalan hari ini.
-                            </div>
-                        @endforelse
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ========================================================================= -->
-        <!-- SLIDE 3: HALL OF FAME — TOP 10 RANKING POIN PRESTASI POSITIF SISWA       -->
-        <!-- ========================================================================= -->
-        <section id="slide-3" class="kiosk-slide hidden h-full w-full flex flex-col justify-between overflow-hidden gap-3">
-            <!-- Slide Title Header -->
-            <div class="flex items-center justify-between shrink-0 pb-1 border-b border-white/5">
-                <div class="flex items-center gap-2">
-                    <div class="w-7 h-7 rounded-lg bg-yellow-500/20 text-yellow-300 flex items-center justify-center font-black text-sm">04</div>
-                    <div>
-                        <h2 class="text-sm sm:text-base font-extrabold text-white flex items-center gap-2">
-                            <span>Hall of Fame: Ranking Poin Prestasi Positif Siswa</span>
-                        </h2>
-                        <p class="text-[11px] text-slate-400">Papan apresiasi dan kehormatan siswa dengan akumulasi poin prestasi tertinggi</p>
-                    </div>
-                </div>
-                <div class="text-[11px] text-yellow-300 font-mono hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-yellow-500/10 border border-yellow-500/30">
-                    <span>🏆 Reward &amp; Prestasi Terverifikasi</span>
-                </div>
-            </div>
-
-            <!-- Main Podium & Leaderboard View -->
-            <div class="flex-1 min-h-0 flex flex-col justify-between gap-3 overflow-hidden">
-                <!-- Top 3 Grand Stage Podium -->
-                <div class="grid grid-cols-3 gap-3 sm:gap-4 shrink-0">
-                    @php
-                        $top1 = $data['ranking'][0] ?? null;
-                        $top2 = $data['ranking'][1] ?? null;
-                        $top3 = $data['ranking'][2] ?? null;
-                    @endphp
-
-                    <!-- Rank 2 (Silver) -->
-                    <div class="p-3 sm:p-4 rounded-2xl glass-card border border-slate-300/30 flex flex-col items-center text-center justify-between order-1 shadow-lg">
-                        <div class="w-7 h-7 rounded-full bg-slate-300 text-slate-950 font-black text-xs flex items-center justify-center shadow-md">2</div>
-                        <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-tr from-slate-400 to-slate-200 p-0.5 my-1.5 shadow-md">
-                            <div class="w-full h-full bg-slate-900 rounded-[14px] flex items-center justify-center font-black text-lg text-slate-200">
-                                {{ $top2 ? substr($top2['name'], 0, 2) : '--' }}
-                            </div>
-                        </div>
-                        <h4 class="text-xs sm:text-sm font-bold text-white truncate max-w-full">{{ $top2['name'] ?? 'Belum Ada' }}</h4>
-                        <span class="text-[10px] text-slate-400">{{ $top2['class'] ?? '-' }}</span>
-                        <div class="mt-1 px-3 py-0.5 rounded-full bg-slate-300/20 text-slate-200 font-mono font-black text-xs sm:text-sm">
-                            +{{ $top2['points'] ?? 0 }} Poin
-                        </div>
-                    </div>
-
-                    <!-- Rank 1 (Gold) - Higher & Glowing -->
-                    <div class="p-3 sm:p-4 rounded-2xl glass-panel border border-yellow-500/60 flex flex-col items-center text-center justify-between order-2 glow-gold scale-102">
-                        <span class="text-xl sm:text-2xl animate-bounce">👑</span>
-                        <div class="w-14 h-14 sm:w-18 sm:h-18 rounded-2xl bg-gradient-to-tr from-yellow-400 via-amber-300 to-yellow-500 p-1 my-1 shadow-xl shadow-yellow-500/30">
-                            <div class="w-full h-full bg-slate-900 rounded-[14px] flex items-center justify-center font-black text-xl sm:text-2xl text-yellow-300">
-                                {{ $top1 ? substr($top1['name'], 0, 2) : '--' }}
-                            </div>
-                        </div>
-                        <h4 class="text-sm sm:text-base font-black text-white truncate max-w-full">{{ $top1['name'] ?? 'Belum Ada' }}</h4>
-                        <span class="text-[10px] sm:text-xs text-yellow-200/90 font-semibold">{{ $top1['class'] ?? '-' }} &bull; {{ $top1['achievements_count'] ?? 0 }} Prestasi</span>
-                        <div class="mt-1 px-4 py-1 rounded-full bg-gradient-to-r from-yellow-500 to-amber-500 text-slate-950 font-mono font-black text-sm sm:text-base shadow-lg">
-                            +{{ $top1['points'] ?? 0 }} POIN
-                        </div>
-                    </div>
-
-                    <!-- Rank 3 (Bronze) -->
-                    <div class="p-3 sm:p-4 rounded-2xl glass-card border border-amber-600/30 flex flex-col items-center text-center justify-between order-3 shadow-lg">
-                        <div class="w-7 h-7 rounded-full bg-amber-600 text-white font-black text-xs flex items-center justify-center shadow-md">3</div>
-                        <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-tr from-amber-600 to-amber-400 p-0.5 my-1.5 shadow-md">
-                            <div class="w-full h-full bg-slate-900 rounded-[14px] flex items-center justify-center font-black text-lg text-amber-300">
-                                {{ $top3 ? substr($top3['name'], 0, 2) : '--' }}
-                            </div>
-                        </div>
-                        <h4 class="text-xs sm:text-sm font-bold text-white truncate max-w-full">{{ $top3['name'] ?? 'Belum Ada' }}</h4>
-                        <span class="text-[10px] text-slate-400">{{ $top3['class'] ?? '-' }}</span>
-                        <div class="mt-1 px-3 py-0.5 rounded-full bg-amber-600/20 text-amber-300 font-mono font-black text-xs sm:text-sm">
-                            +{{ $top3['points'] ?? 0 }} Poin
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Ranks 4 to 10 Horizontal Grid -->
-                <div class="flex-1 min-h-0 rounded-2xl glass-card border border-white/10 p-3 flex flex-col justify-between overflow-hidden">
-                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 block shrink-0">Peringkat 4 s.d. 10 Poin Prestasi Sekolah</span>
-                    <div id="rankingList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 flex-1 min-h-0 overflow-y-auto kiosk-scroll pr-1">
-                        @forelse(collect($data['ranking'])->slice(3, 8) as $rk)
-                            <div class="rounded-xl px-3 py-2 bg-slate-900/60 border border-white/5 flex items-center justify-between">
-                                <div class="flex items-center gap-2 truncate mr-2">
-                                    <span class="w-5 h-5 rounded-md bg-slate-800 text-slate-400 flex items-center justify-center text-[10px] font-bold">
-                                        {{ $rk['rank'] }}
-                                    </span>
-                                    <div class="truncate">
-                                        <div class="font-bold text-xs text-white truncate">{{ $rk['name'] }}</div>
-                                        <div class="text-[9px] text-slate-400 truncate">{{ $rk['class'] }}</div>
-                                    </div>
-                                </div>
-                                <span class="font-mono font-black text-xs text-yellow-400 shrink-0">+{{ $rk['points'] }}</span>
-                            </div>
-                        @empty
-                            <div class="col-span-full text-center text-slate-500 text-xs italic py-2">
-                                Belum ada data prestasi lainnya.
-                            </div>
-                        @endforelse
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ========================================================================= -->
-        <!-- SLIDE 4: KETERTIBAN SEKOLAH, PETUGAS PIKET & MONITORING POS SATPAM       -->
-        <!-- ========================================================================= -->
-        <section id="slide-4" class="kiosk-slide hidden h-full w-full flex flex-col justify-between overflow-hidden gap-3">
-            <!-- Slide Title Header -->
-            <div class="flex items-center justify-between shrink-0 pb-1 border-b border-white/5">
-                <div class="flex items-center gap-2">
-                    <div class="w-7 h-7 rounded-lg bg-sky-500/20 text-sky-300 flex items-center justify-center font-black text-sm">05</div>
-                    <div>
-                        <h2 class="text-sm sm:text-base font-extrabold text-white flex items-center gap-2">
-                            <span>Ketertiban Sekolah, Petugas Piket &amp; Monitoring Pos Satpam</span>
-                        </h2>
-                        <p class="text-[11px] text-slate-400">Jadwal guru/staf piket hari ini dan monitoring perizinan siswa di pos gerbang sekolah</p>
-                    </div>
-                </div>
-                <div class="text-[11px] text-sky-300 font-mono hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-sky-500/10 border border-sky-500/30">
-                    <span>🛡️ Keamanan &amp; Ketertiban Terpadu</span>
-                </div>
-            </div>
-
-            <!-- Main Grid: Left Duty Pickets, Right Security & Exit Permits -->
-            <div class="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-3 lg:gap-4 overflow-hidden">
-                <!-- Left Column: Picket Schedule (6 Cols) -->
-                <div class="lg:col-span-6 rounded-2xl glass-panel border border-white/10 p-3 sm:p-4 flex flex-col justify-between overflow-hidden shadow-xl">
-                    <div class="flex items-center justify-between pb-2 mb-2 border-b border-white/10 shrink-0">
-                        <div class="flex items-center gap-2">
-                            <span class="text-base">📋</span>
-                            <h3 class="text-xs sm:text-sm font-extrabold text-white uppercase tracking-wider">
-                                Petugas Piket Hari Ini ({{ $data['picket']['day_name'] ?? 'Aktif' }})
-                            </h3>
-                        </div>
-                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-teal-500/20 text-teal-300">
-                            {{ $data['picket']['total'] ?? 0 }} Petugas Bertugas
-                        </span>
-                    </div>
-
-                    <div id="picketOfficersList" class="flex-1 min-h-0 overflow-y-auto kiosk-scroll space-y-2 pr-1">
-                        @forelse($data['picket']['officers'] as $pk)
-                            <div class="p-2.5 rounded-xl bg-slate-900/70 border border-white/5 flex items-center justify-between hover:border-teal-500/30 transition">
-                                <div class="flex items-center gap-2.5 truncate mr-2">
-                                    <div class="w-8 h-8 rounded-xl bg-teal-500/20 text-teal-300 flex items-center justify-center font-bold text-xs shrink-0">
-                                        {{ substr($pk['name'], 0, 2) }}
-                                    </div>
-                                    <div class="truncate">
-                                        <div class="font-bold text-xs text-white truncate">{{ $pk['name'] }}</div>
-                                        <div class="text-[10px] text-slate-400 truncate">NIP: {{ $pk['nip'] }} &bull; {{ $pk['location'] }}</div>
-                                    </div>
-                                </div>
-                                <div class="text-right shrink-0">
-                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-800 text-teal-300 border border-teal-500/20">
-                                        {{ $pk['role_type'] }}
-                                    </span>
-                                    <div class="text-[9px] text-slate-400 mt-1 font-mono">{{ $pk['time'] }}</div>
-                                </div>
-                            </div>
-                        @empty
-                            <div class="h-full flex items-center justify-center text-slate-500 text-xs italic py-6">
-                                Belum ada petugas piket yang terjadwal untuk hari ini.
-                            </div>
-                        @endforelse
-                    </div>
-
-                    <div class="mt-2 pt-2 border-t border-white/5 text-[10px] text-slate-400 flex items-center justify-between shrink-0">
-                        <span>Standby di Pos Piket Lobi Utama &amp; Pos Gerbang</span>
-                        <span class="font-mono text-teal-400">SMAN 1 Lengkong</span>
-                    </div>
-                </div>
-
-                <!-- Right Column: Security Gate & Permits Monitoring (6 Cols) -->
-                <div class="lg:col-span-6 rounded-2xl glass-panel border border-white/10 p-3 sm:p-4 flex flex-col justify-between overflow-hidden shadow-xl">
-                    <div class="flex items-center justify-between pb-2 mb-2 border-b border-white/10 shrink-0">
-                        <div class="flex items-center gap-2">
-                            <span class="text-base">🛡️</span>
-                            <h3 class="text-xs sm:text-sm font-extrabold text-white uppercase tracking-wider">
-                                Monitoring Pos Satpam &amp; Perizinan Siswa
-                            </h3>
-                        </div>
-                        <span class="text-[10px] text-slate-400 font-mono">Gerbang Sekolah</span>
-                    </div>
-
-                    <!-- 3 Security Metric Badges -->
-                    <div class="grid grid-cols-3 gap-2 shrink-0 mb-2">
-                        <div class="p-2 rounded-xl bg-amber-500/10 border border-amber-500/20 text-center">
-                            <span class="text-[9px] text-amber-300 font-bold block uppercase">Di Luar Kampus</span>
-                            <span id="securityOutsideCount" class="text-lg font-black text-white font-mono">{{ $data['security']['currently_outside'] ?? 0 }}</span>
-                            <span class="text-[9px] text-slate-400 block">Siswa</span>
-                        </div>
-                        <div class="p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-center">
-                            <span class="text-[9px] text-emerald-300 font-bold block uppercase">Sudah Kembali</span>
-                            <span id="securityReturnedCount" class="text-lg font-black text-white font-mono">{{ $data['security']['returned'] ?? 0 }}</span>
-                            <span class="text-[9px] text-slate-400 block">Siswa</span>
-                        </div>
-                        <div class="p-2 rounded-xl bg-sky-500/10 border border-sky-500/20 text-center">
-                            <span class="text-[9px] text-sky-300 font-bold block uppercase">Pulang Cepat</span>
-                            <span id="securityEarlyLeavesCount" class="text-lg font-black text-white font-mono">{{ $data['security']['early_leaves_count'] ?? 0 }}</span>
-                            <span class="text-[9px] text-slate-400 block">Disetujui</span>
-                        </div>
-                    </div>
-
-                    <!-- Recent Permits Feed -->
-                    <div id="securityRecentPermits" class="flex-1 min-h-0 overflow-y-auto kiosk-scroll space-y-2 pr-1">
-                        @forelse($data['security']['recent'] as $pm)
-                            <div class="p-2 rounded-xl bg-slate-900/70 border border-white/5 flex items-center justify-between text-xs">
-                                <div class="truncate mr-2">
-                                    <div class="font-bold text-white truncate">{{ $pm['students'] }}</div>
-                                    <div class="text-[10px] text-slate-400 truncate">{{ $pm['purpose'] }}</div>
-                                </div>
-                                <div class="text-right shrink-0">
-                                    <span class="px-2 py-0.5 rounded text-[9px] font-black {{ $pm['status'] === 'SUDAH KEMBALI' ? 'bg-emerald-500/20 text-emerald-300' : ($pm['status'] === 'DI LUAR SEKOLAH' ? 'bg-amber-500/20 text-amber-300' : 'bg-sky-500/20 text-sky-300') }}">
-                                        {{ $pm['status'] }}
-                                    </span>
-                                    <div class="text-[9px] text-slate-400 mt-0.5 font-mono">{{ $pm['time'] }}</div>
-                                </div>
-                            </div>
-                        @empty
-                            <div class="h-full flex items-center justify-center text-slate-500 text-xs italic py-4">
-                                Tidak ada siswa berizin keluar atau pulang cepat hari ini.
-                            </div>
-                        @endforelse
-                    </div>
-
-                    <div class="mt-2 pt-2 border-t border-white/5 text-[10px] text-slate-400 flex items-center justify-between shrink-0">
-                        <span>Pemeriksaan ketat surat izin bermaterai/QR oleh satpam</span>
-                        <a href="{{ route('attendance.kiosk-satpam') }}" target="_blank" class="text-teal-400 hover:underline">Buka Kios Satpam &rarr;</a>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ========================================================================= -->
-        <!-- SLIDE 5: IDENTITAS RESMI, PROFIL & KEPEMIMPINAN SMAN 1 LENGKONG           -->
-        <!-- ========================================================================= -->
-        <section id="slide-5" class="kiosk-slide hidden h-full w-full flex-col justify-between overflow-hidden gap-3">
-            <!-- Slide Title Header -->
-            <div class="flex items-center justify-between shrink-0 pb-1 border-b border-white/5">
-                <div class="flex items-center gap-2">
-                    <div class="w-7 h-7 rounded-lg bg-teal-500/20 text-teal-300 flex items-center justify-center font-black text-sm">06</div>
                     <div>
                         <h2 class="text-sm sm:text-base font-extrabold text-white flex items-center gap-2">
                             <span>Profil Resmi Kelembagaan &amp; Kepemimpinan Sekolah</span>
@@ -1058,218 +492,146 @@
         </section>
 
         <!-- ========================================================================= -->
-        <!-- SLIDE 6: PRESENSI & PEMBINAAN EKSTRAKURIKULER SISWA                       -->
+        <!-- SLIDE 1: DIREKTORI DEWAN GURU & TENAGA KEPENDIDIKAN -->
         <!-- ========================================================================= -->
-        <section id="slide-6" class="kiosk-slide hidden h-full w-full flex-col justify-between overflow-hidden gap-3">
+        <section id="slide-1" class="kiosk-slide h-full w-full hidden flex-col justify-between overflow-hidden gap-3">
             <!-- Slide Title Header -->
             <div class="flex items-center justify-between shrink-0 pb-1 border-b border-white/5">
                 <div class="flex items-center gap-2">
-                    <div class="w-7 h-7 rounded-lg bg-purple-500/20 text-purple-300 flex items-center justify-center font-black text-sm">07</div>
+                    <div class="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-300 flex items-center justify-center font-black text-sm">02</div>
                     <div>
                         <h2 class="text-sm sm:text-base font-extrabold text-white flex items-center gap-2">
-                            <span>Presensi &amp; Pembinaan Ekstrakurikuler Siswa</span>
+                            <span>Direktori Dewan Guru &amp; Tenaga Kependidikan</span>
+                            <span class="text-xs font-normal text-slate-400 hidden md:inline">&bull; Profil Pendidik &amp; Tenaga Administrasi Resmi</span>
                         </h2>
-                        <p class="text-[11px] text-slate-400">Pengembangan minat, bakat, kepemimpinan, dan pembinaan karakter siswa SMAN 1 Lengkong</p>
+                        <p class="text-[10px] text-slate-400">Data resmi nama lengkap, gelar, NIP, mata pelajaran/tugas, dan foto pendidik SMAN 1 Lengkong</p>
                     </div>
                 </div>
                 <div class="flex items-center gap-2">
-                    <!-- Sub-page Navigation for Ekskul (1/2 Layar Slide) -->
-                    <div class="flex items-center gap-1 bg-purple-950/60 border border-purple-500/30 rounded-xl p-0.5 text-xs">
-                        <button type="button" onclick="prevExtraPage()" class="p-1 px-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition" title="Halaman Ekskul Sebelumnya">
+                    <span class="px-2.5 py-1 rounded-full text-[10px] font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1">
+                        <span>👥</span> {{ count($data['staff'] ?? []) }} PENDIDIK &amp; STAF
+                    </span>
+
+                    <!-- Sub-page Prev/Next Navigation Controls -->
+                    <div class="flex items-center bg-slate-900/90 border border-white/10 rounded-xl p-0.5 text-xs">
+                        <button type="button" onclick="prevStaffPage()" class="p-1 px-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition" title="Halaman Guru Sebelumnya">
                             &larr;
                         </button>
-                        <span id="extraPageIndicator" class="px-2 font-mono text-[11px] font-bold text-purple-300">
-                            Hal 1 / {{ max(1, count(array_chunk(collect($data['extracurricular']['clubs'] ?? [])->all(), 4))) }}
+                        <span id="staffPageIndicator" class="px-2 font-mono text-[11px] font-bold text-teal-300">
+                            Hal 1 / {{ max(1, count(array_chunk($data['staff'] ?? [], 8))) }}
                         </span>
-                        <button type="button" onclick="nextExtraPage()" class="p-1 px-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition" title="Halaman Ekskul Berikutnya">
+                        <button type="button" onclick="nextStaffPage()" class="p-1 px-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition" title="Halaman Guru Berikutnya">
                             &rarr;
                         </button>
                     </div>
-                    <span class="px-2.5 py-1 rounded-full text-[10px] font-black bg-purple-500/20 text-purple-300 border border-purple-500/30 flex items-center gap-1">
-                        <span>🎯</span> {{ $data['extracurricular']['total_clubs'] ?? count($data['extracurricular']['clubs'] ?? []) }} CABANG EKSKUL
-                    </span>
+
+                    <a href="{{ route('website.home') }}#guru-staf" target="_blank" class="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 transition">
+                        Buka di Web &rarr;
+                    </a>
                 </div>
             </div>
 
-            <!-- Content Area: Left 7 Cols (1/2 Layar Sistem Slide Cabang & Pembina Foto), Right 5 Cols (Presensi Hari Ini & Pilar Karakter) -->
-            <div class="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-3 lg:gap-4 overflow-hidden">
-                <!-- Left Column (7 Cols): 1/2 Layar Sistem Slide Ekskul & Foto Pembina Guru & PTK -->
-                <div class="lg:col-span-7 flex flex-col h-full min-h-0 gap-3 justify-between overflow-hidden">
-                    <!-- Ribbon: Jadwal Latihan & Keterangan -->
-                    <div class="p-2 sm:p-2.5 rounded-xl bg-purple-950/40 border border-purple-500/20 flex flex-wrap items-center justify-between gap-2 shrink-0">
-                        <div class="flex items-center gap-2">
-                            <span class="text-lg">🏆</span>
-                            <div>
-                                <div class="text-xs sm:text-sm font-bold text-white">Cabang Peminatan Minat &amp; Bakat Aktif</div>
-                                <div class="text-[10px] text-purple-300">Wadah aktualisasi diri, sportivitas, kreativitas, dan kepanduan</div>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <div class="text-[9px] text-slate-400">Jadwal Latihan Mingguan</div>
-                            <div class="text-xs font-mono font-bold text-white">{{ $data['extracurricular']['schedule'] ?? 'Senin - Sabtu' }}</div>
-                        </div>
-                    </div>
+            <!-- Content Area: Chunked Grid of Teachers & Staff with Enlarged Photos -->
+            <div class="flex-1 min-h-0 relative overflow-hidden">
+                @php
+                    $allStaff = $data['staff'] ?? [];
+                    $chunkedStaff = array_chunk($allStaff, 8);
+                @endphp
 
-                    <!-- Paginated Sliding Grid: 4 Clubs Per Screen (2x2) with Teacher Photo -->
-                    <div class="flex-1 min-h-0 relative overflow-hidden">
-                        @php
-                            $allClubs = collect($data['extracurricular']['clubs'] ?? [])->all();
-                            $chunkedClubs = array_chunk($allClubs, 4);
-                        @endphp
+                @forelse($chunkedStaff as $pageIdx => $staffPage)
+                    <div class="staff-page h-full w-full {{ $pageIdx === 0 ? 'grid' : 'hidden' }} grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-3 sm:gap-4 overflow-y-auto kiosk-scroll content-start" id="staff-page-{{ $pageIdx }}">
+                        @foreach($staffPage as $st)
+                            @php
+                                $photoUrl = null;
+                                if (!empty($st['photo'])) {
+                                    if (str_starts_with($st['photo'], 'http')) {
+                                        $photoUrl = $st['photo'];
+                                    } elseif (str_starts_with($st['photo'], 'images/') || str_starts_with($st['photo'], 'storage/')) {
+                                        $photoUrl = asset($st['photo']);
+                                    } else {
+                                        $photoUrl = asset('storage/' . $st['photo']);
+                                    }
+                                }
+                                $isHeadmaster = ($st['type'] ?? '') === 'kepala_sekolah' || str_contains(strtolower($st['duty'] ?? ''), 'kepala sekolah');
+                                $isGuru = ($st['type'] ?? '') === 'guru' || !empty($st['mapel']);
+                            @endphp
+                            <div class="glass-card rounded-2xl border border-white/10 p-2.5 sm:p-3 flex flex-col items-center text-center justify-between hover:border-teal-500/40 transition duration-300 group relative overflow-hidden {{ $isHeadmaster ? 'glow-gold border-amber-500/30 bg-amber-950/20' : 'glow-teal' }}">
+                                <!-- Top Status Pill -->
+                                <div class="w-full flex items-center justify-between gap-1 mb-1 shrink-0">
+                                    <span class="px-2 py-0.5 rounded text-[8.5px] font-black uppercase tracking-wider truncate {{ $isHeadmaster ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40' : ($isGuru ? 'bg-teal-500/20 text-teal-300 border border-teal-500/30' : 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30') }}">
+                                        {{ $isHeadmaster ? '👑 Kepala Sekolah' : ($isGuru ? '🎓 Dewan Guru' : '🏢 Staf TU') }}
+                                    </span>
+                                    <span class="text-[8px] font-mono text-slate-400 truncate">
+                                        {{ $st['employment_status'] ?? 'ASN' }}
+                                    </span>
+                                </div>
 
-                        @forelse($chunkedClubs as $pIdx => $clubPage)
-                            <div class="extra-page h-full w-full {{ $pIdx === 0 ? 'grid' : 'hidden' }} grid-cols-1 sm:grid-cols-2 gap-2.5 content-start overflow-y-auto kiosk-scroll" id="extra-page-{{ $pIdx }}">
-                                @foreach($clubPage as $club)
-                                    <div class="p-3 rounded-2xl bg-slate-900/80 border border-white/10 hover:border-purple-500/40 transition flex flex-col justify-between group shadow-md">
-                                        <!-- Club Name & Category Badge -->
-                                        <div>
-                                            <div class="flex items-start justify-between gap-2">
-                                                <div class="flex items-center gap-2.5">
-                                                    <div class="w-9 h-9 rounded-xl bg-purple-500/20 text-purple-300 flex items-center justify-center text-lg font-bold shrink-0 border border-purple-500/30">
-                                                        {{ $club['icon'] ?? '🎯' }}
-                                                    </div>
-                                                    <div>
-                                                        <h4 class="text-xs sm:text-sm font-black text-white group-hover:text-purple-300 transition truncate">{{ $club['name'] }}</h4>
-                                                        <span class="px-1.5 py-0.5 rounded text-[8.5px] font-black uppercase tracking-wider bg-purple-500/10 text-purple-300 border border-purple-500/20 inline-block mt-0.5">
-                                                            {{ $club['category'] ?? 'Ekstrakurikuler' }}
-                                                        </span>
-                                                    </div>
-                                                </div>
+                                <!-- Photo Container with Elegant Ring (Portrait Ratio, No Head Cutoff) -->
+                                <div class="w-24 h-28 sm:w-28 sm:h-32 md:w-30 md:h-36 rounded-2xl overflow-hidden p-1 bg-gradient-to-tr {{ $isHeadmaster ? 'from-amber-400 via-yellow-500 to-amber-600' : 'from-teal-400 via-indigo-500 to-sky-400' }} shadow-lg my-1 shrink-0 group-hover:scale-105 transition duration-300">
+                                    <div class="w-full h-full bg-slate-950 rounded-[12px] overflow-hidden flex items-center justify-center">
+                                        @if($photoUrl)
+                                            <img src="{{ $photoUrl }}" alt="{{ $st['name'] }}" class="w-full h-full object-cover object-top" style="object-position: top center;">
+                                        @else
+                                            <div class="w-full h-full flex flex-col items-center justify-center bg-gradient-to-tr from-slate-900 via-slate-800 to-teal-950 text-teal-300 font-extrabold text-xl sm:text-2xl">
+                                                <span>{{ strtoupper(substr($st['name'], 0, 2)) }}</span>
                                             </div>
-
-                                            <div class="mt-2 text-[10px] text-slate-400">
-                                                <span class="font-mono text-purple-300">{{ $club['schedule'] ?? 'Sore Hari' }}</span> &bull; <span>{{ $club['location'] ?? 'Kampus S1L' }}</span>
-                                            </div>
-                                        </div>
-
-                                        <!-- Pembina Box with Photo from Master Data - Data Guru & PTK -->
-                                        <div class="mt-2 pt-2 border-t border-white/10 flex items-center gap-2.5 bg-slate-950/70 p-2 rounded-xl">
-                                            <div class="w-11 h-14 rounded-lg overflow-hidden p-0.5 bg-gradient-to-tr from-purple-400 to-indigo-500 shadow-md shrink-0">
-                                                <div class="w-full h-full bg-slate-900 rounded-[6px] overflow-hidden flex items-center justify-center">
-                                                    @if(!empty($club['pembina']['photo']))
-                                                        <img src="{{ $club['pembina']['photo'] }}" alt="{{ $club['pembina']['name'] }}" class="w-full h-full object-cover" style="object-position: top center;">
-                                                    @else
-                                                        <div class="w-full h-full flex items-center justify-center bg-slate-900 text-purple-300 font-extrabold text-xs">
-                                                            {{ strtoupper(substr($club['pembina']['name'] ?? 'PB', 0, 2)) }}
-                                                        </div>
-                                                    @endif
-                                                </div>
-                                            </div>
-                                            <div class="min-w-0 flex-1">
-                                                <div class="text-[9px] font-bold text-purple-400 uppercase tracking-wider">Pembina Ekskul</div>
-                                                <div class="text-xs font-extrabold text-white truncate group-hover:text-purple-300 transition" title="{{ $club['pembina']['name'] ?? $club['teacher'] ?? 'Dewan Guru' }}">
-                                                    {{ $club['pembina']['name'] ?? $club['teacher'] ?? 'Dewan Guru' }}
-                                                </div>
-                                                <div class="text-[9.5px] font-mono text-slate-400 truncate">
-                                                    {{ !empty($club['pembina']['nip']) && $club['pembina']['nip'] !== '-' ? 'NIP ' . $club['pembina']['nip'] : 'Guru Pembina Terverifikasi' }}
-                                                </div>
-                                            </div>
-                                        </div>
+                                        @endif
                                     </div>
-                                @endforeach
-                            </div>
-                        @empty
-                            <div class="h-full flex items-center justify-center text-slate-500 text-xs italic py-6">
-                                Belum ada data cabang ekstrakurikuler terdaftar.
-                            </div>
-                        @endforelse
-                    </div>
+                                </div>
 
-                    <!-- Bottom Bar -->
-                    <div class="p-2 rounded-xl bg-slate-950/80 border border-white/5 text-[10px] text-slate-400 flex items-center justify-between shrink-0">
-                        <span>Pramuka (Wajib), Paskibra, PMR Wira, Rohis, Seni Musik &amp; Tari, Futsal, Basket, Voli, Silat, KIR, English Club</span>
-                        <span class="text-purple-300 font-bold font-mono">Ekosistem S1L</span>
-                    </div>
-                </div>
-
-                <!-- Right Column (5 Cols): Log Presensi Ekskul Hari Ini & 4 Pilar Karakter -->
-                <div class="lg:col-span-5 flex flex-col h-full min-h-0 gap-3 justify-between overflow-hidden">
-                    <!-- Presensi Ekstrakurikuler Card -->
-                    <div class="flex-1 min-h-0 glass-panel rounded-2xl border border-white/10 p-3 sm:p-4 flex flex-col justify-between overflow-hidden shadow-xl">
-                        <div class="flex items-center justify-between pb-2 border-b border-white/10 shrink-0">
-                            <div class="flex items-center gap-2">
-                                <span class="p-1 rounded-lg bg-purple-500/20 text-purple-300 text-xs">📝</span>
-                                <h3 class="text-xs sm:text-sm font-black text-white">Log Presensi Ekskul Hari Ini</h3>
-                            </div>
-                            <div class="flex items-center gap-1.5">
-                                <span id="extraTotalToday" class="text-base font-black text-purple-300 font-mono">{{ $data['extracurricular']['total_today'] }}</span>
-                                <span class="text-[10px] text-slate-400">Siswa Hadir</span>
-                            </div>
-                        </div>
-
-                        <div id="extraRecentLogs" class="flex-1 min-h-0 overflow-y-auto kiosk-scroll space-y-2 py-2 pr-1">
-                            @forelse($data['extracurricular']['recent'] ?? [] as $ex)
-                                <div class="p-2.5 rounded-xl bg-slate-900/70 border border-white/5 flex items-center justify-between text-xs">
-                                    <div class="truncate mr-2">
-                                        <div class="font-bold text-white truncate">{{ $ex['name'] }} <span class="text-slate-400 font-normal">({{ $ex['class'] }})</span></div>
-                                        <div class="text-[10px] text-purple-300 font-semibold truncate">{{ $ex['extracurricular'] }}</div>
-                                    </div>
-                                    <div class="flex items-center gap-2 shrink-0">
-                                        <span class="px-2 py-0.5 rounded text-[9px] font-black bg-purple-500/20 text-purple-300">
-                                            {{ $ex['status'] }}
+                                                                <!-- Staff Name & Academic Degrees -->
+                                <div class="w-full min-w-0 mt-0.5 shrink-0">
+                                    <h4 class="text-xs sm:text-[13px] font-black text-white leading-tight truncate group-hover:text-teal-300 transition" title="{{ $st['name'] }}">
+                                        {{ $st['name'] }}
+                                    </h4>
+                                    <!-- NIP -->
+                                    <div class="mt-0.5">
+                                        <span class="inline-block text-[9px] font-mono text-slate-300 bg-slate-900/90 px-2 py-0.5 rounded-md border border-white/10 truncate max-w-full">
+                                            NIP: {{ !empty($st['nip']) && $st['nip'] !== '-' ? $st['nip'] : '-' }}
                                         </span>
-                                        <span class="font-mono text-slate-400 text-[10px]">{{ $ex['time'] }}</span>
+                                    </div>
+                                    <!-- Tugas Tambahan & Mata Pelajaran -->
+                                    <div class="w-full mt-1 pt-1 border-t border-white/5 space-y-0.5 text-left text-[9.5px]">
+                                        @if($isGuru)
+                                            <div class="truncate text-slate-300 flex items-center gap-1" title="Mata Pelajaran: {{ $st['mapel'] ?? '-' }}">
+                                                <span class="text-teal-400 font-bold shrink-0">📚 Mapel:</span>
+                                                <span class="truncate font-medium text-white">{{ !empty($st['mapel']) ? $st['mapel'] : 'Mata Pelajaran Umum' }}</span>
+                                            </div>
+                                            <div class="truncate text-slate-300 flex items-center gap-1" title="Tugas Tambahan: {{ $st['duty'] ?? '-' }}">
+                                                <span class="text-indigo-400 font-bold shrink-0">⭐ Tugas:</span>
+                                                <span class="truncate font-medium text-teal-200">{{ !empty($st['duty']) && $st['duty'] !== 'Guru Pengajar' ? $st['duty'] : '-' }}</span>
+                                            </div>
+                                        @else
+                                            <div class="truncate text-slate-300 flex items-center gap-1" title="Tugas: {{ $st['duty'] ?? 'Staf Administrasi' }}">
+                                                <span class="text-indigo-400 font-bold shrink-0">🏢 Tugas:</span>
+                                                <span class="truncate font-medium text-white">{{ $st['duty'] ?? 'Staf Administrasi' }}</span>
+                                            </div>
+                                            <div class="truncate text-slate-400 flex items-center gap-1" title="Bidang: {{ !empty($st['tu_duty']) ? $st['tu_duty'] : '-' }}">
+                                                <span class="text-teal-400 font-bold shrink-0">📋 Bidang:</span>
+                                                <span class="truncate font-medium text-slate-300">{{ !empty($st['tu_duty']) ? $st['tu_duty'] : '-' }}</span>
+                                            </div>
+                                        @endif
                                     </div>
                                 </div>
-                            @empty
-                                <div class="h-full flex flex-col items-center justify-center text-center py-6 text-slate-500 text-xs space-y-1">
-                                    <span class="text-2xl">🎯</span>
-                                    <span class="font-semibold text-slate-400">Belum ada presensi ekstrakurikuler tercatat hari ini.</span>
-                                    <span class="text-[10px] text-slate-500">Presensi dibuka saat jadwal latihan ekskul berlangsung.</span>
-                                </div>
-                            @endforelse
-                        </div>
-
-                        <div class="pt-2 border-t border-white/5 text-[10px] text-slate-400 flex items-center justify-between shrink-0">
-                            <span>Presensi berbasis RFID / Barcode Mandiri</span>
-                            <span class="text-purple-300 font-mono font-bold">Terverifikasi</span>
-                        </div>
+                            </div>
+                        @endforeach
                     </div>
-
-                    <!-- 4 Pilar Karakter Ekstrakurikuler -->
-                    <div class="glass-panel rounded-2xl border border-white/10 p-3 shrink-0 shadow-lg">
-                        <div class="text-[10px] font-black uppercase text-purple-300 tracking-wider mb-2 flex items-center gap-1.5">
-                            <span>🛡️</span> 4 PILAR PEMBINAAN KARAKTER EKSKUL
-                        </div>
-                        <div class="grid grid-cols-2 gap-2 text-xs">
-                            <div class="p-2 rounded-xl bg-slate-900/70 border border-white/5">
-                                <div class="font-bold text-white flex items-center gap-1">
-                                    <span>🧭</span> Kepemimpinan
-                                </div>
-                                <div class="text-[9.5px] text-slate-400 mt-0.5 leading-snug">Menempa jiwa mandiri, tangguh, dan berintegritas.</div>
-                            </div>
-                            <div class="p-2 rounded-xl bg-slate-900/70 border border-white/5">
-                                <div class="font-bold text-white flex items-center gap-1">
-                                    <span>⏱️</span> Kedisiplinan
-                                </div>
-                                <div class="text-[9.5px] text-slate-400 mt-0.5 leading-snug">Menghargai waktu, aturan, dan komitmen tim.</div>
-                            </div>
-                            <div class="p-2 rounded-xl bg-slate-900/70 border border-white/5">
-                                <div class="font-bold text-white flex items-center gap-1">
-                                    <span>🎨</span> Kreativitas
-                                </div>
-                                <div class="text-[9.5px] text-slate-400 mt-0.5 leading-snug">Eksplorasi bakat seni, riset, dan olahraga.</div>
-                            </div>
-                            <div class="p-2 rounded-xl bg-slate-900/70 border border-white/5">
-                                <div class="font-bold text-white flex items-center gap-1">
-                                    <span>🤝</span> Solidaritas
-                                </div>
-                                <div class="text-[9.5px] text-slate-400 mt-0.5 leading-snug">Kebersamaan, gotong royong, dan empati sosial.</div>
-                            </div>
-                        </div>
+                @empty
+                    <div class="h-full flex items-center justify-center text-slate-500 text-xs italic py-12">
+                        Data dewan guru dan tenaga kependidikan belum dimuat.
                     </div>
-                </div>
+                @endforelse
             </div>
         </section>
 
         <!-- ========================================================================= -->
-        <!-- SLIDE 7: DATA ROMBEL (L/P) & DIREKTORI WALI KELAS (1-4 LAYAR SLIDE)      -->
+        <!-- SLIDE 2: DATA ROMBONGAN BELAJAR (ROMBEL) & DIREKTORI WALI KELAS -->
         <!-- ========================================================================= -->
-        <section id="slide-7" class="kiosk-slide hidden h-full w-full flex-col justify-between overflow-hidden gap-3">
+        <section id="slide-2" class="kiosk-slide hidden h-full w-full flex-col justify-between overflow-hidden gap-3">
             <!-- Slide Title Header -->
             <div class="flex items-center justify-between shrink-0 pb-1 border-b border-white/5">
                 <div class="flex items-center gap-2">
-                    <div class="w-7 h-7 rounded-lg bg-sky-500/20 text-sky-300 flex items-center justify-center font-black text-sm">08</div>
+                    <div class="w-7 h-7 rounded-lg bg-sky-500/20 text-sky-300 flex items-center justify-center font-black text-sm">03</div>
                     <div>
                         <h2 class="text-sm sm:text-base font-extrabold text-white flex items-center gap-2">
                             <span>Data Rombongan Belajar (Rombel) &amp; Direktori Wali Kelas</span>
@@ -1440,403 +802,13 @@
         </section>
 
         <!-- ========================================================================= -->
-        <!-- SLIDE 8: BERITA & WARTA SEKOLAH RESMI                                      -->
+        <!-- SLIDE 3: PERPUSTAKAAN & LITERASI DIGITAL -->
         <!-- ========================================================================= -->
-        <section id="slide-8" class="kiosk-slide h-full w-full hidden flex-col justify-between overflow-hidden gap-3">
-            <!-- Slide Title Header -->
-            <div class="flex items-center justify-between shrink-0 pb-1 border-b border-white/5">
-                <div class="flex items-center gap-2">
-                    <div class="w-7 h-7 rounded-lg bg-teal-500/20 text-teal-300 flex items-center justify-center font-black text-sm">09</div>
-                    <div>
-                        <h2 class="text-sm sm:text-base font-extrabold text-white flex items-center gap-2">
-                            <span>Warta &amp; Publikasi Resmi Sekolah</span>
-                            <span class="text-xs font-normal text-slate-400 hidden md:inline">&bull; Kabar Terkini, Prestasi &amp; Dokumentasi Kegiatan Siswa</span>
-                        </h2>
-                        <p class="text-[10px] text-slate-400">Liputan berita resmi SMAN 1 Lengkong yang terintegrasi langsung dengan portal website</p>
-                    </div>
-                </div>
-                <div class="flex items-center gap-2">
-                    <span class="px-2.5 py-1 rounded-full text-[10px] font-black bg-teal-500/20 text-teal-300 border border-teal-500/30 flex items-center gap-1">
-                        <span>📰</span> PORTAL BERITA
-                    </span>
-                    <a href="{{ route('website.home') }}#berita" target="_blank" class="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 transition">
-                        Buka di Web &rarr;
-                    </a>
-                </div>
-            </div>
-
-            <!-- Content Area: Two-Column TV Layout -->
-            <div class="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-3.5 overflow-hidden">
-                @php
-                    $newsList = $data['news'] ?? [];
-                    $featuredNews = $newsList[0] ?? null;
-                    $otherNews = array_slice($newsList, 1);
-                @endphp
-
-                <!-- Left Column: Featured News (7 of 12 cols) -->
-                <div class="lg:col-span-7 h-full flex flex-col glass-card rounded-2xl border border-white/10 p-3 sm:p-4 overflow-hidden glow-teal">
-                    @if($featuredNews)
-                        @php
-                            $imgSrc = null;
-                            if (!empty($featuredNews['image'])) {
-                                $imgSrc = (str_starts_with($featuredNews['image'], 'http') || str_starts_with($featuredNews['image'], 'images/') || str_starts_with($featuredNews['image'], 'storage/'))
-                                    ? asset($featuredNews['image'])
-                                    : asset('storage/' . $featuredNews['image']);
-                            }
-                        @endphp
-                        <div class="relative w-full h-44 sm:h-52 md:h-60 rounded-xl overflow-hidden shrink-0 border border-white/10 bg-slate-900 shadow-lg">
-                            @if($imgSrc)
-                                <img src="{{ $imgSrc }}" alt="{{ $featuredNews['title'] }}" class="w-full h-full object-cover">
-                            @else
-                                <div class="w-full h-full flex items-center justify-center bg-gradient-to-tr from-slate-950 via-slate-900 to-teal-950">
-                                    <span class="text-4xl">📰</span>
-                                </div>
-                            @endif
-                            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent"></div>
-                            
-                            <div class="absolute top-3 left-3 flex items-center gap-2">
-                                <span class="px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider bg-teal-500 text-slate-950 shadow-md">
-                                    ⭐ UTAMA &bull; {{ $featuredNews['category'] ?? 'Berita' }}
-                                </span>
-                            </div>
-
-                            <div class="absolute bottom-3 left-3 right-3 flex items-center justify-between text-[11px] text-slate-300">
-                                <span class="flex items-center gap-1.5 font-medium bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/10">
-                                    <span>🗓️</span> {{ $featuredNews['date'] ?? '' }}
-                                </span>
-                                <span class="flex items-center gap-1.5 font-medium bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/10">
-                                    <span>✍️</span> {{ $featuredNews['author'] ?? 'Humas SMAN 1 Lengkong' }}
-                                </span>
-                            </div>
-                        </div>
-
-                        <!-- Featured Body -->
-                        <div class="flex-1 min-h-0 flex flex-col justify-between mt-3 overflow-hidden">
-                            <div>
-                                <h3 class="text-base sm:text-lg font-black text-white leading-snug line-clamp-2 hover:text-teal-300 transition">
-                                    {{ $featuredNews['title'] }}
-                                </h3>
-                                <p class="text-xs sm:text-sm text-slate-300 mt-2 leading-relaxed line-clamp-3 sm:line-clamp-4 font-normal">
-                                    {{ $featuredNews['excerpt'] ?? Str::limit(strip_tags($featuredNews['content'] ?? ''), 220) }}
-                                </p>
-                            </div>
-                            
-                            <div class="pt-2 border-t border-white/5 flex items-center justify-between text-xs text-slate-400 mt-2 shrink-0">
-                                <span class="text-[11px] flex items-center gap-1 text-teal-400 font-semibold">
-                                    <span>🌐</span> Terpublikasi di Portal Resmi SMAN 1 Lengkong
-                                </span>
-                                <span class="font-mono text-[10px] text-slate-500">sman1lengkong.school</span>
-                            </div>
-                        </div>
-                    @else
-                        <div class="h-full flex items-center justify-center text-slate-500 text-xs italic">
-                            Belum ada artikel berita tersimpan.
-                        </div>
-                    @endif
-                </div>
-
-                <!-- Right Column: Other Recent News Cards (5 of 12 cols) -->
-                <div class="lg:col-span-5 h-full flex flex-col glass-card rounded-2xl border border-white/10 p-3 sm:p-4 overflow-hidden">
-                    <div class="flex items-center justify-between pb-2 mb-2 border-b border-white/10 shrink-0">
-                        <div class="flex items-center gap-2">
-                            <span class="w-2 h-2 rounded-full bg-teal-400 animate-ping"></span>
-                            <h4 class="text-xs font-black uppercase tracking-wider text-slate-200">Koleksi Warta Terbaru</h4>
-                        </div>
-                        <span class="text-[10px] font-mono text-slate-400">{{ count($newsList) }} Berita Aktif</span>
-                    </div>
-
-                    <div class="flex-1 min-h-0 overflow-y-auto kiosk-scroll flex flex-col gap-2.5 pr-1">
-                        @forelse($otherNews as $item)
-                            @php
-                                $subImg = null;
-                                if (!empty($item['image'])) {
-                                    $subImg = (str_starts_with($item['image'], 'http') || str_starts_with($item['image'], 'images/') || str_starts_with($item['image'], 'storage/'))
-                                        ? asset($item['image'])
-                                        : asset('storage/' . $item['image']);
-                                }
-                            @endphp
-                            <div class="p-2.5 rounded-xl bg-slate-900/70 border border-white/5 hover:border-teal-500/30 transition flex gap-3 items-center group">
-                                <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden shrink-0 border border-white/10 bg-slate-950 relative">
-                                    @if($subImg)
-                                        <img src="{{ $subImg }}" alt="{{ $item['title'] }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
-                                    @else
-                                        <div class="w-full h-full flex items-center justify-center bg-slate-800 text-slate-400 text-lg">
-                                            📰
-                                        </div>
-                                    @endif
-                                </div>
-                                <div class="min-w-0 flex-1">
-                                    <div class="flex items-center gap-2 mb-1">
-                                        <span class="px-2 py-0.5 rounded text-[9px] font-black uppercase bg-teal-500/20 text-teal-300 border border-teal-500/30">
-                                            {{ $item['category'] ?? 'Berita' }}
-                                        </span>
-                                        <span class="text-[10px] text-slate-400 font-mono">{{ $item['date'] ?? '' }}</span>
-                                    </div>
-                                    <h5 class="text-xs font-bold text-white leading-snug line-clamp-2 group-hover:text-teal-300 transition">
-                                        {{ $item['title'] }}
-                                    </h5>
-                                    <p class="text-[10px] text-slate-400 line-clamp-2 mt-1 leading-snug">
-                                        {{ $item['excerpt'] ?? Str::limit(strip_tags($item['content'] ?? ''), 90) }}
-                                    </p>
-                                </div>
-                            </div>
-                        @empty
-                            <div class="h-full flex items-center justify-center text-slate-500 text-xs italic py-6">
-                                Belum ada artikel warta tambahan.
-                            </div>
-                        @endforelse
-                    </div>
-
-                    <div class="pt-2 mt-2 border-t border-white/5 flex items-center justify-between text-[11px] text-slate-400 shrink-0">
-                        <span>Menampilkan warta rujukan website</span>
-                        <span class="text-teal-400 font-mono text-[10px]">Pembaruan Otomatis</span>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ========================================================================= -->
-        <!-- SLIDE 9: AGENDA & KALENDER KEGIATAN AKADEMIK                              -->
-        <!-- ========================================================================= -->
-        <section id="slide-9" class="kiosk-slide h-full w-full hidden flex-col justify-between overflow-hidden gap-3">
-            <!-- Slide Title Header -->
-            <div class="flex items-center justify-between shrink-0 pb-1 border-b border-white/5">
-                <div class="flex items-center gap-2">
-                    <div class="w-7 h-7 rounded-lg bg-indigo-500/20 text-indigo-300 flex items-center justify-center font-black text-sm">10</div>
-                    <div>
-                        <h2 class="text-sm sm:text-base font-extrabold text-white flex items-center gap-2">
-                            <span>Agenda &amp; Kalender Kegiatan Akademik</span>
-                            <span class="text-xs font-normal text-slate-400 hidden md:inline">&bull; Jadwal Asesmen, Projek P5, Peringatan &amp; Kegiatan Resmi</span>
-                        </h2>
-                        <p class="text-[10px] text-slate-400">Jadwal kegiatan akademik dan kesiswaan SMAN 1 Lengkong terkoneksi langsung dari website</p>
-                    </div>
-                </div>
-                <div class="flex items-center gap-2">
-                    <span class="px-2.5 py-1 rounded-full text-[10px] font-black bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 flex items-center gap-1">
-                        <span>📅</span> KALENDER AGENDA
-                    </span>
-                    <a href="{{ route('website.home') }}#agenda" target="_blank" class="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 transition">
-                        Buka di Web &rarr;
-                    </a>
-                </div>
-            </div>
-
-            <!-- Content Area: Agenda Grid & Info Cards -->
-            <div class="flex-1 min-h-0 flex flex-col gap-3 overflow-hidden">
-                <!-- Top Summary Ribbon -->
-                <div class="p-2.5 sm:p-3 rounded-xl bg-gradient-to-r from-indigo-950/70 via-slate-900/80 to-teal-950/70 border border-indigo-500/20 flex flex-wrap items-center justify-between gap-3 shrink-0 shadow-md">
-                    <div class="flex items-center gap-3">
-                        <div class="w-9 h-9 rounded-xl bg-indigo-500/20 text-indigo-300 flex items-center justify-center text-lg font-black shrink-0">
-                            🗓️
-                        </div>
-                        <div>
-                            <div class="text-xs sm:text-sm font-bold text-white">Kalender Aktivitas Terpadu SMAN 1 Lengkong</div>
-                            <div class="text-[10.5px] text-slate-300">Seluruh agenda resmi mengacu pada kalender pendidikan &amp; agenda semester berjalan</div>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-2 font-mono text-xs">
-                        <span class="px-3 py-1 rounded-lg bg-indigo-500/30 text-indigo-300 font-bold border border-indigo-500/40">
-                            {{ count($data['agendas'] ?? []) }} Agenda Terdaftar
-                        </span>
-                        <span class="px-3 py-1 rounded-lg bg-teal-500/30 text-teal-300 font-bold border border-teal-500/40 hidden sm:inline-block">
-                            Semester Ganjil 2026/2027
-                        </span>
-                    </div>
-                </div>
-
-                <!-- Grid of Agenda Cards -->
-                <div class="flex-1 min-h-0 overflow-y-auto kiosk-scroll grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-3 pr-1">
-                    @forelse($data['agendas'] ?? [] as $idx => $agenda)
-                        @php
-                            $dateObj = null;
-                            try {
-                                $dateObj = \Carbon\Carbon::parse($agenda['date']);
-                            } catch (\Throwable $e) {}
-                            $dayNum = $dateObj ? $dateObj->format('d') : '25';
-                            $monthStr = $dateObj ? $dateObj->translatedFormat('M') : 'NOV';
-                            $dayName = $dateObj ? $dateObj->translatedFormat('l') : 'Rabu';
-                        @endphp
-                        <div class="glass-card rounded-2xl border border-white/10 p-3.5 flex flex-col justify-between hover:border-indigo-500/40 transition group glow-indigo relative overflow-hidden">
-                            <!-- Top Ribbon: Date Badge + Tag -->
-                            <div class="flex items-start justify-between gap-3 mb-2">
-                                <div class="flex items-center gap-2.5">
-                                    <div class="w-12 h-13 rounded-xl bg-gradient-to-b from-indigo-500 to-indigo-700 text-white flex flex-col items-center justify-center shadow-lg shrink-0 border border-indigo-400/30">
-                                        <span class="text-[9px] font-black tracking-widest uppercase">{{ $monthStr }}</span>
-                                        <span class="text-base font-extrabold leading-tight">{{ $dayNum }}</span>
-                                    </div>
-                                    <div>
-                                        <span class="px-2 py-0.5 rounded text-[9px] font-black uppercase bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-                                            {{ $agenda['tag'] ?? 'Akademik' }}
-                                        </span>
-                                        <div class="text-[10px] text-slate-400 font-mono mt-0.5">
-                                            {{ $dayName }}, {{ $agenda['date'] ?? '' }}
-                                            @if(!empty($agenda['end_date']))
-                                                s.d. {{ $agenda['end_date'] }}
-                                            @endif
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <span class="w-7 h-7 rounded-lg bg-slate-900 border border-white/10 flex items-center justify-center text-xs text-indigo-300 font-mono">
-                                    #{{ $idx + 1 }}
-                                </span>
-                            </div>
-
-                            <!-- Title & Description -->
-                            <div class="flex-1 min-h-0 my-1">
-                                <h4 class="text-sm font-extrabold text-white leading-snug group-hover:text-indigo-300 transition line-clamp-2">
-                                    {{ $agenda['title'] }}
-                                </h4>
-                                <p class="text-xs text-slate-300 leading-relaxed mt-1.5 line-clamp-3">
-                                    {{ $agenda['description'] ?? 'Agenda resmi sekolah yang wajib diikuti oleh warga sekolah yang bersangkutan.' }}
-                                </p>
-                            </div>
-
-                            <!-- Footer Card Status -->
-                            <div class="pt-2 mt-2 border-t border-white/5 flex items-center justify-between text-[10.5px] text-slate-400 shrink-0">
-                                <span class="flex items-center gap-1 text-teal-400 font-medium">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse"></span> Terjadwal Resmi
-                                </span>
-                                <span class="font-mono text-slate-500 text-[10px]">SMAN 1 Lengkong</span>
-                            </div>
-                        </div>
-                    @empty
-                        <div class="col-span-full h-full flex items-center justify-center text-slate-500 text-xs italic py-12">
-                            Belum ada jadwal agenda yang dipublikasikan.
-                        </div>
-                    @endforelse
-                </div>
-            </div>
-        </section>
-
-        <!-- ========================================================================= -->
-        <!-- SLIDE 10: DEWAN GURU & TENAGA KEPENDIDIKAN (NAMA & FOTO RESMI)            -->
-        <!-- ========================================================================= -->
-        <section id="slide-10" class="kiosk-slide h-full w-full hidden flex-col justify-between overflow-hidden gap-3">
-            <!-- Slide Title Header -->
-            <div class="flex items-center justify-between shrink-0 pb-1 border-b border-white/5">
-                <div class="flex items-center gap-2">
-                    <div class="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-300 flex items-center justify-center font-black text-sm">11</div>
-                    <div>
-                        <h2 class="text-sm sm:text-base font-extrabold text-white flex items-center gap-2">
-                            <span>Direktori Dewan Guru &amp; Tenaga Kependidikan</span>
-                            <span class="text-xs font-normal text-slate-400 hidden md:inline">&bull; Profil Pendidik &amp; Tenaga Administrasi Resmi</span>
-                        </h2>
-                        <p class="text-[10px] text-slate-400">Data resmi nama lengkap, gelar, NIP, mata pelajaran/tugas, dan foto pendidik SMAN 1 Lengkong</p>
-                    </div>
-                </div>
-                <div class="flex items-center gap-2">
-                    <span class="px-2.5 py-1 rounded-full text-[10px] font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1">
-                        <span>👥</span> {{ count($data['staff'] ?? []) }} PENDIDIK &amp; STAF
-                    </span>
-
-                    <!-- Sub-page Prev/Next Navigation Controls -->
-                    <div class="flex items-center bg-slate-900/90 border border-white/10 rounded-xl p-0.5 text-xs">
-                        <button type="button" onclick="prevStaffPage()" class="p-1 px-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition" title="Halaman Guru Sebelumnya">
-                            &larr;
-                        </button>
-                        <span id="staffPageIndicator" class="px-2 font-mono text-[11px] font-bold text-teal-300">
-                            Hal 1 / {{ max(1, count(array_chunk($data['staff'] ?? [], 8))) }}
-                        </span>
-                        <button type="button" onclick="nextStaffPage()" class="p-1 px-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition" title="Halaman Guru Berikutnya">
-                            &rarr;
-                        </button>
-                    </div>
-
-                    <a href="{{ route('website.home') }}#guru-staf" target="_blank" class="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 transition">
-                        Buka di Web &rarr;
-                    </a>
-                </div>
-            </div>
-
-            <!-- Content Area: Chunked Grid of Teachers & Staff with Enlarged Photos -->
-            <div class="flex-1 min-h-0 relative overflow-hidden">
-                @php
-                    $allStaff = $data['staff'] ?? [];
-                    $chunkedStaff = array_chunk($allStaff, 8);
-                @endphp
-
-                @forelse($chunkedStaff as $pageIdx => $staffPage)
-                    <div class="staff-page h-full w-full {{ $pageIdx === 0 ? 'grid' : 'hidden' }} grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-3 sm:gap-4 overflow-y-auto kiosk-scroll content-start" id="staff-page-{{ $pageIdx }}">
-                        @foreach($staffPage as $st)
-                            @php
-                                $photoUrl = null;
-                                if (!empty($st['photo'])) {
-                                    if (str_starts_with($st['photo'], 'http')) {
-                                        $photoUrl = $st['photo'];
-                                    } elseif (str_starts_with($st['photo'], 'images/') || str_starts_with($st['photo'], 'storage/')) {
-                                        $photoUrl = asset($st['photo']);
-                                    } else {
-                                        $photoUrl = asset('storage/' . $st['photo']);
-                                    }
-                                }
-                                $isHeadmaster = ($st['type'] ?? '') === 'kepala_sekolah' || str_contains(strtolower($st['duty'] ?? ''), 'kepala sekolah');
-                                $isGuru = ($st['type'] ?? '') === 'guru' || !empty($st['mapel']);
-                            @endphp
-                            <div class="glass-card rounded-2xl border border-white/10 p-2.5 sm:p-3 flex flex-col items-center text-center justify-between hover:border-teal-500/40 transition duration-300 group relative overflow-hidden {{ $isHeadmaster ? 'glow-gold border-amber-500/30 bg-amber-950/20' : 'glow-teal' }}">
-                                <!-- Top Status Pill -->
-                                <div class="w-full flex items-center justify-between gap-1 mb-1 shrink-0">
-                                    <span class="px-2 py-0.5 rounded text-[8.5px] font-black uppercase tracking-wider truncate {{ $isHeadmaster ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40' : ($isGuru ? 'bg-teal-500/20 text-teal-300 border border-teal-500/30' : 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30') }}">
-                                        {{ $isHeadmaster ? '👑 Kepala Sekolah' : ($isGuru ? '🎓 Dewan Guru' : '🏢 Staf TU') }}
-                                    </span>
-                                    <span class="text-[8px] font-mono text-slate-400 truncate">
-                                        {{ $st['employment_status'] ?? 'ASN' }}
-                                    </span>
-                                </div>
-
-                                <!-- Photo Container with Elegant Ring (Portrait Ratio, No Head Cutoff) -->
-                                <div class="w-24 h-28 sm:w-28 sm:h-32 md:w-30 md:h-36 rounded-2xl overflow-hidden p-1 bg-gradient-to-tr {{ $isHeadmaster ? 'from-amber-400 via-yellow-500 to-amber-600' : 'from-teal-400 via-indigo-500 to-sky-400' }} shadow-lg my-1 shrink-0 group-hover:scale-105 transition duration-300">
-                                    <div class="w-full h-full bg-slate-950 rounded-[12px] overflow-hidden flex items-center justify-center">
-                                        @if($photoUrl)
-                                            <img src="{{ $photoUrl }}" alt="{{ $st['name'] }}" class="w-full h-full object-cover object-top" style="object-position: top center;">
-                                        @else
-                                            <div class="w-full h-full flex flex-col items-center justify-center bg-gradient-to-tr from-slate-900 via-slate-800 to-teal-950 text-teal-300 font-extrabold text-xl sm:text-2xl">
-                                                <span>{{ strtoupper(substr($st['name'], 0, 2)) }}</span>
-                                            </div>
-                                        @endif
-                                    </div>
-                                </div>
-
-                                <!-- Staff Name & Academic Degrees -->
-                                <div class="w-full min-w-0 mt-0.5 shrink-0">
-                                    <h4 class="text-xs sm:text-sm font-extrabold text-white leading-tight truncate group-hover:text-teal-300 transition" title="{{ $st['name'] }}">
-                                        {{ $st['name'] }}
-                                    </h4>
-                                    <div class="text-[10px] sm:text-[10.5px] font-semibold text-teal-300 truncate mt-0.5" title="{{ $st['duty'] ?? 'Pendidik' }}">
-                                        {{ $st['duty'] ?? 'Pendidik' }}
-                                    </div>
-                                    @if(!empty($st['mapel']) && $st['mapel'] !== ($st['duty'] ?? ''))
-                                        <div class="text-[9.5px] text-slate-400 truncate mt-0.5" title="{{ $st['mapel'] }}">
-                                            {{ $st['mapel'] }}
-                                        </div>
-                                    @endif
-                                </div>
-
-                                <!-- NIP Badge Footer -->
-                                <div class="w-full pt-1 mt-0.5 border-t border-white/5 shrink-0">
-                                    <span class="inline-block text-[9px] font-mono text-slate-400 bg-slate-900/90 px-2 py-0.5 rounded-full border border-white/5 truncate max-w-full">
-                                        {{ !empty($st['nip']) && $st['nip'] !== '-' ? 'NIP ' . $st['nip'] : 'Pendidik Resmi' }}
-                                    </span>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                @empty
-                    <div class="h-full flex items-center justify-center text-slate-500 text-xs italic py-12">
-                        Data dewan guru dan tenaga kependidikan belum dimuat.
-                    </div>
-                @endforelse
-            </div>
-        </section>
-
-        <!-- =========================================================
-             SLIDE 12: PERPUSTAKAAN & LITERASI DIGITAL (INDEX 11)
-             ========================================================= -->
-        <section id="slide-11" class="hidden flex-col h-full min-h-0 overflow-hidden">
+        <section id="slide-3" class="hidden flex-col h-full min-h-0 overflow-hidden">
             <!-- Header Slide -->
             <div class="flex items-center justify-between pb-2 shrink-0">
                 <div class="flex items-center gap-2.5">
-                    <span class="px-2 py-0.5 rounded-md bg-indigo-500/20 text-indigo-400 font-mono font-bold text-xs">12</span>
+                    <span class="px-2 py-0.5 rounded-md bg-indigo-500/20 text-indigo-400 font-mono font-bold text-xs">04</span>
                     <div>
                         <h2 class="text-sm sm:text-base font-black text-white flex items-center gap-2">
                             <span>Perpustakaan &amp; Literasi Digital</span>
@@ -2122,14 +1094,14 @@
             </div>
         </section>
 
-        <!-- =========================================================
-             SLIDE 13: BIMBINGAN & KONSELING (BK) (INDEX 12)
-             ========================================================= -->
-        <section id="slide-12" class="hidden flex-col h-full min-h-0 overflow-hidden">
+        <!-- ========================================================================= -->
+        <!-- SLIDE 4: BIMBINGAN & KONSELING (BK) -->
+        <!-- ========================================================================= -->
+        <section id="slide-4" class="hidden flex-col h-full min-h-0 overflow-hidden">
             <!-- Header Slide -->
             <div class="flex items-center justify-between pb-2 shrink-0">
                 <div class="flex items-center gap-2.5">
-                    <span class="px-2 py-0.5 rounded-md bg-purple-500/20 text-purple-400 font-mono font-bold text-xs">13</span>
+                    <span class="px-2 py-0.5 rounded-md bg-purple-500/20 text-purple-400 font-mono font-bold text-xs">05</span>
                     <div>
                         <h2 class="text-sm sm:text-base font-black text-white flex items-center gap-2">
                             <span>Bimbingan &amp; Konseling (BK)</span>
@@ -2269,9 +1241,1145 @@
             </div>
         </section>
 
-        <!-- =========================================================
-             SLIDE 14: BUKU TAMU & KUNJUNGAN SEKOLAH (SIKATAS) (INDEX 13)
-             ========================================================= -->
+        <!-- ========================================================================= -->
+        <!-- SLIDE 5: PRESENSI KEHADIRAN SISWA TERPADU & JADWAL HARI INI -->
+        <!-- ========================================================================= -->
+        <section id="slide-5" class="kiosk-slide h-full w-full  flex-col justify-between overflow-hidden gap-3">
+            <!-- Slide Title Header -->
+            <div class="flex items-center justify-between shrink-0 pb-1 border-b border-white/5">
+                <div class="flex items-center gap-2">
+                    <div class="w-7 h-7 rounded-lg bg-teal-500/20 text-teal-300 flex items-center justify-center font-black text-sm">06</div>
+                    <div>
+                        <h2 class="text-sm sm:text-base font-extrabold text-white flex items-center gap-2">
+                            <span>Presensi Kehadiran Harian &amp; Jadwal Sekolah</span>
+                        </h2>
+                        <p class="text-[11px] text-slate-400">Ringkasan kehadiran siswa real-time dan jadwal bel masuk-pulang hari ini</p>
+                    </div>
+                </div>
+                <div class="text-[11px] text-slate-400 font-mono hidden sm:flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-teal-400 animate-ping"></span>
+                    <span>Sinkronisasi Otomatis 15s</span>
+                </div>
+            </div>
+
+            <!-- Slide Main Grid: Left Statistics & Schedule, Right Live Tap Feed -->
+            <div class="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-3 lg:gap-4 overflow-hidden">
+                <!-- Left Column: KPI Gauge & Status Breakdown & Bell Schedule (7 Cols) -->
+                <div class="lg:col-span-7 flex flex-col justify-between gap-3 min-h-0 overflow-hidden">
+                    <!-- Top Metric Cards Grid -->
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 shrink-0">
+                        <!-- Percentage Big Card -->
+                        <div class="col-span-2 sm:col-span-1 p-3 rounded-2xl glass-card border border-teal-500/30 flex flex-col justify-between glow-teal">
+                            <span class="text-[10px] font-bold text-teal-400 uppercase tracking-wider">Persentase Kehadiran</span>
+                            <div class="my-1 flex items-baseline gap-2">
+                                <span id="dailyPercentage" class="text-3xl sm:text-4xl font-black text-white font-mono">{{ $data['daily']['percentage'] }}%</span>
+                            </div>
+                            <div class="w-full bg-slate-900/80 rounded-full h-2 overflow-hidden border border-white/5">
+                                <div id="dailyPercentageBar" class="bg-gradient-to-r from-teal-400 to-emerald-400 h-full rounded-full transition-all duration-500" style="width: {{ $data['daily']['percentage'] }}%"></div>
+                            </div>
+                            <span class="text-[10px] text-slate-400 mt-1">Total <strong id="dailyTotalStudents" class="text-white">{{ $data['daily']['total_students'] }}</strong> Siswa Aktif</span>
+                        </div>
+
+                        <!-- Hadir & Terlambat -->
+                        <div class="p-3 rounded-2xl glass-card border border-emerald-500/20 flex flex-col justify-between">
+                            <div class="flex items-center justify-between">
+                                <span class="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">Hadir Tepat</span>
+                                <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                            </div>
+                            <div class="my-1">
+                                <span id="countHadir" class="text-2xl sm:text-3xl font-black text-white font-mono">{{ $data['daily']['hadir'] }}</span>
+                                <span class="text-xs text-slate-400 font-sans">Siswa</span>
+                            </div>
+                            <span class="text-[10px] text-emerald-300/80 font-medium">Tepat Waktu</span>
+                        </div>
+
+                        <div class="p-3 rounded-2xl glass-card border border-amber-500/20 flex flex-col justify-between">
+                            <div class="flex items-center justify-between">
+                                <span class="text-[10px] font-bold text-amber-400 uppercase tracking-wider">Terlambat</span>
+                                <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+                            </div>
+                            <div class="my-1">
+                                <span id="countTerlambat" class="text-2xl sm:text-3xl font-black text-amber-300 font-mono">{{ $data['daily']['terlambat'] }}</span>
+                                <span class="text-xs text-slate-400 font-sans">Siswa</span>
+                            </div>
+                            <span class="text-[10px] text-amber-300/80 font-medium">Dalam Batas Toleransi</span>
+                        </div>
+
+                        <!-- Izin, Sakit, Alpa -->
+                        <div class="p-2.5 rounded-xl glass-card border border-sky-500/20 flex items-center justify-between">
+                            <div>
+                                <span class="text-[10px] font-bold text-sky-400 uppercase block">Izin</span>
+                                <span id="countIzin" class="text-lg font-black text-white font-mono">{{ $data['daily']['izin'] }}</span>
+                            </div>
+                            <span class="text-lg">📄</span>
+                        </div>
+
+                        <div class="p-2.5 rounded-xl glass-card border border-indigo-500/20 flex items-center justify-between">
+                            <div>
+                                <span class="text-[10px] font-bold text-indigo-400 uppercase block">Sakit</span>
+                                <span id="countSakit" class="text-lg font-black text-white font-mono">{{ $data['daily']['sakit'] }}</span>
+                            </div>
+                            <span class="text-lg">💊</span>
+                        </div>
+
+                        <div class="p-2.5 rounded-xl glass-card border border-rose-500/20 flex items-center justify-between">
+                            <div>
+                                <span class="text-[10px] font-bold text-rose-400 uppercase block">Tanpa Keterangan (Alpa)</span>
+                                <span id="countAlpa" class="text-lg font-black text-rose-400 font-mono">{{ $data['daily']['alpa'] }}</span>
+                            </div>
+                            <span class="text-lg">⚠️</span>
+                        </div>
+                    </div>
+
+                    <!-- Bottom Schedule Information Card -->
+                    <div class="flex-1 min-h-0 p-3 sm:p-4 rounded-2xl glass-card border border-white/10 flex flex-col justify-between">
+                        <div class="flex items-center justify-between mb-2 pb-1.5 border-b border-white/5">
+                            <div class="flex items-center gap-2">
+                                <span class="text-base">⏰</span>
+                                <span class="text-xs font-bold text-white uppercase tracking-wider">Jadwal Presensi &amp; Jam Bel Hari Ini</span>
+                            </div>
+                            <span class="px-2 py-0.5 rounded-md text-[10px] font-bold {{ ($data['schedules']['presensi_utama']['is_holiday'] ?? false) ? 'bg-rose-500/20 text-rose-300' : 'bg-emerald-500/20 text-emerald-300' }}">
+                                {{ ($data['schedules']['presensi_utama']['is_holiday'] ?? false) ? 'HARI LIBUR' : 'HARI AKTIF SEKOLAH' }}
+                            </span>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs">
+                            <div class="p-2 rounded-xl bg-slate-900/60 border border-white/5">
+                                <span class="text-[10px] text-slate-400 block font-bold">WAKTU MASUK</span>
+                                <span class="font-mono font-bold text-teal-300 text-sm">s.d. 06:30 WIB</span>
+                                <span class="text-[9px] text-slate-500 block mt-0.5">Tepat waktu</span>
+                            </div>
+                            <div class="p-2 rounded-xl bg-slate-900/60 border border-white/5">
+                                <span class="text-[10px] text-slate-400 block font-bold">BATAS TERLAMBAT</span>
+                                <span class="font-mono font-bold text-amber-300 text-sm">11:00 WIB</span>
+                                <span class="text-[9px] text-slate-500 block mt-0.5">Melewati batas = Alpa</span>
+                            </div>
+                            <div class="p-2 rounded-xl bg-slate-900/60 border border-white/5">
+                                <span class="text-[10px] text-slate-400 block font-bold">WAKTU PULANG</span>
+                                <span class="font-mono font-bold text-indigo-300 text-sm">15:00 - 21:00 WIB</span>
+                                <span class="text-[9px] text-slate-500 block mt-0.5">Presensi kepulangan siswa</span>
+                            </div>
+                        </div>
+
+                        <div class="mt-2 p-2 rounded-xl bg-teal-500/10 border border-teal-500/20 flex items-center justify-between text-[11px] text-teal-200">
+                            <span class="flex items-center gap-1.5 font-medium">
+                                <span>💡 Siswa belum tap presensi hingga batas waktu otomatis tersinkronisasi sebagai Alpa.</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Live Tap Feed (5 Cols) -->
+                <div class="lg:col-span-5 flex flex-col h-full min-h-0 rounded-2xl glass-panel border border-white/10 p-3 sm:p-4 overflow-hidden shadow-xl">
+                    <div class="flex items-center justify-between pb-2 mb-2 border-b border-white/10 shrink-0">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                            <span class="text-xs font-black text-white uppercase tracking-wider">Aktivitas Presensi Terkini</span>
+                        </div>
+                        <span class="text-[10px] text-slate-400 font-mono">Live Tap Log</span>
+                    </div>
+
+                    <div id="dailyRecentLogs" class="flex-1 min-h-0 overflow-y-auto kiosk-scroll space-y-2 pr-1">
+                        @forelse($data['daily']['recent'] as $rec)
+                            <div class="bg-slate-900/70 border border-white/5 rounded-xl px-3 py-2 flex items-center justify-between hover:border-teal-500/30 transition">
+                                <div class="flex items-center gap-2.5 truncate mr-2">
+                                    <div class="w-7 h-7 rounded-lg bg-teal-500/20 text-teal-300 flex items-center justify-center font-bold text-xs shrink-0">
+                                        {{ substr($rec['name'], 0, 1) }}
+                                    </div>
+                                    <div class="truncate">
+                                        <div class="font-bold text-xs text-white truncate">{{ $rec['name'] }}</div>
+                                        <div class="text-[10px] text-slate-400 truncate">{{ $rec['class'] }} &bull; {{ $rec['method'] }}</div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-2 shrink-0">
+                                    <span class="px-2 py-0.5 rounded text-[10px] font-black {{ $rec['status'] === 'HADIR' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-amber-500/20 text-amber-300 border border-amber-500/30' }}">
+                                        {{ $rec['status'] }}
+                                    </span>
+                                    <span class="text-[11px] font-mono font-bold text-slate-300">{{ $rec['time'] }}</span>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="h-full flex items-center justify-center text-slate-500 text-xs italic">
+                                Belum ada aktivitas presensi masuk hari ini.
+                            </div>
+                        @endforelse
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================================================= -->
+        <!-- SLIDE 6: PRESENSI IBADAH BERJAMAAH & KARAKTER 7 KAIH -->
+        <!-- ========================================================================= -->
+        <section id="slide-6" class="kiosk-slide hidden h-full w-full  flex-col justify-between overflow-hidden gap-3">
+            <!-- Slide Title Header -->
+            <div class="flex items-center justify-between shrink-0 pb-1 border-b border-white/5">
+                <div class="flex items-center gap-2">
+                    <div class="w-7 h-7 rounded-lg bg-indigo-500/20 text-indigo-300 flex items-center justify-center font-black text-sm">07</div>
+                    <div>
+                        <h2 class="text-sm sm:text-base font-extrabold text-white flex items-center gap-2">
+                            <span>Presensi Ibadah Berjamaah &amp; 7 Kebiasaan Anak Indonesia Hebat</span>
+                        </h2>
+                        <p class="text-[11px] text-slate-400">Monitoring Shalat Dhuha, Shalat Dzuhur, Presensi Keputrian, dan pembiasaan karakter 7 KAIH</p>
+                    </div>
+                </div>
+                <div class="text-[11px] text-slate-400 font-mono hidden sm:flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-indigo-400 animate-ping"></span>
+                    <span>Sesi Ibadah Terjadwal</span>
+                </div>
+            </div>
+
+            <!-- Top Grid: 3 Worship Panels (Dhuha, Dzuhur, Keputrian) -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 shrink-0">
+                <!-- Card 1: Shalat Dhuha Bersama -->
+                <div class="p-3 sm:p-3.5 rounded-2xl glass-card border border-teal-500/30 flex flex-col justify-between">
+                    <div class="flex items-center justify-between mb-1.5">
+                        <div class="flex items-center gap-2">
+                            <span class="text-base">🕌</span>
+                            <h3 class="text-xs font-bold text-white uppercase tracking-wider">Shalat Dhuha Bersama</h3>
+                        </div>
+                        <span id="dhuhaStatusBadge" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black {{ $data['dhuha']['is_open'] ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 animate-pulse' : 'bg-slate-800 text-slate-400 border border-white/10' }}">
+                            {{ $data['dhuha']['is_open'] ? 'SESI BUKA' : 'SESI TUTUP' }}
+                        </span>
+                    </div>
+                    <div class="flex items-baseline justify-between my-1">
+                        <span class="text-[10px] text-slate-400">{{ $data['dhuha']['schedule'] }}</span>
+                        <div class="text-right">
+                            <span id="dhuhaTotalToday" class="text-xl sm:text-2xl font-black text-teal-300 font-mono">{{ $data['dhuha']['total_today'] }}</span>
+                            <span class="text-[10px] text-slate-400">Jamaah</span>
+                        </div>
+                    </div>
+                    <div id="dhuhaRecentLogs" class="max-h-24 overflow-y-auto kiosk-scroll space-y-1.5 mt-1 border-t border-white/5 pt-1.5">
+                        @forelse(collect($data['dhuha']['recent'])->take(3) as $dw)
+                            <div class="text-[11px] flex items-center justify-between text-slate-300 bg-slate-900/50 px-2 py-1 rounded-lg">
+                                <span class="truncate mr-2 font-medium">{{ $dw['name'] }} <span class="text-slate-500">({{ $dw['class'] }})</span></span>
+                                <span class="font-mono text-teal-400 shrink-0">{{ $dw['time'] }}</span>
+                            </div>
+                        @empty
+                            <div class="text-slate-500 text-[10px] italic py-1">Belum ada jamaah dhuha yang tercatat.</div>
+                        @endforelse
+                    </div>
+                </div>
+
+                <!-- Card 2: Shalat Dzuhur / Jum'at Berjamaah -->
+                <div class="p-3 sm:p-3.5 rounded-2xl glass-card border border-indigo-500/30 flex flex-col justify-between">
+                    <div class="flex items-center justify-between mb-1.5">
+                        <div class="flex items-center gap-2">
+                            <span class="text-base">🕌</span>
+                            <h3 class="text-xs font-bold text-white uppercase tracking-wider">Shalat Dzuhur / Jum'at</h3>
+                        </div>
+                        <span id="dzuhurStatusBadge" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black {{ $data['dzuhur']['is_open'] ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 animate-pulse' : 'bg-slate-800 text-slate-400 border border-white/10' }}">
+                            {{ $data['dzuhur']['is_open'] ? 'SESI BUKA' : 'SESI TUTUP' }}
+                        </span>
+                    </div>
+                    <div class="flex items-baseline justify-between my-1">
+                        <span class="text-[10px] text-slate-400">{{ $data['dzuhur']['schedule'] }}</span>
+                        <div class="text-right">
+                            <span id="dzuhurTotalToday" class="text-xl sm:text-2xl font-black text-indigo-300 font-mono">{{ $data['dzuhur']['total_today'] }}</span>
+                            <span class="text-[10px] text-slate-400">Jamaah</span>
+                        </div>
+                    </div>
+                    <div id="dzuhurRecentLogs" class="max-h-24 overflow-y-auto kiosk-scroll space-y-1.5 mt-1 border-t border-white/5 pt-1.5">
+                        @forelse(collect($data['dzuhur']['recent'])->take(3) as $dz)
+                            <div class="text-[11px] flex items-center justify-between text-slate-300 bg-slate-900/50 px-2 py-1 rounded-lg">
+                                <span class="truncate mr-2 font-medium">{{ $dz['name'] }} <span class="text-slate-500">({{ $dz['class'] }})</span></span>
+                                <span class="font-mono text-indigo-400 shrink-0">{{ $dz['time'] }}</span>
+                            </div>
+                        @empty
+                            <div class="text-slate-500 text-[10px] italic py-1">Belum ada jamaah dzuhur yang tercatat.</div>
+                        @endforelse
+                    </div>
+                </div>
+
+                <!-- Card 3: Presensi Keputrian -->
+                <div class="p-3 sm:p-3.5 rounded-2xl glass-card border border-rose-500/30 flex flex-col justify-between">
+                    <div class="flex items-center justify-between mb-1.5">
+                        <div class="flex items-center gap-2">
+                            <span class="text-base">✨</span>
+                            <h3 class="text-xs font-bold text-white uppercase tracking-wider">Presensi Keputrian</h3>
+                        </div>
+                        <span id="keputrianStatusBadge" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black {{ $data['keputrian']['is_open'] ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 animate-pulse' : 'bg-slate-800 text-slate-400 border border-white/10' }}">
+                            {{ $data['keputrian']['is_open'] ? 'SESI BUKA' : 'SESI TUTUP' }}
+                        </span>
+                    </div>
+                    <div class="flex items-baseline justify-between my-1">
+                        <span class="text-[10px] text-slate-400">{{ $data['keputrian']['schedule'] }}</span>
+                        <div class="text-right">
+                            <span id="keputrianTotalToday" class="text-xl sm:text-2xl font-black text-rose-300 font-mono">{{ $data['keputrian']['total_today'] }}</span>
+                            <span class="text-[10px] text-slate-400">Siswi</span>
+                        </div>
+                    </div>
+                    <div id="keputrianRecentLogs" class="max-h-24 overflow-y-auto kiosk-scroll space-y-1.5 mt-1 border-t border-white/5 pt-1.5">
+                        @forelse(collect($data['keputrian']['recent'])->take(3) as $kp)
+                            <div class="text-[11px] flex items-center justify-between text-slate-300 bg-slate-900/50 px-2 py-1 rounded-lg">
+                                <span class="truncate mr-2 font-medium">{{ $kp['name'] }} <span class="text-slate-500">({{ $kp['class'] }})</span></span>
+                                <span class="font-mono text-rose-400 shrink-0">{{ $kp['time'] }}</span>
+                            </div>
+                        @empty
+                            <div class="text-slate-500 text-[10px] italic py-1">Belum ada kehadiran keputrian yang tercatat.</div>
+                        @endforelse
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Panel: 7 Kebiasaan Anak Indonesia Hebat (7 KAIH) -->
+            <div class="flex-1 min-h-0 rounded-2xl glass-panel border border-white/10 p-3 sm:p-4 flex flex-col justify-between overflow-hidden shadow-xl">
+                <div class="flex items-center justify-between pb-2 mb-2 border-b border-white/10 shrink-0">
+                    <div class="flex items-center gap-2">
+                        <span class="text-lg">🌟</span>
+                        <div>
+                            <h3 class="text-xs sm:text-sm font-extrabold text-white uppercase tracking-wider">
+                                Pembiasaan Karakter &bull; 7 Kebiasaan Anak Indonesia Hebat (7 KAIH)
+                            </h3>
+                            <p class="text-[10px] text-slate-400">Pencatatan pembiasaan harian siswa untuk membangun profil pelajar berintegritas</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <span id="habitsCompletedToday" class="text-sm font-black text-emerald-400 font-mono">{{ $data['habits']['completed_today'] ?? 0 }}</span>
+                        <span class="text-[10px] text-slate-400 block">Aktivitas Terisi Hari Ini</span>
+                    </div>
+                </div>
+
+                <!-- 7 Habits Horizontal Cards Grid -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2.5 flex-1 min-h-0 overflow-y-auto kiosk-scroll">
+                    @foreach($data['habits']['list'] as $hb)
+                        <div class="p-2.5 rounded-xl bg-slate-900/70 border border-white/5 flex flex-col justify-between hover:border-teal-500/40 transition">
+                            <div class="flex items-center justify-between">
+                                <span class="text-lg">{{ $hb['icon'] }}</span>
+                                <span class="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-white/5 text-slate-400">#{{ $hb['order'] }}</span>
+                            </div>
+                            <div class="my-1">
+                                <h4 class="text-xs font-bold text-white truncate">{{ $hb['name'] }}</h4>
+                                <p class="text-[9px] text-slate-400 line-clamp-1">{{ $hb['tagline'] }}</p>
+                            </div>
+                            <div class="pt-1.5 border-t border-white/5 flex items-center justify-between text-[10px]">
+                                <span class="text-slate-500">Hari ini:</span>
+                                <span class="font-bold text-emerald-400 font-mono">+{{ $hb['completed'] }}</span>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================================================= -->
+        <!-- SLIDE 7: PRESENSI & PEMBINAAN EKSTRAKURIKULER SISWA -->
+        <!-- ========================================================================= -->
+        <section id="slide-7" class="kiosk-slide hidden h-full w-full flex-col justify-between overflow-hidden gap-3">
+            <!-- Slide Title Header -->
+            <div class="flex items-center justify-between shrink-0 pb-1 border-b border-white/5">
+                <div class="flex items-center gap-2">
+                    <div class="w-7 h-7 rounded-lg bg-purple-500/20 text-purple-300 flex items-center justify-center font-black text-sm">08</div>
+                    <div>
+                        <h2 class="text-sm sm:text-base font-extrabold text-white flex items-center gap-2">
+                            <span>Presensi &amp; Pembinaan Ekstrakurikuler Siswa</span>
+                        </h2>
+                        <p class="text-[11px] text-slate-400">Pengembangan minat, bakat, kepemimpinan, dan pembinaan karakter siswa SMAN 1 Lengkong</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <!-- Sub-page Navigation for Ekskul (1/2 Layar Slide) -->
+                    <div class="flex items-center gap-1 bg-purple-950/60 border border-purple-500/30 rounded-xl p-0.5 text-xs">
+                        <button type="button" onclick="prevExtraPage()" class="p-1 px-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition" title="Halaman Ekskul Sebelumnya">
+                            &larr;
+                        </button>
+                        <span id="extraPageIndicator" class="px-2 font-mono text-[11px] font-bold text-purple-300">
+                            Hal 1 / {{ max(1, count(array_chunk(collect($data['extracurricular']['clubs'] ?? [])->all(), 4))) }}
+                        </span>
+                        <button type="button" onclick="nextExtraPage()" class="p-1 px-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition" title="Halaman Ekskul Berikutnya">
+                            &rarr;
+                        </button>
+                    </div>
+                    <span class="px-2.5 py-1 rounded-full text-[10px] font-black bg-purple-500/20 text-purple-300 border border-purple-500/30 flex items-center gap-1">
+                        <span>🎯</span> {{ $data['extracurricular']['total_clubs'] ?? count($data['extracurricular']['clubs'] ?? []) }} CABANG EKSKUL
+                    </span>
+                </div>
+            </div>
+
+            <!-- Content Area: Left 7 Cols (1/2 Layar Sistem Slide Cabang & Pembina Foto), Right 5 Cols (Presensi Hari Ini & Pilar Karakter) -->
+            <div class="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-3 lg:gap-4 overflow-hidden">
+                <!-- Left Column (7 Cols): 1/2 Layar Sistem Slide Ekskul & Foto Pembina Guru & PTK -->
+                <div class="lg:col-span-7 flex flex-col h-full min-h-0 gap-3 justify-between overflow-hidden">
+                    <!-- Ribbon: Jadwal Latihan & Keterangan -->
+                    <div class="p-2 sm:p-2.5 rounded-xl bg-purple-950/40 border border-purple-500/20 flex flex-wrap items-center justify-between gap-2 shrink-0">
+                        <div class="flex items-center gap-2">
+                            <span class="text-lg">🏆</span>
+                            <div>
+                                <div class="text-xs sm:text-sm font-bold text-white">Cabang Peminatan Minat &amp; Bakat Aktif</div>
+                                <div class="text-[10px] text-purple-300">Wadah aktualisasi diri, sportivitas, kreativitas, dan kepanduan</div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-[9px] text-slate-400">Jadwal Latihan Mingguan</div>
+                            <div class="text-xs font-mono font-bold text-white">{{ $data['extracurricular']['schedule'] ?? 'Senin - Sabtu' }}</div>
+                        </div>
+                    </div>
+
+                    <!-- Paginated Sliding Grid: 4 Clubs Per Screen (2x2) with Teacher Photo -->
+                    <div class="flex-1 min-h-0 relative overflow-hidden">
+                        @php
+                            $allClubs = collect($data['extracurricular']['clubs'] ?? [])->all();
+                            $chunkedClubs = array_chunk($allClubs, 4);
+                        @endphp
+
+                        @forelse($chunkedClubs as $pIdx => $clubPage)
+                            <div class="extra-page h-full w-full {{ $pIdx === 0 ? 'grid' : 'hidden' }} grid-cols-1 sm:grid-cols-2 gap-2.5 content-start overflow-y-auto kiosk-scroll" id="extra-page-{{ $pIdx }}">
+                                @foreach($clubPage as $club)
+                                    <div class="p-3 rounded-2xl bg-slate-900/80 border border-white/10 hover:border-purple-500/40 transition flex flex-col justify-between group shadow-md">
+                                        <!-- Club Name & Category Badge -->
+                                        <div>
+                                            <div class="flex items-start justify-between gap-2">
+                                                <div class="flex items-center gap-2.5">
+                                                    <div class="w-9 h-9 rounded-xl bg-purple-500/20 text-purple-300 flex items-center justify-center text-lg font-bold shrink-0 border border-purple-500/30">
+                                                        {{ $club['icon'] ?? '🎯' }}
+                                                    </div>
+                                                    <div>
+                                                        <h4 class="text-xs sm:text-sm font-black text-white group-hover:text-purple-300 transition truncate">{{ $club['name'] }}</h4>
+                                                        <span class="px-1.5 py-0.5 rounded text-[8.5px] font-black uppercase tracking-wider bg-purple-500/10 text-purple-300 border border-purple-500/20 inline-block mt-0.5">
+                                                            {{ $club['category'] ?? 'Ekstrakurikuler' }}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="mt-2 text-[10px] text-slate-400">
+                                                <span class="font-mono text-purple-300">{{ $club['schedule'] ?? 'Sore Hari' }}</span> &bull; <span>{{ $club['location'] ?? 'Kampus S1L' }}</span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Pembina Box with Photo from Master Data - Data Guru & PTK -->
+                                        <div class="mt-2 pt-2 border-t border-white/10 flex items-center gap-2.5 bg-slate-950/70 p-2 rounded-xl">
+                                            <div class="w-11 h-14 rounded-lg overflow-hidden p-0.5 bg-gradient-to-tr from-purple-400 to-indigo-500 shadow-md shrink-0">
+                                                <div class="w-full h-full bg-slate-900 rounded-[6px] overflow-hidden flex items-center justify-center">
+                                                    @if(!empty($club['pembina']['photo']))
+                                                        <img src="{{ $club['pembina']['photo'] }}" alt="{{ $club['pembina']['name'] }}" class="w-full h-full object-cover" style="object-position: top center;">
+                                                    @else
+                                                        <div class="w-full h-full flex items-center justify-center bg-slate-900 text-purple-300 font-extrabold text-xs">
+                                                            {{ strtoupper(substr($club['pembina']['name'] ?? 'PB', 0, 2)) }}
+                                                        </div>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                            <div class="min-w-0 flex-1">
+                                                <div class="text-[9px] font-bold text-purple-400 uppercase tracking-wider">Pembina Ekskul</div>
+                                                <div class="text-xs font-extrabold text-white truncate group-hover:text-purple-300 transition" title="{{ $club['pembina']['name'] ?? $club['teacher'] ?? 'Dewan Guru' }}">
+                                                    {{ $club['pembina']['name'] ?? $club['teacher'] ?? 'Dewan Guru' }}
+                                                </div>
+                                                <div class="text-[9.5px] font-mono text-slate-400 truncate">
+                                                    {{ !empty($club['pembina']['nip']) && $club['pembina']['nip'] !== '-' ? 'NIP ' . $club['pembina']['nip'] : 'Guru Pembina Terverifikasi' }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @empty
+                            <div class="h-full flex items-center justify-center text-slate-500 text-xs italic py-6">
+                                Belum ada data cabang ekstrakurikuler terdaftar.
+                            </div>
+                        @endforelse
+                    </div>
+
+                    <!-- Bottom Bar -->
+                    <div class="p-2 rounded-xl bg-slate-950/80 border border-white/5 text-[10px] text-slate-400 flex items-center justify-between shrink-0">
+                        <span>Pramuka (Wajib), Paskibra, PMR Wira, Rohis, Seni Musik &amp; Tari, Futsal, Basket, Voli, Silat, KIR, English Club</span>
+                        <span class="text-purple-300 font-bold font-mono">Ekosistem S1L</span>
+                    </div>
+                </div>
+
+                <!-- Right Column (5 Cols): Log Presensi Ekskul Hari Ini & 4 Pilar Karakter -->
+                <div class="lg:col-span-5 flex flex-col h-full min-h-0 gap-3 justify-between overflow-hidden">
+                    <!-- Presensi Ekstrakurikuler Card -->
+                    <div class="flex-1 min-h-0 glass-panel rounded-2xl border border-white/10 p-3 sm:p-4 flex flex-col justify-between overflow-hidden shadow-xl">
+                        <div class="flex items-center justify-between pb-2 border-b border-white/10 shrink-0">
+                            <div class="flex items-center gap-2">
+                                <span class="p-1 rounded-lg bg-purple-500/20 text-purple-300 text-xs">📝</span>
+                                <h3 class="text-xs sm:text-sm font-black text-white">Log Presensi Ekskul Hari Ini</h3>
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                <span id="extraTotalToday" class="text-base font-black text-purple-300 font-mono">{{ $data['extracurricular']['total_today'] }}</span>
+                                <span class="text-[10px] text-slate-400">Siswa Hadir</span>
+                            </div>
+                        </div>
+
+                        <div id="extraRecentLogs" class="flex-1 min-h-0 overflow-y-auto kiosk-scroll space-y-2 py-2 pr-1">
+                            @forelse($data['extracurricular']['recent'] ?? [] as $ex)
+                                <div class="p-2.5 rounded-xl bg-slate-900/70 border border-white/5 flex items-center justify-between text-xs">
+                                    <div class="truncate mr-2">
+                                        <div class="font-bold text-white truncate">{{ $ex['name'] }} <span class="text-slate-400 font-normal">({{ $ex['class'] }})</span></div>
+                                        <div class="text-[10px] text-purple-300 font-semibold truncate">{{ $ex['extracurricular'] }}</div>
+                                    </div>
+                                    <div class="flex items-center gap-2 shrink-0">
+                                        <span class="px-2 py-0.5 rounded text-[9px] font-black bg-purple-500/20 text-purple-300">
+                                            {{ $ex['status'] }}
+                                        </span>
+                                        <span class="font-mono text-slate-400 text-[10px]">{{ $ex['time'] }}</span>
+                                    </div>
+                                </div>
+                            @empty
+                                <div class="h-full flex flex-col items-center justify-center text-center py-6 text-slate-500 text-xs space-y-1">
+                                    <span class="text-2xl">🎯</span>
+                                    <span class="font-semibold text-slate-400">Belum ada presensi ekstrakurikuler tercatat hari ini.</span>
+                                    <span class="text-[10px] text-slate-500">Presensi dibuka saat jadwal latihan ekskul berlangsung.</span>
+                                </div>
+                            @endforelse
+                        </div>
+
+                        <div class="pt-2 border-t border-white/5 text-[10px] text-slate-400 flex items-center justify-between shrink-0">
+                            <span>Presensi berbasis RFID / Barcode Mandiri</span>
+                            <span class="text-purple-300 font-mono font-bold">Terverifikasi</span>
+                        </div>
+                    </div>
+
+                    <!-- 4 Pilar Karakter Ekstrakurikuler -->
+                    <div class="glass-panel rounded-2xl border border-white/10 p-3 shrink-0 shadow-lg">
+                        <div class="text-[10px] font-black uppercase text-purple-300 tracking-wider mb-2 flex items-center gap-1.5">
+                            <span>🛡️</span> 4 PILAR PEMBINAAN KARAKTER EKSKUL
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 text-xs">
+                            <div class="p-2 rounded-xl bg-slate-900/70 border border-white/5">
+                                <div class="font-bold text-white flex items-center gap-1">
+                                    <span>🧭</span> Kepemimpinan
+                                </div>
+                                <div class="text-[9.5px] text-slate-400 mt-0.5 leading-snug">Menempa jiwa mandiri, tangguh, dan berintegritas.</div>
+                            </div>
+                            <div class="p-2 rounded-xl bg-slate-900/70 border border-white/5">
+                                <div class="font-bold text-white flex items-center gap-1">
+                                    <span>⏱️</span> Kedisiplinan
+                                </div>
+                                <div class="text-[9.5px] text-slate-400 mt-0.5 leading-snug">Menghargai waktu, aturan, dan komitmen tim.</div>
+                            </div>
+                            <div class="p-2 rounded-xl bg-slate-900/70 border border-white/5">
+                                <div class="font-bold text-white flex items-center gap-1">
+                                    <span>🎨</span> Kreativitas
+                                </div>
+                                <div class="text-[9.5px] text-slate-400 mt-0.5 leading-snug">Eksplorasi bakat seni, riset, dan olahraga.</div>
+                            </div>
+                            <div class="p-2 rounded-xl bg-slate-900/70 border border-white/5">
+                                <div class="font-bold text-white flex items-center gap-1">
+                                    <span>🤝</span> Solidaritas
+                                </div>
+                                <div class="text-[9.5px] text-slate-400 mt-0.5 leading-snug">Kebersamaan, gotong royong, dan empati sosial.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================================================= -->
+        <!-- SLIDE 8: BUKU KONTROL DIGITAL TAHFIDZ AL-QUR'AN JUZ 30 -->
+        <!-- ========================================================================= -->
+        <section id="slide-8" class="kiosk-slide hidden h-full w-full  flex-col justify-between overflow-hidden gap-3">
+            <!-- Slide Title Header -->
+            <div class="flex items-center justify-between shrink-0 pb-1 border-b border-white/5">
+                <div class="flex items-center gap-2">
+                    <div class="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-300 flex items-center justify-center font-black text-sm">09</div>
+                    <div>
+                        <h2 class="text-sm sm:text-base font-extrabold text-white flex items-center gap-2">
+                            <span>Buku Kontrol Digital: Setor Hafalan Juz 30 Al-Qur'an</span>
+                        </h2>
+                        <p class="text-[11px] text-slate-400">Target kelulusan surat per jenjang kelas X, XI, XII dan santri dengan capaian terbaik</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3 text-xs font-mono">
+                    <span class="px-2.5 py-1 rounded-lg bg-slate-900 border border-white/10 text-slate-300">
+                        Setoran Hari Ini: <strong id="tahfidzTotalToday" class="text-emerald-400">{{ $data['tahfidz']['total_today'] }}</strong>
+                    </span>
+                    <span class="px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-300">
+                        Lulus Hari Ini: <strong id="tahfidzPassedToday" class="text-white">{{ $data['tahfidz']['passed_today'] }}</strong>
+                    </span>
+                </div>
+            </div>
+
+            <!-- Main Content: Left 3 Grade Target & Top Students Columns, Right Recent Feed -->
+            <div class="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-3 lg:gap-4 overflow-hidden">
+                <!-- Left 3 Grade Cards (8 Cols) -->
+                <div class="lg:col-span-8 grid grid-cols-1 md:grid-cols-3 gap-3 min-h-0 overflow-hidden">
+                    @foreach(['X' => ['target' => 'Al-Balad s.d. An-Nas (25 Surat)', 'color' => 'teal'], 'XI' => ['target' => 'Al-Mutaffifin s.d. Al-Fajr (7 Surat)', 'color' => 'indigo'], 'XII' => ['target' => 'An-Naba\' s.d. Al-Infitar (5 Surat)', 'color' => 'emerald']] as $grd => $gcfg)
+                        <div class="rounded-2xl glass-panel border border-{{ $gcfg['color'] }}-500/30 p-3 sm:p-3.5 flex flex-col justify-between overflow-hidden shadow-lg">
+                            <div class="pb-2 border-b border-white/10 shrink-0">
+                                <div class="flex items-center justify-between">
+                                    <span class="px-2 py-0.5 rounded-md text-[10px] font-black bg-{{ $gcfg['color'] }}-500/20 text-{{ $gcfg['color'] }}-300 border border-{{ $gcfg['color'] }}-500/40">
+                                        KELAS {{ $grd }}
+                                    </span>
+                                    <span class="text-[10px] text-slate-400 font-mono">Target {{ $data['tahfidz']['rankings'][$grd]['total_target'] ?? 0 }} Surat</span>
+                                </div>
+                                <div class="text-[11px] text-slate-300 font-semibold mt-1 truncate">{{ $gcfg['target'] }}</div>
+                            </div>
+
+                            <!-- Top Students List per Grade -->
+                            <div id="tahfidzRankList{{ $grd }}" class="flex-1 min-h-0 overflow-y-auto kiosk-scroll space-y-2 my-2 pr-1">
+                                @forelse($data['tahfidz']['rankings'][$grd]['students'] ?? [] as $st)
+                                    <div class="rounded-xl px-2.5 py-2 flex items-center justify-between border {{ $st['rank'] === 1 ? 'bg-emerald-500/10 border-emerald-500/40 text-emerald-200' : 'bg-slate-900/60 border-white/5 text-slate-200' }}">
+                                        <div class="flex items-center gap-2 truncate mr-2">
+                                            <span class="w-5 h-5 rounded-md flex items-center justify-center text-[10px] font-black {{ $st['rank'] === 1 ? 'bg-emerald-500 text-slate-950' : 'bg-slate-800 text-slate-400' }}">
+                                                {{ $st['rank'] }}
+                                            </span>
+                                            <div class="truncate">
+                                                <div class="font-bold text-xs text-white truncate">{{ $st['name'] }}</div>
+                                                <div class="text-[9px] text-slate-400 truncate">{{ $st['class'] }} &bull; {{ $st['badge'] }}</div>
+                                            </div>
+                                        </div>
+                                        <div class="text-right shrink-0">
+                                            <span class="text-xs font-black text-emerald-300 font-mono">{{ $st['lulus_count'] }} <span class="text-[9px] font-sans text-slate-400">/ {{ $st['total_target'] }}</span></span>
+                                            <div class="text-[9px] text-emerald-400 font-bold">{{ $st['pct'] }}%</div>
+                                        </div>
+                                    </div>
+                                @empty
+                                    <div class="h-full flex items-center justify-center text-center text-slate-500 text-xs italic py-4">
+                                        Belum ada data capaian hafalan kelas {{ $grd }}.
+                                    </div>
+                                @endforelse
+                            </div>
+
+                            <div class="text-[10px] text-slate-400 text-center pt-1 border-t border-white/5 shrink-0">
+                                Evaluasi Tajwid, Makhraj &amp; Kelancaran
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+
+                <!-- Right Recent Setoran Tahfidz Feed (4 Cols) -->
+                <div class="lg:col-span-4 rounded-2xl glass-panel border border-white/10 p-3 sm:p-4 flex flex-col justify-between overflow-hidden shadow-xl">
+                    <div class="flex items-center justify-between pb-2 mb-2 border-b border-white/10 shrink-0">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                            <span class="text-xs font-black text-white uppercase tracking-wider">Setoran Hafalan Terkini</span>
+                        </div>
+                        <span class="text-[10px] text-slate-400 font-mono">Buku Kontrol</span>
+                    </div>
+
+                    <div id="tahfidzRecentLogs" class="flex-1 min-h-0 overflow-y-auto kiosk-scroll space-y-2 pr-1">
+                        @forelse($data['tahfidz']['recent'] as $rec)
+                            <div class="bg-slate-900/70 border border-white/5 rounded-xl px-3 py-2 flex items-center justify-between hover:border-emerald-500/30 transition">
+                                <div class="truncate mr-2">
+                                    <div class="font-bold text-xs text-white truncate">{{ $rec['name'] }} <span class="text-slate-400 font-normal">({{ $rec['class'] }})</span></div>
+                                    <div class="text-[10px] text-emerald-300 font-semibold">{{ $rec['surah'] }}</div>
+                                    <div class="text-[9px] text-slate-400">Tajwid: {{ $rec['tajwid'] }} &bull; Kelancaran: {{ $rec['kelancaran'] }}</div>
+                                </div>
+                                <div class="text-right shrink-0">
+                                    <span class="px-2 py-0.5 rounded text-[10px] font-black {{ $rec['grade'] === 'Lulus' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-amber-500/20 text-amber-300 border border-amber-500/30' }}">
+                                        {{ $rec['grade'] }}
+                                    </span>
+                                    <div class="text-[10px] text-slate-400 mt-1 font-mono">{{ $rec['time'] }}</div>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="h-full flex items-center justify-center text-slate-500 text-xs italic">
+                                Belum ada riwayat setoran hafalan hari ini.
+                            </div>
+                        @endforelse
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================================================= -->
+        <!-- SLIDE 9: HALL OF FAME — TOP 10 RANKING POIN PRESTASI POSITIF SISWA -->
+        <!-- ========================================================================= -->
+        <section id="slide-9" class="kiosk-slide hidden h-full w-full  flex-col justify-between overflow-hidden gap-3">
+            <!-- Slide Title Header -->
+            <div class="flex items-center justify-between shrink-0 pb-1 border-b border-white/5">
+                <div class="flex items-center gap-2">
+                    <div class="w-7 h-7 rounded-lg bg-yellow-500/20 text-yellow-300 flex items-center justify-center font-black text-sm">10</div>
+                    <div>
+                        <h2 class="text-sm sm:text-base font-extrabold text-white flex items-center gap-2">
+                            <span>Hall of Fame: Ranking Poin Prestasi Positif Siswa</span>
+                        </h2>
+                        <p class="text-[11px] text-slate-400">Papan apresiasi dan kehormatan siswa dengan akumulasi poin prestasi tertinggi</p>
+                    </div>
+                </div>
+                <div class="text-[11px] text-yellow-300 font-mono hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-yellow-500/10 border border-yellow-500/30">
+                    <span>🏆 Reward &amp; Prestasi Terverifikasi</span>
+                </div>
+            </div>
+
+            <!-- Main Podium & Leaderboard View -->
+            <div class="flex-1 min-h-0 flex flex-col justify-between gap-3 overflow-hidden">
+                <!-- Top 3 Grand Stage Podium -->
+                <div class="grid grid-cols-3 gap-3 sm:gap-4 shrink-0">
+                    @php
+                        $top1 = $data['ranking'][0] ?? null;
+                        $top2 = $data['ranking'][1] ?? null;
+                        $top3 = $data['ranking'][2] ?? null;
+                    @endphp
+
+                    <!-- Rank 2 (Silver) -->
+                    <div class="p-3 sm:p-4 rounded-2xl glass-card border border-slate-300/30 flex flex-col items-center text-center justify-between order-1 shadow-lg">
+                        <div class="w-7 h-7 rounded-full bg-slate-300 text-slate-950 font-black text-xs flex items-center justify-center shadow-md">2</div>
+                        <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-tr from-slate-400 to-slate-200 p-0.5 my-1.5 shadow-md">
+                            <div class="w-full h-full bg-slate-900 rounded-[14px] flex items-center justify-center font-black text-lg text-slate-200">
+                                {{ $top2 ? substr($top2['name'], 0, 2) : '--' }}
+                            </div>
+                        </div>
+                        <h4 class="text-xs sm:text-sm font-bold text-white truncate max-w-full">{{ $top2['name'] ?? 'Belum Ada' }}</h4>
+                        <span class="text-[10px] text-slate-400">{{ $top2['class'] ?? '-' }}</span>
+                        <div class="mt-1 px-3 py-0.5 rounded-full bg-slate-300/20 text-slate-200 font-mono font-black text-xs sm:text-sm">
+                            +{{ $top2['points'] ?? 0 }} Poin
+                        </div>
+                    </div>
+
+                    <!-- Rank 1 (Gold) - Higher & Glowing -->
+                    <div class="p-3 sm:p-4 rounded-2xl glass-panel border border-yellow-500/60 flex flex-col items-center text-center justify-between order-2 glow-gold scale-102">
+                        <span class="text-xl sm:text-2xl animate-bounce">👑</span>
+                        <div class="w-14 h-14 sm:w-18 sm:h-18 rounded-2xl bg-gradient-to-tr from-yellow-400 via-amber-300 to-yellow-500 p-1 my-1 shadow-xl shadow-yellow-500/30">
+                            <div class="w-full h-full bg-slate-900 rounded-[14px] flex items-center justify-center font-black text-xl sm:text-2xl text-yellow-300">
+                                {{ $top1 ? substr($top1['name'], 0, 2) : '--' }}
+                            </div>
+                        </div>
+                        <h4 class="text-sm sm:text-base font-black text-white truncate max-w-full">{{ $top1['name'] ?? 'Belum Ada' }}</h4>
+                        <span class="text-[10px] sm:text-xs text-yellow-200/90 font-semibold">{{ $top1['class'] ?? '-' }} &bull; {{ $top1['achievements_count'] ?? 0 }} Prestasi</span>
+                        <div class="mt-1 px-4 py-1 rounded-full bg-gradient-to-r from-yellow-500 to-amber-500 text-slate-950 font-mono font-black text-sm sm:text-base shadow-lg">
+                            +{{ $top1['points'] ?? 0 }} POIN
+                        </div>
+                    </div>
+
+                    <!-- Rank 3 (Bronze) -->
+                    <div class="p-3 sm:p-4 rounded-2xl glass-card border border-amber-600/30 flex flex-col items-center text-center justify-between order-3 shadow-lg">
+                        <div class="w-7 h-7 rounded-full bg-amber-600 text-white font-black text-xs flex items-center justify-center shadow-md">3</div>
+                        <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-tr from-amber-600 to-amber-400 p-0.5 my-1.5 shadow-md">
+                            <div class="w-full h-full bg-slate-900 rounded-[14px] flex items-center justify-center font-black text-lg text-amber-300">
+                                {{ $top3 ? substr($top3['name'], 0, 2) : '--' }}
+                            </div>
+                        </div>
+                        <h4 class="text-xs sm:text-sm font-bold text-white truncate max-w-full">{{ $top3['name'] ?? 'Belum Ada' }}</h4>
+                        <span class="text-[10px] text-slate-400">{{ $top3['class'] ?? '-' }}</span>
+                        <div class="mt-1 px-3 py-0.5 rounded-full bg-amber-600/20 text-amber-300 font-mono font-black text-xs sm:text-sm">
+                            +{{ $top3['points'] ?? 0 }} Poin
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ranks 4 to 10 Horizontal Grid -->
+                <div class="flex-1 min-h-0 rounded-2xl glass-card border border-white/10 p-3 flex flex-col justify-between overflow-hidden">
+                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 block shrink-0">Peringkat 4 s.d. 10 Poin Prestasi Sekolah</span>
+                    <div id="rankingList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 flex-1 min-h-0 overflow-y-auto kiosk-scroll pr-1">
+                        @forelse(collect($data['ranking'])->slice(3, 8) as $rk)
+                            <div class="rounded-xl px-3 py-2 bg-slate-900/60 border border-white/5 flex items-center justify-between">
+                                <div class="flex items-center gap-2 truncate mr-2">
+                                    <span class="w-5 h-5 rounded-md bg-slate-800 text-slate-400 flex items-center justify-center text-[10px] font-bold">
+                                        {{ $rk['rank'] }}
+                                    </span>
+                                    <div class="truncate">
+                                        <div class="font-bold text-xs text-white truncate">{{ $rk['name'] }}</div>
+                                        <div class="text-[9px] text-slate-400 truncate">{{ $rk['class'] }}</div>
+                                    </div>
+                                </div>
+                                <span class="font-mono font-black text-xs text-yellow-400 shrink-0">+{{ $rk['points'] }}</span>
+                            </div>
+                        @empty
+                            <div class="col-span-full text-center text-slate-500 text-xs italic py-2">
+                                Belum ada data prestasi lainnya.
+                            </div>
+                        @endforelse
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================================================= -->
+        <!-- SLIDE 10: KETERTIBAN SEKOLAH, PETUGAS PIKET & MONITORING POS SATPAM -->
+        <!-- ========================================================================= -->
+        <section id="slide-10" class="kiosk-slide hidden h-full w-full  flex-col justify-between overflow-hidden gap-3">
+            <!-- Slide Title Header -->
+            <div class="flex items-center justify-between shrink-0 pb-1 border-b border-white/5">
+                <div class="flex items-center gap-2">
+                    <div class="w-7 h-7 rounded-lg bg-sky-500/20 text-sky-300 flex items-center justify-center font-black text-sm">11</div>
+                    <div>
+                        <h2 class="text-sm sm:text-base font-extrabold text-white flex items-center gap-2">
+                            <span>Ketertiban Sekolah, Petugas Piket &amp; Monitoring Pos Satpam</span>
+                        </h2>
+                        <p class="text-[11px] text-slate-400">Jadwal guru/staf piket hari ini dan monitoring perizinan siswa di pos gerbang sekolah</p>
+                    </div>
+                </div>
+                <div class="text-[11px] text-sky-300 font-mono hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-sky-500/10 border border-sky-500/30">
+                    <span>🛡️ Keamanan &amp; Ketertiban Terpadu</span>
+                </div>
+            </div>
+
+            <!-- Main Grid: Left Duty Pickets, Right Security & Exit Permits -->
+            <div class="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-3 lg:gap-4 overflow-hidden">
+                <!-- Left Column: Picket Schedule (6 Cols) -->
+                <div class="lg:col-span-6 rounded-2xl glass-panel border border-white/10 p-3 sm:p-4 flex flex-col justify-between overflow-hidden shadow-xl">
+                    <div class="flex items-center justify-between pb-2 mb-2 border-b border-white/10 shrink-0">
+                        <div class="flex items-center gap-2">
+                            <span class="text-base">📋</span>
+                            <h3 class="text-xs sm:text-sm font-extrabold text-white uppercase tracking-wider">
+                                Petugas Piket Hari Ini ({{ $data['picket']['day_name'] ?? 'Aktif' }})
+                            </h3>
+                        </div>
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-teal-500/20 text-teal-300">
+                            {{ $data['picket']['total'] ?? 0 }} Petugas Bertugas
+                        </span>
+                    </div>
+
+                    <div id="picketOfficersList" class="flex-1 min-h-0 overflow-y-auto kiosk-scroll space-y-2 pr-1">
+                        @forelse($data['picket']['officers'] as $pk)
+                            <div class="p-2.5 rounded-xl bg-slate-900/70 border border-white/5 flex items-center justify-between hover:border-teal-500/30 transition">
+                                <div class="flex items-center gap-2.5 truncate mr-2">
+                                    <div class="w-8 h-8 rounded-xl bg-teal-500/20 text-teal-300 flex items-center justify-center font-bold text-xs shrink-0">
+                                        {{ substr($pk['name'], 0, 2) }}
+                                    </div>
+                                    <div class="truncate">
+                                        <div class="font-bold text-xs text-white truncate">{{ $pk['name'] }}</div>
+                                        <div class="text-[10px] text-slate-400 truncate">NIP: {{ $pk['nip'] }} &bull; {{ $pk['location'] }}</div>
+                                    </div>
+                                </div>
+                                <div class="text-right shrink-0">
+                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-800 text-teal-300 border border-teal-500/20">
+                                        {{ $pk['role_type'] }}
+                                    </span>
+                                    <div class="text-[9px] text-slate-400 mt-1 font-mono">{{ $pk['time'] }}</div>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="h-full flex items-center justify-center text-slate-500 text-xs italic py-6">
+                                Belum ada petugas piket yang terjadwal untuk hari ini.
+                            </div>
+                        @endforelse
+                    </div>
+
+                    <div class="mt-2 pt-2 border-t border-white/5 text-[10px] text-slate-400 flex items-center justify-between shrink-0">
+                        <span>Standby di Pos Piket Lobi Utama &amp; Pos Gerbang</span>
+                        <span class="font-mono text-teal-400">SMAN 1 Lengkong</span>
+                    </div>
+                </div>
+
+                <!-- Right Column: Security Gate & Permits Monitoring (6 Cols) -->
+                <div class="lg:col-span-6 rounded-2xl glass-panel border border-white/10 p-3 sm:p-4 flex flex-col justify-between overflow-hidden shadow-xl">
+                    <div class="flex items-center justify-between pb-2 mb-2 border-b border-white/10 shrink-0">
+                        <div class="flex items-center gap-2">
+                            <span class="text-base">🛡️</span>
+                            <h3 class="text-xs sm:text-sm font-extrabold text-white uppercase tracking-wider">
+                                Monitoring Pos Satpam &amp; Perizinan Siswa
+                            </h3>
+                        </div>
+                        <span class="text-[10px] text-slate-400 font-mono">Gerbang Sekolah</span>
+                    </div>
+
+                    <!-- 3 Security Metric Badges -->
+                    <div class="grid grid-cols-3 gap-2 shrink-0 mb-2">
+                        <div class="p-2 rounded-xl bg-amber-500/10 border border-amber-500/20 text-center">
+                            <span class="text-[9px] text-amber-300 font-bold block uppercase">Di Luar Kampus</span>
+                            <span id="securityOutsideCount" class="text-lg font-black text-white font-mono">{{ $data['security']['currently_outside'] ?? 0 }}</span>
+                            <span class="text-[9px] text-slate-400 block">Siswa</span>
+                        </div>
+                        <div class="p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-center">
+                            <span class="text-[9px] text-emerald-300 font-bold block uppercase">Sudah Kembali</span>
+                            <span id="securityReturnedCount" class="text-lg font-black text-white font-mono">{{ $data['security']['returned'] ?? 0 }}</span>
+                            <span class="text-[9px] text-slate-400 block">Siswa</span>
+                        </div>
+                        <div class="p-2 rounded-xl bg-sky-500/10 border border-sky-500/20 text-center">
+                            <span class="text-[9px] text-sky-300 font-bold block uppercase">Pulang Cepat</span>
+                            <span id="securityEarlyLeavesCount" class="text-lg font-black text-white font-mono">{{ $data['security']['early_leaves_count'] ?? 0 }}</span>
+                            <span class="text-[9px] text-slate-400 block">Disetujui</span>
+                        </div>
+                    </div>
+
+                    <!-- Recent Permits Feed -->
+                    <div id="securityRecentPermits" class="flex-1 min-h-0 overflow-y-auto kiosk-scroll space-y-2 pr-1">
+                        @forelse($data['security']['recent'] as $pm)
+                            <div class="p-2 rounded-xl bg-slate-900/70 border border-white/5 flex items-center justify-between text-xs">
+                                <div class="truncate mr-2">
+                                    <div class="font-bold text-white truncate">{{ $pm['students'] }}</div>
+                                    <div class="text-[10px] text-slate-400 truncate">{{ $pm['purpose'] }}</div>
+                                </div>
+                                <div class="text-right shrink-0">
+                                    <span class="px-2 py-0.5 rounded text-[9px] font-black {{ $pm['status'] === 'SUDAH KEMBALI' ? 'bg-emerald-500/20 text-emerald-300' : ($pm['status'] === 'DI LUAR SEKOLAH' ? 'bg-amber-500/20 text-amber-300' : 'bg-sky-500/20 text-sky-300') }}">
+                                        {{ $pm['status'] }}
+                                    </span>
+                                    <div class="text-[9px] text-slate-400 mt-0.5 font-mono">{{ $pm['time'] }}</div>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="h-full flex items-center justify-center text-slate-500 text-xs italic py-4">
+                                Tidak ada siswa berizin keluar atau pulang cepat hari ini.
+                            </div>
+                        @endforelse
+                    </div>
+
+                    <div class="mt-2 pt-2 border-t border-white/5 text-[10px] text-slate-400 flex items-center justify-between shrink-0">
+                        <span>Pemeriksaan ketat surat izin bermaterai/QR oleh satpam</span>
+                        <a href="{{ route('attendance.kiosk-satpam') }}" target="_blank" class="text-teal-400 hover:underline">Buka Kios Satpam &rarr;</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================================================= -->
+        <!-- SLIDE 11: BERITA & WARTA SEKOLAH RESMI -->
+        <!-- ========================================================================= -->
+        <section id="slide-11" class="kiosk-slide h-full w-full hidden flex-col justify-between overflow-hidden gap-3">
+            <!-- Slide Title Header -->
+            <div class="flex items-center justify-between shrink-0 pb-1 border-b border-white/5">
+                <div class="flex items-center gap-2">
+                    <div class="w-7 h-7 rounded-lg bg-teal-500/20 text-teal-300 flex items-center justify-center font-black text-sm">12</div>
+                    <div>
+                        <h2 class="text-sm sm:text-base font-extrabold text-white flex items-center gap-2">
+                            <span>Warta &amp; Publikasi Resmi Sekolah</span>
+                            <span class="text-xs font-normal text-slate-400 hidden md:inline">&bull; Kabar Terkini, Prestasi &amp; Dokumentasi Kegiatan Siswa</span>
+                        </h2>
+                        <p class="text-[10px] text-slate-400">Liputan berita resmi SMAN 1 Lengkong yang terintegrasi langsung dengan portal website</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="px-2.5 py-1 rounded-full text-[10px] font-black bg-teal-500/20 text-teal-300 border border-teal-500/30 flex items-center gap-1">
+                        <span>📰</span> PORTAL BERITA
+                    </span>
+                    <a href="{{ route('website.home') }}#berita" target="_blank" class="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 transition">
+                        Buka di Web &rarr;
+                    </a>
+                </div>
+            </div>
+
+            <!-- Content Area: Two-Column TV Layout -->
+            <div class="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-3.5 overflow-hidden">
+                @php
+                    $newsList = $data['news'] ?? [];
+                    $featuredNews = $newsList[0] ?? null;
+                    $otherNews = array_slice($newsList, 1);
+                @endphp
+
+                <!-- Left Column: Featured News (7 of 12 cols) -->
+                <div class="lg:col-span-7 h-full flex flex-col glass-card rounded-2xl border border-white/10 p-3 sm:p-4 overflow-hidden glow-teal">
+                    @if($featuredNews)
+                        @php
+                            $imgSrc = null;
+                            if (!empty($featuredNews['image'])) {
+                                $imgSrc = (str_starts_with($featuredNews['image'], 'http') || str_starts_with($featuredNews['image'], 'images/') || str_starts_with($featuredNews['image'], 'storage/'))
+                                    ? asset($featuredNews['image'])
+                                    : asset('storage/' . $featuredNews['image']);
+                            }
+                        @endphp
+                        <div class="relative w-full h-44 sm:h-52 md:h-60 rounded-xl overflow-hidden shrink-0 border border-white/10 bg-slate-900 shadow-lg">
+                            @if($imgSrc)
+                                <img src="{{ $imgSrc }}" alt="{{ $featuredNews['title'] }}" class="w-full h-full object-cover">
+                            @else
+                                <div class="w-full h-full flex items-center justify-center bg-gradient-to-tr from-slate-950 via-slate-900 to-teal-950">
+                                    <span class="text-4xl">📰</span>
+                                </div>
+                            @endif
+                            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent"></div>
+                            
+                            <div class="absolute top-3 left-3 flex items-center gap-2">
+                                <span class="px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider bg-teal-500 text-slate-950 shadow-md">
+                                    ⭐ UTAMA &bull; {{ $featuredNews['category'] ?? 'Berita' }}
+                                </span>
+                            </div>
+
+                            <div class="absolute bottom-3 left-3 right-3 flex items-center justify-between text-[11px] text-slate-300">
+                                <span class="flex items-center gap-1.5 font-medium bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/10">
+                                    <span>🗓️</span> {{ $featuredNews['date'] ?? '' }}
+                                </span>
+                                <span class="flex items-center gap-1.5 font-medium bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/10">
+                                    <span>✍️</span> {{ $featuredNews['author'] ?? 'Humas SMAN 1 Lengkong' }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Featured Body -->
+                        <div class="flex-1 min-h-0 flex flex-col justify-between mt-3 overflow-hidden">
+                            <div>
+                                <h3 class="text-base sm:text-lg font-black text-white leading-snug line-clamp-2 hover:text-teal-300 transition">
+                                    {{ $featuredNews['title'] }}
+                                </h3>
+                                <p class="text-xs sm:text-sm text-slate-300 mt-2 leading-relaxed line-clamp-3 sm:line-clamp-4 font-normal">
+                                    {{ $featuredNews['excerpt'] ?? Str::limit(strip_tags($featuredNews['content'] ?? ''), 220) }}
+                                </p>
+                            </div>
+                            
+                            <div class="pt-2 border-t border-white/5 flex items-center justify-between text-xs text-slate-400 mt-2 shrink-0">
+                                <span class="text-[11px] flex items-center gap-1 text-teal-400 font-semibold">
+                                    <span>🌐</span> Terpublikasi di Portal Resmi SMAN 1 Lengkong
+                                </span>
+                                <span class="font-mono text-[10px] text-slate-500">sman1lengkong.school</span>
+                            </div>
+                        </div>
+                    @else
+                        <div class="h-full flex items-center justify-center text-slate-500 text-xs italic">
+                            Belum ada artikel berita tersimpan.
+                        </div>
+                    @endif
+                </div>
+
+                <!-- Right Column: Other Recent News Cards (5 of 12 cols) -->
+                <div class="lg:col-span-5 h-full flex flex-col glass-card rounded-2xl border border-white/10 p-3 sm:p-4 overflow-hidden">
+                    <div class="flex items-center justify-between pb-2 mb-2 border-b border-white/10 shrink-0">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-teal-400 animate-ping"></span>
+                            <h4 class="text-xs font-black uppercase tracking-wider text-slate-200">Koleksi Warta Terbaru</h4>
+                        </div>
+                        <span class="text-[10px] font-mono text-slate-400">{{ count($newsList) }} Berita Aktif</span>
+                    </div>
+
+                    <div class="flex-1 min-h-0 overflow-y-auto kiosk-scroll flex flex-col gap-2.5 pr-1">
+                        @forelse($otherNews as $item)
+                            @php
+                                $subImg = null;
+                                if (!empty($item['image'])) {
+                                    $subImg = (str_starts_with($item['image'], 'http') || str_starts_with($item['image'], 'images/') || str_starts_with($item['image'], 'storage/'))
+                                        ? asset($item['image'])
+                                        : asset('storage/' . $item['image']);
+                                }
+                            @endphp
+                            <div class="p-2.5 rounded-xl bg-slate-900/70 border border-white/5 hover:border-teal-500/30 transition flex gap-3 items-center group">
+                                <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden shrink-0 border border-white/10 bg-slate-950 relative">
+                                    @if($subImg)
+                                        <img src="{{ $subImg }}" alt="{{ $item['title'] }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                                    @else
+                                        <div class="w-full h-full flex items-center justify-center bg-slate-800 text-slate-400 text-lg">
+                                            📰
+                                        </div>
+                                    @endif
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <span class="px-2 py-0.5 rounded text-[9px] font-black uppercase bg-teal-500/20 text-teal-300 border border-teal-500/30">
+                                            {{ $item['category'] ?? 'Berita' }}
+                                        </span>
+                                        <span class="text-[10px] text-slate-400 font-mono">{{ $item['date'] ?? '' }}</span>
+                                    </div>
+                                    <h5 class="text-xs font-bold text-white leading-snug line-clamp-2 group-hover:text-teal-300 transition">
+                                        {{ $item['title'] }}
+                                    </h5>
+                                    <p class="text-[10px] text-slate-400 line-clamp-2 mt-1 leading-snug">
+                                        {{ $item['excerpt'] ?? Str::limit(strip_tags($item['content'] ?? ''), 90) }}
+                                    </p>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="h-full flex items-center justify-center text-slate-500 text-xs italic py-6">
+                                Belum ada artikel warta tambahan.
+                            </div>
+                        @endforelse
+                    </div>
+
+                    <div class="pt-2 mt-2 border-t border-white/5 flex items-center justify-between text-[11px] text-slate-400 shrink-0">
+                        <span>Menampilkan warta rujukan website</span>
+                        <span class="text-teal-400 font-mono text-[10px]">Pembaruan Otomatis</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================================================= -->
+        <!-- SLIDE 12: AGENDA & KALENDER KEGIATAN AKADEMIK RESMI -->
+        <!-- ========================================================================= -->
+        <section id="slide-12" class="kiosk-slide h-full w-full hidden flex-col justify-between overflow-hidden gap-3">
+            <!-- Slide Title Header -->
+            <div class="flex items-center justify-between shrink-0 pb-1 border-b border-white/5">
+                <div class="flex items-center gap-2">
+                    <div class="w-7 h-7 rounded-lg bg-indigo-500/20 text-indigo-300 flex items-center justify-center font-black text-sm">13</div>
+                    <div>
+                        <h2 class="text-sm sm:text-base font-extrabold text-white flex items-center gap-2">
+                            <span>Agenda &amp; Kalender Kegiatan Akademik</span>
+                            <span class="text-xs font-normal text-slate-400 hidden md:inline">&bull; Jadwal Asesmen, Projek P5, Peringatan &amp; Kegiatan Resmi</span>
+                        </h2>
+                        <p class="text-[10px] text-slate-400">Jadwal kegiatan akademik dan kesiswaan SMAN 1 Lengkong terkoneksi langsung dari website</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="px-2.5 py-1 rounded-full text-[10px] font-black bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 flex items-center gap-1">
+                        <span>📅</span> KALENDER AGENDA
+                    </span>
+                    <a href="{{ route('website.home') }}#agenda" target="_blank" class="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 transition">
+                        Buka di Web &rarr;
+                    </a>
+                </div>
+            </div>
+
+            <!-- Content Area: Agenda Grid & Info Cards -->
+            <div class="flex-1 min-h-0 flex flex-col gap-3 overflow-hidden">
+                <!-- Top Summary Ribbon -->
+                <div class="p-2.5 sm:p-3 rounded-xl bg-gradient-to-r from-indigo-950/70 via-slate-900/80 to-teal-950/70 border border-indigo-500/20 flex flex-wrap items-center justify-between gap-3 shrink-0 shadow-md">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-xl bg-indigo-500/20 text-indigo-300 flex items-center justify-center text-lg font-black shrink-0">
+                            🗓️
+                        </div>
+                        <div>
+                            <div class="text-xs sm:text-sm font-bold text-white">Kalender Aktivitas Terpadu SMAN 1 Lengkong</div>
+                            <div class="text-[10.5px] text-slate-300">Seluruh agenda resmi mengacu pada kalender pendidikan &amp; agenda semester berjalan</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 font-mono text-xs">
+                        <span class="px-3 py-1 rounded-lg bg-indigo-500/30 text-indigo-300 font-bold border border-indigo-500/40">
+                            {{ count($data['agendas'] ?? []) }} Agenda Terdaftar
+                        </span>
+                        <span class="px-3 py-1 rounded-lg bg-teal-500/30 text-teal-300 font-bold border border-teal-500/40 hidden sm:inline-block">
+                            Semester Ganjil 2026/2027
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Grid of Agenda Cards -->
+                <div class="flex-1 min-h-0 overflow-y-auto kiosk-scroll grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-3 pr-1">
+                    @forelse($data['agendas'] ?? [] as $idx => $agenda)
+                        @php
+                            $dateObj = null;
+                            try {
+                                $dateObj = \Carbon\Carbon::parse($agenda['date']);
+                            } catch (\Throwable $e) {}
+                            $dayNum = $dateObj ? $dateObj->format('d') : '25';
+                            $monthStr = $dateObj ? $dateObj->translatedFormat('M') : 'NOV';
+                            $dayName = $dateObj ? $dateObj->translatedFormat('l') : 'Rabu';
+                        @endphp
+                        <div class="glass-card rounded-2xl border border-white/10 p-3.5 flex flex-col justify-between hover:border-indigo-500/40 transition group glow-indigo relative overflow-hidden">
+                            <!-- Top Ribbon: Date Badge + Tag -->
+                            <div class="flex items-start justify-between gap-3 mb-2">
+                                <div class="flex items-center gap-2.5">
+                                    <div class="w-12 h-13 rounded-xl bg-gradient-to-b from-indigo-500 to-indigo-700 text-white flex flex-col items-center justify-center shadow-lg shrink-0 border border-indigo-400/30">
+                                        <span class="text-[9px] font-black tracking-widest uppercase">{{ $monthStr }}</span>
+                                        <span class="text-base font-extrabold leading-tight">{{ $dayNum }}</span>
+                                    </div>
+                                    <div>
+                                        <span class="px-2 py-0.5 rounded text-[9px] font-black uppercase bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                                            {{ $agenda['tag'] ?? 'Akademik' }}
+                                        </span>
+                                        <div class="text-[10px] text-slate-400 font-mono mt-0.5">
+                                            {{ $dayName }}, {{ $agenda['date'] ?? '' }}
+                                            @if(!empty($agenda['end_date']))
+                                                s.d. {{ $agenda['end_date'] }}
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <span class="w-7 h-7 rounded-lg bg-slate-900 border border-white/10 flex items-center justify-center text-xs text-indigo-300 font-mono">
+                                    #{{ $idx + 1 }}
+                                </span>
+                            </div>
+
+                            <!-- Title & Description -->
+                            <div class="flex-1 min-h-0 my-1">
+                                <h4 class="text-sm font-extrabold text-white leading-snug group-hover:text-indigo-300 transition line-clamp-2">
+                                    {{ $agenda['title'] }}
+                                </h4>
+                                <p class="text-xs text-slate-300 leading-relaxed mt-1.5 line-clamp-3">
+                                    {{ $agenda['description'] ?? 'Agenda resmi sekolah yang wajib diikuti oleh warga sekolah yang bersangkutan.' }}
+                                </p>
+                            </div>
+
+                            <!-- Footer Card Status -->
+                            <div class="pt-2 mt-2 border-t border-white/5 flex items-center justify-between text-[10.5px] text-slate-400 shrink-0">
+                                <span class="flex items-center gap-1 text-teal-400 font-medium">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse"></span> Terjadwal Resmi
+                                </span>
+                                <span class="font-mono text-slate-500 text-[10px]">SMAN 1 Lengkong</span>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="col-span-full h-full flex items-center justify-center text-slate-500 text-xs italic py-12">
+                            Belum ada jadwal agenda yang dipublikasikan.
+                        </div>
+                    @endforelse
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================================================= -->
+        <!-- SLIDE 13: BUKU TAMU KEDINASAN & KUNJUNGAN SEKOLAH (SIKATAS) -->
+        <!-- ========================================================================= -->
         <section id="slide-13" class="hidden flex-col h-full min-h-0 overflow-hidden">
             <!-- Header Slide -->
             <div class="flex items-center justify-between pb-2 shrink-0">
@@ -2451,6 +2559,32 @@
         let isPaused = false;
         let slideTimerInterval = null;
 
+                // Theme Controller (Dark / Light Theme)
+        function initKioskTheme() {
+            const saved = localStorage.getItem('kiosk_theme') || 'dark';
+            applyKioskTheme(saved);
+        }
+
+        function applyKioskTheme(theme) {
+            const icon = document.getElementById('themeToggleIcon');
+            if (theme === 'light') {
+                document.documentElement.classList.remove('dark');
+                document.documentElement.classList.add('light');
+                if (icon) icon.textContent = '☀️';
+                localStorage.setItem('kiosk_theme', 'light');
+            } else {
+                document.documentElement.classList.add('dark');
+                document.documentElement.classList.remove('light');
+                if (icon) icon.textContent = '🌙';
+                localStorage.setItem('kiosk_theme', 'dark');
+            }
+        }
+
+        function toggleKioskTheme() {
+            const isDark = document.documentElement.classList.contains('dark');
+            applyKioskTheme(isDark ? 'light' : 'dark');
+        }
+
         // Sub-page Controller for Direktori Guru & Staf
         let currentStaffPageIdx = 0;
         const totalStaffPages = {{ max(1, count(array_chunk($data['staff'] ?? [], 8))) }};
@@ -2603,6 +2737,7 @@
 
         // Initialize Slide Engine
         function initSlideDeck() {
+            initKioskTheme();
             showSlide(currentSlideIdx);
             startSlideTimer();
             updateLiveClock();

@@ -323,7 +323,7 @@ class KioskController extends Controller
             $targetSurahKeys = array_keys($targetSurahs);
             $totalTarget = count($targetSurahs);
 
-            $topStudents = Student::where('is_active', true)
+            $students = Student::where('is_active', true)
                 ->whereHas('schoolClass', function ($q) use ($grade) {
                     $q->where('grade', $grade)
                         ->orWhere('grade', match ($grade) {
@@ -333,33 +333,50 @@ class KioskController extends Controller
                             default => $grade
                         });
                 })
-                ->withCount([
-                    'tahfidzRecords as lulus_count' => function ($q) use ($targetSurahKeys) {
-                        $q->where('overall_grade', 'Lulus')
-                            ->whereIn('surah_number', $targetSurahKeys);
-                    },
-                ])
                 ->whereHas('tahfidzRecords', function ($q) use ($targetSurahKeys) {
                     $q->where('overall_grade', 'Lulus')
                         ->whereIn('surah_number', $targetSurahKeys);
                 })
-                ->orderByDesc('lulus_count')
-                ->limit(5)
-                ->with('schoolClass')
+                ->with(['tahfidzRecords' => function ($q) use ($targetSurahKeys) {
+                    $q->where('overall_grade', 'Lulus')
+                        ->whereIn('surah_number', $targetSurahKeys);
+                }, 'schoolClass'])
                 ->get();
+
+            $topStudents = $students->map(function ($s) use ($targetSurahKeys, $totalTarget) {
+                // Hitung jumlah surat unik yang lulus pada target jenjang
+                $distinctSurahs = $s->tahfidzRecords
+                    ->where('overall_grade', 'Lulus')
+                    ->whereIn('surah_number', $targetSurahKeys)
+                    ->pluck('surah_number')
+                    ->unique();
+                $distinctCount = $distinctSurahs->count();
+                $lulusCount = min($totalTarget, $distinctCount);
+                $pct = $totalTarget > 0 ? min(100.0, round(($lulusCount / $totalTarget) * 100, 1)) : 0;
+
+                return [
+                    'student' => $s,
+                    'lulus_count' => $lulusCount,
+                    'pct' => $pct,
+                ];
+            })
+                ->filter(fn ($item) => $item['lulus_count'] > 0)
+                ->sortByDesc('lulus_count')
+                ->take(5)
+                ->values();
 
             $tahfidzRankings[$grade] = [
                 'total_target' => $totalTarget,
-                'students' => $topStudents->values()->map(function ($s, $idx) use ($totalTarget) {
-                    $pct = $totalTarget > 0 ? round(($s->lulus_count / $totalTarget) * 100, 1) : 0;
+                'students' => $topStudents->map(function ($item, $idx) use ($totalTarget) {
+                    $s = $item['student'];
 
                     return [
                         'rank' => $idx + 1,
                         'name' => $s->name,
                         'class' => $s->schoolClass?->name ?? '-',
-                        'lulus_count' => (int) $s->lulus_count,
+                        'lulus_count' => (int) $item['lulus_count'],
                         'total_target' => $totalTarget,
-                        'pct' => $pct,
+                        'pct' => $item['pct'],
                         'badge' => match ($idx) {
                             0 => '👑 TERBAIK 1',
                             1 => '⭐ TERBAIK 2',
