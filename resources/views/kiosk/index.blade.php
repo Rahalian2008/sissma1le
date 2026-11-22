@@ -141,22 +141,28 @@
                 <span>6. Profil</span>
             </button>
             <button type="button" onclick="goToSlide(6)" id="pill-slide-6" class="slide-nav-pill px-1.5 lg:px-2 py-0.5 sm:py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap text-[10.5px] lg:text-[11px]">
-                <span>7. Berita</span>
+                <span>7. Ekskul</span>
             </button>
             <button type="button" onclick="goToSlide(7)" id="pill-slide-7" class="slide-nav-pill px-1.5 lg:px-2 py-0.5 sm:py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap text-[10.5px] lg:text-[11px]">
-                <span>8. Agenda</span>
+                <span>8. Rombel</span>
             </button>
             <button type="button" onclick="goToSlide(8)" id="pill-slide-8" class="slide-nav-pill px-1.5 lg:px-2 py-0.5 sm:py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap text-[10.5px] lg:text-[11px]">
-                <span>9. Guru &amp; TU</span>
+                <span>9. Berita</span>
             </button>
             <button type="button" onclick="goToSlide(9)" id="pill-slide-9" class="slide-nav-pill px-1.5 lg:px-2 py-0.5 sm:py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap text-[10.5px] lg:text-[11px]">
-                <span>10. Perpus</span>
+                <span>10. Agenda</span>
             </button>
             <button type="button" onclick="goToSlide(10)" id="pill-slide-10" class="slide-nav-pill px-1.5 lg:px-2 py-0.5 sm:py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap text-[10.5px] lg:text-[11px]">
-                <span>11. BK</span>
+                <span>11. Guru &amp; TU</span>
             </button>
             <button type="button" onclick="goToSlide(11)" id="pill-slide-11" class="slide-nav-pill px-1.5 lg:px-2 py-0.5 sm:py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap text-[10.5px] lg:text-[11px]">
-                <span>12. Tamu</span>
+                <span>12. Perpus</span>
+            </button>
+            <button type="button" onclick="goToSlide(12)" id="pill-slide-12" class="slide-nav-pill px-1.5 lg:px-2 py-0.5 sm:py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap text-[10.5px] lg:text-[11px]">
+                <span>13. BK</span>
+            </button>
+            <button type="button" onclick="goToSlide(13)" id="pill-slide-13" class="slide-nav-pill px-1.5 lg:px-2 py-0.5 sm:py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap text-[10.5px] lg:text-[11px]">
+                <span>14. Tamu</span>
             </button>
         </div>
 
@@ -877,106 +883,94 @@
         </section>
 
         <!-- ========================================================================= -->
-        <!-- SLIDE 5: EKSTRAKURIKULER, PROFIL & VISI MISI SMAN 1 LENGKONG             -->
+        <!-- SLIDE 5: IDENTITAS RESMI, PROFIL & KEPEMIMPINAN SMAN 1 LENGKONG           -->
         <!-- ========================================================================= -->
-        <section id="slide-5" class="kiosk-slide hidden h-full w-full flex flex-col justify-between overflow-hidden gap-3">
+        <section id="slide-5" class="kiosk-slide hidden h-full w-full flex-col justify-between overflow-hidden gap-3">
             <!-- Slide Title Header -->
             <div class="flex items-center justify-between shrink-0 pb-1 border-b border-white/5">
                 <div class="flex items-center gap-2">
-                    <div class="w-7 h-7 rounded-lg bg-purple-500/20 text-purple-300 flex items-center justify-center font-black text-sm">06</div>
+                    <div class="w-7 h-7 rounded-lg bg-teal-500/20 text-teal-300 flex items-center justify-center font-black text-sm">06</div>
                     <div>
                         <h2 class="text-sm sm:text-base font-extrabold text-white flex items-center gap-2">
-                            <span>Presensi Ekstrakurikuler &amp; Profil SMA Negeri 1 Lengkong</span>
+                            <span>Profil Resmi Kelembagaan &amp; Kepemimpinan Sekolah</span>
                         </h2>
-                        <p class="text-[11px] text-slate-400">Pengembangan bakat minat siswa, identitas resmi, serta visi-misi sekolah</p>
+                        <p class="text-[11px] text-slate-400">Identitas lengkap, legalitas institusi, akreditasi, pimpinan kepala sekolah, serta visi &amp; misi resmi</p>
                     </div>
                 </div>
-                <div class="text-[11px] text-purple-300 font-mono hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-purple-500/10 border border-purple-500/30">
-                    <span>🎯 Minat &amp; Bakat Siswa</span>
+                <div class="text-[11px] text-teal-300 font-mono hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-teal-500/10 border border-teal-500/30">
+                    <span>🏛️ Profil Lembaga &amp; Pimpinan</span>
                 </div>
             </div>
 
-            <!-- Main Grid: Left Extracurricular Feed, Right School Profile & Vision -->
+            <!-- Main Grid: Left 7 Cols (Identitas Lengkap + Visi & Misi), Right 5 Cols (Pimpinan / Kepala Sekolah) -->
             <div class="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-3 lg:gap-4 overflow-hidden">
-                <!-- Left Column: Ekstrakurikuler (5 Cols) -->
-                <div class="lg:col-span-5 rounded-2xl glass-panel border border-white/10 p-3 sm:p-4 flex flex-col justify-between overflow-hidden shadow-xl">
-                    <div class="flex items-center justify-between pb-2 mb-2 border-b border-white/10 shrink-0">
-                        <div class="flex items-center gap-2">
-                            <span class="text-base">🎯</span>
-                            <h3 class="text-xs sm:text-sm font-extrabold text-white uppercase tracking-wider">
-                                Presensi Ekstrakurikuler
-                            </h3>
+                <!-- Left Column (7 Cols): Identitas Sekolah & Visi Misi -->
+                <div class="lg:col-span-7 flex flex-col h-full min-h-0 gap-3 overflow-hidden">
+                    <!-- School Identity Specs Card -->
+                    <div class="glass-panel rounded-2xl border border-white/10 p-3 sm:p-4 shrink-0 shadow-lg">
+                        <div class="flex items-center justify-between pb-2.5 mb-2.5 border-b border-white/10">
+                            <div class="flex items-center gap-2.5">
+                                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-teal-500 to-indigo-600 p-0.5 shadow-md shrink-0">
+                                    <div class="w-full h-full bg-slate-900 rounded-[10px] flex items-center justify-center font-black text-white text-sm">
+                                        1LE
+                                    </div>
+                                </div>
+                                <div>
+                                    <h3 class="text-sm sm:text-base font-black text-white leading-tight">{{ $data['profile']['name'] }}</h3>
+                                    <div class="text-[10.5px] text-slate-400 mt-0.5">
+                                        {{ $data['profile']['province_dept'] }} &bull; {{ $data['profile']['branch_office'] }}
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-teal-500/20 text-teal-300 border border-teal-500/30">
+                                Akreditasi {{ $data['profile']['accreditation'] }}
+                            </span>
                         </div>
-                        <div class="text-right">
-                            <span id="extraTotalToday" class="text-base font-black text-purple-300 font-mono">{{ $data['extracurricular']['total_today'] }}</span>
-                            <span class="text-[10px] text-slate-400">Hadir</span>
-                        </div>
-                    </div>
 
-                    <div class="text-[10px] text-slate-400 mb-2 shrink-0">
-                        Jadwal Latihan: <strong class="text-slate-300">{{ $data['extracurricular']['schedule'] ?? '-' }}</strong>
-                    </div>
-
-                    <div id="extraRecentLogs" class="flex-1 min-h-0 overflow-y-auto kiosk-scroll space-y-2 pr-1">
-                        @forelse($data['extracurricular']['recent'] as $ex)
-                            <div class="p-2 rounded-xl bg-slate-900/70 border border-white/5 flex items-center justify-between text-xs">
-                                <div class="truncate mr-2">
-                                    <div class="font-bold text-white truncate">{{ $ex['name'] }} <span class="text-slate-400 font-normal">({{ $ex['class'] }})</span></div>
-                                    <div class="text-[10px] text-purple-300 font-semibold truncate">{{ $ex['extracurricular'] }}</div>
-                                </div>
-                                <div class="flex items-center gap-2 shrink-0">
-                                    <span class="px-2 py-0.5 rounded text-[9px] font-black bg-purple-500/20 text-purple-300">
-                                        {{ $ex['status'] }}
-                                    </span>
-                                    <span class="font-mono text-slate-400 text-[10px]">{{ $ex['time'] }}</span>
-                                </div>
+                        <!-- 6-Grid School Meta Details -->
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
+                            <div class="p-2 rounded-xl bg-slate-900/70 border border-white/5">
+                                <div class="text-[9.5px] text-slate-400 uppercase tracking-wider font-semibold">NPSN</div>
+                                <div class="font-mono font-bold text-white text-[12px] mt-0.5">{{ $data['profile']['npsn'] }}</div>
                             </div>
-                        @empty
-                            <div class="h-full flex items-center justify-center text-slate-500 text-xs italic py-6">
-                                Belum ada presensi ekstrakurikuler tercatat hari ini.
+                            <div class="p-2 rounded-xl bg-slate-900/70 border border-white/5">
+                                <div class="text-[9.5px] text-slate-400 uppercase tracking-wider font-semibold">NSS</div>
+                                <div class="font-mono font-bold text-white text-[12px] mt-0.5">{{ $data['profile']['nss'] }}</div>
                             </div>
-                        @endforelse
-                    </div>
-
-                    <div class="mt-2 pt-2 border-t border-white/5 text-[10px] text-slate-400 shrink-0">
-                        Pramuka, Paskibra, PMR, Rohis, Seni Tari, Olahraga Prestasi &bull; S1L
-                    </div>
-                </div>
-
-                <!-- Right Column: Profil Resmi & Visi Misi Sekolah (7 Cols) -->
-                <div class="lg:col-span-7 rounded-2xl glass-panel border border-white/10 p-3 sm:p-5 flex flex-col justify-between overflow-hidden shadow-xl">
-                    <!-- School Header Profile -->
-                    <div class="flex items-center justify-between pb-3 border-b border-white/10 shrink-0">
-                        <div class="flex items-center gap-3">
-                            <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-teal-500 to-indigo-600 p-0.5 shadow-lg">
-                                <div class="w-full h-full bg-slate-900 rounded-[14px] flex items-center justify-center font-black text-white text-lg">
-                                    1LE
-                                </div>
+                            <div class="p-2 rounded-xl bg-slate-900/70 border border-white/5">
+                                <div class="text-[9.5px] text-slate-400 uppercase tracking-wider font-semibold">Status / Kurikulum</div>
+                                <div class="font-bold text-teal-300 text-[11px] truncate mt-0.5">{{ $data['profile']['status'] }} &bull; {{ $data['profile']['curriculum'] }}</div>
                             </div>
-                            <div>
-                                <h3 class="text-base sm:text-lg font-black text-white">{{ $data['profile']['name'] }}</h3>
-                                <div class="flex items-center gap-2 text-xs text-slate-400 mt-0.5">
-                                    <span>NPSN: <strong class="text-white font-mono">{{ $data['profile']['npsn'] }}</strong></span>
-                                    <span>&bull;</span>
-                                    <span>Akreditasi: <strong class="text-teal-300">{{ $data['profile']['accreditation'] }}</strong></span>
-                                </div>
+                            <div class="p-2 rounded-xl bg-slate-900/70 border border-white/5">
+                                <div class="text-[9.5px] text-slate-400 uppercase tracking-wider font-semibold">Telepon / Kontak</div>
+                                <div class="font-mono text-slate-200 text-[11px] mt-0.5 truncate">{{ $data['profile']['phone'] }}</div>
+                            </div>
+                            <div class="p-2 rounded-xl bg-slate-900/70 border border-white/5">
+                                <div class="text-[9.5px] text-slate-400 uppercase tracking-wider font-semibold">Email Resmi</div>
+                                <div class="font-mono text-slate-200 text-[11px] mt-0.5 truncate">{{ $data['profile']['email'] }}</div>
+                            </div>
+                            <div class="p-2 rounded-xl bg-slate-900/70 border border-white/5">
+                                <div class="text-[9.5px] text-slate-400 uppercase tracking-wider font-semibold">Kepala Tata Usaha</div>
+                                <div class="font-bold text-indigo-300 text-[11px] mt-0.5 truncate">{{ $data['profile']['head_of_admin'] }}</div>
                             </div>
                         </div>
-                        <div class="text-right hidden sm:block">
-                            <div class="text-xs font-bold text-white">{{ $data['profile']['principal_name'] }}</div>
-                            <div class="text-[10px] text-slate-400">Kepala Sekolah &bull; NIP {{ $data['profile']['principal_nip'] }}</div>
+
+                        <!-- Address bar -->
+                        <div class="mt-2 pt-2 border-t border-white/5 flex items-center justify-between text-[10.5px] text-slate-300">
+                            <span class="truncate">📍 {{ $data['profile']['address'] }}</span>
+                            <span class="font-mono text-teal-300 shrink-0 ml-2">{{ $data['profile']['website'] }}</span>
                         </div>
                     </div>
 
-                    <!-- Visi & Misi Resmi (Diambil dari Kelola Konten Web di Visi & Misi) -->
-                    <div class="flex-1 min-h-0 my-2 flex flex-col gap-2.5 overflow-hidden">
-                        <!-- Visi Sekolah -->
-                        <div class="p-2.5 sm:p-3 rounded-xl bg-slate-900/80 border border-teal-500/20 shrink-0 shadow-sm">
+                    <!-- Visi & Misi Card -->
+                    <div class="flex-1 min-h-0 glass-panel rounded-2xl border border-white/10 p-3 sm:p-4 flex flex-col justify-between overflow-hidden shadow-lg">
+                        <!-- Visi Highlight -->
+                        <div class="p-2.5 rounded-xl bg-slate-900/80 border border-teal-500/20 shrink-0">
                             <div class="flex items-center justify-between mb-1">
                                 <span class="text-[10px] font-black text-teal-400 uppercase tracking-wider flex items-center gap-1.5">
                                     <span>🌟</span> VISI SEKOLAH
                                 </span>
-                                <span class="text-[9.5px] text-slate-400 font-medium">SIS-SMA1LE &bull; Profil Resmi</span>
+                                <span class="text-[9.5px] text-slate-400 font-mono">SMAN 1 Lengkong</span>
                             </div>
                             <p class="text-xs sm:text-sm text-white font-medium italic leading-snug">
                                 "{{ $data['profile']['vision'] }}"
@@ -988,54 +982,435 @@
                             @endif
                         </div>
 
-                        <!-- Misi Sekolah (Cards / Grid) -->
-                        <div class="flex-1 min-h-0 flex flex-col overflow-hidden">
+                        <!-- Misi List -->
+                        <div class="flex-1 min-h-0 flex flex-col overflow-hidden my-2">
                             <div class="flex items-center justify-between pb-1.5 mb-1.5 border-b border-white/10 shrink-0">
                                 <span class="text-[10px] font-black text-indigo-400 uppercase tracking-wider flex items-center gap-1.5">
                                     <span>🎯</span> MISI SEKOLAH
                                 </span>
-                                <span class="text-[9.5px] text-slate-400 font-mono">{{ count($data['profile']['missions'] ?? []) }} Misi Utama</span>
+                                <span class="text-[9.5px] text-slate-400 font-mono">{{ count($data['profile']['missions'] ?? []) }} Misi Unggulan</span>
                             </div>
 
                             <div class="flex-1 min-h-0 overflow-y-auto kiosk-scroll grid grid-cols-1 sm:grid-cols-2 gap-2 pr-1">
                                 @forelse($data['profile']['missions'] ?? [] as $misi)
-                                    <div class="p-2.5 rounded-xl bg-slate-900/70 border border-white/5 hover:border-indigo-500/30 transition flex items-start gap-2.5">
-                                        <div class="w-6 h-6 rounded-lg bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 flex items-center justify-center font-black text-[10px] shrink-0 font-mono mt-0.5">
+                                    <div class="p-2 rounded-xl bg-slate-900/70 border border-white/5 flex items-start gap-2">
+                                        <div class="w-5 h-5 rounded-lg bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 flex items-center justify-center font-black text-[9px] shrink-0 font-mono mt-0.5">
                                             {{ $misi['number'] ?? '01' }}
                                         </div>
                                         <div class="min-w-0 flex-1">
-                                            <h4 class="text-xs font-bold text-white truncate">{{ $misi['title'] ?? '' }}</h4>
-                                            <p class="text-[10px] text-slate-300 leading-snug mt-0.5 line-clamp-3">
+                                            <h4 class="text-[11px] font-bold text-white truncate">{{ $misi['title'] ?? '' }}</h4>
+                                            <p class="text-[9.5px] text-slate-300 leading-snug mt-0.5 line-clamp-2">
                                                 {{ $misi['desc'] ?? '' }}
                                             </p>
                                         </div>
                                     </div>
                                 @empty
-                                    <div class="col-span-2 text-center text-slate-500 text-xs italic py-4">
+                                    <div class="col-span-2 text-center text-slate-500 text-xs italic py-3">
                                         Data misi sekolah belum dikonfigurasi.
                                     </div>
                                 @endforelse
                             </div>
                         </div>
+
+                        <!-- Bottom Tagline -->
+                        <div class="pt-1.5 border-t border-white/5 flex items-center justify-between text-[10px] text-slate-400 shrink-0">
+                            <span>Mewujudkan Generasi Berakhlak Mulia, Cerdas, Terampil &amp; Berwawasan Global</span>
+                            <span class="text-teal-400 font-semibold font-mono">SIS-SMA1LE</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column (5 Cols): Pimpinan / Kepala Sekolah Profile -->
+                <div class="lg:col-span-5 glass-panel rounded-2xl border border-amber-500/30 p-3 sm:p-5 flex flex-col justify-between overflow-hidden shadow-2xl bg-gradient-to-b from-slate-900/90 via-slate-900/95 to-amber-950/20 glow-gold">
+                    <!-- Top Card Header -->
+                    <div class="flex items-center justify-between pb-2 border-b border-white/10 shrink-0">
+                        <div class="flex items-center gap-2">
+                            <span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/40">
+                                👑 PIMPINAN SEKOLAH
+                            </span>
+                        </div>
+                        <span class="text-[10px] font-mono text-slate-400">Kepemimpinan Resmi</span>
                     </div>
 
-                    <!-- School Address & Location Footer -->
-                    <div class="p-2.5 rounded-xl bg-teal-500/10 border border-teal-500/20 flex flex-col sm:flex-row sm:items-center justify-between text-xs text-slate-300 shrink-0 gap-1">
-                        <span class="truncate">📍 {{ $data['profile']['address'] }}</span>
-                        <span class="font-mono text-teal-300 shrink-0">sman1lengkong.school</span>
+                    <!-- Principal Photo & Identity -->
+                    <div class="flex flex-col items-center text-center my-2 shrink-0">
+                        <!-- Photo with Portrait Frame (Head NOT cut off) -->
+                        <div class="w-32 h-40 sm:w-36 sm:h-44 rounded-2xl overflow-hidden p-1 bg-gradient-to-tr from-amber-400 via-yellow-500 to-amber-600 shadow-2xl shadow-amber-500/20 mb-2.5">
+                            <div class="w-full h-full bg-slate-950 rounded-[14px] overflow-hidden flex items-center justify-center">
+                                @if(!empty($data['profile']['principal_photo']))
+                                    <img src="{{ $data['profile']['principal_photo'] }}" alt="{{ $data['profile']['principal_name'] }}" class="w-full h-full object-cover" style="object-position: top center;">
+                                @else
+                                    <div class="w-full h-full flex flex-col items-center justify-center bg-gradient-to-tr from-slate-900 to-amber-950 text-amber-300 font-extrabold text-3xl">
+                                        PS
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+
+                        <!-- Name & Titles -->
+                        <h3 class="text-base sm:text-lg font-black text-white leading-tight">
+                            {{ $data['profile']['principal_name'] }}
+                        </h3>
+                        <div class="text-xs font-bold text-amber-300 mt-1">
+                            {{ $data['profile']['principal_title'] }}
+                        </div>
+                        <div class="flex flex-wrap items-center justify-center gap-1.5 mt-1.5">
+                            <span class="px-2 py-0.5 rounded-md bg-slate-900 border border-white/10 text-[9.5px] font-mono text-slate-300">
+                                NIP {{ $data['profile']['principal_nip'] }}
+                            </span>
+                            <span class="px-2 py-0.5 rounded-md bg-amber-500/20 border border-amber-500/30 text-[9.5px] font-semibold text-amber-200">
+                                {{ $data['profile']['principal_rank'] }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Quote Box -->
+                    <div class="flex-1 min-h-0 p-3 rounded-xl bg-slate-950/80 border border-amber-500/20 flex flex-col justify-center my-1">
+                        <div class="text-[9.5px] text-amber-400 font-bold uppercase tracking-wider mb-1 flex items-center gap-1">
+                            <span>💬</span> Amanat &amp; Sambutan Kepala Sekolah:
+                        </div>
+                        <p class="text-xs text-slate-200 italic leading-relaxed line-clamp-4">
+                            "{{ $data['profile']['principal_quote'] }}"
+                        </p>
+                    </div>
+
+                    <!-- Bottom Commitment Bar -->
+                    <div class="pt-2 mt-1 border-t border-white/5 flex items-center justify-between text-[10px] text-slate-400 shrink-0">
+                        <span class="text-teal-300 font-medium truncate">Maju Bersama, Hebat Semua!</span>
+                        <span class="font-mono text-amber-300/80 shrink-0">SMA Negeri 1 Lengkong</span>
                     </div>
                 </div>
             </div>
         </section>
 
         <!-- ========================================================================= -->
-        <!-- SLIDE 6: BERITA & WARTA SEKOLAH RESMI                                      -->
+        <!-- SLIDE 6: PRESENSI & PEMBINAAN EKSTRAKURIKULER SISWA                       -->
         <!-- ========================================================================= -->
-        <section id="slide-6" class="kiosk-slide h-full w-full hidden flex-col justify-between overflow-hidden gap-3">
+        <section id="slide-6" class="kiosk-slide hidden h-full w-full flex-col justify-between overflow-hidden gap-3">
             <!-- Slide Title Header -->
             <div class="flex items-center justify-between shrink-0 pb-1 border-b border-white/5">
                 <div class="flex items-center gap-2">
-                    <div class="w-7 h-7 rounded-lg bg-teal-500/20 text-teal-300 flex items-center justify-center font-black text-sm">07</div>
+                    <div class="w-7 h-7 rounded-lg bg-purple-500/20 text-purple-300 flex items-center justify-center font-black text-sm">07</div>
+                    <div>
+                        <h2 class="text-sm sm:text-base font-extrabold text-white flex items-center gap-2">
+                            <span>Presensi &amp; Pembinaan Ekstrakurikuler Siswa</span>
+                        </h2>
+                        <p class="text-[11px] text-slate-400">Pengembangan minat, bakat, kepemimpinan, dan prestasi non-akademik siswa SMAN 1 Lengkong</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="px-2.5 py-1 rounded-full text-[10px] font-black bg-purple-500/20 text-purple-300 border border-purple-500/30 flex items-center gap-1">
+                        <span>🎯</span> {{ $data['extracurricular']['total_clubs'] ?? count($data['extracurricular']['clubs'] ?? []) }} CABANG EKSKUL
+                    </span>
+                </div>
+            </div>
+
+            <!-- Content Area: Left 7 Cols (Cabang Ekstrakurikuler & Pembina), Right 5 Cols (Presensi Hari Ini & Pilar Karakter) -->
+            <div class="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-3 lg:gap-4 overflow-hidden">
+                <!-- Left Column (7 Cols): Daftar Cabang Ekstrakurikuler & Pembina -->
+                <div class="lg:col-span-7 flex flex-col h-full min-h-0 gap-3 overflow-hidden">
+                    <!-- Ribbon: Jadwal Latihan & Keterangan -->
+                    <div class="p-2.5 sm:p-3 rounded-xl bg-purple-950/40 border border-purple-500/20 flex flex-wrap items-center justify-between gap-2 shrink-0">
+                        <div class="flex items-center gap-2.5">
+                            <span class="text-xl">🏆</span>
+                            <div>
+                                <div class="text-xs sm:text-sm font-bold text-white">Cabang Peminatan Minat &amp; Bakat Aktif</div>
+                                <div class="text-[10px] text-purple-300">Wadah aktualisasi diri, sportivitas, kreativitas, dan kepanduan</div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-[9.5px] text-slate-400">Jadwal Latihan Mingguan</div>
+                            <div class="text-xs font-mono font-bold text-white">{{ $data['extracurricular']['schedule'] ?? 'Jum\'at & Sabtu' }}</div>
+                        </div>
+                    </div>
+
+                    <!-- Grid of Ekstrakurikuler Clubs -->
+                    <div class="flex-1 min-h-0 overflow-y-auto kiosk-scroll grid grid-cols-1 sm:grid-cols-2 gap-2.5 pr-1">
+                        @forelse($data['extracurricular']['clubs'] ?? [] as $club)
+                            <div class="p-3 rounded-2xl bg-slate-900/80 border border-white/10 hover:border-purple-500/40 transition flex flex-col justify-between group shadow-md">
+                                <div class="flex items-start justify-between gap-2">
+                                    <div class="flex items-center gap-2.5">
+                                        <div class="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-300 flex items-center justify-center text-lg font-bold shrink-0 border border-purple-500/30">
+                                            {{ $club['icon'] ?? '🎯' }}
+                                        </div>
+                                        <div>
+                                            <h4 class="text-xs sm:text-sm font-black text-white group-hover:text-purple-300 transition truncate">{{ $club['name'] }}</h4>
+                                            <span class="px-1.5 py-0.5 rounded text-[8.5px] font-black uppercase tracking-wider bg-purple-500/10 text-purple-300 border border-purple-500/20 inline-block mt-0.5">
+                                                {{ $club['category'] ?? 'Ekstrakurikuler' }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mt-2 pt-2 border-t border-white/5 space-y-1 text-[10px]">
+                                    <div class="flex items-center justify-between text-slate-300">
+                                        <span class="text-slate-400">Pembina:</span>
+                                        <span class="font-bold text-white truncate ml-2">{{ $club['teacher'] ?? 'Dewan Guru' }}</span>
+                                    </div>
+                                    <div class="flex items-center justify-between text-slate-400">
+                                        <span>Jadwal / Lokasi:</span>
+                                        <span class="font-mono text-purple-300 truncate ml-2">{{ $club['schedule'] ?? 'Sore Hari' }} &bull; {{ $club['location'] ?? 'Kampus S1L' }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="col-span-2 text-center text-slate-500 text-xs italic py-6">
+                                Belum ada data cabang ekstrakurikuler terdaftar.
+                            </div>
+                        @endforelse
+                    </div>
+
+                    <!-- Bottom Bar -->
+                    <div class="p-2 rounded-xl bg-slate-950/80 border border-white/5 text-[10px] text-slate-400 flex items-center justify-between shrink-0">
+                        <span>Pramuka (Wajib), Paskibra, PMR Wira, Rohis, Seni Musik &amp; Tari, Futsal, Basket, Voli, Silat, KIR, English Club</span>
+                        <span class="text-purple-300 font-bold font-mono">Ekosistem S1L</span>
+                    </div>
+                </div>
+
+                <!-- Right Column (5 Cols): Log Presensi Ekskul Hari Ini & 4 Pilar Karakter -->
+                <div class="lg:col-span-5 flex flex-col h-full min-h-0 gap-3 overflow-hidden">
+                    <!-- Presensi Ekstrakurikuler Card -->
+                    <div class="flex-1 min-h-0 glass-panel rounded-2xl border border-white/10 p-3 sm:p-4 flex flex-col justify-between overflow-hidden shadow-xl">
+                        <div class="flex items-center justify-between pb-2 border-b border-white/10 shrink-0">
+                            <div class="flex items-center gap-2">
+                                <span class="p-1 rounded-lg bg-purple-500/20 text-purple-300 text-xs">📝</span>
+                                <h3 class="text-xs sm:text-sm font-black text-white">Log Presensi Ekskul Hari Ini</h3>
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                <span id="extraTotalToday" class="text-base font-black text-purple-300 font-mono">{{ $data['extracurricular']['total_today'] }}</span>
+                                <span class="text-[10px] text-slate-400">Siswa Hadir</span>
+                            </div>
+                        </div>
+
+                        <div id="extraRecentLogs" class="flex-1 min-h-0 overflow-y-auto kiosk-scroll space-y-2 py-2 pr-1">
+                            @forelse($data['extracurricular']['recent'] ?? [] as $ex)
+                                <div class="p-2.5 rounded-xl bg-slate-900/70 border border-white/5 flex items-center justify-between text-xs">
+                                    <div class="truncate mr-2">
+                                        <div class="font-bold text-white truncate">{{ $ex['name'] }} <span class="text-slate-400 font-normal">({{ $ex['class'] }})</span></div>
+                                        <div class="text-[10px] text-purple-300 font-semibold truncate">{{ $ex['extracurricular'] }}</div>
+                                    </div>
+                                    <div class="flex items-center gap-2 shrink-0">
+                                        <span class="px-2 py-0.5 rounded text-[9px] font-black bg-purple-500/20 text-purple-300">
+                                            {{ $ex['status'] }}
+                                        </span>
+                                        <span class="font-mono text-slate-400 text-[10px]">{{ $ex['time'] }}</span>
+                                    </div>
+                                </div>
+                            @empty
+                                <div class="h-full flex flex-col items-center justify-center text-center py-6 text-slate-500 text-xs space-y-1">
+                                    <span class="text-2xl">🎯</span>
+                                    <span class="font-semibold text-slate-400">Belum ada presensi ekstrakurikuler tercatat hari ini.</span>
+                                    <span class="text-[10px] text-slate-500">Presensi dibuka saat jadwal latihan ekskul berlangsung.</span>
+                                </div>
+                            @endforelse
+                        </div>
+
+                        <div class="pt-2 border-t border-white/5 text-[10px] text-slate-400 flex items-center justify-between shrink-0">
+                            <span>Presensi berbasis RFID / Barcode Mandiri</span>
+                            <span class="text-purple-300 font-mono font-bold">Terverifikasi</span>
+                        </div>
+                    </div>
+
+                    <!-- 4 Pilar Karakter Ekstrakurikuler -->
+                    <div class="glass-panel rounded-2xl border border-white/10 p-3 shrink-0 shadow-lg">
+                        <div class="text-[10px] font-black uppercase text-purple-300 tracking-wider mb-2 flex items-center gap-1.5">
+                            <span>🛡️</span> 4 PILAR PEMBINAAN KARAKTER EKSKUL
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 text-xs">
+                            <div class="p-2 rounded-xl bg-slate-900/70 border border-white/5">
+                                <div class="font-bold text-white flex items-center gap-1">
+                                    <span>🧭</span> Kepemimpinan
+                                </div>
+                                <div class="text-[9.5px] text-slate-400 mt-0.5 leading-snug">Menempa jiwa mandiri, tangguh, dan berintegritas.</div>
+                            </div>
+                            <div class="p-2 rounded-xl bg-slate-900/70 border border-white/5">
+                                <div class="font-bold text-white flex items-center gap-1">
+                                    <span>⏱️</span> Kedisiplinan
+                                </div>
+                                <div class="text-[9.5px] text-slate-400 mt-0.5 leading-snug">Menghargai waktu, aturan, dan komitmen tim.</div>
+                            </div>
+                            <div class="p-2 rounded-xl bg-slate-900/70 border border-white/5">
+                                <div class="font-bold text-white flex items-center gap-1">
+                                    <span>🎨</span> Kreativitas
+                                </div>
+                                <div class="text-[9.5px] text-slate-400 mt-0.5 leading-snug">Eksplorasi bakat seni, riset, dan olahraga.</div>
+                            </div>
+                            <div class="p-2 rounded-xl bg-slate-900/70 border border-white/5">
+                                <div class="font-bold text-white flex items-center gap-1">
+                                    <span>🤝</span> Solidaritas
+                                </div>
+                                <div class="text-[9.5px] text-slate-400 mt-0.5 leading-snug">Kebersamaan, gotong royong, dan empati sosial.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================================================= -->
+        <!-- SLIDE 7: DATA ROMBEL (L/P) & DIREKTORI WALI KELAS                         -->
+        <!-- ========================================================================= -->
+        <section id="slide-7" class="kiosk-slide hidden h-full w-full flex-col justify-between overflow-hidden gap-3">
+            <!-- Slide Title Header -->
+            <div class="flex items-center justify-between shrink-0 pb-1 border-b border-white/5">
+                <div class="flex items-center gap-2">
+                    <div class="w-7 h-7 rounded-lg bg-sky-500/20 text-sky-300 flex items-center justify-center font-black text-sm">08</div>
+                    <div>
+                        <h2 class="text-sm sm:text-base font-extrabold text-white flex items-center gap-2">
+                            <span>Data Rombongan Belajar (Rombel) &amp; Direktori Wali Kelas</span>
+                        </h2>
+                        <p class="text-[11px] text-slate-400">Komposisi siswa Laki-laki (L) / Perempuan (P), rasio gender, serta profil &amp; foto wali kelas resmi</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="px-2.5 py-1 rounded-full text-[10px] font-black bg-sky-500/20 text-sky-300 border border-sky-500/30 flex items-center gap-1">
+                        <span>🏫</span> {{ $data['rombels']['total_rombels'] ?? 0 }} ROMBEL BELAJAR
+                    </span>
+                </div>
+            </div>
+
+            <!-- Content Area: Top KPI Ribbon + Rombel Cards Grid -->
+            <div class="flex-1 min-h-0 flex flex-col gap-3 overflow-hidden">
+                <!-- Top Summary Ribbon: Total Siswa, L, P, Rombel, Avg -->
+                <div class="p-2.5 sm:p-3 rounded-2xl bg-gradient-to-r from-sky-950/70 via-slate-900/80 to-indigo-950/70 border border-sky-500/20 grid grid-cols-2 sm:grid-cols-5 gap-2 shrink-0 shadow-lg">
+                    <div class="p-2 rounded-xl bg-slate-900/70 border border-white/5 flex items-center gap-2.5">
+                        <div class="w-9 h-9 rounded-xl bg-sky-500/20 text-sky-300 flex items-center justify-center text-base font-bold shrink-0">
+                            👥
+                        </div>
+                        <div>
+                            <div class="text-[9.5px] text-slate-400 uppercase font-bold">Total Seluruh Siswa</div>
+                            <div class="text-base font-black text-white font-mono leading-none mt-0.5">{{ $data['rombels']['total_students'] ?? 0 }} <span class="text-[10px] font-normal text-slate-400">Orang</span></div>
+                        </div>
+                    </div>
+
+                    <div class="p-2 rounded-xl bg-slate-900/70 border border-white/5 flex items-center gap-2.5">
+                        <div class="w-9 h-9 rounded-xl bg-teal-500/20 text-teal-300 flex items-center justify-center text-base font-bold shrink-0">
+                            👦
+                        </div>
+                        <div>
+                            <div class="text-[9.5px] text-teal-400 uppercase font-bold">Laki-Laki (L)</div>
+                            <div class="text-base font-black text-teal-300 font-mono leading-none mt-0.5">{{ $data['rombels']['total_male'] ?? 0 }} <span class="text-[10px] font-normal text-slate-400">Siswa</span></div>
+                        </div>
+                    </div>
+
+                    <div class="p-2 rounded-xl bg-slate-900/70 border border-white/5 flex items-center gap-2.5">
+                        <div class="w-9 h-9 rounded-xl bg-rose-500/20 text-rose-300 flex items-center justify-center text-base font-bold shrink-0">
+                            👧
+                        </div>
+                        <div>
+                            <div class="text-[9.5px] text-rose-400 uppercase font-bold">Perempuan (P)</div>
+                            <div class="text-base font-black text-rose-300 font-mono leading-none mt-0.5">{{ $data['rombels']['total_female'] ?? 0 }} <span class="text-[10px] font-normal text-slate-400">Siswi</span></div>
+                        </div>
+                    </div>
+
+                    <div class="p-2 rounded-xl bg-slate-900/70 border border-white/5 flex items-center gap-2.5">
+                        <div class="w-9 h-9 rounded-xl bg-indigo-500/20 text-indigo-300 flex items-center justify-center text-base font-bold shrink-0">
+                            🏫
+                        </div>
+                        <div>
+                            <div class="text-[9.5px] text-indigo-400 uppercase font-bold">Total Rombel</div>
+                            <div class="text-base font-black text-indigo-300 font-mono leading-none mt-0.5">{{ $data['rombels']['total_rombels'] ?? 0 }} <span class="text-[10px] font-normal text-slate-400">Kelas</span></div>
+                        </div>
+                    </div>
+
+                    <div class="p-2 rounded-xl bg-slate-900/70 border border-white/5 flex items-center gap-2.5 col-span-2 sm:col-span-1">
+                        <div class="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-300 flex items-center justify-center text-base font-bold shrink-0">
+                            📊
+                        </div>
+                        <div>
+                            <div class="text-[9.5px] text-amber-400 uppercase font-bold">Rata-Rata Kelas</div>
+                            <div class="text-base font-black text-amber-300 font-mono leading-none mt-0.5">{{ $data['rombels']['avg_per_rombel'] ?? 0 }} <span class="text-[10px] font-normal text-slate-400">Siswa/Kls</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Grid of Rombel Cards with Teacher Photo -->
+                <div class="flex-1 min-h-0 overflow-y-auto kiosk-scroll grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 pr-1">
+                    @forelse($data['rombels']['list'] ?? [] as $r)
+                        <div class="glass-card rounded-2xl border border-white/10 p-3 flex flex-col justify-between hover:border-sky-500/40 transition duration-300 group glow-teal relative overflow-hidden shadow-lg">
+                            <!-- Class Title & Grade Badge -->
+                            <div>
+                                <div class="flex items-center justify-between pb-2 border-b border-white/5 mb-2">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-7 h-7 rounded-lg bg-sky-500/20 text-sky-300 flex items-center justify-center font-black text-xs font-mono">
+                                            {{ $r['grade'] ?? 'X' }}
+                                        </div>
+                                        <div>
+                                            <h4 class="text-xs sm:text-sm font-black text-white group-hover:text-sky-300 transition truncate">{{ $r['name'] }}</h4>
+                                            <span class="text-[9.5px] text-slate-400 block">{{ $r['major'] ?? 'Kurikulum Merdeka' }}</span>
+                                        </div>
+                                    </div>
+                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-black font-mono bg-sky-500/20 text-sky-300 border border-sky-500/30">
+                                        {{ $r['total_count'] }} Siswa
+                                    </span>
+                                </div>
+
+                                <!-- Gender L / P Metrics & Split Bar -->
+                                <div class="space-y-1.5 my-2">
+                                    <div class="flex items-center justify-between text-xs">
+                                        <div class="flex items-center gap-1.5 text-teal-300 font-bold">
+                                            <span>👦 L:</span>
+                                            <span class="font-mono text-white">{{ $r['male_count'] }}</span>
+                                            <span class="text-[10px] text-slate-400">({{ $r['male_pct'] }}%)</span>
+                                        </div>
+                                        <div class="flex items-center gap-1.5 text-rose-300 font-bold">
+                                            <span>👧 P:</span>
+                                            <span class="font-mono text-white">{{ $r['female_count'] }}</span>
+                                            <span class="text-[10px] text-slate-400">({{ $r['female_pct'] }}%)</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Bi-color split progress bar -->
+                                    <div class="w-full h-2 rounded-full bg-slate-900 overflow-hidden flex border border-white/5">
+                                        <div class="h-full bg-teal-400 transition-all duration-500" style="width: {{ $r['male_pct'] }}%"></div>
+                                        <div class="h-full bg-rose-400 transition-all duration-500" style="width: {{ $r['female_pct'] }}%"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Homeroom Teacher Profile Box with Photo -->
+                            <div class="mt-2 pt-2 border-t border-white/10 flex items-center gap-2.5 bg-slate-950/60 p-2 rounded-xl">
+                                <!-- Photo Container (Portrait ratio, head not cut off) -->
+                                <div class="w-11 h-14 rounded-lg overflow-hidden p-0.5 bg-gradient-to-tr from-sky-400 to-indigo-500 shadow-md shrink-0">
+                                    <div class="w-full h-full bg-slate-900 rounded-[6px] overflow-hidden flex items-center justify-center">
+                                        @if(!empty($r['homeroom_teacher']['photo']))
+                                            <img src="{{ $r['homeroom_teacher']['photo'] }}" alt="{{ $r['homeroom_teacher']['name'] }}" class="w-full h-full object-cover" style="object-position: top center;">
+                                        @else
+                                            <div class="w-full h-full flex items-center justify-center bg-slate-900 text-sky-300 font-extrabold text-xs">
+                                                {{ strtoupper(substr($r['homeroom_teacher']['name'] ?? 'WK', 0, 2)) }}
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+
+                                <div class="min-w-0 flex-1">
+                                    <div class="text-[9px] font-bold text-sky-400 uppercase tracking-wider">Wali Kelas</div>
+                                    <div class="text-xs font-extrabold text-white truncate group-hover:text-sky-300 transition" title="{{ $r['homeroom_teacher']['name'] }}">
+                                        {{ $r['homeroom_teacher']['name'] }}
+                                    </div>
+                                    <div class="text-[9.5px] font-mono text-slate-400 truncate">
+                                        {{ !empty($r['homeroom_teacher']['nip']) && $r['homeroom_teacher']['nip'] !== '-' ? 'NIP ' . $r['homeroom_teacher']['nip'] : 'Pendidik Resmi' }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="col-span-full h-full flex items-center justify-center text-slate-500 text-xs italic py-10">
+                            Data rombel belum tersedia.
+                        </div>
+                    @endforelse
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================================================= -->
+        <!-- SLIDE 8: BERITA & WARTA SEKOLAH RESMI                                      -->
+        <!-- ========================================================================= -->
+        <section id="slide-8" class="kiosk-slide h-full w-full hidden flex-col justify-between overflow-hidden gap-3">
+            <!-- Slide Title Header -->
+            <div class="flex items-center justify-between shrink-0 pb-1 border-b border-white/5">
+                <div class="flex items-center gap-2">
+                    <div class="w-7 h-7 rounded-lg bg-teal-500/20 text-teal-300 flex items-center justify-center font-black text-sm">09</div>
                     <div>
                         <h2 class="text-sm sm:text-base font-extrabold text-white flex items-center gap-2">
                             <span>Warta &amp; Publikasi Resmi Sekolah</span>
@@ -1185,13 +1560,13 @@
         </section>
 
         <!-- ========================================================================= -->
-        <!-- SLIDE 7: AGENDA & KALENDER KEGIATAN AKADEMIK                              -->
+        <!-- SLIDE 9: AGENDA & KALENDER KEGIATAN AKADEMIK                              -->
         <!-- ========================================================================= -->
-        <section id="slide-7" class="kiosk-slide h-full w-full hidden flex-col justify-between overflow-hidden gap-3">
+        <section id="slide-9" class="kiosk-slide h-full w-full hidden flex-col justify-between overflow-hidden gap-3">
             <!-- Slide Title Header -->
             <div class="flex items-center justify-between shrink-0 pb-1 border-b border-white/5">
                 <div class="flex items-center gap-2">
-                    <div class="w-7 h-7 rounded-lg bg-indigo-500/20 text-indigo-300 flex items-center justify-center font-black text-sm">08</div>
+                    <div class="w-7 h-7 rounded-lg bg-indigo-500/20 text-indigo-300 flex items-center justify-center font-black text-sm">10</div>
                     <div>
                         <h2 class="text-sm sm:text-base font-extrabold text-white flex items-center gap-2">
                             <span>Agenda &amp; Kalender Kegiatan Akademik</span>
@@ -1299,13 +1674,13 @@
         </section>
 
         <!-- ========================================================================= -->
-        <!-- SLIDE 8: DEWAN GURU & TENAGA KEPENDIDIKAN (NAMA & FOTO RESMI)             -->
+        <!-- SLIDE 10: DEWAN GURU & TENAGA KEPENDIDIKAN (NAMA & FOTO RESMI)            -->
         <!-- ========================================================================= -->
-        <section id="slide-8" class="kiosk-slide h-full w-full hidden flex-col justify-between overflow-hidden gap-3">
+        <section id="slide-10" class="kiosk-slide h-full w-full hidden flex-col justify-between overflow-hidden gap-3">
             <!-- Slide Title Header -->
             <div class="flex items-center justify-between shrink-0 pb-1 border-b border-white/5">
                 <div class="flex items-center gap-2">
-                    <div class="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-300 flex items-center justify-center font-black text-sm">09</div>
+                    <div class="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-300 flex items-center justify-center font-black text-sm">11</div>
                     <div>
                         <h2 class="text-sm sm:text-base font-extrabold text-white flex items-center gap-2">
                             <span>Direktori Dewan Guru &amp; Tenaga Kependidikan</span>
@@ -1419,13 +1794,13 @@
         </section>
 
         <!-- =========================================================
-             SLIDE 10: PERPUSTAKAAN & LITERASI DIGITAL (INDEX 9)
+             SLIDE 12: PERPUSTAKAAN & LITERASI DIGITAL (INDEX 11)
              ========================================================= -->
-        <section id="slide-9" class="hidden flex-col h-full min-h-0 overflow-hidden">
+        <section id="slide-11" class="hidden flex-col h-full min-h-0 overflow-hidden">
             <!-- Header Slide -->
             <div class="flex items-center justify-between pb-2 shrink-0">
                 <div class="flex items-center gap-2.5">
-                    <span class="px-2 py-0.5 rounded-md bg-indigo-500/20 text-indigo-400 font-mono font-bold text-xs">10</span>
+                    <span class="px-2 py-0.5 rounded-md bg-indigo-500/20 text-indigo-400 font-mono font-bold text-xs">12</span>
                     <div>
                         <h2 class="text-sm sm:text-base font-black text-white flex items-center gap-2">
                             <span>Perpustakaan &amp; Literasi Digital</span>
@@ -1712,13 +2087,13 @@
         </section>
 
         <!-- =========================================================
-             SLIDE 11: BIMBINGAN & KONSELING (BK) (INDEX 10)
+             SLIDE 13: BIMBINGAN & KONSELING (BK) (INDEX 12)
              ========================================================= -->
-        <section id="slide-10" class="hidden flex-col h-full min-h-0 overflow-hidden">
+        <section id="slide-12" class="hidden flex-col h-full min-h-0 overflow-hidden">
             <!-- Header Slide -->
             <div class="flex items-center justify-between pb-2 shrink-0">
                 <div class="flex items-center gap-2.5">
-                    <span class="px-2 py-0.5 rounded-md bg-purple-500/20 text-purple-400 font-mono font-bold text-xs">11</span>
+                    <span class="px-2 py-0.5 rounded-md bg-purple-500/20 text-purple-400 font-mono font-bold text-xs">13</span>
                     <div>
                         <h2 class="text-sm sm:text-base font-black text-white flex items-center gap-2">
                             <span>Bimbingan &amp; Konseling (BK)</span>
@@ -1859,13 +2234,13 @@
         </section>
 
         <!-- =========================================================
-             SLIDE 12: BUKU TAMU & KUNJUNGAN SEKOLAH (SIKATAS) (INDEX 11)
+             SLIDE 14: BUKU TAMU & KUNJUNGAN SEKOLAH (SIKATAS) (INDEX 13)
              ========================================================= -->
-        <section id="slide-11" class="hidden flex-col h-full min-h-0 overflow-hidden">
+        <section id="slide-13" class="hidden flex-col h-full min-h-0 overflow-hidden">
             <!-- Header Slide -->
             <div class="flex items-center justify-between pb-2 shrink-0">
                 <div class="flex items-center gap-2.5">
-                    <span class="px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-400 font-mono font-bold text-xs">12</span>
+                    <span class="px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-400 font-mono font-bold text-xs">14</span>
                     <div>
                         <h2 class="text-sm sm:text-base font-black text-white flex items-center gap-2">
                             <span>Buku Tamu Kedinasan &amp; Kunjungan Sekolah</span>
@@ -2033,14 +2408,14 @@
     <!-- JAVASCRIPT SLIDE CONTROLLER & BACKGROUND REALTIME POLLER -->
     <script>
         // Slide Deck State
-        const TOTAL_SLIDES = 12;
+        const TOTAL_SLIDES = 14;
         const SLIDE_DURATION = 16; // 16 seconds per slide
         let currentSlideIdx = 0;
         let slideRemainingTime = SLIDE_DURATION;
         let isPaused = false;
         let slideTimerInterval = null;
 
-        // Sub-page Controller for Slide 8 (Guru & Staf)
+        // Sub-page Controller for Direktori Guru & Staf
         let currentStaffPageIdx = 0;
         const totalStaffPages = {{ max(1, count(array_chunk($data['staff'] ?? [], 8))) }};
         let staffCycleInterval = null;
@@ -2079,12 +2454,14 @@
                 clearInterval(staffCycleInterval);
                 staffCycleInterval = null;
             }
-            if (currentSlideIdx === 8 && totalStaffPages > 1) {
+            const activeSlideEl = document.getElementById(`slide-${currentSlideIdx}`);
+            const hasStaffPages = activeSlideEl && activeSlideEl.querySelector('.staff-page');
+            if (hasStaffPages && totalStaffPages > 1) {
                 staffCycleInterval = setInterval(() => {
                     if (!isPaused) {
                         nextStaffPage();
                     }
-                }, 3000); // cycle sub-page briskly every 3s while on slide 8
+                }, 3000); // cycle sub-page briskly every 3s while on staff slide
             }
         }
 

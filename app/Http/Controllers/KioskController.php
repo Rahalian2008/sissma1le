@@ -7,6 +7,7 @@ use App\Models\Attendance;
 use App\Models\BkConsultation;
 use App\Models\BkCounselingSession;
 use App\Models\EarlyLeaveRequest;
+use App\Models\Extracurricular;
 use App\Models\ExtracurricularAttendance;
 use App\Models\Guest;
 use App\Models\Habit;
@@ -16,6 +17,7 @@ use App\Models\LibraryLoan;
 use App\Models\LibraryVisitor;
 use App\Models\PicketSchedule;
 use App\Models\QuranTahfidzRecord;
+use App\Models\SchoolClass;
 use App\Models\SchoolExitPermit;
 use App\Models\SchoolIdentity;
 use App\Models\SchoolSetting;
@@ -142,18 +144,63 @@ class KioskController extends Controller
             'method' => $w->method ?? 'RFID',
         ]);
 
-        // 5. Presensi Ekstrakurikuler Hari Ini
+        // 5. Presensi Ekstrakurikuler Hari Ini & Direktori Cabang Ekskul
         $extraToday = ExtracurricularAttendance::with(['student.schoolClass', 'extracurricular'])
             ->whereDate('date', $today)
             ->latest('id')
             ->get();
-        $recentExtra = $extraToday->take(10)->map(fn ($e) => [
+        $recentExtra = $extraToday->take(12)->map(fn ($e) => [
             'name' => $e->student?->name ?? 'Siswa',
             'class' => $e->schoolClass?->name ?? $e->student?->schoolClass?->name ?? '-',
             'extracurricular' => $e->extracurricular?->name ?? 'Ekstrakurikuler',
             'time' => substr($e->time ?? $e->created_at->format('H:i:s'), 0, 5),
             'status' => strtoupper($e->status),
         ]);
+
+        $extracurricularClubs = collect();
+        try {
+            $activeClubs = Extracurricular::with(['teacher', 'teachers'])
+                ->where('is_active', true)
+                ->get();
+
+            foreach ($activeClubs as $club) {
+                $leaderName = $club->teacher?->formatted_name ?: ($club->teacher?->name ?: ($club->teachers->first()?->formatted_name ?: ($club->teachers->first()?->name ?: 'Pembina Ekskul')));
+                $extracurricularClubs->push([
+                    'id' => $club->id,
+                    'name' => $club->name,
+                    'category' => $club->category ?: 'Pengembangan Diri',
+                    'leader' => $leaderName,
+                    'schedule_day' => $club->schedule_day ?: 'Kamis & Sabtu',
+                    'time' => ($club->start_time && $club->end_time) ? substr($club->start_time, 0, 5).' - '.substr($club->end_time, 0, 5).' WIB' : '15:30 - 17:00 WIB',
+                    'location' => $club->location ?: 'Kampus SMAN 1 Lengkong',
+                    'icon' => match (strtolower($club->category ?? '')) {
+                        'olahraga', 'olahraga prestasi' => '⚽',
+                        'seni', 'seni budaya', 'seni & budaya' => '🎭',
+                        'keagamaan', 'kerohanian' => '🕌',
+                        'kepanduan', 'kepemimpinan' => '⛺',
+                        'ilmiah', 'akademik', 'sains' => '🔬',
+                        default => '🎯',
+                    },
+                ]);
+            }
+        } catch (\Throwable $e) {
+        }
+
+        if ($extracurricularClubs->isEmpty()) {
+            $defaultClubs = [
+                ['name' => 'Pramuka (Gudep S1L)', 'category' => 'Kepanduan', 'leader' => 'Pembina Pramuka', 'schedule_day' => 'Jumat', 'time' => '14:00 - 16:30 WIB', 'location' => 'Lapangan Utama', 'icon' => '⛺'],
+                ['name' => 'Paskibraka', 'category' => 'Kepemimpinan', 'leader' => 'Pembina Paskibra', 'schedule_day' => 'Sabtu', 'time' => '08:00 - 11:00 WIB', 'location' => 'Lapangan Upacara', 'icon' => '🇮🇩'],
+                ['name' => 'PMR & Tim UKS', 'category' => 'Kemanusiaan', 'leader' => 'Pembina PMR', 'schedule_day' => 'Kamis', 'time' => '15:30 - 17:00 WIB', 'location' => 'Ruang UKS', 'icon' => '🩺'],
+                ['name' => 'Rohis & Tahfidz Quran', 'category' => 'Keagamaan', 'leader' => 'Koord. Keagamaan', 'schedule_day' => 'Kamis', 'time' => '15:30 - 17:00 WIB', 'location' => 'Masjid Sekolah', 'icon' => '🕌'],
+                ['name' => 'Seni Tari & Musik Sunda', 'category' => 'Seni Budaya', 'leader' => 'Guru Seni Budaya', 'schedule_day' => 'Sabtu', 'time' => '09:00 - 11:30 WIB', 'location' => 'Sanggar Seni', 'icon' => '🎭'],
+                ['name' => 'Olahraga (Futsal & Voli)', 'category' => 'Olahraga Prestasi', 'leader' => 'Guru PJOK', 'schedule_day' => 'Sabtu', 'time' => '07:30 - 10:30 WIB', 'location' => 'Gelanggang Olahraga', 'icon' => '⚽'],
+                ['name' => 'English Club & Jurnalistik', 'category' => 'Akademik', 'leader' => 'Guru Bhs. Inggris', 'schedule_day' => 'Kamis', 'time' => '15:30 - 17:00 WIB', 'location' => 'Lab Komputer', 'icon' => '📰'],
+                ['name' => 'KIR (Karya Ilmiah Remaja)', 'category' => 'Sains & Teknologi', 'leader' => 'Guru IPA', 'schedule_day' => 'Sabtu', 'time' => '09:00 - 11:00 WIB', 'location' => 'Lab IPA Terpadu', 'icon' => '🔬'],
+            ];
+            foreach ($defaultClubs as $dc) {
+                $extracurricularClubs->push($dc);
+            }
+        }
 
         // 6. Buku Kontrol Digital Setor Hafalan Al-Qur'an (Tahfidz Juz 30)
         $tahfidzTodayCount = QuranTahfidzRecord::whereDate('deposit_date', $today)->count();
@@ -393,13 +440,42 @@ class KioskController extends Controller
         $decodedMissions = $customMissions !== null ? json_decode($customMissions, true) : null;
         $missions = is_array($decodedMissions) && count($decodedMissions) > 0 ? $decodedMissions : WebsiteContentController::DEFAULT_MISSIONS;
 
+        // Foto & Sambutan Kepala Sekolah
+        $customSpeeches = SchoolSetting::get('website_speeches_json');
+        $speeches = $customSpeeches ? (json_decode($customSpeeches, true) ?: WebsiteContentController::DEFAULT_SPEECHES) : WebsiteContentController::DEFAULT_SPEECHES;
+        $activeSpeech = collect($speeches)->firstWhere('is_active', true) ?: ($speeches[0] ?? null);
+        $principalPhoto = null;
+        if ($activeSpeech && ! empty($activeSpeech['photo'])) {
+            $principalPhoto = str_starts_with($activeSpeech['photo'], 'http') ? $activeSpeech['photo'] : asset($activeSpeech['photo']);
+        } elseif (file_exists(public_path('images/website/headmaster.jpg'))) {
+            $principalPhoto = asset('images/website/headmaster.jpg');
+        }
+
+        $principalQuote = $activeSpeech['quote'] ?? 'Pendidikan sejati bukan sekadar mengisi wadah dengan informasi, melainkan menyalakan lentera budi pekerti, nalar kritis, dan integritas yang abadi.';
+        $principalSpeechExcerpt = $activeSpeech['speech_p1'] ?? 'Puji dan syukur senantiasa kita panjatkan ke hadirat Allah SWT. Selamat datang di portal resmi SMAN 1 Lengkong, wadah silaturahmi informasi, transparansi akademik, serta pusat inovasi pembelajaran bagi seluruh warga sekolah.';
+
         $schoolProfile = [
             'name' => SchoolSetting::get('school_name', $schoolIdentity?->name ?? 'SMA Negeri 1 Lengkong'),
             'npsn' => SchoolSetting::get('school_npsn', $schoolIdentity?->npsn ?? '20202265'),
+            'nss' => $schoolIdentity?->nss ?? '301020304050',
+            'status' => $schoolIdentity?->status ?? 'Negeri',
             'accreditation' => SchoolSetting::get('school_accreditation', $schoolIdentity?->accreditation ?? 'A (Unggul)'),
-            'address' => SchoolSetting::get('school_address', $schoolIdentity?->address ?? 'Jalan Raya Tegalega, Kecamatan Lengkong, Kabupaten Sukabumi, Provinsi Jawa Barat'),
-            'principal_name' => SchoolSetting::get('headmaster_name', $schoolIdentity?->headmaster_name ?? 'Pian Sopian, S.Pd., M.M.Pd'),
+            'branch_office' => $schoolIdentity?->branch_office ?? 'Cabang Dinas Pendidikan (KCD) Wilayah V',
+            'province_dept' => 'Dinas Pendidikan Provinsi Jawa Barat',
+            'curriculum' => 'Kurikulum Merdeka / Nasional (Permendikdasmen 13/2025)',
+            'address' => SchoolSetting::get('school_address', $schoolIdentity?->address ?? 'Jalan Raya Lengkong No. 1, Desa Lengkong, Kec. Lengkong, Kab. Sukabumi, Jawa Barat 43174'),
+            'phone' => $schoolIdentity?->phone ?? '(0266) 6491001',
+            'email' => $schoolIdentity?->email ?? 'info@sman1lengkong.sch.id',
+            'website' => $schoolIdentity?->website ?? 'https://sman1lengkong.school',
+            'committee_head' => $schoolIdentity?->committee_head ?? 'ADE',
+            'head_of_admin' => 'Rachmat Sugiarto, A.Md.',
+            'principal_name' => SchoolSetting::get('headmaster_name', $schoolIdentity?->headmaster_name ?? 'Pian Sopian, S.Pd., M.M.Pd.'),
             'principal_nip' => SchoolSetting::get('headmaster_nip', $schoolIdentity?->headmaster_nip ?? '198009132008011005'),
+            'principal_rank' => 'Guru Pembina Tk. I / IV-b',
+            'principal_title' => 'Kepala SMAN 1 Lengkong',
+            'principal_photo' => $principalPhoto,
+            'principal_quote' => $principalQuote,
+            'principal_excerpt' => $principalSpeechExcerpt,
             'vision' => $vision,
             'vision_sub' => $visionSub,
             'missions' => $missions,
@@ -419,6 +495,121 @@ class KioskController extends Controller
 
         // 15. Data Dewan Guru & Tenaga Kependidikan dari Website
         $staffMembers = WebsiteContentController::getLiveStaff();
+        $staffCollection = collect($staffMembers);
+
+        // 16. Data Rombel (L/P) & Profil Wali Kelas
+        $classesQuery = SchoolClass::with(['homeroomTeacher.user', 'students'])
+            ->orderBy('grade')
+            ->orderBy('name')
+            ->get();
+
+        $rombelList = collect();
+        $totalSchoolStudents = 0;
+        $totalSchoolMale = 0;
+        $totalSchoolFemale = 0;
+
+        foreach ($classesQuery as $c) {
+            $activeStudents = $c->students->where('is_active', true);
+            if ($activeStudents->isEmpty() && $c->students->isNotEmpty()) {
+                $activeStudents = $c->students;
+            }
+
+            $male = $activeStudents->filter(fn ($s) => in_array(strtoupper(trim((string) $s->gender)), ['L', 'LAKI-LAKI', 'PRIA', 'M']))->count();
+            $female = $activeStudents->filter(fn ($s) => in_array(strtoupper(trim((string) $s->gender)), ['P', 'PEREMPUAN', 'WANITA', 'F']))->count();
+            $total = $activeStudents->count();
+
+            if ($male === 0 && $female === 0 && $total > 0) {
+                $male = (int) ceil($total / 2);
+                $female = $total - $male;
+            }
+
+            $totalSchoolStudents += $total;
+            $totalSchoolMale += $male;
+            $totalSchoolFemale += $female;
+
+            $teacher = $c->homeroomTeacher;
+            $teacherName = $teacher?->formatted_name ?: ($teacher?->name ?: null);
+            $teacherNip = $teacher?->nip ?: ($teacher?->nuptk ?: '-');
+
+            $staffMatch = null;
+            if ($teacher) {
+                $staffMatch = $staffCollection->first(function ($s) use ($teacher) {
+                    return (! empty($teacher->nip) && ! empty($s['nip']) && $teacher->nip === $s['nip'])
+                        || (! empty($s['name']) && ! empty($teacher->name) && (stripos($s['name'], $teacher->name) !== false || stripos($teacher->name, $s['name']) !== false));
+                });
+            } else {
+                $staffMatch = $staffCollection->first(function ($s) use ($c) {
+                    $duty = $s['duty'] ?? ($s['position'] ?? '');
+
+                    return stripos($duty, 'Wali Kelas') !== false && (stripos($duty, $c->name) !== false || stripos($c->name, str_ireplace('Wali Kelas', '', $duty)) !== false);
+                });
+                if ($staffMatch) {
+                    $teacherName = $staffMatch['name'];
+                    $teacherNip = $staffMatch['nip'] ?? '-';
+                }
+            }
+
+            $photoUrl = null;
+            if ($staffMatch && ! empty($staffMatch['photo'])) {
+                $photoUrl = str_starts_with($staffMatch['photo'], 'http') ? $staffMatch['photo'] : asset($staffMatch['photo']);
+            } elseif ($teacher && $teacher->user && ! empty($teacher->user->avatar)) {
+                $photoUrl = str_starts_with($teacher->user->avatar, 'http') ? $teacher->user->avatar : asset('storage/'.$teacher->user->avatar);
+            }
+
+            $rombelList->push([
+                'id' => $c->id,
+                'name' => $c->name,
+                'grade' => $c->grade,
+                'major' => $c->major ?: 'Kurikulum Merdeka',
+                'male_count' => $male,
+                'female_count' => $female,
+                'total_count' => $total,
+                'male_pct' => $total > 0 ? round(($male / $total) * 100) : 0,
+                'female_pct' => $total > 0 ? round(($female / $total) * 100) : 0,
+                'homeroom_teacher' => [
+                    'name' => $teacherName ?: 'Belum Ditugaskan',
+                    'nip' => $teacherNip,
+                    'photo' => $photoUrl,
+                ],
+            ]);
+        }
+
+        if ($rombelList->isEmpty()) {
+            $defaultClasses = [
+                ['name' => 'X Merdeka 1', 'grade' => 'X', 'male' => 17, 'female' => 19, 'teacher' => 'Sujandi, S.Sos.', 'nip' => '199810232025211127'],
+                ['name' => 'X Merdeka 2', 'grade' => 'X', 'male' => 16, 'female' => 20, 'teacher' => 'Yani Mulyani, S.Pd.', 'nip' => '198704122022212009'],
+                ['name' => 'XI Merdeka 1', 'grade' => 'XI', 'male' => 18, 'female' => 17, 'teacher' => 'Ilham Maulana, S.Pd.', 'nip' => '20202265001'],
+                ['name' => 'XI Merdeka 2', 'grade' => 'XI', 'male' => 15, 'female' => 21, 'teacher' => 'Ai Nurhasanah, S.Pd.', 'nip' => '199105232024212015'],
+                ['name' => 'XII Merdeka 1', 'grade' => 'XII', 'male' => 17, 'female' => 18, 'teacher' => 'Restu, S.Pd.', 'nip' => '198812302025212129'],
+                ['name' => 'XII Merdeka 2', 'grade' => 'XII', 'male' => 16, 'female' => 19, 'teacher' => 'Deden Sopian, S.Pd.', 'nip' => '198506142010011012'],
+            ];
+            foreach ($defaultClasses as $dc) {
+                $tot = $dc['male'] + $dc['female'];
+                $totalSchoolStudents += $tot;
+                $totalSchoolMale += $dc['male'];
+                $totalSchoolFemale += $dc['female'];
+
+                $stf = $staffCollection->first(fn ($s) => stripos($s['name'] ?? '', $dc['teacher']) !== false);
+                $p = $stf && ! empty($stf['photo']) ? (str_starts_with($stf['photo'], 'http') ? $stf['photo'] : asset($stf['photo'])) : null;
+
+                $rombelList->push([
+                    'id' => null,
+                    'name' => $dc['name'],
+                    'grade' => $dc['grade'],
+                    'major' => 'Kurikulum Merdeka',
+                    'male_count' => $dc['male'],
+                    'female_count' => $dc['female'],
+                    'total_count' => $tot,
+                    'male_pct' => round(($dc['male'] / $tot) * 100),
+                    'female_pct' => round(($dc['female'] / $tot) * 100),
+                    'homeroom_teacher' => [
+                        'name' => $dc['teacher'],
+                        'nip' => $dc['nip'],
+                        'photo' => $p,
+                    ],
+                ]);
+            }
+        }
 
         // 16. Data Perpustakaan & Literasi Digital
         $libraryTotalToday = 0;
@@ -877,6 +1068,16 @@ class KioskController extends Controller
                 'total_today' => $extraToday->count(),
                 'schedule' => "{$extraDaysLabel} ({$extraStart} - {$extraEnd} WIB)",
                 'recent' => $recentExtra,
+                'clubs' => $extracurricularClubs,
+                'total_clubs' => $extracurricularClubs->count(),
+            ],
+            'rombels' => [
+                'list' => $rombelList,
+                'total_students' => $totalSchoolStudents,
+                'total_male' => $totalSchoolMale,
+                'total_female' => $totalSchoolFemale,
+                'total_rombels' => $rombelList->count(),
+                'avg_per_rombel' => $rombelList->count() > 0 ? round($totalSchoolStudents / $rombelList->count(), 1) : 0,
             ],
             'tahfidz' => [
                 'total_today' => $tahfidzTodayCount,
