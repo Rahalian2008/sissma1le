@@ -429,6 +429,9 @@ Route::middleware([
     Route::prefix('guests')->name('guests.')->group(function () {
         Route::get('/', [GuestController::class, 'index'])->name('index');
         Route::get('/report/print', [GuestController::class, 'printReport'])->name('report.print');
+        Route::get('/{guest}/print-card', [GuestController::class, 'printCard'])->name('print-card');
+        Route::get('/{guest}/print_card', [GuestController::class, 'printCard'])->name('print_card');
+        Route::get('/{guest}/card', [GuestController::class, 'card'])->name('card');
         Route::get('/{guest}', [GuestController::class, 'show'])->name('show');
         Route::put('/{guest}', [GuestController::class, 'update'])->name('update');
         Route::patch('/{guest}/status', [GuestController::class, 'updateStatus'])->name('status');

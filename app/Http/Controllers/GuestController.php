@@ -170,7 +170,9 @@ class GuestController extends Controller
      */
     public function printCard(string $ticket): View
     {
-        $guest = Guest::where('ticket_number', $ticket)->firstOrFail();
+        $guest = is_numeric($ticket)
+            ? (Guest::find($ticket) ?? Guest::where('ticket_number', $ticket)->firstOrFail())
+            : Guest::where('ticket_number', $ticket)->firstOrFail();
         $school = SchoolIdentity::current();
 
         $verificationUrl = route('guests.card', ['ticket' => $guest->ticket_number]);

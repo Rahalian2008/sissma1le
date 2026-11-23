@@ -2032,6 +2032,9 @@
         });
     </script>
 
+    <!-- Universal Searchable Select for Students & Teachers across SIS-SMA1LE -->
+    <script src="{{ asset('js/searchable-select.js') }}"></script>
+
     @stack('modals')
     @stack('scripts')
 </body>

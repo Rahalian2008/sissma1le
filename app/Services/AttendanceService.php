@@ -329,10 +329,11 @@ class AttendanceService
                 ];
             }
 
-            if ($timeShort > $lateCutoffTime) {
+            // Batas presensi masuk adalah sebelum jam pulang dimulai ($outStartStr)
+            if ($timeShort >= $outStartStr) {
                 return [
                     'success' => false,
-                    'message' => "Batas akhir presensi masuk untuk sesi hari ini telah berakhir pada pukul {$lateCutoffTime} WIB. Siswa yang belum presensi masuk tercatat Alpa.",
+                    'message' => "Batas operasional presensi masuk untuk sesi hari ini telah berakhir (Pukul {$outStartStr} WIB). Saat ini adalah waktu sesi presensi pulang.",
                     'error_code' => 'TIME_TOO_LATE',
                 ];
             }

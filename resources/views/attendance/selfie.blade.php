@@ -4,6 +4,19 @@
 
 @section('content')
 <div class="w-full max-w-full sm:max-w-3xl min-w-0 mx-auto space-y-4 sm:space-y-6 px-1 xs:px-2 sm:px-0 overflow-x-hidden">
+    <!-- Tombol Kembali ke Presensi Utama -->
+    <div class="flex items-center justify-between gap-3 mb-1">
+        <a href="{{ route('attendance.index') }}" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-900/90 dark:bg-slate-800 hover:bg-slate-800 text-white font-bold text-xs transition border border-slate-700 shadow-sm group">
+            <svg class="w-4 h-4 text-emerald-400 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+            </svg>
+            <span>Kembali ke Presensi Utama</span>
+        </a>
+        <div class="text-[11px] text-slate-500 dark:text-slate-400 font-medium hidden sm:block">
+            Modul Presensi Mandiri Siswa
+        </div>
+    </div>
+
     @include('attendance.partials.nav')
     <!-- Header Notice: Strict Business Rule -->
     <div class="w-full max-w-full min-w-0 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-2xl sm:rounded-3xl p-3.5 xs:p-4 sm:p-6 text-white shadow-xl border border-slate-800">
@@ -113,154 +126,220 @@
 
             $isCheckinWindow = $currentTimeStr >= $inStartStr && $currentTimeStr <= $inLateStr;
             $isBeforeCheckin = $currentTimeStr < $inStartStr;
-            $isAfterCheckin = $currentTimeStr > $inLateStr;
+            $isCheckinLate = $currentTimeStr > $inLateStr && $currentTimeStr < $outStartStr;
 
-            if ($isComplete) {
-                $sessionMode = 'complete';
-            } elseif ($hasCheckin) {
-                if ($isBeforeCheckout && !$isPrivileged) {
-                    $sessionMode = 'waiting_checkout';
-                } elseif ($isCheckoutWindow || $isPrivileged) {
-                    $sessionMode = 'checkout';
-                } else {
-                    $sessionMode = 'checkout_closed';
-                }
-            } else {
-                if ($isBeforeCheckin && !$isPrivileged) {
-                    $sessionMode = 'waiting_checkin';
-                } elseif ($isCheckinWindow || $isPrivileged) {
-                    $sessionMode = 'checkin';
-                } else {
-                    $sessionMode = 'checkin_late';
-                }
-            }
+            // Default sesi aktif: jika sudah absen masuk dan sudah masuk jam pulang, default ke checkout; selain itu checkin
+            $defaultSession = ($hasCheckin && ($currentTimeStr >= $outStartStr || $isCheckoutWindow)) ? 'checkout' : 'checkin';
         @endphp
 
-        @if($sessionMode === 'complete')
-            <div class="mb-4 sm:mb-6 p-3.5 sm:p-5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/50 text-emerald-950 dark:text-emerald-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 w-full min-w-0">
-                <div class="flex items-center gap-3 min-w-0">
-                    <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-emerald-500 text-white font-black flex items-center justify-center text-base sm:text-lg shadow-md shadow-emerald-500/20 shrink-0">
-                        ✓
-                    </div>
-                    <div class="min-w-0">
-                        <h3 class="font-extrabold text-xs sm:text-sm text-emerald-900 dark:text-emerald-100">Presensi Hari Ini Telah Lengkap!</h3>
-                        <p class="text-[11px] sm:text-xs text-emerald-700 dark:text-emerald-300 mt-0.5">
-                            Masuk: <strong>{{ substr($existingAttendance->time, 0, 5) }} WIB</strong> • Pulang: <strong>{{ substr($existingAttendance->time_out, 0, 5) }} WIB</strong>
-                        </p>
-                    </div>
-                </div>
-                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-600 text-white text-xs font-bold self-start sm:self-auto shrink-0">
-                    Status: VALID ✓
-                </div>
+        <!-- Tab Pemilih Sesi: Masuk (Hadir) vs Pulang -->
+        <div class="mb-4 sm:mb-6">
+            <div class="p-1 bg-slate-100 dark:bg-slate-800 rounded-2xl flex items-center gap-1 border border-slate-200 dark:border-slate-700/80 shadow-xs max-w-md mx-auto">
+                <button type="button" id="tab-btn-checkin" onclick="selectSelfieSession('checkin')"
+                    class="flex-1 py-2 sm:py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5 transition-all cursor-pointer {{ $defaultSession === 'checkin' ? 'bg-white dark:bg-slate-900 text-emerald-700 dark:text-emerald-400 shadow-sm border border-slate-200/80 dark:border-slate-700' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200' }}">
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                    <span>Presensi Masuk (Hadir)</span>
+                    @if($hasCheckin)
+                        <span class="text-[10px] px-1.5 py-0.2 bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 rounded font-bold">✓</span>
+                    @endif
+                </button>
+                <button type="button" id="tab-btn-checkout" onclick="selectSelfieSession('checkout')"
+                    class="flex-1 py-2 sm:py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5 transition-all cursor-pointer {{ $defaultSession === 'checkout' ? 'bg-white dark:bg-slate-900 text-sky-700 dark:text-sky-400 shadow-sm border border-slate-200/80 dark:border-slate-700' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200' }}">
+                    <span class="w-2.5 h-2.5 rounded-full bg-sky-500"></span>
+                    <span>Presensi Pulang</span>
+                    @if($hasCheckout)
+                        <span class="text-[10px] px-1.5 py-0.2 bg-sky-100 dark:bg-sky-950 text-sky-800 dark:text-sky-300 rounded font-bold">✓</span>
+                    @endif
+                </button>
             </div>
-        @elseif($sessionMode === 'waiting_checkout')
-            <div class="mb-4 sm:mb-6 p-3.5 sm:p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/50 text-amber-950 dark:text-amber-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 w-full min-w-0">
-                <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
-                    <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-amber-500 text-white font-bold flex items-center justify-center text-xs sm:text-sm shadow-sm shrink-0">
-                        🔒
-                    </div>
-                    <div class="min-w-0">
-                        <div class="flex items-center gap-2 flex-wrap">
-                            <h4 class="font-extrabold text-xs text-amber-950 dark:text-amber-100">SESI PRESENSI PULANG BELUM DIBUKA</h4>
-                            <span class="px-2 py-0.5 rounded text-[10px] font-extrabold bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300">
-                                Masuk Selesai ({{ substr($existingAttendance->time, 0, 5) }} WIB)
-                            </span>
+        </div>
+
+        <!-- Panel Informasi Sesi Masuk -->
+        <div id="panel-info-checkin" class="{{ $defaultSession === 'checkin' ? '' : 'hidden' }}">
+            @if($hasCheckin)
+                <div class="mb-4 sm:mb-6 p-3.5 sm:p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/50 text-emerald-950 dark:text-emerald-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 w-full min-w-0">
+                    <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
+                        <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-emerald-500 text-white font-bold flex items-center justify-center text-xs sm:text-sm shadow-sm shrink-0">
+                            ✓
                         </div>
-                        <p class="text-[11px] text-amber-800 dark:text-amber-300 leading-snug mt-1">
-                            Anda telah presensi masuk pada pukul <strong>{{ substr($existingAttendance->time, 0, 5) }} WIB</strong>. Sesi presensi pulang hari <strong>{{ $settings['day_name'] }}</strong> baru dibuka pukul <strong>{{ $outStartStr }} s.d. {{ $outEndStr }} WIB</strong>.
-                        </p>
+                        <div class="min-w-0">
+                            <h4 class="font-extrabold text-xs text-emerald-950 dark:text-emerald-100">PRESENSI MASUK SUDAH TERCATAT</h4>
+                            <p class="text-[11px] text-emerald-800 dark:text-emerald-300 leading-snug">
+                                Anda telah presensi masuk hari ini pada pukul <strong>{{ substr($existingAttendance->time, 0, 5) }} WIB</strong> (Status: <strong>{{ $existingAttendance->status }} - VALID</strong>).
+                            </p>
+                        </div>
+                    </div>
+                    <span class="px-2.5 py-1 rounded-lg bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 font-extrabold text-[11px] shrink-0 border border-emerald-200 dark:border-emerald-800 self-start sm:self-auto">
+                        Masuk: {{ substr($existingAttendance->time, 0, 5) }} WIB
+                    </span>
+                </div>
+            @elseif($isBeforeCheckin && !$isPrivileged)
+                <div class="mb-4 sm:mb-6 p-3.5 sm:p-4 rounded-2xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900/50 text-indigo-950 dark:text-indigo-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 w-full min-w-0">
+                    <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
+                        <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-indigo-600 text-white font-bold flex items-center justify-center text-xs sm:text-sm shadow-sm shrink-0">
+                            ⏰
+                        </div>
+                        <div class="min-w-0">
+                            <h4 class="font-extrabold text-xs text-indigo-950 dark:text-indigo-100">SESI PRESENSI MASUK BELUM DIBUKA</h4>
+                            <p class="text-[11px] text-indigo-800 dark:text-indigo-300 leading-snug">
+                                Jam presensi masuk hari <strong>{{ $settings['day_name'] }}</strong> baru dibuka pukul <strong>{{ $inStartStr }} WIB</strong>.
+                            </p>
+                        </div>
+                    </div>
+                    <span class="px-2.5 py-1 rounded-lg bg-indigo-100 dark:bg-indigo-950/60 text-indigo-800 dark:text-indigo-300 font-extrabold text-[11px] shrink-0 border border-indigo-200 dark:border-indigo-800 self-start sm:self-auto">
+                        Buka {{ $inStartStr }} WIB
+                    </span>
+                </div>
+            @elseif($isCheckinLate)
+                <div class="mb-4 sm:mb-6 p-3.5 sm:p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/50 text-amber-950 dark:text-amber-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 w-full min-w-0">
+                    <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
+                        <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-amber-500 text-white font-bold flex items-center justify-center text-xs sm:text-sm shadow-sm shrink-0">
+                            ⚠️
+                        </div>
+                        <div class="min-w-0">
+                            <h4 class="font-extrabold text-xs text-amber-950 dark:text-amber-100">PRESENSI MASUK (TERLAMBAT)</h4>
+                            <p class="text-[11px] text-amber-800 dark:text-amber-300 leading-snug">
+                                Jam masuk tepat waktu ({{ $inLateStr }} WIB) telah lewat. Anda tetap dapat melakukan presensi masuk, kehadiran akan tercatat dengan status <strong>TERLAMBAT</strong>.
+                            </p>
+                        </div>
+                    </div>
+                    <span class="px-2.5 py-1 rounded-lg bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 font-extrabold text-[11px] shrink-0 border border-amber-200 dark:border-amber-800 self-start sm:self-auto">
+                        Status Terlambat
+                    </span>
+                </div>
+            @elseif($currentTimeStr >= $outStartStr && !$isPrivileged)
+                <div class="mb-4 sm:mb-6 p-3.5 sm:p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/50 text-rose-950 dark:text-rose-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 w-full min-w-0">
+                    <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
+                        <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-rose-600 text-white font-bold flex items-center justify-center text-xs sm:text-sm shadow-sm shrink-0">
+                            ✕
+                        </div>
+                        <div class="min-w-0">
+                            <h4 class="font-extrabold text-xs text-rose-950 dark:text-rose-100">JAM PRESENSI MASUK TELAH BERAKHIR</h4>
+                            <p class="text-[11px] text-rose-800 dark:text-rose-300 leading-snug">
+                                Waktu sekolah sudah memasuki jam kepulangan ({{ $outStartStr }} WIB). Silakan lakukan presensi pulang pada tab di atas.
+                            </p>
+                        </div>
+                    </div>
+                    <span class="px-2.5 py-1 rounded-lg bg-rose-100 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300 font-extrabold text-[11px] shrink-0 border border-rose-200 dark:border-rose-800 self-start sm:self-auto">
+                        Tutup {{ $outStartStr }} WIB
+                    </span>
+                </div>
+            @else
+                <div class="mb-4 sm:mb-6 p-3.5 sm:p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-100 dark:border-emerald-900/50 text-emerald-950 dark:text-emerald-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 w-full min-w-0">
+                    <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
+                        <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-emerald-600 text-white font-bold flex items-center justify-center text-xs sm:text-sm shadow-sm shrink-0">
+                            1
+                        </div>
+                        <div class="min-w-0">
+                            <h4 class="font-extrabold text-xs text-emerald-950 dark:text-emerald-100">SESI PRESENSI MASUK (HADIR)</h4>
+                            <p class="text-[11px] text-emerald-800 dark:text-emerald-300 leading-snug">
+                                Posisikan wajah Anda di dalam lingkaran panduan dan pastikan berada di area sekolah (Radius {{ $settings['radius_meters'] }}m).
+                            </p>
+                        </div>
+                    </div>
+                    <span class="px-2.5 py-1 rounded-lg bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 font-extrabold text-[11px] shrink-0 border border-emerald-200 dark:border-emerald-800 self-start sm:self-auto">
+                        Sesi Masuk Aktif
+                    </span>
+                </div>
+            @endif
+        </div>
+
+        <!-- Panel Informasi Sesi Pulang -->
+        <div id="panel-info-checkout" class="{{ $defaultSession === 'checkout' ? '' : 'hidden' }}">
+            @if($hasCheckout)
+                <div class="mb-4 sm:mb-6 p-3.5 sm:p-5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/50 text-emerald-950 dark:text-emerald-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 w-full min-w-0">
+                    <div class="flex items-center gap-3 min-w-0">
+                        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-emerald-500 text-white font-black flex items-center justify-center text-base sm:text-lg shadow-md shadow-emerald-500/20 shrink-0">
+                            ✓
+                        </div>
+                        <div class="min-w-0">
+                            <h3 class="font-extrabold text-xs sm:text-sm text-emerald-900 dark:text-emerald-100">Presensi Hari Ini Telah Lengkap!</h3>
+                            <p class="text-[11px] sm:text-xs text-emerald-700 dark:text-emerald-300 mt-0.5">
+                                Masuk: <strong>{{ substr($existingAttendance->time, 0, 5) }} WIB</strong> • Pulang: <strong>{{ substr($existingAttendance->time_out, 0, 5) }} WIB</strong>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-600 text-white text-xs font-bold self-start sm:self-auto shrink-0">
+                        Status: VALID ✓
                     </div>
                 </div>
-                <span class="px-2.5 py-1 rounded-lg bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 font-extrabold text-[11px] shrink-0 border border-amber-200 dark:border-amber-800 self-start sm:self-auto">
-                    Buka {{ $outStartStr }} WIB
-                </span>
-            </div>
-        @elseif($sessionMode === 'checkout')
-            <div class="mb-4 sm:mb-6 p-3.5 sm:p-4 rounded-2xl bg-sky-50 dark:bg-sky-950/40 border border-sky-200 dark:border-sky-900/50 text-sky-950 dark:text-sky-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 w-full min-w-0">
-                <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
-                    <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-sky-500 text-white font-bold flex items-center justify-center text-xs sm:text-sm shadow-sm shrink-0">
-                        2
+            @elseif(!$hasCheckin && !$isPrivileged)
+                <div class="mb-4 sm:mb-6 p-3.5 sm:p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/50 text-amber-950 dark:text-amber-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 w-full min-w-0">
+                    <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
+                        <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-amber-500 text-white font-bold flex items-center justify-center text-xs sm:text-sm shadow-sm shrink-0">
+                            ⚠️
+                        </div>
+                        <div class="min-w-0">
+                            <h4 class="font-extrabold text-xs text-amber-950 dark:text-amber-100">BELUM PRESENSI MASUK</h4>
+                            <p class="text-[11px] text-amber-800 dark:text-amber-300 leading-snug">
+                                Anda belum melakukan presensi masuk hari ini. Silakan klik tab <strong>Presensi Masuk</strong> terlebih dahulu.
+                            </p>
+                        </div>
                     </div>
-                    <div class="min-w-0">
-                        <h4 class="font-extrabold text-xs text-sky-950 dark:text-sky-100">SESI PRESENSI PULANG DIAKTIFKAN</h4>
-                        <p class="text-[11px] text-sky-800 dark:text-sky-300 leading-snug">
-                            Jam kepulangan sekolah telah tiba ({{ $outStartStr }} - {{ $outEndStr }} WIB). Silakan ambil foto selfie untuk merekam jam kepulangan Anda.
-                        </p>
-                    </div>
+                    <button type="button" onclick="selectSelfieSession('checkin')" class="px-2.5 py-1 rounded-lg bg-amber-600 text-white font-bold text-[11px] shrink-0 self-start sm:self-auto hover:bg-amber-700 transition">
+                        Beralih ke Presensi Masuk →
+                    </button>
                 </div>
-                <span class="px-2.5 py-1 rounded-lg bg-sky-100 dark:bg-sky-950/60 text-sky-800 dark:text-sky-300 font-extrabold text-[11px] shrink-0 border border-sky-200 dark:border-sky-800 self-start sm:self-auto">
-                    Sesi Pulang Aktif
-                </span>
-            </div>
-        @elseif($sessionMode === 'checkout_closed')
-            <div class="mb-4 sm:mb-6 p-3.5 sm:p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/50 text-rose-950 dark:text-rose-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 w-full min-w-0">
-                <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
-                    <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-rose-500 text-white font-bold flex items-center justify-center text-xs sm:text-sm shadow-sm shrink-0">
-                        !
+            @elseif($isBeforeCheckout && !$isPrivileged)
+                <div class="mb-4 sm:mb-6 p-3.5 sm:p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/50 text-amber-950 dark:text-amber-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 w-full min-w-0">
+                    <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
+                        <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-amber-500 text-white font-bold flex items-center justify-center text-xs sm:text-sm shadow-sm shrink-0">
+                            🔒
+                        </div>
+                        <div class="min-w-0">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <h4 class="font-extrabold text-xs text-amber-950 dark:text-amber-100">SESI PRESENSI PULANG BELUM DIBUKA</h4>
+                                @if($hasCheckin)
+                                    <span class="px-2 py-0.5 rounded text-[10px] font-extrabold bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300">
+                                        Masuk: {{ substr($existingAttendance->time, 0, 5) }} WIB
+                                    </span>
+                                @endif
+                            </div>
+                            <p class="text-[11px] text-amber-800 dark:text-amber-300 leading-snug mt-1">
+                                Sesi presensi pulang hari <strong>{{ $settings['day_name'] }}</strong> baru dibuka pukul <strong>{{ $outStartStr }} s.d. {{ $outEndStr }} WIB</strong>.
+                            </p>
+                        </div>
                     </div>
-                    <div class="min-w-0">
-                        <h4 class="font-extrabold text-xs text-rose-950 dark:text-rose-100">SESI PRESENSI PULANG TELAH BERAKHIR</h4>
-                        <p class="text-[11px] text-rose-800 dark:text-rose-300 leading-snug">
-                            Batas akhir kepulangan pukul <strong>{{ $outEndStr }} WIB</strong> untuk hari ini telah berakhir.
-                        </p>
-                    </div>
+                    <span class="px-2.5 py-1 rounded-lg bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 font-extrabold text-[11px] shrink-0 border border-amber-200 dark:border-amber-800 self-start sm:self-auto">
+                        Buka {{ $outStartStr }} WIB
+                    </span>
                 </div>
-                <span class="px-2.5 py-1 rounded-lg bg-rose-100 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300 font-extrabold text-[11px] shrink-0 border border-rose-200 dark:border-rose-800 self-start sm:self-auto">
-                    Tutup {{ $outEndStr }} WIB
-                </span>
-            </div>
-        @elseif($sessionMode === 'waiting_checkin')
-            <div class="mb-4 sm:mb-6 p-3.5 sm:p-4 rounded-2xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900/50 text-indigo-950 dark:text-indigo-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 w-full min-w-0">
-                <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
-                    <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-indigo-600 text-white font-bold flex items-center justify-center text-xs sm:text-sm shadow-sm shrink-0">
-                        ⏰
+            @elseif($isCheckoutWindow || $isPrivileged)
+                <div class="mb-4 sm:mb-6 p-3.5 sm:p-4 rounded-2xl bg-sky-50 dark:bg-sky-950/40 border border-sky-200 dark:border-sky-900/50 text-sky-950 dark:text-sky-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 w-full min-w-0">
+                    <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
+                        <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-sky-500 text-white font-bold flex items-center justify-center text-xs sm:text-sm shadow-sm shrink-0">
+                            2
+                        </div>
+                        <div class="min-w-0">
+                            <h4 class="font-extrabold text-xs text-sky-950 dark:text-sky-100">SESI PRESENSI PULANG DIAKTIFKAN</h4>
+                            <p class="text-[11px] text-sky-800 dark:text-sky-300 leading-snug">
+                                Jam kepulangan sekolah telah tiba ({{ $outStartStr }} - {{ $outEndStr }} WIB). Silakan ambil foto selfie untuk merekam jam kepulangan Anda.
+                            </p>
+                        </div>
                     </div>
-                    <div class="min-w-0">
-                        <h4 class="font-extrabold text-xs text-indigo-950 dark:text-indigo-100">SESI PRESENSI MASUK BELUM DIBUKA</h4>
-                        <p class="text-[11px] text-indigo-800 dark:text-indigo-300 leading-snug">
-                            Jam presensi masuk hari <strong>{{ $settings['day_name'] }}</strong> baru dibuka pukul <strong>{{ $inStartStr }} WIB</strong>.
-                        </p>
-                    </div>
+                    <span class="px-2.5 py-1 rounded-lg bg-sky-100 dark:bg-sky-950/60 text-sky-800 dark:text-sky-300 font-extrabold text-[11px] shrink-0 border border-sky-200 dark:border-sky-800 self-start sm:self-auto">
+                        Sesi Pulang Aktif
+                    </span>
                 </div>
-                <span class="px-2.5 py-1 rounded-lg bg-indigo-100 dark:bg-indigo-950/60 text-indigo-800 dark:text-indigo-300 font-extrabold text-[11px] shrink-0 border border-indigo-200 dark:border-indigo-800 self-start sm:self-auto">
-                    Buka {{ $inStartStr }} WIB
-                </span>
-            </div>
-        @elseif($sessionMode === 'checkin_late')
-            <div class="mb-4 sm:mb-6 p-3.5 sm:p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/50 text-rose-950 dark:text-rose-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 w-full min-w-0">
-                <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
-                    <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-rose-600 text-white font-bold flex items-center justify-center text-xs sm:text-sm shadow-sm shrink-0">
-                        ✕
+            @else
+                <div class="mb-4 sm:mb-6 p-3.5 sm:p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/50 text-rose-950 dark:text-rose-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 w-full min-w-0">
+                    <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
+                        <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-rose-500 text-white font-bold flex items-center justify-center text-xs sm:text-sm shadow-sm shrink-0">
+                            !
+                        </div>
+                        <div class="min-w-0">
+                            <h4 class="font-extrabold text-xs text-rose-950 dark:text-rose-100">SESI PRESENSI PULANG TELAH BERAKHIR</h4>
+                            <p class="text-[11px] text-rose-800 dark:text-rose-300 leading-snug">
+                                Batas akhir kepulangan pukul <strong>{{ $outEndStr }} WIB</strong> untuk hari ini telah berakhir.
+                            </p>
+                        </div>
                     </div>
-                    <div class="min-w-0">
-                        <h4 class="font-extrabold text-xs text-rose-950 dark:text-rose-100">BATAS AKHIR PRESENSI MASUK TELAH LEWAT</h4>
-                        <p class="text-[11px] text-rose-800 dark:text-rose-300 leading-snug">
-                            Batas akhir presensi masuk pukul <strong>{{ $inLateStr }} WIB</strong> telah berakhir. Siswa yang belum hadir tercatat Alpa.
-                        </p>
-                    </div>
+                    <span class="px-2.5 py-1 rounded-lg bg-rose-100 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300 font-extrabold text-[11px] shrink-0 border border-rose-200 dark:border-rose-800 self-start sm:self-auto">
+                        Tutup {{ $outEndStr }} WIB
+                    </span>
                 </div>
-                <span class="px-2.5 py-1 rounded-lg bg-rose-100 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300 font-extrabold text-[11px] shrink-0 border border-rose-200 dark:border-rose-800 self-start sm:self-auto">
-                    Batas {{ $inLateStr }} WIB
-                </span>
-            </div>
-        @else
-            <div class="mb-4 sm:mb-6 p-3.5 sm:p-4 rounded-2xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900/50 text-indigo-950 dark:text-indigo-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 w-full min-w-0">
-                <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
-                    <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-indigo-600 text-white font-bold flex items-center justify-center text-xs sm:text-sm shadow-sm shrink-0">
-                        1
-                    </div>
-                    <div class="min-w-0">
-                        <h4 class="font-extrabold text-xs text-indigo-950 dark:text-indigo-100">SESI PRESENSI MASUK</h4>
-                        <p class="text-[11px] text-indigo-800 dark:text-indigo-300 leading-snug">
-                            Posisikan wajah Anda di dalam lingkaran panduan di bawah dan pastikan GPS mendeteksi Anda di area sekolah.
-                        </p>
-                    </div>
-                </div>
-                <span class="px-2.5 py-1 rounded-lg bg-indigo-100 dark:bg-indigo-950/60 text-indigo-800 dark:text-indigo-300 font-extrabold text-[11px] shrink-0 border border-indigo-200 dark:border-indigo-800 self-start sm:self-auto">
-                    Sesi Masuk Aktif
-                </span>
-            </div>
-        @endif
+            @endif
+        </div>
 
         <!-- Geofence & GPS Status Bar -->
         <div class="mb-4 sm:mb-6 p-3 sm:p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 text-xs w-full min-w-0 max-w-full overflow-hidden">
@@ -316,7 +395,7 @@
             </div>
         </div>
 
-        <!-- Action Button: AMBIL SELFIE -->
+        <!-- Action Button: Sesuai Sesi Terpilih (Masuk vs Pulang) -->
         <div class="mt-4 sm:mt-6 text-center w-full min-w-0 max-w-full flex flex-col items-center px-1">
             @if(!$settings['is_enabled'])
                 <button type="button" disabled
@@ -340,121 +419,134 @@
                 <p class="text-xs text-rose-600 dark:text-rose-400 mt-2 font-medium">
                     {{ !empty($settings['is_holiday']) ? 'Hari ini adalah hari libur resmi: ' . $settings['holiday_name'] : 'Hari ini bukan merupakan hari aktif presensi sekolah.' }}
                 </p>
-            @elseif($sessionMode === 'complete')
-                <button type="button" disabled
-                    class="w-full max-w-xs xs:max-w-sm sm:max-w-md px-4 sm:px-10 py-3 sm:py-4 bg-slate-100 dark:bg-slate-800 text-slate-400 font-black rounded-xl sm:rounded-2xl cursor-not-allowed text-xs sm:text-base tracking-wide flex items-center justify-center gap-2">
-                    <svg class="w-5 h-5 text-emerald-500 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                    </svg>
-                    <span>PRESENSI HARI INI SELESAI</span>
-                </button>
-                <p class="text-xs text-slate-400 mt-2">
-                    Anda telah melakukan presensi masuk dan pulang untuk hari ini.
-                </p>
-            @elseif($sessionMode === 'waiting_checkout')
-                <div class="w-full flex flex-col items-center gap-2">
-                    <button type="button" disabled
-                        class="w-full max-w-xs xs:max-w-sm sm:max-w-md px-4 sm:px-10 py-3 sm:py-4 bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-black rounded-xl sm:rounded-2xl cursor-not-allowed text-xs sm:text-sm tracking-wide flex items-center justify-center gap-2">
-                        <svg class="w-5 h-5 shrink-0 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-                        </svg>
-                        <span>🔒 SESI PULANG DIBUKA PUKUL {{ $outStartStr }} WIB</span>
-                    </button>
-                    @if($isPrivileged)
-                        <button type="button" onclick="takeSelfie('checkout', true)" class="text-xs text-amber-600 dark:text-amber-400 hover:underline font-bold cursor-pointer">
-                            ⚡ Mode Admin: Buka Paksa Sesi Presensi Pulang
-                        </button>
-                        <button type="button" onclick="takeSelfie('checkin', true)" class="text-xs text-indigo-600 dark:text-indigo-400 hover:underline font-semibold cursor-pointer">
-                            ⚡ Mode Admin: Paksa Sesi Presensi Masuk (Hadir)
-                        </button>
-                    @endif
-                </div>
-                <p class="text-xs text-slate-400 mt-2">
-                    Jam kepulangan diatur sesuai aturan sekolah: pukul {{ $outStartStr }} s.d. {{ $outEndStr }} WIB.
-                </p>
-            @elseif($sessionMode === 'checkout')
-                <div class="w-full flex flex-col items-center gap-2">
-                    <button type="button" id="btn-capture" onclick="takeSelfie('checkout')" disabled
-                        class="w-full max-w-xs xs:max-w-sm sm:max-w-md px-4 sm:px-10 py-3 sm:py-4 bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-black rounded-xl sm:rounded-2xl shadow-xl shadow-sky-600/25 text-xs sm:text-base tracking-wide transition transform active:scale-95 flex items-center justify-center gap-2 sm:gap-3 cursor-pointer">
-                        <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-                        </svg>
-                        <span>AMBIL SELFIE & PRESENSI PULANG</span>
-                    </button>
-                    @if($isPrivileged)
-                        <button type="button" onclick="takeSelfie('checkin', true)" class="text-xs text-indigo-500 dark:text-indigo-400 hover:underline font-semibold cursor-pointer">
-                            Mode Admin: Paksa Sesi Presensi Masuk (Hadir)
-                        </button>
-                    @endif
-                </div>
-                <p class="text-xs text-slate-400 mt-2">
-                    Merekam waktu kepulangan dan foto selfie pulang tervalidasi otomatis.
-                </p>
-            @elseif($sessionMode === 'checkout_closed')
-                <button type="button" disabled
-                    class="w-full max-w-xs xs:max-w-sm sm:max-w-md px-4 sm:px-10 py-3 sm:py-4 bg-slate-100 dark:bg-slate-800 text-slate-400 font-bold rounded-xl sm:rounded-2xl cursor-not-allowed text-xs sm:text-sm tracking-wide flex items-center justify-center gap-2">
-                    <svg class="w-5 h-5 text-rose-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                    <span>SESI PULANG TELAH DITUTUP ({{ $outEndStr }} WIB)</span>
-                </button>
-                <p class="text-xs text-slate-400 mt-2">
-                    Batas akhir kepulangan hari ini telah berakhir pada pukul {{ $outEndStr }} WIB.
-                </p>
-            @elseif($sessionMode === 'waiting_checkin')
-                <div class="w-full flex flex-col items-center gap-2">
-                    <button type="button" disabled
-                        class="w-full max-w-xs xs:max-w-sm sm:max-w-md px-4 sm:px-10 py-3 sm:py-4 bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-black rounded-xl sm:rounded-2xl cursor-not-allowed text-xs sm:text-sm tracking-wide flex items-center justify-center gap-2">
-                        <svg class="w-5 h-5 shrink-0 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-                        </svg>
-                        <span>🔒 SESI MASUK DIBUKA PUKUL {{ $inStartStr }} WIB</span>
-                    </button>
-                    @if($isPrivileged)
-                        <button type="button" onclick="takeSelfie('checkin', true)" class="text-xs text-amber-600 dark:text-amber-400 hover:underline font-bold cursor-pointer">
-                            ⚡ Mode Admin: Buka Paksa Sesi Presensi Masuk
-                        </button>
-                    @endif
-                </div>
-                <p class="text-xs text-slate-400 mt-2">
-                    Sesi presensi masuk dibuka pukul {{ $inStartStr }} s.d. {{ $inLateStr }} WIB.
-                </p>
-            @elseif($sessionMode === 'checkin_late')
-                <div class="w-full flex flex-col items-center gap-2">
-                    <button type="button" disabled
-                        class="w-full max-w-xs xs:max-w-sm sm:max-w-md px-4 sm:px-10 py-3 sm:py-4 bg-slate-100 dark:bg-slate-800 text-slate-400 font-bold rounded-xl sm:rounded-2xl cursor-not-allowed text-xs sm:text-sm tracking-wide flex items-center justify-center gap-2">
-                        <svg class="w-5 h-5 text-rose-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                        <span>BATAS PRESENSI MASUK BERAKHIR ({{ $inLateStr }} WIB)</span>
-                    </button>
-                    @if($isPrivileged)
-                        <button type="button" onclick="takeSelfie('checkin', true)" class="text-xs text-amber-600 dark:text-amber-400 hover:underline font-bold cursor-pointer">
-                            ⚡ Mode Admin: Buka Paksa Sesi Presensi Masuk
-                        </button>
-                    @endif
-                </div>
-                <p class="text-xs text-slate-400 mt-2">
-                    Batas akhir presensi masuk untuk sesi hari ini telah berakhir pada pukul {{ $inLateStr }} WIB.
-                </p>
             @else
-                <div class="w-full flex flex-col items-center gap-2">
-                    <button type="button" id="btn-capture" onclick="takeSelfie('checkin')" disabled
-                        class="w-full max-w-xs xs:max-w-sm sm:max-w-md px-4 sm:px-10 py-3 sm:py-4 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 disabled:opacity-50 disabled:cursor-not-allowed text-slate-950 font-black rounded-xl sm:rounded-2xl shadow-xl shadow-emerald-500/20 text-xs sm:text-base tracking-wide transition transform active:scale-95 flex items-center justify-center gap-2 sm:gap-3 cursor-pointer">
-                        <svg class="w-5 h-5 sm:w-6 sm:h-6 text-slate-950 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
-                        </svg>
-                        <span>AMBIL SELFIE & PRESENSI MASUK</span>
-                    </button>
-                    @if($isPrivileged)
-                        <button type="button" onclick="takeSelfie('checkout', true)" class="text-xs text-indigo-500 dark:text-indigo-400 hover:underline font-semibold cursor-pointer">
-                            Mode Admin: Paksa Sesi Presensi Pulang
-                        </button>
+                <!-- Action Group Sesi Masuk -->
+                <div id="action-session-checkin" class="w-full flex flex-col items-center {{ $defaultSession === 'checkin' ? '' : 'hidden' }}">
+                    @if($hasCheckin)
+                        <div class="w-full flex flex-col items-center gap-2">
+                            <button type="button" disabled
+                                class="w-full max-w-xs xs:max-w-sm sm:max-w-md px-4 sm:px-10 py-3 sm:py-4 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 font-bold rounded-xl sm:rounded-2xl text-xs sm:text-sm tracking-wide flex items-center justify-center gap-2">
+                                <svg class="w-5 h-5 text-emerald-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                                </svg>
+                                <span>PRESENSI MASUK SELESAI ({{ substr($existingAttendance->time, 0, 5) }} WIB)</span>
+                            </button>
+                            <button type="button" onclick="takeSelfie('checkin', true)" class="btn-selfie-capture text-xs text-slate-500 hover:text-emerald-600 dark:hover:text-emerald-400 font-semibold underline cursor-pointer mt-1">
+                                ↻ Ambil Ulang Foto Presensi Masuk
+                            </button>
+                        </div>
+                    @elseif($isBeforeCheckin && !$isPrivileged)
+                        <div class="w-full flex flex-col items-center gap-2">
+                            <button type="button" disabled
+                                class="w-full max-w-xs xs:max-w-sm sm:max-w-md px-4 sm:px-10 py-3 sm:py-4 bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-black rounded-xl sm:rounded-2xl cursor-not-allowed text-xs sm:text-sm tracking-wide flex items-center justify-center gap-2">
+                                <svg class="w-5 h-5 shrink-0 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                                </svg>
+                                <span>🔒 SESI MASUK DIBUKA PUKUL {{ $inStartStr }} WIB</span>
+                            </button>
+                            @if($isPrivileged)
+                                <button type="button" onclick="takeSelfie('checkin', true)" class="text-xs text-amber-600 dark:text-amber-400 hover:underline font-bold cursor-pointer">
+                                    ⚡ Mode Admin: Buka Paksa Sesi Presensi Masuk
+                                </button>
+                            @endif
+                        </div>
+                    @elseif($currentTimeStr >= $outStartStr && !$isPrivileged)
+                        <div class="w-full flex flex-col items-center gap-2">
+                            <button type="button" disabled
+                                class="w-full max-w-xs xs:max-w-sm sm:max-w-md px-4 sm:px-10 py-3 sm:py-4 bg-slate-100 dark:bg-slate-800 text-slate-400 font-bold rounded-xl sm:rounded-2xl cursor-not-allowed text-xs sm:text-sm tracking-wide flex items-center justify-center gap-2">
+                                <svg class="w-5 h-5 text-rose-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                <span>WAKTU PRESENSI MASUK SELESAI</span>
+                            </button>
+                            <p class="text-xs text-slate-400 mt-1">Silakan klik tab Presensi Pulang untuk presensi kepulangan.</p>
+                        </div>
+                    @elseif($isCheckinLate)
+                        <div class="w-full flex flex-col items-center gap-2">
+                            <button type="button" onclick="takeSelfie('checkin')" disabled
+                                class="btn-selfie-capture w-full max-w-xs xs:max-w-sm sm:max-w-md px-4 sm:px-10 py-3 sm:py-4 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 disabled:opacity-50 disabled:cursor-not-allowed text-white font-black rounded-xl sm:rounded-2xl shadow-xl shadow-amber-500/20 text-xs sm:text-base tracking-wide transition transform active:scale-95 flex items-center justify-center gap-2 sm:gap-3 cursor-pointer">
+                                <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                <span>AMBIL SELFIE & PRESENSI MASUK (TERLAMBAT)</span>
+                            </button>
+                            <p class="text-xs text-amber-600 dark:text-amber-400 mt-1 font-medium">Batas tepat waktu ({{ $inLateStr }} WIB) telah lewat. Kehadiran tercatat TERLAMBAT.</p>
+                        </div>
+                    @else
+                        <div class="w-full flex flex-col items-center gap-2">
+                            <button type="button" onclick="takeSelfie('checkin')" disabled
+                                class="btn-selfie-capture w-full max-w-xs xs:max-w-sm sm:max-w-md px-4 sm:px-10 py-3 sm:py-4 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 disabled:opacity-50 disabled:cursor-not-allowed text-slate-950 font-black rounded-xl sm:rounded-2xl shadow-xl shadow-emerald-500/20 text-xs sm:text-base tracking-wide transition transform active:scale-95 flex items-center justify-center gap-2 sm:gap-3 cursor-pointer">
+                                <svg class="w-5 h-5 sm:w-6 sm:h-6 text-slate-950 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                                </svg>
+                                <span>AMBIL SELFIE & PRESENSI MASUK</span>
+                            </button>
+                            <p class="text-xs text-slate-400 mt-1">Kehadiran di dalam area sekolah berstatus otomatis <strong>VALID</strong>.</p>
+                        </div>
                     @endif
                 </div>
-                <p class="text-xs text-slate-400 mt-2">
-                    Kehadiran siswa di dalam area sekolah berstatus otomatis <strong>VALID</strong>.
-                </p>
+
+                <!-- Action Group Sesi Pulang -->
+                <div id="action-session-checkout" class="w-full flex flex-col items-center {{ $defaultSession === 'checkout' ? '' : 'hidden' }}">
+                    @if($hasCheckout)
+                        <div class="w-full flex flex-col items-center gap-2">
+                            <button type="button" disabled
+                                class="w-full max-w-xs xs:max-w-sm sm:max-w-md px-4 sm:px-10 py-3 sm:py-4 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 font-bold rounded-xl sm:rounded-2xl text-xs sm:text-sm tracking-wide flex items-center justify-center gap-2">
+                                <svg class="w-5 h-5 text-emerald-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                                </svg>
+                                <span>PRESENSI PULANG SELESAI ({{ substr($existingAttendance->time_out, 0, 5) }} WIB)</span>
+                            </button>
+                            <p class="text-xs text-slate-400 mt-1">Presensi kepulangan hari ini telah lengkap.</p>
+                        </div>
+                    @elseif(!$hasCheckin && !$isPrivileged)
+                        <div class="w-full flex flex-col items-center gap-2">
+                            <button type="button" onclick="selectSelfieSession('checkin')"
+                                class="w-full max-w-xs xs:max-w-sm sm:max-w-md px-4 sm:px-10 py-3 sm:py-4 bg-amber-500 hover:bg-amber-400 text-white font-bold rounded-xl sm:rounded-2xl text-xs sm:text-sm tracking-wide flex items-center justify-center gap-2 shadow-lg transition cursor-pointer">
+                                <span>← Beralih ke Presensi Masuk Dahulu</span>
+                            </button>
+                            <p class="text-xs text-slate-400 mt-1">Presensi pulang membutuhkan rekaman presensi masuk hari ini.</p>
+                        </div>
+                    @elseif($isBeforeCheckout && !$isPrivileged)
+                        <div class="w-full flex flex-col items-center gap-2">
+                            <button type="button" disabled
+                                class="w-full max-w-xs xs:max-w-sm sm:max-w-md px-4 sm:px-10 py-3 sm:py-4 bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-black rounded-xl sm:rounded-2xl cursor-not-allowed text-xs sm:text-sm tracking-wide flex items-center justify-center gap-2">
+                                <svg class="w-5 h-5 shrink-0 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                                </svg>
+                                <span>🔒 SESI PULANG DIBUKA PUKUL {{ $outStartStr }} WIB</span>
+                            </button>
+                            @if($isPrivileged)
+                                <button type="button" onclick="takeSelfie('checkout', true)" class="text-xs text-amber-600 dark:text-amber-400 hover:underline font-bold cursor-pointer">
+                                    ⚡ Mode Admin: Buka Paksa Sesi Presensi Pulang
+                                </button>
+                            @endif
+                            <p class="text-xs text-slate-400 mt-1">Jam kepulangan diatur sesuai aturan sekolah: pukul {{ $outStartStr }} s.d. {{ $outEndStr }} WIB.</p>
+                        </div>
+                    @elseif($isCheckoutWindow || $isPrivileged)
+                        <div class="w-full flex flex-col items-center gap-2">
+                            <button type="button" onclick="takeSelfie('checkout')" disabled
+                                class="btn-selfie-capture w-full max-w-xs xs:max-w-sm sm:max-w-md px-4 sm:px-10 py-3 sm:py-4 bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-black rounded-xl sm:rounded-2xl shadow-xl shadow-sky-600/25 text-xs sm:text-base tracking-wide transition transform active:scale-95 flex items-center justify-center gap-2 sm:gap-3 cursor-pointer">
+                                <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                                </svg>
+                                <span>AMBIL SELFIE & PRESENSI PULANG</span>
+                            </button>
+                            <p class="text-xs text-slate-400 mt-1">Merekam waktu kepulangan dan foto selfie pulang tervalidasi otomatis.</p>
+                        </div>
+                    @else
+                        <div class="w-full flex flex-col items-center gap-2">
+                            <button type="button" disabled
+                                class="w-full max-w-xs xs:max-w-sm sm:max-w-md px-4 sm:px-10 py-3 sm:py-4 bg-slate-100 dark:bg-slate-800 text-slate-400 font-bold rounded-xl sm:rounded-2xl cursor-not-allowed text-xs sm:text-sm tracking-wide flex items-center justify-center gap-2">
+                                <svg class="w-5 h-5 text-rose-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                <span>SESI PULANG TELAH DITUTUP ({{ $outEndStr }} WIB)</span>
+                            </button>
+                            <p class="text-xs text-slate-400 mt-1">Batas akhir kepulangan hari ini telah berakhir pada pukul {{ $outEndStr }} WIB.</p>
+                        </div>
+                    @endif
+                </div>
             @endif
         </div>
 
@@ -471,6 +563,7 @@
     let currentLng = null;
     let currentAccuracy = null;
     let isWithinRadius = false;
+    let activeSession = '{{ $defaultSession }}';
 
     const schoolLat = {{ $settings['school_lat'] }};
     const schoolLng = {{ $settings['school_lng'] }};
@@ -479,13 +572,39 @@
 
     const video = document.getElementById('webcam-video');
     const canvas = document.getElementById('canvas-capture');
-    const btnCapture = document.getElementById('btn-capture');
     const promptBox = document.getElementById('camera-prompt');
     const gpsIndicator = document.getElementById('gps-indicator');
     const gpsStatusText = document.getElementById('gps-status-text');
     const gpsCoordsText = document.getElementById('gps-coords-text');
     const distanceBadge = document.getElementById('distance-badge');
     const resultBox = document.getElementById('result-box');
+
+    function selectSelfieSession(session) {
+        activeSession = session;
+        const tabCheckin = document.getElementById('tab-btn-checkin');
+        const tabCheckout = document.getElementById('tab-btn-checkout');
+        const infoCheckin = document.getElementById('panel-info-checkin');
+        const infoCheckout = document.getElementById('panel-info-checkout');
+        const actionCheckin = document.getElementById('action-session-checkin');
+        const actionCheckout = document.getElementById('action-session-checkout');
+
+        if (session === 'checkin') {
+            if (tabCheckin) tabCheckin.className = "flex-1 py-2 sm:py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5 transition-all cursor-pointer bg-white dark:bg-slate-900 text-emerald-700 dark:text-emerald-400 shadow-sm border border-slate-200/80 dark:border-slate-700";
+            if (tabCheckout) tabCheckout.className = "flex-1 py-2 sm:py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5 transition-all cursor-pointer text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200";
+            if (infoCheckin) infoCheckin.classList.remove('hidden');
+            if (infoCheckout) infoCheckout.classList.add('hidden');
+            if (actionCheckin) actionCheckin.classList.remove('hidden');
+            if (actionCheckout) actionCheckout.classList.add('hidden');
+        } else {
+            if (tabCheckout) tabCheckout.className = "flex-1 py-2 sm:py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5 transition-all cursor-pointer bg-white dark:bg-slate-900 text-sky-700 dark:text-sky-400 shadow-sm border border-slate-200/80 dark:border-slate-700";
+            if (tabCheckin) tabCheckin.className = "flex-1 py-2 sm:py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5 transition-all cursor-pointer text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200";
+            if (infoCheckin) infoCheckin.classList.add('hidden');
+            if (infoCheckout) infoCheckout.classList.remove('hidden');
+            if (actionCheckin) actionCheckin.classList.add('hidden');
+            if (actionCheckout) actionCheckout.classList.remove('hidden');
+        }
+        checkReadyState();
+    }
 
     // Haversine Distance Formula in Meters
     function calculateDistance(lat1, lon1, lat2, lon2) {
@@ -575,15 +694,18 @@
     }
 
     function checkReadyState() {
-        if (btnCapture && videoStream && videoStream.active) {
-            btnCapture.disabled = false;
-        }
+        document.querySelectorAll('.btn-selfie-capture').forEach(btn => {
+            if (videoStream && videoStream.active) {
+                btn.disabled = false;
+            }
+        });
     }
 
     // Capture Frame Directly from Live Stream to Canvas
-    async function takeSelfie(sessionType = 'checkin', bypass = false) {
+    async function takeSelfie(sessionType = null, bypass = false) {
+        const sess = sessionType || activeSession;
         if (!videoStream) {
-            alert("Kamera belum aktif!");
+            alert("Kamera belum aktif! Silakan berikan izin kamera.");
             return;
         }
 
@@ -604,16 +726,17 @@
 
         const base64Image = canvas.toDataURL('image/jpeg', 0.85);
 
-        if (btnCapture) {
-            btnCapture.disabled = true;
-            btnCapture.innerHTML = `
-                <svg class="animate-spin w-5 h-5 ${sessionType === 'checkout' ? 'text-white' : 'text-slate-950'}" fill="none" viewBox="0 0 24 24">
+        const activeBtns = document.querySelectorAll('.btn-selfie-capture');
+        activeBtns.forEach(b => {
+            b.disabled = true;
+            b.innerHTML = `
+                <svg class="animate-spin w-5 h-5 ${sess === 'checkout' ? 'text-white' : 'text-slate-950'}" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
                 </svg>
                 MEMVERIFIKASI PRESENSI...
             `;
-        }
+        });
 
         try {
             const response = await fetch("{{ route('attendance.selfie.store') }}", {
@@ -630,7 +753,7 @@
                     accuracy: currentAccuracy,
                     device_info: navigator.userAgent,
                     liveness_score: 1.00,
-                    session_type: sessionType,
+                    session_type: sess,
                     bypass_time: bypass
                 })
             });
@@ -650,7 +773,7 @@
                         </div>
                     </div>
                 `;
-                btnCapture.innerHTML = "PRESENSI BERHASIL ✓";
+                activeBtns.forEach(b => { b.innerHTML = "PRESENSI BERHASIL ✓"; });
                 setTimeout(() => {
                     window.location.reload();
                 }, 1800);
@@ -665,15 +788,19 @@
                         </div>
                     </div>
                 `;
-                btnCapture.disabled = false;
-                btnCapture.innerHTML = "COBA LAGI";
+                activeBtns.forEach(b => {
+                    b.disabled = false;
+                    b.innerHTML = "COBA LAGI";
+                });
             }
         } catch (err) {
             resultBox.classList.remove('hidden');
             resultBox.className = "mt-5 sm:mt-6 p-4 sm:p-5 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-900 dark:text-rose-200";
             resultBox.innerHTML = `<strong>Error:</strong> Gagal terhubung ke server. ${err.message}`;
-            btnCapture.disabled = false;
-            btnCapture.innerHTML = "COBA LAGI";
+            activeBtns.forEach(b => {
+                b.disabled = false;
+                b.innerHTML = "COBA LAGI";
+            });
         }
     }
 

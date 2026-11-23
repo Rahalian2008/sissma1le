@@ -91,6 +91,7 @@ Route::post('/kiosk-tamu', [GuestController::class, 'storeKiosk'])->name('guests
 Route::post('/kiosk-tamu/checkout', [GuestController::class, 'checkout'])->name('guests.kiosk.checkout');
 Route::get('/kiosk-tamu/card/{ticket}', [GuestController::class, 'card'])->name('guests.card');
 Route::get('/kiosk-tamu/print/{ticket}', [GuestController::class, 'printCard'])->name('guests.print_card');
+Route::get('/kiosk-tamu/print-card/{ticket}', [GuestController::class, 'printCard'])->name('guests.print-card');
 
 // SPMB Publik (Pendaftaran Siswa Baru Online SMAN 1 Lengkong & Cek Bukti)
 Route::get('/spmb/daftar', [SpmbController::class, 'publicRegister'])->name('spmb.public.register');

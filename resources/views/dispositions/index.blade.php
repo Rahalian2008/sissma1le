@@ -45,10 +45,15 @@
                                 {{ $disp->disposition_date?->format('d/m/Y') }}
                             </td>
                             <td class="px-5 py-3.5 max-w-xs">
-                                <a href="{{ route('letters.incoming.show', $disp->incomingLetter) }}" class="font-bold text-slate-900 hover:text-blue-600 line-clamp-1">
-                                    {{ $disp->incomingLetter->subject }}
-                                </a>
-                                <div class="text-[11px] text-slate-400 font-mono">{{ $disp->incomingLetter->letter_number }} &bull; Dari: {{ $disp->incomingLetter->sender }}</div>
+                                @if($disp->incomingLetter)
+                                    <a href="{{ route('letters.incoming.show', $disp->incomingLetter) }}" class="font-bold text-slate-900 hover:text-blue-600 line-clamp-1">
+                                        {{ $disp->incomingLetter->subject }}
+                                    </a>
+                                    <div class="text-[11px] text-slate-400 font-mono">{{ $disp->incomingLetter->letter_number }} &bull; Dari: {{ $disp->incomingLetter->sender }}</div>
+                                @else
+                                    <span class="font-bold text-slate-400 italic line-clamp-1">Surat Masuk Tidak Ditemukan / Terhapus</span>
+                                    <div class="text-[11px] text-slate-400 font-mono">ID Surat: {{ $disp->incoming_letter_id }}</div>
+                                @endif
                             </td>
                             <td class="px-5 py-3.5 font-bold text-slate-800">
                                 {{ $disp->target_role_or_user }}
