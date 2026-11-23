@@ -171,7 +171,7 @@
                                 <a href="{{ route('guests.show', $g) }}" class="inline-flex items-center px-2 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold rounded-lg transition" title="Lihat Profil Tamu">
                                     Detail
                                 </a>
-                                <a href="{{ route('guests.print-card', $g->ticket_number) }}" target="_blank" class="inline-flex items-center px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-lg transition" title="Cetak ID Card">
+                                <a href="{{ Route::has('guests.print-card') ? route('guests.print-card', $g->ticket_number) : (Route::has('guests.print_card') ? route('guests.print_card', $g->ticket_number) : url('/kiosk-tamu/print/' . $g->ticket_number)) }}" target="_blank" class="inline-flex items-center px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-lg transition" title="Cetak ID Card">
                                     Badge
                                 </a>
                                 <button type="button" onclick="openEditGuestModal({{ json_encode($g) }})" class="inline-flex items-center px-2 py-1 bg-amber-50 hover:bg-amber-100 text-amber-700 font-bold rounded-lg transition cursor-pointer" title="Edit Data Tamu">

@@ -16,7 +16,7 @@
         </div>
 
         <div class="flex items-center gap-2">
-            <a href="{{ route('guests.print-card', $guest->ticket_number) }}" target="_blank" class="inline-flex items-center px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition shadow-xs">
+            <a href="{{ Route::has('guests.print-card') ? route('guests.print-card', $guest->ticket_number) : (Route::has('guests.print_card') ? route('guests.print_card', $guest->ticket_number) : url('/kiosk-tamu/print/' . $guest->ticket_number)) }}" target="_blank" class="inline-flex items-center px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition shadow-xs">
                 <svg class="w-4 h-4 mr-1.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
                 Cetak Badge
             </a>

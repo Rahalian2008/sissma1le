@@ -133,7 +133,7 @@
 
             <!-- Footer Card Actions -->
             <div class="bg-slate-950/80 p-5 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3">
-                <a href="{{ route('guests.print-card', $guest->ticket_number) }}" target="_blank" class="w-full sm:w-auto px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl font-bold flex items-center justify-center gap-1.5 transition">
+                <a href="{{ Route::has('guests.print-card') ? route('guests.print-card', $guest->ticket_number) : (Route::has('guests.print_card') ? route('guests.print_card', $guest->ticket_number) : url('/kiosk-tamu/print/' . $guest->ticket_number)) }}" target="_blank" class="w-full sm:w-auto px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl font-bold flex items-center justify-center gap-1.5 transition">
                     <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
                     Cetak ID Badge Tamu
                 </a>
