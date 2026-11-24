@@ -36,7 +36,17 @@
         }
     </script>
     <style>
-        html, body {
+        :root {
+            --kiosk-scale: 1;
+        }
+        html {
+            height: 100%;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+            background-color: #040711;
+        }
+        body {
             height: 100vh;
             max-height: 100vh;
             overflow: hidden;
@@ -45,6 +55,7 @@
             background-color: #040711;
             font-family: 'Outfit', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
             color: #f1f5f9;
+            transform-origin: top left;
         }
         .font-mono {
             font-family: 'JetBrains Mono', monospace;
@@ -299,6 +310,12 @@
                         <!-- Theme Toggle Button (Dark / Light) -->
             <button type="button" id="themeToggleBtn" onclick="toggleKioskTheme()" class="p-2 rounded-xl bg-slate-900/90 border border-white/10 hover:border-teal-500/50 text-slate-300 hover:text-white transition" title="Ganti Tema (Gelap / Terang)">
                 <span id="themeToggleIcon" class="text-sm">🌙</span>
+            </button>
+
+            <!-- TV Screen Zoom Scaler Button (Auto Fit TV / Fullscreen) -->
+            <button type="button" onclick="cycleKioskZoom()" id="btnKioskZoom" class="px-2 sm:px-2.5 py-1.5 rounded-xl bg-slate-900/90 border border-white/10 hover:border-teal-500/50 text-slate-300 hover:text-white transition flex items-center gap-1.5 cursor-pointer shadow-xs" title="Skala Tampilan Layar TV & Monitor (Klik untuk ubah: Auto, 125%, 140%, 160%)">
+                <span class="text-xs">📺</span>
+                <span id="kioskZoomLabel" class="font-mono text-[10.5px] font-bold text-teal-300">Auto TV</span>
             </button>
 
             <!-- Fullscreen Button -->
@@ -2893,6 +2910,70 @@
                 }
             }
         }
+
+        // =========================================================================
+        // TV & FULLSCREEN AUTO-SCALING ENGINE
+        // Memastikan saat Kios TV di-layar penuhkan (Fullscreen) atau dibuka di monitor besar / TV Display,
+        // seluruh teks, gambar, card, dan menu membesar proporsional mengisi layar tanpa menyisakan ruang kosong.
+        // =========================================================================
+        let currentZoomMode = localStorage.getItem('kiosk_zoom_mode') || 'auto';
+
+        function applyKioskAutoScaling() {
+            const vh = window.innerHeight;
+            const vw = window.innerWidth;
+            const isFs = !!document.fullscreenElement;
+            let scale = 1.0;
+
+            if (currentZoomMode === 'auto') {
+                // Skala proporsional otomatis berbasis resolusi layar TV (Base design standard: ~720p - 768p)
+                if (isFs || vh >= 780 || vw >= 1440) {
+                    const scaleH = vh / 750;
+                    const scaleW = vw / 1366;
+                    scale = Math.min(scaleH, scaleW);
+                    // Minimal 1.0, batas atas 2.8 untuk layar 4K
+                    scale = Math.max(1.0, Math.min(scale, 2.8));
+                } else {
+                    scale = 1.0;
+                }
+            } else {
+                scale = parseFloat(currentZoomMode) / 100;
+            }
+
+            scale = Math.round(scale * 100) / 100;
+
+            const label = document.getElementById('kioskZoomLabel');
+            if (label) {
+                label.textContent = currentZoomMode === 'auto' ? `Auto (${Math.round(scale * 100)}%)` : `${Math.round(scale * 100)}%`;
+            }
+
+            const body = document.body;
+            if (scale > 1.02 || scale < 0.98) {
+                body.style.zoom = scale;
+                body.style.width = (100 / scale) + 'vw';
+                body.style.height = (100 / scale) + 'vh';
+                body.style.maxHeight = (100 / scale) + 'vh';
+            } else {
+                body.style.zoom = '';
+                body.style.width = '';
+                body.style.height = '';
+                body.style.maxHeight = '';
+            }
+        }
+
+        function cycleKioskZoom() {
+            const modes = ['auto', '100', '125', '140', '160', '180'];
+            const idx = modes.indexOf(currentZoomMode);
+            currentZoomMode = modes[(idx + 1) % modes.length];
+            localStorage.setItem('kiosk_zoom_mode', currentZoomMode);
+            applyKioskAutoScaling();
+        }
+
+        window.addEventListener('resize', applyKioskAutoScaling);
+        document.addEventListener('fullscreenchange', () => {
+            setTimeout(applyKioskAutoScaling, 100);
+        });
+        document.addEventListener('DOMContentLoaded', applyKioskAutoScaling);
+        setTimeout(applyKioskAutoScaling, 50);
 
         // Keyboard Navigation (ArrowLeft, ArrowRight, Space)
         document.addEventListener('keydown', (e) => {
