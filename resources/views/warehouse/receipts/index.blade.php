@@ -154,7 +154,7 @@
 
 @push('modals')
 <!-- Modal Catat Penerimaan Barang Masuk (Multi-Klasifikasi: Habis Pakai vs Inventaris KIB-KIR) -->
-<div id="modal-receipt" class="hidden fixed inset-0 z-[100] bg-slate-900/70 backdrop-blur-xs flex items-center justify-center p-2 sm:p-4 md:p-6 overflow-hidden">
+<div id="modal-receipt" class="hidden fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-xs flex items-center justify-center p-2 sm:p-4 md:p-6 overflow-hidden" style="z-index: 1050;">
     <div class="relative bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl max-w-4xl w-full shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col h-[92vh] max-h-[92vh] overflow-hidden">
         <!-- Header (Fixed Top) -->
         <div class="flex items-center justify-between p-4 sm:p-5 border-b border-slate-100 dark:border-slate-800 shrink-0 bg-white dark:bg-slate-900 z-10">
@@ -526,7 +526,7 @@
 </div>
 
 <!-- Mini Modal Quick Add Room Inline -->
-<div id="modal-quick-add-room" class="hidden fixed inset-0 z-[120] bg-slate-900/60 backdrop-blur-xs overflow-y-auto p-3 sm:p-4">
+<div id="modal-quick-add-room" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs overflow-y-auto p-3 sm:p-4" style="z-index: 1100;">
     <div class="min-h-full flex items-center justify-center py-2 sm:py-4">
         <div class="relative bg-white dark:bg-slate-900 rounded-3xl max-w-md w-full shadow-2xl border border-slate-200 dark:border-slate-800 p-5 space-y-3.5">
             <div class="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
@@ -854,7 +854,7 @@ function openEditReceiptModal(rcp) {
 </script>
 
 <!-- Modal Edit Penerimaan Barang -->
-<div id="modal-edit-receipt" class="hidden fixed inset-0 z-[100] bg-slate-900/70 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-hidden">
+<div id="modal-edit-receipt" class="hidden fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-hidden" style="z-index: 1050;">
     <div class="relative bg-white dark:bg-slate-900 rounded-3xl max-w-xl w-full shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col max-h-[90vh] overflow-hidden">
         <div class="flex items-center justify-between p-5 sm:p-6 pb-4 border-b border-slate-100 dark:border-slate-800 shrink-0 bg-white dark:bg-slate-900">
             <div>

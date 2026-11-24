@@ -240,6 +240,9 @@ test('warehouse and sarpras modals are rendered without clipping and absen manua
     $resReceipts = $this->actingAs($admin)->get(route('warehouse.receipts.index'));
     $resReceipts->assertStatus(200);
     $resReceipts->assertSee('modal-receipt');
+    $resReceipts->assertSee('id="sim-bmd-modal"', false);
+    $resReceipts->assertSee('style="z-index: 99999 !important;"', false);
+    $resReceipts->assertSee('style="z-index: 1050;"', false);
 
     $resBorrowings = $this->actingAs($admin)->get(route('warehouse.borrowings.index'));
     $resBorrowings->assertStatus(200);

@@ -9,11 +9,11 @@
     'presetSelectId' => 'preset-consumable',
 ])
 
-<div id="consumable-modal" class="fixed inset-0 z-[150] hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+<div id="consumable-modal" class="fixed inset-0 z-50 hidden overflow-y-auto" style="z-index: 99999 !important;" aria-labelledby="modal-title" role="dialog" aria-modal="true">
     <!-- Backdrop -->
-    <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity" onclick="closeConsumableModal()"></div>
+    <div class="fixed inset-0 bg-slate-900/75 backdrop-blur-xs transition-opacity" style="z-index: 1;" onclick="closeConsumableModal()"></div>
 
-    <div class="flex min-h-full items-center justify-center p-3 sm:p-4 text-center">
+    <div class="flex min-h-full items-center justify-center p-3 sm:p-4 text-center relative" style="z-index: 2;">
         <div class="relative transform overflow-hidden rounded-3xl bg-white text-left shadow-2xl transition-all w-full max-w-4xl border border-slate-200">
             <!-- Modal Header -->
             <div class="p-5 bg-gradient-to-r from-emerald-700 via-teal-700 to-emerald-800 text-white flex items-center justify-between">
@@ -134,6 +134,10 @@ function openConsumableModal(customConfig = null) {
     }
     const modal = document.getElementById('consumable-modal');
     if (!modal) return;
+    if (modal.parentElement !== document.body) {
+        document.body.appendChild(modal);
+    }
+    modal.style.zIndex = '99999';
     modal.classList.remove('hidden');
     document.body.classList.add('overflow-hidden');
     const input = document.getElementById('consumable-search-input');
@@ -429,6 +433,14 @@ function selectConsumableItem(code) {
     if (presetSelect) {
         presetSelect.value = item.code;
         presetSelect.dispatchEvent(new Event('change', { bubbles: true }));
+
+        const parentWrapper = presetSelect.closest('.custom-searchable-select') || presetSelect.closest('.searchable-select-wrapper');
+        if (parentWrapper) {
+            const selectedTextSpan = parentWrapper.querySelector('.selected-text') || parentWrapper.querySelector('.searchable-select-label');
+            if (selectedTextSpan) {
+                selectedTextSpan.textContent = `[${item.code}] ${item.name}`;
+            }
+        }
     }
 
     closeConsumableModal();

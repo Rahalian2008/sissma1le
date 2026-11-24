@@ -66,7 +66,8 @@
 
         // Panel Dropdown
         const dropdown = document.createElement('div');
-        dropdown.className = 'searchable-select-dropdown hidden absolute left-0 right-0 top-full mt-1.5 z-[160] bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl p-2.5 max-w-full';
+        dropdown.className = 'searchable-select-dropdown hidden absolute left-0 right-0 top-full mt-1.5 z-50 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl p-2.5 max-w-full';
+        dropdown.style.zIndex = '9999';
 
         // Search Input Header
         const searchBox = document.createElement('div');
