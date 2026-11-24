@@ -70,6 +70,7 @@ Route::get('/kiosk/data', [KioskController::class, 'data'])->name('kiosk.data');
 // Kios Informasi Satpam (Monitoring Siswa Izin Pulang Cepat & Izin Keluar Sekolah Sementara)
 Route::get('/kiosk-satpam', [AttendanceController::class, 'kiosSatpam'])->name('attendance.kiosk-satpam');
 Route::post('/kiosk-satpam/return/{permit}', [AttendanceController::class, 'kiosSatpamReturnStudent'])->name('attendance.kiosk-satpam.return');
+Route::post('/kiosk-satpam/guests/{guest}/checkout', [AttendanceController::class, 'kiosSatpamCheckoutGuest'])->name('attendance.kiosk-satpam.guest-checkout');
 
 // Portal Gateway SIS-SMA1LE Terpadu
 Route::get('/portal', [PublicPortalController::class, 'portalSelection'])->name('portal.select');

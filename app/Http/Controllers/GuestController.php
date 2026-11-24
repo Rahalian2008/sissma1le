@@ -230,13 +230,15 @@ class GuestController extends Controller
             $query->where('status', $status);
         }
 
-        if ($date = $request->query('date')) {
-            $query->whereDate('check_in_at', $date);
-        } else {
-            // Default filter hari ini jika parameter filter_all tidak diset
-            if (! $request->has('filter_all')) {
-                $query->whereDate('check_in_at', Carbon::today());
-            }
+        $filterAll = $request->boolean('filter_all');
+        $dateFrom = $request->query('date_from', $request->query('date', Carbon::today()->format('Y-m-d')));
+        $dateTo = $request->query('date_to', $request->query('date', Carbon::today()->format('Y-m-d')));
+
+        if (! $filterAll) {
+            $query->whereBetween('check_in_at', [
+                Carbon::parse($dateFrom)->startOfDay(),
+                Carbon::parse($dateTo)->endOfDay(),
+            ]);
         }
 
         if ($department = $request->query('department')) {
@@ -298,7 +300,7 @@ class GuestController extends Controller
             'Keperluan Lainnya',
         ];
 
-        return view('guests.index', compact('guests', 'stats', 'departments', 'institutionTypes', 'purposes'));
+        return view('guests.index', compact('guests', 'stats', 'departments', 'institutionTypes', 'purposes', 'dateFrom', 'dateTo', 'filterAll'));
     }
 
     public function update(Request $request, Guest $guest): RedirectResponse
@@ -394,8 +396,13 @@ class GuestController extends Controller
             ->orderBy('check_in_at')
             ->get();
 
+        // Cari Kepala Administrasi (PTK) dari Master Data Guru & PTK
+        $headOfAdmin = \App\Models\User::whereJsonContains('roles', 'kepala_administrasi')->first()
+            ?? \App\Models\Teacher::where('name', 'like', '%Rachmat Sugiarto%')->first()
+            ?? \App\Models\Employee::where('name', 'like', '%Rachmat Sugiarto%')->first();
+
         AuditTrailService::log('print', 'kesiswaan', "Mencetak Laporan Buku Tamu dari {$dateFrom} s.d. {$dateTo}");
 
-        return view('guests.report-print', compact('school', 'guests', 'dateFrom', 'dateTo'));
+        return view('guests.report-print', compact('school', 'guests', 'dateFrom', 'dateTo', 'headOfAdmin'));
     }
 }

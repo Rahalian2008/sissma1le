@@ -354,7 +354,16 @@ class AttendanceController extends Controller
     public function selfie(): View
     {
         $user = Auth::user();
-        $student = $user->student ?? Student::first();
+        $today = Carbon::today('Asia/Jakarta')->toDateString();
+
+        // Jika user adalah siswa, gunakan siswa tsb. Jika admin/staf penguji, utamakan siswa yang belum absen hari ini
+        $student = $user->student;
+        if (! $student) {
+            $student = Student::whereDoesntHave('attendances', function ($q) use ($today) {
+                $q->whereDate('date', $today);
+            })->first() ?? Student::first();
+        }
+
         $location = AttendanceLocation::primary();
         $schedule = AttendanceService::getScheduleForDay(Carbon::now('Asia/Jakarta'));
 
@@ -1627,7 +1636,9 @@ class AttendanceController extends Controller
                     'student_name' => $student->name,
                     'class_id' => $student->class_id,
                     'time' => $time,
-                    'method' => ($existing && $existing->method === 'IZIN_SAKIT') ? 'IZIN_SAKIT' : 'MANUAL',
+                    'method' => ($existing && in_array($existing->method, ['SELFIE', 'QR_CODE', 'BARCODE', 'RFID', 'FACE_RECOGNITION', 'IZIN_SAKIT']))
+                        ? $existing->method
+                        : (($existing && ($existing->selfie_path || $existing->latitude)) ? 'SELFIE' : 'MANUAL'),
                     'status' => $statusUpper,
                     'verification_status' => 'DIVERIFIKASI',
                     'approved_by' => $user->id,
@@ -1878,15 +1889,40 @@ class AttendanceController extends Controller
                 ->get()
             : collect();
 
+        // 3. Data Tamu Masuk Sekolah Hari Ini (Buku Tamu Digital Terpadu)
+        $todayGuests = Schema::hasTable('guests')
+            ? \App\Models\Guest::whereDate('check_in_at', $todayStr)
+                ->orderByDesc('check_in_at')
+                ->get()
+            : collect();
+
         // Statistik Cepat untuk Kios Satpam
         $stats = [
             'total_approved_early_leaves' => $earlyLeaves->count(),
             'total_approved_exit_permits' => $exitPermits->count(),
             'students_currently_outside' => $exitPermits->where('status', 'APPROVED')->whereNull('actual_back_time')->sum(fn ($p) => $p->students->count()),
             'students_returned' => $exitPermits->where('status', 'RETURNED')->sum(fn ($p) => $p->students->count()),
+            'today_guests' => $todayGuests->count(),
+            'guests_in_school' => $todayGuests->whereNull('check_out_at')->where('status', '!=', 'dibatalkan')->count(),
         ];
 
-        return view('attendance.kios_satpam', compact('school', 'today', 'earlyLeaves', 'exitPermits', 'stats'));
+        return view('attendance.kios_satpam', compact('school', 'today', 'earlyLeaves', 'exitPermits', 'todayGuests', 'stats'));
+    }
+
+    /**
+     * Konfirmasi Tamu Keluar / Selesai Berkunjung Langsung dari Kios Satpam
+     */
+    public function kiosSatpamCheckoutGuest(Request $request, \App\Models\Guest $guest): RedirectResponse
+    {
+        $guest->update([
+            'status' => 'selesai',
+            'check_out_at' => Carbon::now('Asia/Jakarta'),
+            'notes' => trim(($guest->notes ? $guest->notes.' • ' : '').'[Satpam] Tamu check-out di gerbang pos satpam.'),
+        ]);
+
+        AuditTrailService::log('update', 'kesiswaan', "Satpam memproses check-out tamu: {$guest->name} ({$guest->ticket_number})");
+
+        return back()->with('success', "Tamu {$guest->name} ({$guest->ticket_number}) berhasil di-checkout.");
     }
 
     /**

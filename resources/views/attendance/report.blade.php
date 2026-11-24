@@ -255,9 +255,9 @@
                                 {{ substr($att->time, 0, 5) }} WIB
                             </td>
                             <td class="py-3 px-4">
-                                @if($att->method === 'SELFIE')
+                                @if($att->method === 'SELFIE' || $att->selfie_path)
                                     <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300">
-                                        📸 Selfie Kamera
+                                        📸 Presensi Selfie (Kamera)
                                     </span>
                                 @elseif($att->method === 'BARCODE' || $att->method === 'QR_CODE')
                                     <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-sky-100 dark:bg-sky-950/60 text-sky-800 dark:text-sky-300">

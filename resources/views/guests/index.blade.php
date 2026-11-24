@@ -11,10 +11,10 @@
             <p class="text-xs text-slate-500 mt-0.5">Pencatatan kunjungan tamu berbasis selfie, identitas lengkap, dan monitoring waktu kunjungan di lingkungan sekolah.</p>
         </div>
         <div class="flex items-center gap-2 flex-wrap">
-            <a href="{{ route('guests.report.print') }}" target="_blank" class="inline-flex items-center px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition shadow-xs">
+            <button type="button" onclick="openPrintRekapModal()" class="inline-flex items-center px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition shadow-xs cursor-pointer">
                 <svg class="w-4 h-4 mr-1.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
                 Cetak Rekap Buku Tamu
-            </a>
+            </button>
             <a href="{{ route('guests.kiosk') }}" target="_blank" class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-bold text-xs rounded-xl shadow-md shadow-indigo-500/20 transition cursor-pointer">
                 <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
                 Buka Kiosk Layar Tamu
@@ -67,16 +67,24 @@
 
     <!-- Filter Bar -->
     <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
-        <form action="{{ route('guests.index') }}" method="GET" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3 text-xs">
+        <form action="{{ route('guests.index') }}" method="GET" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-3 text-xs">
             <div class="md:col-span-2">
+                <label class="block text-[11px] font-semibold text-slate-600 mb-1">Pencarian Tamu</label>
                 <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama tamu, instansi, tiket, atau HP..." 
                        class="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500">
             </div>
-            <div>
-                <input type="date" name="date" value="{{ request('date', (!request()->has('filter_all') ? date('Y-m-d') : '')) }}" 
-                       onchange="this.form.submit()" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl">
+            <div class="md:col-span-2">
+                <label class="block text-[11px] font-semibold text-slate-600 mb-1">Rentang Tanggal Kunjungan</label>
+                <div class="flex items-center gap-1.5">
+                    <input type="date" name="date_from" value="{{ $dateFrom ?? date('Y-m-d') }}" 
+                           class="w-full px-2.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs" title="Dari Tanggal">
+                    <span class="text-slate-400 font-bold text-xs shrink-0">s.d.</span>
+                    <input type="date" name="date_to" value="{{ $dateTo ?? date('Y-m-d') }}" 
+                           class="w-full px-2.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs" title="Sampai Tanggal">
+                </div>
             </div>
             <div>
+                <label class="block text-[11px] font-semibold text-slate-600 mb-1">Status Kunjungan</label>
                 <select name="status" onchange="this.form.submit()" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl">
                     <option value="">Semua Status</option>
                     <option value="menunggu" {{ request('status') === 'menunggu' ? 'selected' : '' }}>Menunggu</option>
@@ -85,6 +93,7 @@
                 </select>
             </div>
             <div>
+                <label class="block text-[11px] font-semibold text-slate-600 mb-1">Tujuan Bagian</label>
                 <select name="department" onchange="this.form.submit()" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl">
                     <option value="">Semua Tujuan Bagian</option>
                     @foreach($departments as $dept)
@@ -92,15 +101,27 @@
                     @endforeach
                 </select>
             </div>
-            <div class="md:col-span-5 flex items-center justify-between text-[11px] text-slate-500 pt-1">
+            <div class="md:col-span-6 flex flex-col sm:flex-row items-start sm:items-center justify-between text-[11px] text-slate-500 pt-1 gap-2">
                 <div>
                     @if(!request()->has('filter_all'))
-                        <span>Menampilkan tamu per tanggal <strong>{{ request('date', date('d/m/Y')) }}</strong>.</span>
+                        @if(($dateFrom ?? '') === ($dateTo ?? ''))
+                            <span>Menampilkan tamu tanggal <strong>{{ \Carbon\Carbon::parse($dateFrom ?? date('Y-m-d'))->translatedFormat('d F Y') }}</strong>.</span>
+                        @else
+                            <span>Menampilkan tamu periode <strong>{{ \Carbon\Carbon::parse($dateFrom)->translatedFormat('d F Y') }}</strong> s.d. <strong>{{ \Carbon\Carbon::parse($dateTo)->translatedFormat('d F Y') }}</strong>.</span>
+                        @endif
                         <a href="{{ route('guests.index', ['filter_all' => 1]) }}" class="text-indigo-600 font-semibold hover:underline ml-1">Tampilkan Seluruh Riwayat</a>
                     @else
                         <span>Menampilkan <strong>seluruh riwayat buku tamu</strong>.</span>
                         <a href="{{ route('guests.index') }}" class="text-indigo-600 font-semibold hover:underline ml-1">Kembali ke Hari Ini</a>
                     @endif
+                </div>
+                <div class="flex items-center gap-2">
+                    <button type="submit" class="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg transition shadow-xs cursor-pointer">
+                        🔍 Terapkan Filter
+                    </button>
+                    <a href="{{ route('guests.report.print', ['date_from' => $dateFrom ?? date('Y-m-d'), 'date_to' => $dateTo ?? date('Y-m-d')]) }}" target="_blank" class="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-lg transition border border-slate-200 flex items-center gap-1 cursor-pointer">
+                        🖨️ Cetak Periode Ini
+                    </a>
                 </div>
             </div>
         </form>
@@ -339,8 +360,56 @@
         </div>
     </div>
 
+    <!-- Modal Cetak Rekap Buku Tamu dengan Pilihan Rentang Tanggal -->
+    <div id="modal-print-rekap" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 text-xs">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+                <div class="flex items-center gap-2">
+                    <span class="text-xl">🖨️</span>
+                    <div>
+                        <h3 class="font-bold text-slate-800 text-sm">Cetak Rekap Buku Tamu Sekolah</h3>
+                        <p class="text-[11px] text-slate-500">Pilih rentang tanggal rekapitulasi yang akan dicetak</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closePrintRekapModal()" class="w-7 h-7 rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 flex items-center justify-center cursor-pointer">&times;</button>
+            </div>
+
+            <form action="{{ route('guests.report.print') }}" method="GET" target="_blank" onsubmit="closePrintRekapModal()">
+                <div class="space-y-3.5">
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Dari Tanggal</label>
+                        <input type="date" name="date_from" id="rekap-date-from" value="{{ $dateFrom ?? date('Y-m-d') }}" required
+                               class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Sampai Tanggal</label>
+                        <input type="date" name="date_to" id="rekap-date-to" value="{{ $dateTo ?? date('Y-m-d') }}" required
+                               class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    <div class="p-3 bg-amber-50 rounded-xl border border-amber-200 text-amber-800 text-[11px] leading-relaxed">
+                        📌 Laporan dicetak dengan format resmi Disdik Jawa Barat lengkap dengan tanda tangan Kepala Sekolah dan Kepala Administrasi Sekolah.
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-2 mt-5 pt-3 border-t border-slate-100">
+                    <button type="button" onclick="closePrintRekapModal()" class="px-4 py-2 border border-slate-300 rounded-xl text-slate-600 hover:bg-slate-50 font-semibold cursor-pointer">Batal</button>
+                    <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 shadow-sm flex items-center gap-1.5 cursor-pointer">
+                        <span>🖨️ Buka &amp; Cetak Laporan</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     @push('scripts')
     <script>
+        function openPrintRekapModal() {
+            document.getElementById('modal-print-rekap').classList.remove('hidden');
+        }
+
+        function closePrintRekapModal() {
+            document.getElementById('modal-print-rekap').classList.add('hidden');
+        }
         function openEditGuestModal(g) {
             document.getElementById('edit-ticket-display').innerText = 'Tiket: ' + g.ticket_number;
             document.getElementById('form-edit-guest').action = "{{ url('guests') }}/" + g.id;

@@ -88,7 +88,11 @@
     <div class="text-center" style="margin-bottom: 15px;">
         <div class="font-bold" style="font-size: 13pt; text-decoration: underline; letter-spacing: 0.5px;">BUKU TAMU UMUM SEKOLAH</div>
         <div style="font-size: 9pt; margin-top: 2px;">
-            Periode Tanggal: {{ \Carbon\Carbon::parse($dateFrom)->translatedFormat('d F Y') }} s.d. {{ \Carbon\Carbon::parse($dateTo)->translatedFormat('d F Y') }}
+            @if($dateFrom === $dateTo)
+                Tanggal: {{ \Carbon\Carbon::parse($dateFrom)->translatedFormat('d F Y') }}
+            @else
+                Periode Tanggal: {{ \Carbon\Carbon::parse($dateFrom)->translatedFormat('d F Y') }} s.d. {{ \Carbon\Carbon::parse($dateTo)->translatedFormat('d F Y') }}
+            @endif
         </div>
     </div>
 
@@ -168,10 +172,10 @@
                 </td>
                 <td style="width: 50%;">
                     {{ $school->city ?? 'Kabupaten Sukabumi' }}, {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}<br>
-                    {{ auth()->user()?->getRoleDisplayName() ?? 'Petugas Pelayanan / Resepsionis' }}
+                    <strong>Kepala Administrasi Sekolah</strong>
                     <div class="ttd-space"></div>
-                    <strong><u>{{ strtoupper(auth()->user()?->getOfficialName() ?? 'Petugas Pelayanan Tamu') }}</u></strong><br>
-                    NIP. {{ auth()->user()?->getOfficialNip() ?? '-' }}
+                    <strong><u>{{ strtoupper($headOfAdmin->name ?? 'RACHMAT SUGIARTO, A.Md.') }}</u></strong><br>
+                    NIP. {{ $headOfAdmin->nip ?? '198112282025211059' }}
                 </td>
             </tr>
         </table>

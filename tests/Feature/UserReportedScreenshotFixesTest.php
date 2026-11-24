@@ -272,3 +272,155 @@ test('warehouse and sarpras modals are rendered without clipping and absen manua
     $resRooms->assertStatus(200);
     $resRooms->assertSee('modal-room');
 });
+
+test('issue 6-item batch: guest report print displays Kepala Administrasi Sekolah and date range', function () {
+    $admin = User::factory()->create(['role' => 'admin', 'roles' => ['admin']]);
+    \App\Models\SchoolIdentity::create([
+        'name' => 'SMAN 1 Lengkong',
+        'city' => 'Kabupaten Sukabumi',
+        'headmaster_name' => 'PIAN SOPIAN, S.Pd, MM.Pd.',
+        'headmaster_nip' => '198009132008011005',
+    ]);
+
+    $headOfAdmin = User::factory()->create([
+        'name' => 'Rachmat Sugiarto, A.Md.',
+        'nip' => '198112282025211059',
+        'roles' => ['kepala_administrasi'],
+    ]);
+
+    \App\Models\Guest::create([
+        'ticket_number' => 'TMU-20261124-001',
+        'name' => 'Bapak Pengawas',
+        'gender' => 'Laki-laki',
+        'identity_type' => 'NIP',
+        'identity_number' => '197501011999031001',
+        'phone' => '081234567890',
+        'institution' => 'Dinas Pendidikan Prov. Jabar',
+        'institution_type' => 'Dinas Pendidikan Prov. Jawa Barat',
+        'destination_department' => 'Kepala Sekolah',
+        'purpose' => 'Monitoring KBM',
+        'purpose_detail' => 'Kunjungan rutin pengawasan KBM',
+        'number_of_guests' => 2,
+        'check_in_at' => now(),
+        'status' => 'menunggu',
+    ]);
+
+    $response = $this->actingAs($admin)->get(route('guests.report.print', [
+        'date_from' => now()->format('Y-m-d'),
+        'date_to' => now()->format('Y-m-d'),
+    ]));
+
+    $response->assertStatus(200);
+    $response->assertSee('Kepala Administrasi Sekolah');
+    $response->assertSee('RACHMAT SUGIARTO, A.MD.');
+    $response->assertSee('198112282025211059');
+    $response->assertSee('Bapak Pengawas');
+});
+
+test('issue 6-item batch: guest index supports date_from and date_to range filter', function () {
+    $admin = User::factory()->create(['role' => 'admin', 'roles' => ['admin']]);
+
+    \App\Models\Guest::create([
+        'ticket_number' => 'TMU-FILTER-001',
+        'name' => 'Tamu Hari Ini',
+        'gender' => 'Laki-laki',
+        'identity_type' => 'KTP',
+        'identity_number' => '3202111122330001',
+        'phone' => '081234567891',
+        'institution' => 'PT Mitra Edukasi',
+        'institution_type' => 'Perusahaan / Dunia Usaha / Vendor',
+        'destination_department' => 'Kepala Tata Usaha',
+        'purpose' => 'Penawaran Kerjasama',
+        'purpose_detail' => 'Presentasi alat lab komputer',
+        'number_of_guests' => 1,
+        'check_in_at' => now(),
+        'status' => 'menunggu',
+    ]);
+
+    $response = $this->actingAs($admin)->get(route('guests.index', [
+        'date_from' => now()->format('Y-m-d'),
+        'date_to' => now()->format('Y-m-d'),
+    ]));
+
+    $response->assertStatus(200);
+    $response->assertSee('TMU-FILTER-001');
+    $response->assertSee('Tamu Hari Ini');
+    $response->assertSee('name="date_from"', false);
+    $response->assertSee('name="date_to"', false);
+});
+
+test('issue 6-item batch: kios satpam displays guest list and can checkout guest', function () {
+    $admin = User::factory()->create(['role' => 'admin', 'roles' => ['admin']]);
+
+    $guest = \App\Models\Guest::create([
+        'ticket_number' => 'TMU-SATPAM-001',
+        'name' => 'Tamu Pos Satpam',
+        'gender' => 'Laki-laki',
+        'identity_type' => 'SIM',
+        'identity_number' => 'SIM-998877',
+        'phone' => '081299887766',
+        'institution' => 'Puskesmas Lengkong',
+        'institution_type' => 'Kementerian / Instansi Pemerintah',
+        'destination_department' => 'Layanan Administrasi TU',
+        'purpose' => 'Penyuluhan Kesehatan',
+        'purpose_detail' => 'Koordinasi program imunisasi siswa',
+        'number_of_guests' => 1,
+        'vehicle_type' => 'Mobil',
+        'vehicle_license_plate' => 'B 1234 XYZ',
+        'check_in_at' => now(),
+        'status' => 'menunggu',
+    ]);
+
+    $responseKiosk = $this->actingAs($admin)->get(route('attendance.kiosk-satpam'));
+    $responseKiosk->assertStatus(200);
+    $responseKiosk->assertSee('TMU-SATPAM-001');
+    $responseKiosk->assertSee('Tamu Pos Satpam');
+    $responseKiosk->assertSee('B 1234 XYZ');
+    $responseKiosk->assertSee('Checkout Tamu');
+
+    // Test checkout action by satpam
+    $responseCheckout = $this->actingAs($admin)->post(route('attendance.kiosk-satpam.guest-checkout', $guest));
+    $responseCheckout->assertRedirect();
+
+    $guest->refresh();
+    expect($guest->status)->toBe('selesai')
+        ->and($guest->check_out_at)->not->toBeNull();
+});
+
+test('issue 6-item batch: class learning agenda syncs from teaching journals', function () {
+    $class = SchoolClass::create(['name' => 'XII Merdeka 4', 'grade' => 'XII']);
+    $subject = \App\Models\Subject::create(['name' => 'Informatika Tingkat Lanjut', 'code' => 'INF-TL-XII']);
+    $teacher = \App\Models\Teacher::create(['name' => 'Rahmat Hidayat, S.Kom', 'nip' => '198501012010011005']);
+
+    $courseClass = \App\Models\CourseClass::create([
+        'subject_id' => $subject->id,
+        'teacher_id' => $teacher->id,
+        'class_id' => $class->id,
+        'academic_year_id' => null,
+    ]);
+
+    $journal = \App\Models\TeachingJournal::create([
+        'course_class_id' => $courseClass->id,
+        'teacher_id' => $teacher->id,
+        'date' => now()->toDateString(),
+        'meeting_number' => 3,
+        'time_slot' => '08.40-10.00',
+        'topic' => 'Mendesain jaringan LAN dan WAN',
+        'teaching_activities' => 'Praktik konfigurasi router mikrotik.',
+        'student_attendance_summary' => ['hadir' => 30, 'sakit' => 2, 'izin' => 1, 'alfa' => 0],
+        'learning_achievement_status' => 'TERCAPAI',
+    ]);
+
+    \App\Models\ClassLearningAgenda::syncFromTeachingJournals('XII Merdeka 4');
+
+    $agenda = \App\Models\ClassLearningAgenda::where('rombel', 'XII Merdeka 4')
+        ->where('subject', 'Informatika Tingkat Lanjut')
+        ->first();
+
+    expect($agenda)->not->toBeNull()
+        ->and($agenda->learning_topic)->toBe('Mendesain jaringan LAN dan WAN')
+        ->and($agenda->time_slot)->toBe('08.40-10.00')
+        ->and($agenda->teacher_name)->toBe('Rahmat Hidayat, S.Kom')
+        ->and($agenda->students_present)->toBe(30)
+        ->and($agenda->students_sick)->toBe(2);
+});

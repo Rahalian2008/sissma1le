@@ -117,7 +117,7 @@
     <!-- Top KPI & Search Bar Container (Shrink-0) -->
     <div class="shrink-0 max-w-7xl w-full mx-auto px-3 sm:px-6 pt-2 pb-1 space-y-2">
         <!-- Quick Search & Status Indicators Bar -->
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+        <div class="grid grid-cols-2 sm:grid-cols-5 gap-2">
             <div class="p-2 sm:p-2.5 rounded-xl bg-slate-900 border border-slate-800 shadow-sm flex items-center gap-2.5">
                 <div class="w-8 h-8 rounded-lg bg-blue-500/15 text-blue-400 flex items-center justify-center text-base shrink-0 font-bold">
                     🏃
@@ -164,20 +164,32 @@
                     <span class="text-[8.5px] sm:text-[9px] text-slate-500 block">Siswa Selesai</span>
                 </div>
             </div>
+
+            <div class="p-2 sm:p-2.5 rounded-xl bg-slate-900 border border-indigo-500/30 shadow-sm flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-lg bg-indigo-500/15 text-indigo-400 flex items-center justify-center text-base shrink-0 font-bold">
+                    👥
+                </div>
+                <div>
+                    <span class="text-[9.5px] sm:text-[10px] text-indigo-300 font-bold block">Buku Tamu</span>
+                    <span class="text-sm sm:text-base font-black text-white font-mono leading-tight">{{ $stats['today_guests'] ?? 0 }}</span>
+                    <span class="text-[8.5px] sm:text-[9px] text-slate-400 block">{{ $stats['guests_in_school'] ?? 0 }} di Sekolah</span>
+                </div>
+            </div>
         </div>
 
         <!-- Filter & Search Bar Satpam -->
         <div class="p-2 bg-slate-900/90 rounded-xl border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs">
             <div class="relative w-full sm:max-w-md">
                 <svg class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                <input type="text" id="kiosk-search" oninput="filterKioskCards(this.value)" placeholder="Cari nama siswa, kelas, NIS, atau no surat..." class="w-full bg-slate-950 border border-slate-700/80 rounded-lg pl-9 pr-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-teal-500">
+                <input type="text" id="kiosk-search" oninput="filterKioskCards(this.value)" placeholder="Cari nama siswa, tamu, instansi, tiket, plat nomor..." class="w-full bg-slate-950 border border-slate-700/80 rounded-lg pl-9 pr-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-teal-500">
             </div>
 
             <div class="flex items-center gap-2 font-semibold self-stretch sm:self-auto justify-between sm:justify-end">
-                <div class="flex items-center gap-1 p-0.5 bg-slate-950 rounded-lg border border-slate-800 text-[11px]">
+                <div class="flex items-center gap-1 p-0.5 bg-slate-950 rounded-lg border border-slate-800 text-[11px] overflow-x-auto">
                     <button type="button" onclick="switchKioskSection('all')" id="btn-kiosk-all" class="px-2.5 py-1 rounded-md bg-teal-600 text-white font-bold transition">Semua</button>
-                    <button type="button" onclick="switchKioskSection('exit-permit')" id="btn-kiosk-exit" class="px-2.5 py-1 rounded-md text-slate-400 hover:text-white transition">🚪 Izin Keluar ({{ $exitPermits->count() }})</button>
-                    <button type="button" onclick="switchKioskSection('early-leave')" id="btn-kiosk-early" class="px-2.5 py-1 rounded-md text-slate-400 hover:text-white transition">🏃 Pulang Cepat ({{ $earlyLeaves->count() }})</button>
+                    <button type="button" onclick="switchKioskSection('exit-permit')" id="btn-kiosk-exit" class="px-2.5 py-1 rounded-md text-slate-400 hover:text-white transition whitespace-nowrap">🚪 Izin Keluar ({{ $exitPermits->count() }})</button>
+                    <button type="button" onclick="switchKioskSection('early-leave')" id="btn-kiosk-early" class="px-2.5 py-1 rounded-md text-slate-400 hover:text-white transition whitespace-nowrap">🏃 Pulang Cepat ({{ $earlyLeaves->count() }})</button>
+                    <button type="button" onclick="switchKioskSection('guests')" id="btn-kiosk-guests" class="px-2.5 py-1 rounded-md text-slate-400 hover:text-white transition whitespace-nowrap">👥 Buku Tamu ({{ $todayGuests->count() }})</button>
                 </div>
                 <div class="text-[10px] text-slate-500 flex items-center gap-1 font-mono">
                     <span>Auto:</span>
@@ -190,7 +202,7 @@
     <!-- Main Content Container (Strictly 1-Screen Viewport Fit) -->
     <main class="flex-1 min-h-0 max-w-7xl w-full mx-auto px-3 sm:px-6 py-2 overflow-hidden flex flex-col">
 
-        <div class="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-2 gap-3.5 overflow-hidden" id="kiosk-sections-grid">
+        <div class="flex-1 min-h-0 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3.5 overflow-hidden" id="kiosk-sections-grid">
             <!-- Section 1: Izin Keluar Sekolah Sementara (School Pass) -->
             <section id="section-exit-permit" class="h-full flex flex-col min-h-0 rounded-2xl bg-slate-900/70 border border-slate-800 p-3 sm:p-4 overflow-hidden">
                 <div class="flex items-center justify-between pb-2 border-b border-slate-800 shrink-0">
@@ -357,6 +369,106 @@
                     @endforelse
                 </div>
             </section>
+
+            <!-- Section 3: Buku Tamu Digital Terpadu di Lingkungan Sekolah -->
+            <section id="section-guests" class="h-full flex flex-col min-h-0 rounded-2xl bg-slate-900/70 border border-slate-800 p-3 sm:p-4 overflow-hidden">
+                <div class="flex items-center justify-between pb-2 border-b border-slate-800 shrink-0">
+                    <div class="flex items-center gap-2">
+                        <span class="text-base sm:text-lg">👥</span>
+                        <h2 class="text-xs sm:text-sm font-extrabold text-white">Daftar Kunjungan Tamu Sekolah</h2>
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-indigo-500/20 text-indigo-300 font-mono">
+                            {{ $todayGuests->count() }} Tamu
+                        </span>
+                    </div>
+                    <a href="{{ route('guests.kiosk') }}" target="_blank" class="text-[10px] text-indigo-400 hover:text-indigo-300 hover:underline flex items-center gap-1 font-semibold">
+                        <span>+ Kiosk Tamu</span> &rarr;
+                    </a>
+                </div>
+
+                <div class="flex-1 min-h-0 overflow-y-auto kiosk-scroll space-y-2.5 pr-1 mt-2" id="guests-container">
+                    @forelse($todayGuests as $guest)
+                        @php
+                            $inSchool = is_null($guest->check_out_at) && $guest->status !== 'dibatalkan';
+                        @endphp
+                        <div class="kiosk-card p-3 sm:p-3.5 rounded-xl bg-slate-950/70 border {{ $inSchool ? 'border-indigo-500/60 shadow-lg shadow-indigo-500/10' : 'border-slate-800' }} space-y-2.5 transition"
+                             data-search="{{ strtolower($guest->name . ' ' . $guest->ticket_number . ' ' . $guest->institution . ' ' . $guest->destination_department . ' ' . ($guest->vehicle_license_plate ?? '')) }}">
+                            
+                            <!-- Header Card Tamu -->
+                            <div class="flex items-start justify-between gap-2">
+                                <div class="flex items-center gap-2.5 min-w-0">
+                                    @if($guest->selfie_path)
+                                        <img src="{{ $guest->selfie_path }}" alt="{{ $guest->name }}" class="w-9 h-9 rounded-lg object-cover border border-slate-700 shrink-0">
+                                    @else
+                                        <div class="w-9 h-9 rounded-lg bg-indigo-900/60 text-indigo-300 font-bold flex items-center justify-center shrink-0 text-xs">
+                                            {{ strtoupper(substr($guest->name, 0, 2)) }}
+                                        </div>
+                                    @endif
+                                    <div class="min-w-0">
+                                        <span class="font-mono font-bold text-xs text-indigo-400 block">{{ $guest->ticket_number }}</span>
+                                        <h3 class="text-xs sm:text-sm font-black text-white truncate">{{ $guest->name }}</h3>
+                                    </div>
+                                </div>
+                                <div class="text-right shrink-0">
+                                    @if($inSchool)
+                                        <span class="px-2 py-0.5 rounded-full text-[9.5px] font-black bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                                            Di Sekolah
+                                        </span>
+                                    @else
+                                        <span class="px-2 py-0.5 rounded-full text-[9.5px] font-black bg-slate-800 text-slate-400 border border-slate-700">
+                                            Selesai ({{ $guest->check_out_at?->format('H:i') }} WIB)
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
+
+                            <!-- Detail Kunjungan -->
+                            <div class="grid grid-cols-2 gap-2 text-[10px] text-slate-400 bg-slate-900/60 p-2 rounded-lg border border-slate-800/80">
+                                <div>
+                                    <span class="text-slate-500 block">Asal Instansi:</span>
+                                    <span class="font-semibold text-slate-200 block truncate">{{ $guest->institution }}</span>
+                                    <span class="text-[9px] text-slate-500 block truncate">{{ $guest->institution_type }}</span>
+                                </div>
+                                <div>
+                                    <span class="text-slate-500 block">Tujuan &amp; Keperluan:</span>
+                                    <span class="font-semibold text-indigo-300 block truncate">{{ $guest->destination_department }}</span>
+                                    <span class="text-[9px] text-slate-300 block truncate">{{ $guest->purpose }}</span>
+                                </div>
+                                <div>
+                                    <span class="text-slate-500 block">Waktu Masuk:</span>
+                                    <span class="font-mono font-bold text-slate-300">{{ $guest->check_in_at?->format('H:i') }} WIB</span>
+                                    <span class="text-[9px] text-slate-500 ml-1">({{ $guest->number_of_guests }} Org)</span>
+                                </div>
+                                <div>
+                                    <span class="text-slate-500 block">Kendaraan &amp; Plat:</span>
+                                    <span class="font-semibold text-slate-300">{{ $guest->vehicle_type ?? '-' }}</span>
+                                    @if($guest->vehicle_license_plate)
+                                        <span class="font-mono text-[9px] px-1 py-0.2 bg-slate-800 text-amber-300 rounded ml-1">{{ $guest->vehicle_license_plate }}</span>
+                                    @endif
+                                </div>
+                            </div>
+
+                            <!-- Action Satpam Check-out -->
+                            @if($inSchool)
+                                <div class="pt-1 flex items-center justify-between border-t border-slate-800/60">
+                                    <span class="text-[10px] text-slate-500 font-mono">Status: Sedang Berkunjung</span>
+                                    <form action="{{ route('attendance.kiosk-satpam.guest-checkout', $guest) }}" method="POST" onsubmit="return confirm('Konfirmasi tamu {{ $guest->name }} ({{ $guest->ticket_number }}) telah keluar dari gerbang sekolah?')">
+                                        @csrf
+                                        <button type="submit" class="px-2.5 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-[10px] transition shadow-xs flex items-center gap-1 cursor-pointer">
+                                            <span>🚪 Checkout Tamu</span>
+                                        </button>
+                                    </form>
+                                </div>
+                            @endif
+                        </div>
+                    @empty
+                        <div class="h-full flex flex-col items-center justify-center text-center py-10 text-slate-500 text-xs space-y-1">
+                            <span class="text-3xl">👥</span>
+                            <p class="font-bold text-slate-400 text-xs">Belum ada kunjungan tamu tercatat hari ini.</p>
+                            <p class="text-[10px] text-slate-500">Tamu yang mendaftar melalui Kiosk Tamu akan muncul otomatis di sini.</p>
+                        </div>
+                    @endforelse
+                </div>
+            </section>
         </div>
     </main>
 
@@ -409,37 +521,48 @@
             });
         }
 
-        // Switch Sections (Semua, Izin Keluar, Pulang Cepat)
+        // Switch Sections (Semua, Izin Keluar, Pulang Cepat, Buku Tamu)
         function switchKioskSection(type) {
             const secExit = document.getElementById('section-exit-permit');
             const secEarly = document.getElementById('section-early-leave');
+            const secGuests = document.getElementById('section-guests');
             const grid = document.getElementById('kiosk-sections-grid');
             const btnAll = document.getElementById('btn-kiosk-all');
             const btnExit = document.getElementById('btn-kiosk-exit');
             const btnEarly = document.getElementById('btn-kiosk-early');
+            const btnGuests = document.getElementById('btn-kiosk-guests');
 
             // Reset buttons
-            [btnAll, btnExit, btnEarly].forEach(btn => {
+            [btnAll, btnExit, btnEarly, btnGuests].forEach(btn => {
                 if (btn) {
-                    btn.className = 'px-2.5 py-1 rounded-md text-slate-400 hover:text-white transition';
+                    btn.className = 'px-2.5 py-1 rounded-md text-slate-400 hover:text-white transition whitespace-nowrap';
                 }
             });
 
             if (type === 'all') {
-                if (secExit) { secExit.classList.remove('hidden'); }
-                if (secEarly) { secEarly.classList.remove('hidden'); }
-                if (grid) { grid.className = 'flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-2 gap-3.5 overflow-hidden'; }
-                if (btnAll) btnAll.className = 'px-2.5 py-1 rounded-md bg-teal-600 text-white font-bold transition';
+                if (secExit) secExit.classList.remove('hidden');
+                if (secEarly) secEarly.classList.remove('hidden');
+                if (secGuests) secGuests.classList.remove('hidden');
+                if (grid) grid.className = 'flex-1 min-h-0 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3.5 overflow-hidden';
+                if (btnAll) btnAll.className = 'px-2.5 py-1 rounded-md bg-teal-600 text-white font-bold transition whitespace-nowrap';
             } else if (type === 'exit-permit') {
-                if (secExit) { secExit.classList.remove('hidden'); }
-                if (secEarly) { secEarly.classList.add('hidden'); }
-                if (grid) { grid.className = 'flex-1 min-h-0 grid grid-cols-1 gap-3.5 overflow-hidden'; }
-                if (btnExit) btnExit.className = 'px-2.5 py-1 rounded-md bg-teal-600 text-white font-bold transition';
+                if (secExit) secExit.classList.remove('hidden');
+                if (secEarly) secEarly.classList.add('hidden');
+                if (secGuests) secGuests.classList.add('hidden');
+                if (grid) grid.className = 'flex-1 min-h-0 grid grid-cols-1 gap-3.5 overflow-hidden';
+                if (btnExit) btnExit.className = 'px-2.5 py-1 rounded-md bg-teal-600 text-white font-bold transition whitespace-nowrap';
             } else if (type === 'early-leave') {
-                if (secExit) { secExit.classList.add('hidden'); }
-                if (secEarly) { secEarly.classList.remove('hidden'); }
-                if (grid) { grid.className = 'flex-1 min-h-0 grid grid-cols-1 gap-3.5 overflow-hidden'; }
-                if (btnEarly) btnEarly.className = 'px-2.5 py-1 rounded-md bg-teal-600 text-white font-bold transition';
+                if (secExit) secExit.classList.add('hidden');
+                if (secEarly) secEarly.classList.remove('hidden');
+                if (secGuests) secGuests.classList.add('hidden');
+                if (grid) grid.className = 'flex-1 min-h-0 grid grid-cols-1 gap-3.5 overflow-hidden';
+                if (btnEarly) btnEarly.className = 'px-2.5 py-1 rounded-md bg-teal-600 text-white font-bold transition whitespace-nowrap';
+            } else if (type === 'guests') {
+                if (secExit) secExit.classList.add('hidden');
+                if (secEarly) secEarly.classList.add('hidden');
+                if (secGuests) secGuests.classList.remove('hidden');
+                if (grid) grid.className = 'flex-1 min-h-0 grid grid-cols-1 gap-3.5 overflow-hidden';
+                if (btnGuests) btnGuests.className = 'px-2.5 py-1 rounded-md bg-teal-600 text-white font-bold transition whitespace-nowrap';
             }
         }
 

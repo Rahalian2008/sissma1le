@@ -686,6 +686,8 @@
             });
 
             video.srcObject = videoStream;
+            video.onloadedmetadata = () => checkReadyState();
+            video.onplay = () => checkReadyState();
             if (promptBox) promptBox.classList.add('hidden');
             checkReadyState();
         } catch (err) {

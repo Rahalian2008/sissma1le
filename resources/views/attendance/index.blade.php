@@ -1194,6 +1194,13 @@
                                                 </a>
                                             </div>
                                         @endif
+                                        @if($item->latitude && $item->longitude)
+                                            <div class="mt-1">
+                                                <a href="https://www.google.com/maps?q={{ $item->latitude }},{{ $item->longitude }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-[11px] font-bold text-sky-600 dark:text-sky-400 hover:underline">
+                                                    <span>📍</span> Lokasi Pengajuan (Buka Google Maps)
+                                                </a>
+                                            </div>
+                                        @endif
                                         @if($item->rejection_reason)
                                             <p class="text-xs text-rose-600 mt-1 font-semibold">Alasan Penolakan: {{ $item->rejection_reason }}</p>
                                         @endif
@@ -1373,19 +1380,22 @@
                                     {{ $row->time_out ? substr($row->time_out, 0, 5) . ' WIB' : '-' }}
                                 </td>
                                 <td class="p-3">
+                                    @php
+                                        $effRowMethod = ($row->selfie_path || ($row->method ?? '') === 'SELFIE') ? 'SELFIE' : ($row->method ?? 'MANUAL');
+                                    @endphp
                                     <span class="px-2 py-0.5 rounded text-[10px] font-bold
-                                        @if(($row->method ?? '') === 'SELFIE') bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300
-                                        @elseif(in_array($row->method ?? '', ['BARCODE', 'QR_CODE'])) bg-sky-100 text-sky-800 dark:bg-sky-950 dark:text-sky-300
-                                        @elseif(($row->method ?? '') === 'RFID') bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300
-                                        @elseif(($row->method ?? '') === 'FACE_RECOGNITION') bg-cyan-100 text-cyan-800 dark:bg-cyan-950 dark:text-cyan-300
-                                        @elseif(($row->method ?? '') === 'MANUAL' || ($row->method ?? '') === 'IZIN_SAKIT') bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300
+                                        @if($effRowMethod === 'SELFIE') bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300
+                                        @elseif(in_array($effRowMethod, ['BARCODE', 'QR_CODE'])) bg-sky-100 text-sky-800 dark:bg-sky-950 dark:text-sky-300
+                                        @elseif($effRowMethod === 'RFID') bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300
+                                        @elseif($effRowMethod === 'FACE_RECOGNITION') bg-cyan-100 text-cyan-800 dark:bg-cyan-950 dark:text-cyan-300
+                                        @elseif($effRowMethod === 'MANUAL' || $effRowMethod === 'IZIN_SAKIT') bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300
                                         @else bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 @endif">
-                                        @if(($row->method ?? '') === 'SELFIE') 📸 Selfie Kamera
-                                        @elseif(in_array($row->method ?? '', ['BARCODE', 'QR_CODE'])) 🏷️ Barcode Scanner
-                                        @elseif(($row->method ?? '') === 'RFID') 💳 Kartu RFID
-                                        @elseif(($row->method ?? '') === 'FACE_RECOGNITION') 🤖 Face Recognition
-                                        @elseif(($row->method ?? '') === 'MANUAL' || ($row->method ?? '') === 'IZIN_SAKIT') 📝 Presensi Manual
-                                        @else {{ $row->method ?? 'Presensi' }}
+                                        @if($effRowMethod === 'SELFIE') 📸 Presensi Selfie (Kamera)
+                                        @elseif(in_array($effRowMethod, ['BARCODE', 'QR_CODE'])) 🏷️ Barcode Scanner
+                                        @elseif($effRowMethod === 'RFID') 💳 Kartu RFID
+                                        @elseif($effRowMethod === 'FACE_RECOGNITION') 🤖 Face Recognition
+                                        @elseif($effRowMethod === 'MANUAL' || $effRowMethod === 'IZIN_SAKIT') 📝 Presensi Manual
+                                        @else {{ $effRowMethod }}
                                         @endif
                                     </span>
                                 </td>

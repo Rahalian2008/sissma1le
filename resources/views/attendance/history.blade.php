@@ -227,19 +227,22 @@
 
                             <!-- Metode Presensi -->
                             <td class="py-3.5 px-4 whitespace-nowrap">
+                                @php
+                                    $effMethod = ($att->selfie_path || !empty($selfieIn) || ($att->method ?? '') === 'SELFIE') ? 'SELFIE' : ($att->method ?? 'MANUAL');
+                                @endphp
                                 <span class="px-2 py-0.5 rounded text-[10px] font-bold
-                                    @if(($att->method ?? '') === 'SELFIE') bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300
-                                    @elseif(in_array($att->method ?? '', ['BARCODE', 'QR_CODE'])) bg-sky-100 dark:bg-sky-950/60 text-sky-800 dark:text-sky-300
-                                    @elseif(($att->method ?? '') === 'RFID') bg-purple-100 dark:bg-purple-950/60 text-purple-800 dark:text-purple-300
-                                    @elseif(($att->method ?? '') === 'FACE_RECOGNITION') bg-cyan-100 dark:bg-cyan-950/60 text-cyan-800 dark:text-cyan-300
-                                    @elseif(($att->method ?? '') === 'MANUAL' || ($att->method ?? '') === 'IZIN_SAKIT') bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300
+                                    @if($effMethod === 'SELFIE') bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300
+                                    @elseif(in_array($effMethod, ['BARCODE', 'QR_CODE'])) bg-sky-100 dark:bg-sky-950/60 text-sky-800 dark:text-sky-300
+                                    @elseif($effMethod === 'RFID') bg-purple-100 dark:bg-purple-950/60 text-purple-800 dark:text-purple-300
+                                    @elseif($effMethod === 'FACE_RECOGNITION') bg-cyan-100 dark:bg-cyan-950/60 text-cyan-800 dark:text-cyan-300
+                                    @elseif($effMethod === 'MANUAL' || $effMethod === 'IZIN_SAKIT') bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300
                                     @else bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 @endif">
-                                    @if(($att->method ?? '') === 'SELFIE') 📸 Selfie Kamera
-                                    @elseif(in_array($att->method ?? '', ['BARCODE', 'QR_CODE'])) 🏷️ Barcode Scanner
-                                    @elseif(($att->method ?? '') === 'RFID') 💳 Kartu RFID
-                                    @elseif(($att->method ?? '') === 'FACE_RECOGNITION') 🤖 Face Recognition
-                                    @elseif(($att->method ?? '') === 'MANUAL' || ($att->method ?? '') === 'IZIN_SAKIT') 📝 Presensi Manual
-                                    @else {{ $att->method ?? 'Presensi' }}
+                                    @if($effMethod === 'SELFIE') 📸 Presensi Selfie (Kamera)
+                                    @elseif(in_array($effMethod, ['BARCODE', 'QR_CODE'])) 🏷️ Barcode Scanner
+                                    @elseif($effMethod === 'RFID') 💳 Kartu RFID
+                                    @elseif($effMethod === 'FACE_RECOGNITION') 🤖 Face Recognition
+                                    @elseif($effMethod === 'MANUAL' || $effMethod === 'IZIN_SAKIT') 📝 Presensi Manual
+                                    @else {{ $effMethod }}
                                     @endif
                                 </span>
                                 @if($att->out_method && $att->out_method !== $att->method)

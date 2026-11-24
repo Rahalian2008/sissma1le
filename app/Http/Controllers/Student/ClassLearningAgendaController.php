@@ -52,6 +52,9 @@ class ClassLearningAgendaController extends Controller
             $totalStudentsInRombel = Student::active()->count();
         }
 
+        // Sinkronisasi otomatis data agenda dari LMS Jurnal Mengajar Guru untuk rombel terpilih
+        ClassLearningAgenda::syncFromTeachingJournals($selectedRombel);
+
         $query = ClassLearningAgenda::with(['teacher', 'academicYear'])
             ->where('rombel', $selectedRombel);
 
@@ -262,6 +265,10 @@ class ClassLearningAgendaController extends Controller
         $rowCount = (int) $request->query('rows', 10);
         if ($rowCount < 5 || $rowCount > 50) {
             $rowCount = 10;
+        }
+
+        if (! $isBlank) {
+            ClassLearningAgenda::syncFromTeachingJournals($rombel);
         }
 
         $agendas = $isBlank ? collect([]) : ClassLearningAgenda::with('teacher')

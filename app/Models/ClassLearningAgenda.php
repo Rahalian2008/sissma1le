@@ -60,4 +60,77 @@ class ClassLearningAgenda extends Model
     {
         return $this->belongsTo(Employee::class, 'teacher_employee_id');
     }
+
+    /**
+     * Sinkronisasi data satu catatan Jurnal Mengajar Guru (LMS) ke Agenda Pembelajaran Kelas
+     */
+    public static function syncFromTeachingJournal(TeachingJournal $journal): ?self
+    {
+        $journal->loadMissing(['courseClass.schoolClass', 'courseClass.subject', 'teacher']);
+        $rombel = $journal->courseClass?->schoolClass?->name;
+        if (! $rombel) {
+            return null;
+        }
+
+        $subjectName = $journal->courseClass?->subject?->name ?? 'Mata Pelajaran';
+        $timeSlot = $journal->time_slot ?: ('Jam Ke-' . ($journal->meeting_number ?: '1'));
+        $teacherName = $journal->teacher?->name ?? 'Guru Mata Pelajaran';
+        $employee = Employee::where('nip', $journal->teacher?->nip)->first()
+            ?? Employee::where('name', 'like', '%' . $journal->teacher?->name . '%')->first();
+
+        $summary = $journal->student_attendance_summary ?? [];
+        $present = (int) ($summary['hadir'] ?? 0);
+        $sick = (int) ($summary['sakit'] ?? 0);
+        $permitted = (int) ($summary['izin'] ?? 0);
+        $absent = (int) ($summary['alfa'] ?? 0);
+
+        return static::updateOrCreate(
+            [
+                'rombel' => $rombel,
+                'date' => $journal->date ? $journal->date->toDateString() : now()->toDateString(),
+                'subject' => $subjectName,
+                'time_slot' => $timeSlot,
+            ],
+            [
+                'academic_year_id' => $journal->courseClass?->academic_year_id,
+                'teacher_employee_id' => $employee?->id,
+                'teacher_name' => $teacherName,
+                'learning_topic' => $journal->topic ?: 'Kegiatan Pembelajaran',
+                'activities_summary' => $journal->teaching_activities,
+                'students_present' => $present,
+                'students_sick' => $sick,
+                'students_permitted' => $permitted,
+                'students_absent' => $absent,
+                'class_notes' => $journal->classroom_dynamics_notes,
+                'teacher_signed' => true,
+            ]
+        );
+    }
+
+    /**
+     * Sinkronisasi seluruh Jurnal Mengajar Guru (LMS) ke Agenda Pembelajaran Kelas (berdasarkan rombel tertentu atau seluruhnya)
+     */
+    public static function syncFromTeachingJournals(?string $rombel = null): int
+    {
+        if (! class_exists(TeachingJournal::class) || ! \Illuminate\Support\Facades\Schema::hasTable('teaching_journals')) {
+            return 0;
+        }
+
+        $query = TeachingJournal::with(['courseClass.schoolClass', 'courseClass.subject', 'teacher']);
+
+        if ($rombel) {
+            $query->whereHas('courseClass.schoolClass', function ($q) use ($rombel) {
+                $q->where('name', $rombel);
+            });
+        }
+
+        $synced = 0;
+        foreach ($query->get() as $journal) {
+            if (static::syncFromTeachingJournal($journal)) {
+                $synced++;
+            }
+        }
+
+        return $synced;
+    }
 }
