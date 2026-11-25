@@ -257,7 +257,7 @@
                     </a>
 
                     <!-- Kanal Pengaduan & Aspirasi Publik -->
-                    <a href="{{ route('complaints.create') }}" class="inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-rose-500/25 hover:bg-rose-500/40 text-rose-200 hover:text-white font-bold text-[10px] sm:text-[11px] transition border border-rose-400/30 shadow-2xs" title="Kanal Aspirasi & Pengaduan Publik SMAN 1 Lengkong">
+                    <a href="{{ url('/pengaduan') }}" class="inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-rose-500/25 hover:bg-rose-500/40 text-rose-200 hover:text-white font-bold text-[10px] sm:text-[11px] transition border border-rose-400/30 shadow-2xs" title="Kanal Aspirasi & Pengaduan Publik SMAN 1 Lengkong">
                         <span>📢 Pengaduan</span>
                     </a>
 
@@ -319,7 +319,7 @@
                 <a href="#prestasi" class="px-3 py-1.5 rounded-full text-xs font-bold text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800 transition shadow-2xs whitespace-nowrap">
                     Prestasi
                 </a>
-                <a href="{{ route('complaints.create') }}" class="px-3 py-1.5 rounded-full text-xs font-bold text-rose-600 dark:text-rose-400 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/50 transition shadow-2xs whitespace-nowrap flex items-center gap-1">
+                <a href="{{ url('/pengaduan') }}" class="px-3 py-1.5 rounded-full text-xs font-bold text-rose-600 dark:text-rose-400 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/50 transition shadow-2xs whitespace-nowrap flex items-center gap-1">
                     <span>📢 Pengaduan</span>
                 </a>
                 <a href="#ekosistem-sis" class="px-3.5 py-1.5 rounded-full text-xs font-extrabold text-indigo-600 dark:text-indigo-300 bg-white dark:bg-slate-800 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 border border-indigo-200/80 dark:border-indigo-800/80 transition shadow-xs flex items-center gap-1.5 whitespace-nowrap">
@@ -413,7 +413,7 @@
                     </span>
                     <span class="text-[10px] bg-white/20 text-white px-2 py-0.5 rounded-md font-bold">Buka</span>
                 </a>
-                <a href="{{ route('complaints.create') }}" class="mobile-nav-link px-3 py-2.5 rounded-xl bg-gradient-to-r from-rose-600 to-indigo-600 text-white font-bold transition flex items-center justify-between shadow-sm">
+                <a href="{{ url('/pengaduan') }}" class="mobile-nav-link px-3 py-2.5 rounded-xl bg-gradient-to-r from-rose-600 to-indigo-600 text-white font-bold transition flex items-center justify-between shadow-sm">
                     <span class="flex items-center gap-2">
                         <span>📢 Kanal Pengaduan & Aspirasi Publik</span>
                     </span>
@@ -2542,10 +2542,10 @@
                         </p>
                     </div>
                     <div class="flex gap-2">
-                        <a href="{{ route('complaints.create') }}" class="flex-1 text-center py-2 px-3 rounded-xl bg-gradient-to-r from-rose-600 to-indigo-600 hover:from-rose-500 hover:to-indigo-500 text-white font-bold text-xs transition shadow-md shadow-rose-600/20">
+                        <a href="{{ url('/pengaduan') }}" class="flex-1 text-center py-2 px-3 rounded-xl bg-gradient-to-r from-rose-600 to-indigo-600 hover:from-rose-500 hover:to-indigo-500 text-white font-bold text-xs transition shadow-md shadow-rose-600/20">
                             Buat Aduan ↗
                         </a>
-                        <a href="{{ route('complaints.track') }}" class="py-2 px-3 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs transition" title="Cek Status Tiket">
+                        <a href="{{ url('/pengaduan/tracking') }}" class="py-2 px-3 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs transition" title="Cek Status Tiket">
                             🔍
                         </a>
                     </div>
@@ -2675,10 +2675,10 @@
                     </p>
                 </div>
                 <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto shrink-0">
-                    <a href="{{ route('complaints.create') }}" class="px-6 py-3 rounded-2xl bg-gradient-to-r from-rose-600 via-rose-500 to-indigo-600 hover:from-rose-500 hover:to-indigo-500 text-white font-bold text-xs sm:text-sm text-center shadow-lg shadow-rose-600/30 transition hover:scale-105">
+                    <a href="{{ url('/pengaduan') }}" class="px-6 py-3 rounded-2xl bg-gradient-to-r from-rose-600 via-rose-500 to-indigo-600 hover:from-rose-500 hover:to-indigo-500 text-white font-bold text-xs sm:text-sm text-center shadow-lg shadow-rose-600/30 transition hover:scale-105">
                         Sampaikan Pengaduan / Aspirasi ↗
                     </a>
-                    <a href="{{ route('complaints.track') }}" class="px-5 py-3 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs sm:text-sm text-center border border-white/20 transition">
+                    <a href="{{ url('/pengaduan/tracking') }}" class="px-5 py-3 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs sm:text-sm text-center border border-white/20 transition">
                         Cek Status Tiket 🔍
                     </a>
                 </div>
@@ -2770,7 +2770,7 @@
                             </a>
                         </li>
                         <li>
-                            <a href="{{ route('complaints.create') }}" class="hover:text-white transition flex items-center gap-1.5 text-rose-300 font-semibold">
+                            <a href="{{ url('/pengaduan') }}" class="hover:text-white transition flex items-center gap-1.5 text-rose-300 font-semibold">
                                 <span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span>
                                 <span>Kanal Pengaduan & Aspirasi Publik 📢</span>
                             </a>

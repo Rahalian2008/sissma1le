@@ -21,7 +21,7 @@
     <!-- Top Navigation Header -->
     <header class="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800 sticky top-0 z-40">
         <div class="max-w-5xl mx-auto px-4 sm:px-6 h-18 sm:h-20 flex items-center justify-between gap-4">
-            <a href="{{ route('complaints.create') }}" class="flex items-center gap-3">
+            <a href="{{ url('/pengaduan') }}" class="flex items-center gap-3">
                 <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-rose-600 to-indigo-600 flex items-center justify-center font-heading font-black text-white text-base shadow-md">
                     SIS
                 </div>
@@ -36,7 +36,7 @@
             </a>
 
             <div class="flex items-center gap-2">
-                <a href="{{ route('complaints.create') }}" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/50 hover:bg-indigo-100 border border-indigo-200 dark:border-indigo-800 transition">
+                <a href="{{ url('/pengaduan') }}" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/50 hover:bg-indigo-100 border border-indigo-200 dark:border-indigo-800 transition">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                     <span>Buat Pengaduan Baru</span>
                 </a>
@@ -61,7 +61,7 @@
                 </p>
             </div>
 
-            <form action="{{ route('complaints.track') }}" method="GET" class="flex flex-col sm:flex-row gap-2.5">
+            <form action="{{ url('/pengaduan/tracking') }}" method="GET" class="flex flex-col sm:flex-row gap-2.5">
                 <div class="relative flex-1">
                     <input type="text" name="ticket" value="{{ $ticket }}" required placeholder="ADU-YYYYMMDD-XXXX" class="w-full text-sm font-mono font-bold uppercase tracking-wider bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-2xl px-4 py-3 text-slate-900 dark:text-white placeholder:normal-case placeholder:font-sans placeholder:font-normal focus:ring-2 focus:ring-indigo-500">
                 </div>
