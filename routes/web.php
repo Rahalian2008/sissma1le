@@ -95,6 +95,10 @@ Route::get('/kiosk-tamu/card/{ticket}', [GuestController::class, 'card'])->name(
 Route::get('/kiosk-tamu/print/{ticket}', [GuestController::class, 'printCard'])->name('guests.print_card');
 Route::get('/kiosk-tamu/print-card/{ticket}', [GuestController::class, 'printCard'])->name('guests.print-card');
 
+// Cetak Poster & Standee QR Code Layanan Mandiri (Buku Tamu, Buku Perpus, Kanal Pengaduan)
+Route::get('/cetak-qrcode', [SchoolWebsiteController::class, 'printQrcodes'])->name('qrcodes.print');
+Route::get('/qrcodes/print', [SchoolWebsiteController::class, 'printQrcodes']);
+
 // Kanal Layanan Pengaduan & Aspirasi Publik (Akses Terbuka / Whistleblowing)
 Route::get('/pengaduan', [ComplaintController::class, 'create'])->name('complaints.create');
 Route::post('/pengaduan', [ComplaintController::class, 'store'])->name('complaints.store');

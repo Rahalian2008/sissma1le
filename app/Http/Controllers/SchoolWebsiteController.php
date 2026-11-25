@@ -544,4 +544,15 @@ class SchoolWebsiteController extends Controller
 
         return response()->noContent(404);
     }
+
+    /**
+     * Cetak Standee Meja & Poster QR Code Layanan Mandiri Publik (Buku Tamu, Buku Perpus, Kanal Pengaduan)
+     */
+    public function printQrcodes(Request $request): \Illuminate\View\View
+    {
+        $school = \App\Models\SchoolIdentity::current();
+        $type = $request->query('type', 'all');
+
+        return view('website.qrcodes-print', compact('school', 'type'));
+    }
 }

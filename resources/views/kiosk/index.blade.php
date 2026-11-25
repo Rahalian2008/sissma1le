@@ -2452,10 +2452,16 @@
                             <span class="text-[11px] font-black text-teal-300 uppercase tracking-wider flex items-center gap-1.5">
                                 <span>📱</span> Scan QR Code &amp; Akses Layanan Mandiri Publik
                             </span>
-                            <span class="text-[9px] font-mono text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-500/30 font-bold flex items-center gap-1">
-                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                                Kamera HP Siap Scan
-                            </span>
+                            <div class="flex items-center gap-2">
+                                <a href="{{ url('/cetak-qrcode') }}" target="_blank" class="text-[9px] font-bold text-teal-300 hover:text-white bg-teal-950/80 hover:bg-teal-900 px-2 py-0.5 rounded border border-teal-500/30 transition flex items-center gap-1" title="Cetak Standee &amp; Poster QR Code">
+                                    <span>🖨️</span>
+                                    <span>Cetak Standee / Poster</span>
+                                </a>
+                                <span class="text-[9px] font-mono text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-500/30 font-bold flex items-center gap-1">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                                    Kamera HP Siap Scan
+                                </span>
+                            </div>
                         </div>
 
                         <!-- 3 Kolom QR Code & Link -->

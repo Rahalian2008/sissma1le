@@ -669,3 +669,24 @@ test('sim bmd search modal has top z-index 999999 to always stay in front of mod
     $view = (string) $this->blade('<x-sim-bmd-search-modal />');
     expect($view)->toContain('z-index: 999999 !important;');
 });
+
+test('cetak qrcode standee page renders successfully for all types with high res images', function () {
+    $resAll = $this->get(route('qrcodes.print', ['type' => 'all']));
+    $resAll->assertStatus(200);
+    $resAll->assertSee('LAYANAN MANDIRI PUBLIK BERBASIS DIGITAL');
+    $resAll->assertSee('BUKU TAMU SEKOLAH');
+    $resAll->assertSee('BUKU TAMU PERPUS');
+    $resAll->assertSee('KANAL PENGADUAN');
+
+    $resTamu = $this->get(route('qrcodes.print', ['type' => 'tamu']));
+    $resTamu->assertStatus(200);
+    $resTamu->assertSee('PRESENSI BUKU TAMU DIGITAL');
+
+    $resPerpus = $this->get(route('qrcodes.print', ['type' => 'perpus']));
+    $resPerpus->assertStatus(200);
+    $resPerpus->assertSee('BUKU PENGUNJUNG PERPUSTAKAAN');
+
+    $resPengaduan = $this->get(route('qrcodes.print', ['type' => 'pengaduan']));
+    $resPengaduan->assertStatus(200);
+    $resPengaduan->assertSee('KANAL PENGADUAN');
+});
