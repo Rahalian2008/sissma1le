@@ -2446,32 +2446,87 @@
                         @endforelse
                     </div>
 
-                    <!-- Enhanced Section: Posko & Zona Pengawasan Piket (Fills Empty Space) -->
-                    <div class="flex-1 min-h-0 flex flex-col justify-between bg-slate-950/40 rounded-xl p-2.5 border border-white/5 overflow-hidden">
-                        <div class="flex items-center justify-between pb-1.5 mb-1.5 border-b border-white/5 shrink-0">
-                            <span class="text-[10.5px] font-bold text-teal-300 uppercase tracking-wider flex items-center gap-1.5">
-                                <span>📍</span> Zona &amp; Posko Pengawasan Piket Sekolah
+                    <!-- Layanan Mandiri & Kanal Publik Berbasis QR Code & Link (Buku Tamu, Buku Tamu Perpustakaan, Kanal Pengaduan) -->
+                    <div class="flex-1 min-h-0 flex flex-col justify-between bg-slate-950/60 rounded-xl p-2.5 sm:p-3 border border-teal-500/30 overflow-hidden shadow-inner">
+                        <div class="flex items-center justify-between pb-1.5 mb-2 border-b border-white/10 shrink-0">
+                            <span class="text-[11px] font-black text-teal-300 uppercase tracking-wider flex items-center gap-1.5">
+                                <span>📱</span> Scan QR Code &amp; Akses Layanan Mandiri Publik
                             </span>
-                            <span class="text-[9px] font-mono text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-500/30 font-bold">Kondusif</span>
-                        </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 flex-1 min-h-0 overflow-y-auto kiosk-scroll">
-                            @foreach($data['picket']['zones'] ?? [] as $zn)
-                                <div class="p-2 rounded-xl bg-slate-900/70 border border-white/5 flex flex-col justify-between hover:border-teal-500/30 transition">
-                                    <div class="flex items-center justify-between gap-1 mb-1">
-                                        <span class="font-bold text-[11px] text-white truncate leading-tight">{{ $zn['pos'] }}</span>
-                                        <span class="text-[8.5px] font-bold font-mono px-1.5 py-0.5 rounded bg-white/5 text-teal-300 shrink-0">{{ $zn['status'] }}</span>
-                                    </div>
-                                    <p class="text-[9.5px] text-slate-400 leading-snug line-clamp-2">{{ $zn['task'] }}</p>
-                                </div>
-                            @endforeach
-                        </div>
-                        <!-- Mini SOP Strip -->
-                        <div class="mt-2 pt-1.5 border-t border-white/5 flex items-center justify-between text-[9.5px] text-slate-400 shrink-0">
-                            <span class="flex items-center gap-1">
+                            <span class="text-[9px] font-mono text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-500/30 font-bold flex items-center gap-1">
                                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                                Standby di Pos Piket Lobi Utama &amp; Pos Gerbang
+                                Kamera HP Siap Scan
                             </span>
-                            <span class="font-mono text-teal-400 font-bold">SIS-SMA1LE KIOSK</span>
+                        </div>
+
+                        <!-- 3 Kolom QR Code & Link -->
+                        <div class="grid grid-cols-3 gap-2 sm:gap-3 flex-1 min-h-0 items-stretch">
+                            
+                            <!-- 1. Buku Tamu Sekolah -->
+                            <div class="p-2 rounded-xl bg-slate-900/90 border border-emerald-500/30 flex flex-col items-center justify-between text-center hover:border-emerald-400 transition group shadow-sm">
+                                <div class="w-full">
+                                    <div class="flex items-center justify-center gap-1 mb-1">
+                                        <span class="text-xs">👥</span>
+                                        <span class="font-extrabold text-[10.5px] text-white truncate leading-tight group-hover:text-emerald-300 transition">Buku Tamu</span>
+                                    </div>
+                                    <p class="text-[8.5px] text-slate-400 leading-tight line-clamp-1 mb-1.5">Resepsionis &amp; Tamu Umum</p>
+                                </div>
+                                <div class="p-1.5 bg-white rounded-lg shadow-sm shrink-0 flex items-center justify-center">
+                                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data={{ urlencode(url('/kiosk-tamu')) }}" alt="QR Buku Tamu" class="w-16 h-16 sm:w-20 sm:h-20 object-contain" loading="lazy">
+                                </div>
+                                <div class="w-full mt-1.5">
+                                    <a href="{{ url('/kiosk-tamu') }}" target="_blank" class="block font-mono text-[8.5px] font-bold text-emerald-400 hover:text-emerald-300 bg-emerald-950/70 py-0.5 px-1 rounded border border-emerald-500/30 truncate">
+                                        /kiosk-tamu
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- 2. Buku Tamu / Pengunjung Perpustakaan -->
+                            <div class="p-2 rounded-xl bg-slate-900/90 border border-amber-500/30 flex flex-col items-center justify-between text-center hover:border-amber-400 transition group shadow-sm">
+                                <div class="w-full">
+                                    <div class="flex items-center justify-center gap-1 mb-1">
+                                        <span class="text-xs">📚</span>
+                                        <span class="font-extrabold text-[10.5px] text-white truncate leading-tight group-hover:text-amber-300 transition">Buku Perpus</span>
+                                    </div>
+                                    <p class="text-[8.5px] text-slate-400 leading-tight line-clamp-1 mb-1.5">Presensi Mandiri Pemustaka</p>
+                                </div>
+                                <div class="p-1.5 bg-white rounded-lg shadow-sm shrink-0 flex items-center justify-center">
+                                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data={{ urlencode(url('/perpustakaan/buku-tamu')) }}" alt="QR Buku Perpus" class="w-16 h-16 sm:w-20 sm:h-20 object-contain" loading="lazy">
+                                </div>
+                                <div class="w-full mt-1.5">
+                                    <a href="{{ url('/perpustakaan/buku-tamu') }}" target="_blank" class="block font-mono text-[8.5px] font-bold text-amber-400 hover:text-amber-300 bg-amber-950/70 py-0.5 px-1 rounded border border-amber-500/30 truncate">
+                                        /perpustakaan/buku-tamu
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- 3. Kanal Pengaduan & Aspirasi Publik -->
+                            <div class="p-2 rounded-xl bg-slate-900/90 border border-rose-500/30 flex flex-col items-center justify-between text-center hover:border-rose-400 transition group shadow-sm">
+                                <div class="w-full">
+                                    <div class="flex items-center justify-center gap-1 mb-1">
+                                        <span class="text-xs">📢</span>
+                                        <span class="font-extrabold text-[10.5px] text-white truncate leading-tight group-hover:text-rose-300 transition">Pengaduan</span>
+                                    </div>
+                                    <p class="text-[8.5px] text-slate-400 leading-tight line-clamp-1 mb-1.5">Jalur Rahasia Kepsek &amp; Wakasek</p>
+                                </div>
+                                <div class="p-1.5 bg-white rounded-lg shadow-sm shrink-0 flex items-center justify-center">
+                                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data={{ urlencode(url('/pengaduan')) }}" alt="QR Pengaduan" class="w-16 h-16 sm:w-20 sm:h-20 object-contain" loading="lazy">
+                                </div>
+                                <div class="w-full mt-1.5">
+                                    <a href="{{ url('/pengaduan') }}" target="_blank" class="block font-mono text-[8.5px] font-bold text-rose-400 hover:text-rose-300 bg-rose-950/70 py-0.5 px-1 rounded border border-rose-500/30 truncate">
+                                        /pengaduan
+                                    </a>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- Footer Instruction Strip -->
+                        <div class="mt-2 pt-1.5 border-t border-white/5 flex items-center justify-between text-[9px] text-slate-400 shrink-0">
+                            <span class="flex items-center gap-1 truncate mr-1">
+                                <span class="w-1.5 h-1.5 rounded-full bg-teal-400"></span>
+                                Arahkan kamera smartphone ke QR Code untuk akses langsung tanpa login
+                            </span>
+                            <span class="font-mono text-teal-400 font-bold shrink-0">SIS-SMA1LE KIOSK</span>
                         </div>
                     </div>
                 </div>

@@ -192,8 +192,8 @@
 
     {{-- Executive Whistleblowing & Complaint Alert Bar --}}
     @php
-        $pendingComplaints = \App\Models\Complaint::where('status', 'MENUNGGU')->count();
-        $inProgressComplaints = \App\Models\Complaint::whereIn('status', ['DITELAAH', 'DIPROSES'])->count();
+        $pendingComplaints = \App\Models\Complaint::countPendingSafe();
+        $inProgressComplaints = \App\Models\Complaint::countInProgressSafe();
     @endphp
     <div class="rounded-3xl p-5 bg-gradient-to-r from-rose-950/60 via-slate-900 to-indigo-950/60 border border-rose-500/30 shadow-lg flex flex-col md:flex-row items-center justify-between gap-4">
         <div class="flex items-center gap-4">

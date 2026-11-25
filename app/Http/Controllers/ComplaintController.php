@@ -49,6 +49,7 @@ class ComplaintController extends Controller
      */
     public function create(): View
     {
+        Complaint::ensureComplaintsTableExists();
         $school = SchoolIdentity::current();
 
         $categories = [
@@ -97,6 +98,7 @@ class ComplaintController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        Complaint::ensureComplaintsTableExists();
         $isAnonymous = $request->boolean('is_anonymous');
 
         $validated = $request->validate([
@@ -177,6 +179,7 @@ class ComplaintController extends Controller
      */
     public function track(Request $request): View
     {
+        Complaint::ensureComplaintsTableExists();
         $school = SchoolIdentity::current();
         $ticket = trim((string) $request->input('ticket'));
         $complaint = null;
@@ -196,6 +199,7 @@ class ComplaintController extends Controller
     public function adminIndex(Request $request): View
     {
         $this->authorizeLeadership();
+        Complaint::ensureComplaintsTableExists();
 
         $statusFilter = $request->query('status');
         $categoryFilter = $request->query('category');

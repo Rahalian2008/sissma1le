@@ -194,7 +194,7 @@ test('kios satpam displays approved early leaves and school passes with confirma
     // Test Kios Satpam view
     $response = $this->get(route('attendance.kiosk-satpam'));
     $response->assertStatus(200);
-    $response->assertSee('Kios Pos Satpam');
+    $response->assertSee('KIOS POS SATPAM');
     $response->assertSee('Siswa Kios Satpam Test');
     $response->assertSee('421.3/SKPC/2026/XI/8881');
     $response->assertSee('421.3/SKIK/2026/XI/8882');

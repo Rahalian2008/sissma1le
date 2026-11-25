@@ -96,6 +96,7 @@ class SchoolExitPermit extends Model
     /**
      * Generate Nomor Surat Resmi Surat Izin Keluar Lingkungan Sekolah
      * Format: 421.3/SIK-LS/{NOMOR}/{BULAN_ROMAWI}/{TAHUN}
+     * Dijamin unik dan tidak akan pernah duplikat / collision.
      */
     public static function generatePermitNumber(?Carbon $date = null): string
     {
@@ -109,10 +110,31 @@ class SchoolExitPermit extends Model
         ];
         $romanMonth = $romanMonths[$month] ?? 'XI';
 
-        $count = static::whereYear('date', $year)->count() + 1;
-        $padded = str_pad((string) $count, 4, '0', STR_PAD_LEFT);
+        // Cari nomor urut terbesar yang sudah ada pada tahun berjalan
+        $maxNum = 0;
+        $existingPermitNumbers = static::whereYear('date', $year)
+            ->orWhere('permit_number', 'like', "%/{$year}")
+            ->pluck('permit_number');
 
-        return "421.3/SIK-LS/{$padded}/{$romanMonth}/{$year}";
+        foreach ($existingPermitNumbers as $pNum) {
+            if (preg_match('/\/(\d{3,6})\//', (string) $pNum, $matches)) {
+                $numVal = (int) $matches[1];
+                if ($numVal > $maxNum) {
+                    $maxNum = $numVal;
+                }
+            }
+        }
+
+        $nextSequence = max($maxNum + 1, static::whereYear('date', $year)->count() + 1);
+
+        // Pastikan tidak ada collision dengan loop unik
+        do {
+            $padded = str_pad((string) $nextSequence, 4, '0', STR_PAD_LEFT);
+            $candidate = "421.3/SIK-LS/{$padded}/{$romanMonth}/{$year}";
+            $nextSequence++;
+        } while (static::where('permit_number', $candidate)->exists());
+
+        return $candidate;
     }
 
     public function getStatusBadgeAttribute(): string

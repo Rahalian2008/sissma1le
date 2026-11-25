@@ -147,4 +147,72 @@ class Complaint extends Model
 
         return $this->reporter_name;
     }
+
+    /**
+     * Hitung total aduan menunggu secara aman tanpa memicu QueryException 1146 jika tabel belum dimigrasi
+     */
+    public static function countPendingSafe(): int
+    {
+        try {
+            static::ensureComplaintsTableExists();
+
+            return static::where('status', 'MENUNGGU')->count();
+        } catch (\Throwable) {
+            return 0;
+        }
+    }
+
+    /**
+     * Hitung total aduan dalam proses secara aman
+     */
+    public static function countInProgressSafe(): int
+    {
+        try {
+            static::ensureComplaintsTableExists();
+
+            return static::whereIn('status', ['DITELAAH', 'DIPROSES'])->count();
+        } catch (\Throwable) {
+            return 0;
+        }
+    }
+
+    /**
+     * Self-healing: Otomatis buat tabel complaints jika belum ada di database Hostinger/Local
+     */
+    public static function ensureComplaintsTableExists(): void
+    {
+        try {
+            if (! \Illuminate\Support\Facades\Schema::hasTable('complaints')) {
+                \Illuminate\Support\Facades\Schema::create('complaints', function (\Illuminate\Database\Schema\Blueprint $table) {
+                    $table->id();
+                    $table->string('ticket_number', 30)->unique();
+                    $table->boolean('is_anonymous')->default(false);
+                    $table->string('reporter_name', 150);
+                    $table->string('reporter_phone', 30);
+                    $table->string('reporter_email', 150)->nullable();
+                    $table->string('reporter_type', 50)->default('masyarakat');
+                    $table->string('category', 50)->default('aspirasi_kemajuan');
+                    $table->string('title', 255);
+                    $table->text('description');
+                    $table->date('incident_date')->nullable();
+                    $table->string('incident_location', 150)->nullable();
+                    $table->string('attachment_path', 255)->nullable();
+                    $table->string('attachment_name', 255)->nullable();
+                    $table->string('status', 30)->default('MENUNGGU');
+                    $table->text('disposition_notes')->nullable();
+                    $table->text('internal_notes')->nullable();
+                    $table->foreignId('handled_by')->nullable()->constrained('users')->nullOnDelete();
+                    $table->timestamp('handled_at')->nullable();
+                    $table->timestamps();
+
+                    $table->index('ticket_number');
+                    $table->index('status');
+                    $table->index('category');
+                    $table->index('created_at');
+                });
+            }
+        } catch (\Throwable) {
+            // Silently ignore if direct DDL fails
+        }
+    }
 }

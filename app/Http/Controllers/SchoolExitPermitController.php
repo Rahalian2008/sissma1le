@@ -143,7 +143,7 @@ class SchoolExitPermitController extends Controller
 
         $shouldDirectApprove = $isStaff && $request->boolean('direct_approve', true);
 
-        $permit = SchoolExitPermit::create([
+        $permitData = [
             'permit_number' => $permitNumber,
             'date' => $validated['date'],
             'out_time' => $validated['out_time'],
@@ -159,7 +159,22 @@ class SchoolExitPermitController extends Controller
             'approved_by' => $shouldDirectApprove ? $user->id : null,
             'approved_at' => $shouldDirectApprove ? now() : null,
             'qr_code_token' => Str::uuid()->toString(),
-        ]);
+        ];
+
+        // Pencegahan tabrakan nomor surat (race condition safe retry)
+        $permit = null;
+        for ($retry = 0; $retry < 5; $retry++) {
+            try {
+                $permit = SchoolExitPermit::create($permitData);
+                break;
+            } catch (\Illuminate\Database\QueryException $e) {
+                if ($retry < 4 && ($e->getCode() == 23000 || str_contains($e->getMessage(), 'Duplicate entry'))) {
+                    $permitData['permit_number'] = SchoolExitPermit::generatePermitNumber($dateCarbon);
+                    continue;
+                }
+                throw $e;
+            }
+        }
 
         // Hubungkan seluruh siswa yang diajukan (Mendukung > 1 siswa)
         $permit->students()->sync($validated['student_ids']);

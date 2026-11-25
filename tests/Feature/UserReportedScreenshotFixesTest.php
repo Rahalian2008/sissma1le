@@ -619,8 +619,10 @@ test('kios tv slide transition has vertical upward glide and slide 7, 10, 11, 13
     // 3. Slide 10 (Prestasi): Live Upward Ticker for recent achievements
     expect($content)->toContain('Prestasi &amp; Kejuaraan Siswa Terbaru');
 
-    // 4. Slide 11 (Piket): Picket zones filling empty space
-    expect($content)->toContain('Zona &amp; Posko Pengawasan Piket Sekolah');
+    // 4. Slide 11 (Piket): QR codes for Buku Tamu, Perpustakaan, and Kanal Pengaduan
+    expect($content)->toContain('Scan QR Code &amp; Akses Layanan Mandiri Publik')
+        ->and($content)->toContain('Buku Tamu')
+        ->and($content)->toContain('Kanal Pengaduan');
 
     // 5. Slide 13 (Agenda): Countdown and live KBM
     expect($content)->toContain('Hitung Mundur Agenda Terdekat')

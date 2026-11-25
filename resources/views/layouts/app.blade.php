@@ -636,7 +636,7 @@
                 {{-- 8. Layanan Pengaduan & Aspirasi Publik (Khusus Kepsek & Wakasek) --}}
                 @if($navUser?->hasAnyRole(['kepala_sekolah', 'wakasek_kurikulum', 'wakasek_kesiswaan', 'wakasek_humas', 'wakasek_sarpras', 'super_admin']) || in_array($navUser?->role, ['kepala_sekolah', 'super_admin']))
                 @php
-                    $pendingComplaintsCount = \App\Models\Complaint::where('status', 'MENUNGGU')->count();
+                    $pendingComplaintsCount = \App\Models\Complaint::countPendingSafe();
                 @endphp
                 <a href="{{ route('complaints.admin.index') }}" data-tooltip="Kanal Pengaduan" class="flex items-center justify-between px-3 py-2.5 rounded-xl text-[13.5px] font-semibold leading-snug transition {{ request()->routeIs('complaints.admin.*') ? 'bg-rose-600 text-white shadow-xs shadow-rose-600/30' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
                     <div class="flex items-center gap-2.5 min-w-0">
@@ -1544,7 +1544,7 @@
                 {{-- 8. Layanan Pengaduan & Aspirasi Publik Mobile (Khusus Kepsek & Wakasek) --}}
                 @if($navUser?->hasAnyRole(['kepala_sekolah', 'wakasek_kurikulum', 'wakasek_kesiswaan', 'wakasek_humas', 'wakasek_sarpras', 'super_admin']) || in_array($navUser?->role, ['kepala_sekolah', 'super_admin']))
                 @php
-                    $pendingComplaintsCount = \App\Models\Complaint::where('status', 'MENUNGGU')->count();
+                    $pendingComplaintsCount = \App\Models\Complaint::countPendingSafe();
                 @endphp
                 <a href="{{ route('complaints.admin.index') }}" class="flex items-center justify-between px-3 py-2.5 rounded-xl text-[13.5px] font-semibold leading-snug transition {{ request()->routeIs('complaints.admin.*') ? 'bg-rose-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
                     <div class="flex items-center gap-2.5 min-w-0">

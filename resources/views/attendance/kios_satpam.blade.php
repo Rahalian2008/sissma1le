@@ -297,6 +297,17 @@
                                     <p class="text-[10px] text-slate-400 mt-0.5">Tujuan: {{ $sp->destination }}</p>
                                 @endif
                             </div>
+
+                            @if($sp->is_returning && $sp->status === 'APPROVED' && empty($sp->actual_back_time))
+                                <form action="{{ route('attendance.kiosk-satpam.return', $sp->id) }}" method="POST" class="pt-2 border-t border-slate-800/80">
+                                    @csrf
+                                    <input type="hidden" name="actual_back_time" value="{{ now()->format('H:i') }}">
+                                    <button type="submit" class="w-full py-1.5 px-3 rounded-lg bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition shadow-sm shadow-teal-600/30 cursor-pointer">
+                                        <span>✓</span>
+                                        <span>Konfirmasi Kembali</span>
+                                    </button>
+                                </form>
+                            @endif
                         </div>
                     @empty
                         <div class="h-full flex flex-col items-center justify-center text-center py-10 text-slate-500 text-xs space-y-1">
@@ -334,6 +345,9 @@
                                     <div class="min-w-0">
                                         <h3 class="font-extrabold text-xs sm:text-sm text-white truncate">{{ $el->student?->name ?? 'Nama Siswa' }}</h3>
                                         <p class="text-[10px] text-teal-300 truncate">{{ $el->student?->schoolClass?->name ?? '-' }} &bull; NIS: {{ $el->student?->nis ?? '-' }}</p>
+                                        <div class="font-mono text-[9.5px] text-slate-400 mt-0.5 truncate">
+                                            No. Surat: <span class="text-teal-300 font-bold">{{ $el->letter_number }}</span>
+                                        </div>
                                     </div>
                                 </div>
                                 <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-blue-500/20 text-blue-300 border border-blue-500/30 shrink-0">
@@ -348,7 +362,7 @@
                                 </div>
                                 <div>
                                     <span class="text-slate-500 text-[9px] block font-semibold">PENJEMPUT</span>
-                                    <span class="font-semibold text-slate-300 text-xs">{{ $el->picked_up_by ?? 'Mandiri / Keluarga' }}</span>
+                                    <span class="font-semibold text-slate-300 text-xs">{{ $el->pickup_name ?? $el->picked_up_by ?? 'Mandiri / Keluarga' }}</span>
                                 </div>
                             </div>
 
