@@ -483,3 +483,108 @@ test('kiosk tv: profil shows kepala sekolah at top, rekap siswa and gtk, and att
         expect($rec['status'])->toBe('HADIR');
     }
 });
+
+test('issue: principal dashboard links Adm. Ketatausahaan to tu.dashboard and sidebar displays TU accordion for kepala_sekolah', function () {
+    Role::firstOrCreate(['name' => 'kepala_sekolah'], ['display_name' => 'Kepala Sekolah', 'level' => 80]);
+    Role::firstOrCreate(['name' => 'guru'], ['display_name' => 'Guru', 'level' => 30]);
+
+    $kepsek = User::factory()->create([
+        'name' => 'Pian Sopian, S.Pd., MM.Pd.',
+        'role' => 'guru',
+        'roles' => ['guru', 'kepala_sekolah'],
+    ]);
+
+    // Active role in session or attribute
+    session(['active_role' => 'kepala_sekolah']);
+
+    // 1. Principal dashboard contains link to tu.dashboard for card 14
+    $dashboardResponse = $this->actingAs($kepsek)->get(route('dashboard'));
+    $dashboardResponse->assertStatus(200);
+    $dashboardResponse->assertSee(route('tu.dashboard'));
+    $dashboardResponse->assertSee('Adm. Ketatausahaan');
+
+    // 2. Sidebar displays Adm. Ketatausahaan and sub-menu links
+    $tuDashboardResponse = $this->actingAs($kepsek)->get(route('tu.dashboard'));
+    $tuDashboardResponse->assertStatus(200);
+    $tuDashboardResponse->assertSee(route('tu.dashboard'));
+    $tuDashboardResponse->assertSee(route('tu.kesiswaan.index'));
+    $tuDashboardResponse->assertSee(route('tu.kepegawaian.index'));
+    $tuDashboardResponse->assertSee(route('tu.persuratan.index'));
+    $tuDashboardResponse->assertSee(route('tu.sarpras.index'));
+    $tuDashboardResponse->assertSee(route('tu.keuangan.index'));
+    $tuDashboardResponse->assertSee(route('guests.index'));
+});
+
+test('issue: lms quiz questions level_kognitif supports long string like Penalaran & Analisis HOTS without truncation', function () {
+    $teacherUser = User::factory()->create(['role' => 'guru', 'roles' => ['guru']]);
+    $teacher = \App\Models\Teacher::create([
+        'user_id' => $teacherUser->id,
+        'name' => 'Guru Pengampu',
+        'nip' => '198501012010011002',
+        'gender' => 'L',
+        'is_active' => true,
+    ]);
+    $class = SchoolClass::create(['name' => 'XII Merdeka 1', 'grade' => 'XII']);
+
+    $subject = \App\Models\Subject::create([
+        'code' => 'INF-XII',
+        'name' => 'Informatika',
+        'order' => 1,
+    ]);
+
+    $courseClass = \App\Models\CourseClass::create([
+        'subject_id' => $subject->id,
+        'class_id' => $class->id,
+        'teacher_id' => $teacher->id,
+        'academic_year_id' => null,
+    ]);
+
+    $quiz = \App\Models\LmsQuiz::create([
+        'course_class_id' => $courseClass->id,
+        'title' => 'Asesmen Sumatif Akhir Semester',
+        'duration_minutes' => 60,
+        'is_published' => true,
+    ]);
+
+    // Test creating question with long level_kognitif (38 chars)
+    $longLevel = 'L3 / C4-C6 (Penalaran & Analisis HOTS)';
+    $response = $this->actingAs($teacherUser)->post(route('lms.quizzes.questions.store', [$courseClass->id, $quiz->id]), [
+        'question_type' => 'essay',
+        'question_text' => '<p>Jelaskan transmisi data real-time TCP vs UDP.</p>',
+        'score_weight' => 20,
+        'level_kognitif' => $longLevel,
+        'correct_answer' => 'TCP berorientasi koneksi, UDP connectionless.',
+    ]);
+
+    $response->assertSessionHasNoErrors();
+    $question = \App\Models\LmsQuizQuestion::where('quiz_id', $quiz->id)->first();
+    expect($question)->not->toBeNull()
+        ->and($question->level_kognitif)->toBe($longLevel);
+
+    // Test updating question with another long level_kognitif
+    $updateLevel = 'Penalaran & Analisis HOTS (Tingkat Tinggi)';
+    $updateResponse = $this->actingAs($teacherUser)->put(route('lms.quizzes.questions.update', [$courseClass->id, $quiz->id, $question->id]), [
+        'question_type' => 'essay',
+        'question_text' => '<p>Jelaskan transmisi data real-time TCP vs UDP (Revisi).</p>',
+        'score_weight' => 25,
+        'level_kognitif' => $updateLevel,
+        'correct_answer' => 'TCP berorientasi koneksi, UDP connectionless dengan latensi rendah.',
+    ]);
+
+    $updateResponse->assertSessionHasNoErrors();
+    $question->refresh();
+    expect($question->level_kognitif)->toBe($updateLevel);
+});
+
+test('issue: kios tv profil slide 0 displays vision under kepala sekolah and auto scroll ticker classes without manual scrollbar', function () {
+    $response = $this->get(route('kiosk.index'));
+    $response->assertStatus(200);
+
+    // Ensure Visi is displayed under Kepala Sekolah
+    $response->assertSee('Visi:');
+    $response->assertSee('animate-vertical-ticker-slow');
+
+    // Ensure no kiosk-scroll manual scrollbar on slide 0
+    $content = $response->getContent();
+    expect($content)->toContain('animate-vertical-ticker-slow');
+});

@@ -110,6 +110,15 @@
         .animate-vertical-ticker:hover {
             animation-play-state: paused;
         }
+        .animate-vertical-ticker-slow {
+            display: flex;
+            flex-direction: column;
+            animation: verticalScrollUp 42s linear infinite;
+            will-change: transform;
+        }
+        .animate-vertical-ticker-slow:hover {
+            animation-play-state: paused;
+        }
 
         /* Clean Hide Scrollbar */
         .no-scrollbar::-webkit-scrollbar {
@@ -406,8 +415,12 @@
                         <div class="mt-1 inline-block px-2.5 py-0.5 rounded-md bg-slate-900/90 border border-white/10 text-[10px] font-mono font-bold text-slate-200">
                             NIP {{ $data['profile']['principal_nip'] }}
                         </div>
-                        <div class="mt-1.5 text-[9.5px] text-slate-300 italic flex items-center gap-1 border-t border-amber-500/20 pt-1 truncate">
-                            <span>💬</span> "Maju Bersama, Hebat Semua! Menuju S1L Berkarakter &amp; Unggul"
+                        <div class="mt-1.5 text-[10px] text-amber-200/90 flex items-start gap-1.5 border-t border-amber-500/20 pt-1 leading-snug">
+                            <span class="shrink-0 text-amber-400 text-xs">🌟</span>
+                            <div class="min-w-0">
+                                <span class="font-black text-amber-300">Visi:</span>
+                                <span class="italic text-white font-medium">"{{ $data['profile']['vision'] }}"</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -483,49 +496,59 @@
                         </div>
                     </div>
 
-                    <!-- Table of Classes -->
-                    <div class="flex-1 min-h-0 overflow-y-auto kiosk-scroll pr-1">
-                        <table class="w-full text-left border-collapse text-xs">
-                            <thead>
-                                <tr class="text-[10px] font-bold text-slate-400 border-b border-white/10 uppercase tracking-wider sticky top-0 bg-slate-950/90 backdrop-blur-xs">
-                                    <th class="py-1.5 pl-2 font-mono">No</th>
-                                    <th class="py-1.5 font-bold">Rombel / Kelas</th>
-                                    <th class="py-1.5 text-center font-bold text-blue-400">Laki-laki (L)</th>
-                                    <th class="py-1.5 text-center font-bold text-rose-400">Perempuan (P)</th>
-                                    <th class="py-1.5 text-right pr-2 font-bold text-emerald-400">Jumlah Total</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-white/5 font-medium">
-                                @forelse($data['recap_students']['classes'] ?? $data['rombels']['list'] as $idx => $cls)
-                                    <tr class="hover:bg-white/5 transition">
-                                        <td class="py-1.5 pl-2 font-mono text-slate-400 text-[11px]">{{ $idx + 1 }}</td>
-                                        <td class="py-1.5 font-bold text-white text-[11px] flex items-center gap-1.5">
-                                            <span class="w-2 h-2 rounded-full {{ str_starts_with($cls['grade'] ?? '', 'X') ? 'bg-teal-400' : (str_starts_with($cls['grade'] ?? '', 'XI') ? 'bg-indigo-400' : 'bg-amber-400') }}"></span>
-                                            <span>{{ $cls['name'] }}</span>
-                                        </td>
-                                        <td class="py-1.5 text-center font-mono font-bold text-blue-300 text-[11px]">
-                                            <span class="px-2 py-0.5 rounded bg-blue-500/10 border border-blue-500/20 inline-block min-w-7">
-                                                {{ $cls['male_count'] }}
-                                            </span>
-                                        </td>
-                                        <td class="py-1.5 text-center font-mono font-bold text-rose-300 text-[11px]">
-                                            <span class="px-2 py-0.5 rounded bg-rose-500/10 border border-rose-500/20 inline-block min-w-7">
-                                                {{ $cls['female_count'] }}
-                                            </span>
-                                        </td>
-                                        <td class="py-1.5 text-right pr-2 font-mono font-black text-white text-xs">
-                                            <span class="px-2.5 py-0.5 rounded bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 inline-block min-w-8">
-                                                {{ $cls['total_count'] }}
-                                            </span>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="5" class="py-3 text-center text-slate-500 italic text-xs">Data kelas belum tersedia.</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
+                    <!-- Pinned Table Header -->
+                    <table class="w-full text-left border-collapse text-xs shrink-0 table-fixed">
+                        <thead>
+                            <tr class="text-[10px] font-bold text-slate-400 border-b border-white/10 uppercase tracking-wider bg-slate-950/90">
+                                <th class="w-10 py-1.5 pl-2 font-mono">No</th>
+                                <th class="py-1.5 font-bold">Rombel / Kelas</th>
+                                <th class="w-24 py-1.5 text-center font-bold text-blue-400">Laki-laki (L)</th>
+                                <th class="w-24 py-1.5 text-center font-bold text-rose-400">Perempuan (P)</th>
+                                <th class="w-28 py-1.5 text-right pr-2 font-bold text-emerald-400">Jumlah Total</th>
+                            </tr>
+                        </thead>
+                    </table>
+
+                    <!-- Auto-Scrolling Upward Ticker (Smooth Infinite Loop, No Scrollbar) -->
+                    <div class="flex-1 min-h-0 overflow-hidden relative">
+                        <div class="animate-vertical-ticker-slow w-full">
+                            @for($copy = 0; $copy < 2; $copy++)
+                                <table class="w-full text-left border-collapse text-xs table-fixed">
+                                    <tbody class="divide-y divide-white/5 font-medium">
+                                        @forelse($data['recap_students']['classes'] ?? $data['rombels']['list'] as $idx => $cls)
+                                            <tr class="hover:bg-white/5 transition">
+                                                <td class="w-10 py-1.5 pl-2 font-mono text-slate-400 text-[11px]">{{ $idx + 1 }}</td>
+                                                <td class="py-1.5 font-bold text-white text-[11px] truncate">
+                                                    <span class="inline-flex items-center gap-1.5">
+                                                        <span class="w-2 h-2 rounded-full shrink-0 {{ str_starts_with($cls['grade'] ?? '', 'X') ? 'bg-teal-400' : (str_starts_with($cls['grade'] ?? '', 'XI') ? 'bg-indigo-400' : 'bg-amber-400') }}"></span>
+                                                        <span class="truncate">{{ $cls['name'] }}</span>
+                                                    </span>
+                                                </td>
+                                                <td class="w-24 py-1.5 text-center font-mono font-bold text-blue-300 text-[11px]">
+                                                    <span class="px-2 py-0.5 rounded bg-blue-500/10 border border-blue-500/20 inline-block min-w-7">
+                                                        {{ $cls['male_count'] }}
+                                                    </span>
+                                                </td>
+                                                <td class="w-24 py-1.5 text-center font-mono font-bold text-rose-300 text-[11px]">
+                                                    <span class="px-2 py-0.5 rounded bg-rose-500/10 border border-rose-500/20 inline-block min-w-7">
+                                                        {{ $cls['female_count'] }}
+                                                    </span>
+                                                </td>
+                                                <td class="w-28 py-1.5 text-right pr-2 font-mono font-black text-white text-xs">
+                                                    <span class="px-2.5 py-0.5 rounded bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 inline-block min-w-8">
+                                                        {{ $cls['total_count'] }}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="5" class="py-3 text-center text-slate-500 italic text-xs">Data kelas belum tersedia.</td>
+                                            </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            @endfor
+                        </div>
                     </div>
 
                     <!-- Table Footer: Total Keseluruhan Siswa -->
@@ -560,85 +583,92 @@
                         </span>
                     </div>
 
-                    <div class="flex-1 min-h-0 overflow-y-auto kiosk-scroll space-y-2.5 pr-1">
-                        <!-- Sub-Section 1: Guru (Pendidik) -->
-                        <div class="p-2.5 rounded-xl bg-slate-900/70 border border-white/5 space-y-1.5">
-                            <div class="flex items-center justify-between pb-1 border-b border-white/5">
-                                <span class="text-[11px] font-black text-indigo-300 uppercase tracking-wide flex items-center gap-1">
-                                    <span>📚</span> Dewan Guru (Pendidik)
-                                </span>
-                                <span class="text-[10px] font-mono font-bold text-white bg-indigo-500/20 px-2 py-0.2 rounded border border-indigo-500/30">
-                                    {{ $data['recap_gtk']['guru']['total'] ?? 28 }} Guru
-                                </span>
-                            </div>
-                            <table class="w-full text-left text-[11px] border-collapse">
-                                <thead>
-                                    <tr class="text-[9px] text-slate-400 font-bold uppercase">
-                                        <th class="py-1">Status Kepegawaian</th>
-                                        <th class="py-1 text-center text-blue-400">L</th>
-                                        <th class="py-1 text-center text-rose-400">P</th>
-                                        <th class="py-1 text-right text-emerald-400">Total</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-white/5 font-mono">
-                                    @foreach($data['recap_gtk']['guru']['statuses'] ?? [] as $st)
-                                        <tr>
-                                            <td class="py-1 text-slate-200 font-sans font-medium text-[10.5px]">{{ $st['status'] }}</td>
-                                            <td class="py-1 text-center text-blue-300">{{ $st['male'] }}</td>
-                                            <td class="py-1 text-center text-rose-300">{{ $st['female'] }}</td>
-                                            <td class="py-1 text-right font-bold text-white">{{ $st['total'] }}</td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                                <tfoot>
-                                    <tr class="border-t border-white/10 font-bold text-[10.5px]">
-                                        <td class="py-1 text-indigo-300 font-sans">Subtotal Guru</td>
-                                        <td class="py-1 text-center text-blue-300 font-mono">{{ $data['recap_gtk']['guru']['total_male'] ?? 14 }}</td>
-                                        <td class="py-1 text-center text-rose-300 font-mono">{{ $data['recap_gtk']['guru']['total_female'] ?? 14 }}</td>
-                                        <td class="py-1 text-right text-emerald-300 font-mono font-black">{{ $data['recap_gtk']['guru']['total'] ?? 28 }}</td>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                        </div>
+                    <!-- Auto-Scrolling Upward Ticker for GTK (Guru & TU) (Smooth Continuous Loop, No Scrollbar) -->
+                    <div class="flex-1 min-h-0 overflow-hidden relative">
+                        <div class="animate-vertical-ticker-slow w-full space-y-2.5">
+                            @for($copyGtk = 0; $copyGtk < 2; $copyGtk++)
+                                <div class="space-y-2.5 pb-2.5">
+                                    <!-- Sub-Section 1: Guru (Pendidik) -->
+                                    <div class="p-2.5 rounded-xl bg-slate-900/70 border border-white/5 space-y-1.5">
+                                        <div class="flex items-center justify-between pb-1 border-b border-white/5">
+                                            <span class="text-[11px] font-black text-indigo-300 uppercase tracking-wide flex items-center gap-1">
+                                                <span>📚</span> Dewan Guru (Pendidik)
+                                            </span>
+                                            <span class="text-[10px] font-mono font-bold text-white bg-indigo-500/20 px-2 py-0.2 rounded border border-indigo-500/30">
+                                                {{ $data['recap_gtk']['guru']['total'] ?? 28 }} Guru
+                                            </span>
+                                        </div>
+                                        <table class="w-full text-left text-[11px] border-collapse">
+                                            <thead>
+                                                <tr class="text-[9px] text-slate-400 font-bold uppercase">
+                                                    <th class="py-1">Status Kepegawaian</th>
+                                                    <th class="py-1 text-center text-blue-400">L</th>
+                                                    <th class="py-1 text-center text-rose-400">P</th>
+                                                    <th class="py-1 text-right text-emerald-400">Total</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="divide-y divide-white/5 font-mono">
+                                                @foreach($data['recap_gtk']['guru']['statuses'] ?? [] as $st)
+                                                    <tr>
+                                                        <td class="py-1 text-slate-200 font-sans font-medium text-[10.5px]">{{ $st['status'] }}</td>
+                                                        <td class="py-1 text-center text-blue-300">{{ $st['male'] }}</td>
+                                                        <td class="py-1 text-center text-rose-300">{{ $st['female'] }}</td>
+                                                        <td class="py-1 text-right font-bold text-white">{{ $st['total'] }}</td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                            <tfoot>
+                                                <tr class="border-t border-white/10 font-bold text-[10.5px]">
+                                                    <td class="py-1 text-indigo-300 font-sans">Subtotal Guru</td>
+                                                    <td class="py-1 text-center text-blue-300 font-mono">{{ $data['recap_gtk']['guru']['total_male'] ?? 14 }}</td>
+                                                    <td class="py-1 text-center text-rose-300 font-mono">{{ $data['recap_gtk']['guru']['total_female'] ?? 14 }}</td>
+                                                    <td class="py-1 text-right text-emerald-300 font-mono font-black">{{ $data['recap_gtk']['guru']['total'] ?? 28 }}</td>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
 
-                        <!-- Sub-Section 2: Tenaga Kependidikan (TU) -->
-                        <div class="p-2.5 rounded-xl bg-slate-900/70 border border-white/5 space-y-1.5">
-                            <div class="flex items-center justify-between pb-1 border-b border-white/5">
-                                <span class="text-[11px] font-black text-amber-300 uppercase tracking-wide flex items-center gap-1">
-                                    <span>🏢</span> Tenaga Kependidikan (TU)
-                                </span>
-                                <span class="text-[10px] font-mono font-bold text-white bg-amber-500/20 px-2 py-0.2 rounded border border-amber-500/30">
-                                    {{ $data['recap_gtk']['tu']['total'] ?? 7 }} Orang
-                                </span>
-                            </div>
-                            <table class="w-full text-left text-[11px] border-collapse">
-                                <thead>
-                                    <tr class="text-[9px] text-slate-400 font-bold uppercase">
-                                        <th class="py-1">Status Kepegawaian</th>
-                                        <th class="py-1 text-center text-blue-400">L</th>
-                                        <th class="py-1 text-center text-rose-400">P</th>
-                                        <th class="py-1 text-right text-emerald-400">Total</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-white/5 font-mono">
-                                    @foreach($data['recap_gtk']['tu']['statuses'] ?? [] as $st)
-                                        <tr>
-                                            <td class="py-1 text-slate-200 font-sans font-medium text-[10.5px]">{{ $st['status'] }}</td>
-                                            <td class="py-1 text-center text-blue-300">{{ $st['male'] }}</td>
-                                            <td class="py-1 text-center text-rose-300">{{ $st['female'] }}</td>
-                                            <td class="py-1 text-right font-bold text-white">{{ $st['total'] }}</td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                                <tfoot>
-                                    <tr class="border-t border-white/10 font-bold text-[10.5px]">
-                                        <td class="py-1 text-amber-300 font-sans">Subtotal TU</td>
-                                        <td class="py-1 text-center text-blue-300 font-mono">{{ $data['recap_gtk']['tu']['total_male'] ?? 5 }}</td>
-                                        <td class="py-1 text-center text-rose-300 font-mono">{{ $data['recap_gtk']['tu']['total_female'] ?? 2 }}</td>
-                                        <td class="py-1 text-right text-emerald-300 font-mono font-black">{{ $data['recap_gtk']['tu']['total'] ?? 7 }}</td>
-                                    </tr>
-                                </tfoot>
-                            </table>
+                                    <!-- Sub-Section 2: Tenaga Kependidikan (TU) -->
+                                    <div class="p-2.5 rounded-xl bg-slate-900/70 border border-white/5 space-y-1.5">
+                                        <div class="flex items-center justify-between pb-1 border-b border-white/5">
+                                            <span class="text-[11px] font-black text-amber-300 uppercase tracking-wide flex items-center gap-1">
+                                                <span>🏢</span> Tenaga Kependidikan (TU)
+                                            </span>
+                                            <span class="text-[10px] font-mono font-bold text-white bg-amber-500/20 px-2 py-0.2 rounded border border-amber-500/30">
+                                                {{ $data['recap_gtk']['tu']['total'] ?? 7 }} Orang
+                                            </span>
+                                        </div>
+                                        <table class="w-full text-left text-[11px] border-collapse">
+                                            <thead>
+                                                <tr class="text-[9px] text-slate-400 font-bold uppercase">
+                                                    <th class="py-1">Status Kepegawaian</th>
+                                                    <th class="py-1 text-center text-blue-400">L</th>
+                                                    <th class="py-1 text-center text-rose-400">P</th>
+                                                    <th class="py-1 text-right text-emerald-400">Total</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="divide-y divide-white/5 font-mono">
+                                                @foreach($data['recap_gtk']['tu']['statuses'] ?? [] as $st)
+                                                    <tr>
+                                                        <td class="py-1 text-slate-200 font-sans font-medium text-[10.5px]">{{ $st['status'] }}</td>
+                                                        <td class="py-1 text-center text-blue-300">{{ $st['male'] }}</td>
+                                                        <td class="py-1 text-center text-rose-300">{{ $st['female'] }}</td>
+                                                        <td class="py-1 text-right font-bold text-white">{{ $st['total'] }}</td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                            <tfoot>
+                                                <tr class="border-t border-white/10 font-bold text-[10.5px]">
+                                                    <td class="py-1 text-amber-300 font-sans">Subtotal TU</td>
+                                                    <td class="py-1 text-center text-blue-300 font-mono">{{ $data['recap_gtk']['tu']['total_male'] ?? 5 }}</td>
+                                                    <td class="py-1 text-center text-rose-300 font-mono">{{ $data['recap_gtk']['tu']['total_female'] ?? 2 }}</td>
+                                                    <td class="py-1 text-right text-emerald-300 font-mono font-black">{{ $data['recap_gtk']['tu']['total'] ?? 7 }}</td>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                </div>
+                            @endfor
                         </div>
                     </div>
 

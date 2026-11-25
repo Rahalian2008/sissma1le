@@ -540,19 +540,67 @@
                 </a>
                 @endif
 
-                @if($canNav('tu') && $navUser?->role !== 'guru')
-                {{-- 7. Adm. Ketatausahaan --}}
-                <a href="{{ route('tu.dashboard') }}" data-tooltip="Adm. Ketatausahaan" class="flex items-center justify-between px-3 py-2.5 rounded-xl text-[13.5px] font-semibold leading-snug transition {{ $isTuActive ? 'bg-emerald-600 text-white shadow-xs shadow-emerald-600/30' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
-                    <div class="flex items-center gap-2.5 min-w-0">
-                        <svg class="w-4.5 h-4.5 shrink-0 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                @if($canNav('tu') && ($navUser?->role !== 'guru' || $navUser?->hasAnyRole(['kepala_sekolah', 'admin', 'super_admin', 'kepala_administrasi'])))
+                {{-- 7. Adm. Ketatausahaan (Menu Kontrol Terpadu TU & Eksekutif) --}}
+                <div>
+                    <button type="button" onclick="toggleSidebarMenu('tu-menu-desktop', 'tu-chevron-desktop')" data-tooltip="Adm. Ketatausahaan" class="sidebar-accordion-btn w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-[13.5px] font-semibold leading-snug transition {{ $isTuActive ? 'text-emerald-400 bg-emerald-500/10' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }} cursor-pointer">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <svg class="w-4.5 h-4.5 shrink-0 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                            </svg>
+                            <span class="sidebar-label font-bold">Adm. Ketatausahaan</span>
+                            @if(in_array($currentActiveSlug, ['kepala_administrasi', 'ta_kesiswaan', 'ta_kepegawaian', 'ta_persuratan', 'ta_sarpras', 'bendahara_bosp', 'bendahara_bopd', 'bendahara_gaji', 'tu_piket', 'operator_dapodik']))
+                                <span class="sidebar-label px-1.5 py-0.5 text-[9px] font-extrabold rounded-md bg-emerald-500/25 text-emerald-300 border border-emerald-500/30">Aktif</span>
+                            @endif
+                        </div>
+                        <svg id="tu-chevron-desktop" class="sidebar-chevron w-4 h-4 text-slate-400 transition-transform duration-200 {{ $isTuActive ? 'rotate-180' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                         </svg>
-                        <span class="sidebar-label font-bold">Adm. Ketatausahaan</span>
+                    </button>
+                    <div id="tu-menu-desktop" class="sidebar-accordion-menu {{ $isTuActive ? '' : 'hidden' }} pl-3 pr-1 py-1 space-y-1 border-l-2 border-emerald-500/30 ml-4 mt-0.5">
+                        <!-- Pusat Kendali TU -->
+                        <a href="{{ route('tu.dashboard') }}" data-tooltip="Pusat Kendali TU" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium leading-snug transition {{ (request()->routeIs('tu.dashboard') || request()->routeIs('adm_tu.*')) ? 'bg-emerald-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                            <span class="sidebar-label font-semibold">Pusat Kendali TU</span>
+                        </a>
+
+                        <!-- Adm. Kesiswaan -->
+                        <a href="{{ route('tu.kesiswaan.index') }}" data-tooltip="Adm. Kesiswaan" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium leading-snug transition {{ request()->routeIs('tu.kesiswaan.*') ? 'bg-emerald-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                            <span class="w-2 h-2 rounded-full bg-blue-400"></span>
+                            <span class="sidebar-label font-semibold">Adm. Kesiswaan</span>
+                        </a>
+
+                        <!-- Adm. Kepegawaian -->
+                        <a href="{{ route('tu.kepegawaian.index') }}" data-tooltip="Adm. Kepegawaian" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium leading-snug transition {{ request()->routeIs('tu.kepegawaian.*') ? 'bg-emerald-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                            <span class="w-2 h-2 rounded-full bg-teal-400"></span>
+                            <span class="sidebar-label font-semibold">Adm. Kepegawaian</span>
+                        </a>
+
+                        <!-- Persuratan & Disposisi -->
+                        <a href="{{ route('tu.persuratan.index') }}" data-tooltip="Persuratan & Disposisi" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium leading-snug transition {{ (request()->routeIs('tu.persuratan.*') || request()->routeIs('letters.*') || request()->routeIs('dispositions.*')) ? 'bg-emerald-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                            <span class="w-2 h-2 rounded-full bg-sky-400"></span>
+                            <span class="sidebar-label font-semibold">Persuratan & Arsip</span>
+                        </a>
+
+                        <!-- Sarpras & SIPD e-BMD -->
+                        <a href="{{ route('tu.sarpras.index') }}" data-tooltip="Sarpras & BMD" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium leading-snug transition {{ (request()->routeIs('tu.sarpras.*') || request()->routeIs('sarpras.*') || request()->routeIs('warehouse.*')) ? 'bg-emerald-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                            <span class="w-2 h-2 rounded-full bg-purple-400"></span>
+                            <span class="sidebar-label font-semibold">Sarpras & SIPD e-BMD</span>
+                        </a>
+
+                        <!-- Keuangan (BKU) -->
+                        <a href="{{ route('tu.keuangan.index') }}" data-tooltip="Keuangan BKU" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium leading-snug transition {{ (request()->routeIs('tu.keuangan.*') || request()->routeIs('finance.*')) ? 'bg-emerald-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                            <span class="w-2 h-2 rounded-full bg-rose-400"></span>
+                            <span class="sidebar-label font-semibold">Keuangan BKU</span>
+                        </a>
+
+                        <!-- Buku Tamu -->
+                        <a href="{{ route('guests.index') }}" data-tooltip="Buku Tamu" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium leading-snug transition {{ request()->routeIs('guests.*') ? 'bg-emerald-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                            <span class="sidebar-label font-semibold">Buku Tamu Digital</span>
+                        </a>
                     </div>
-                    @if(in_array($currentActiveSlug, ['kepala_administrasi', 'ta_kesiswaan', 'ta_kepegawaian', 'ta_persuratan', 'ta_sarpras', 'bendahara_bosp', 'bendahara_bopd', 'bendahara_gaji', 'tu_piket', 'operator_dapodik']))
-                        <span class="sidebar-label px-1.5 py-0.5 text-[9px] font-extrabold rounded-md bg-emerald-500/25 text-emerald-300 border border-emerald-500/30">Aktif</span>
-                    @endif
-                </a>
+                </div>
                 @endif
 
                 @if($canNav('website_content'))
@@ -1372,19 +1420,67 @@
                 </a>
                 @endif
 
-                @if($canNav('tu') && $navUser?->role !== 'guru')
-                {{-- 7. Adm. Ketatausahaan Mobile --}}
-                <a href="{{ route('tu.dashboard') }}" class="flex items-center justify-between px-3 py-2.5 rounded-xl text-[13.5px] font-semibold leading-snug transition {{ $isTuActive ? 'bg-emerald-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
-                    <div class="flex items-center gap-2.5 min-w-0">
-                        <svg class="w-4.5 h-4.5 shrink-0 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                @if($canNav('tu') && ($navUser?->role !== 'guru' || $navUser?->hasAnyRole(['kepala_sekolah', 'admin', 'super_admin', 'kepala_administrasi'])))
+                {{-- 7. Adm. Ketatausahaan Mobile (Menu Kontrol Terpadu TU & Eksekutif) --}}
+                <div>
+                    <button type="button" onclick="toggleSidebarMenu('tu-menu-mobile', 'tu-chevron-mobile')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-[13.5px] font-semibold leading-snug transition {{ $isTuActive ? 'text-emerald-400 bg-emerald-500/10' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }} cursor-pointer">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <svg class="w-4.5 h-4.5 shrink-0 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                            </svg>
+                            <span class="font-bold">Adm. Ketatausahaan</span>
+                            @if(in_array($currentActiveSlug, ['kepala_administrasi', 'ta_kesiswaan', 'ta_kepegawaian', 'ta_persuratan', 'ta_sarpras', 'bendahara_bosp', 'bendahara_bopd', 'bendahara_gaji', 'tu_piket', 'operator_dapodik']))
+                                <span class="px-1.5 py-0.5 text-[9px] font-extrabold rounded-md bg-emerald-500/25 text-emerald-300 border border-emerald-500/30">Aktif</span>
+                            @endif
+                        </div>
+                        <svg id="tu-chevron-mobile" class="w-4 h-4 text-slate-400 transition-transform duration-200 {{ $isTuActive ? 'rotate-180' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                         </svg>
-                        <span class="font-bold">Adm. Ketatausahaan</span>
+                    </button>
+                    <div id="tu-menu-mobile" class="{{ $isTuActive ? '' : 'hidden' }} pl-3 pr-1 py-1 space-y-1 border-l-2 border-emerald-500/30 ml-4 mt-0.5">
+                        <!-- Pusat Kendali TU -->
+                        <a href="{{ route('tu.dashboard') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium leading-snug transition {{ (request()->routeIs('tu.dashboard') || request()->routeIs('adm_tu.*')) ? 'bg-emerald-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                            <span class="font-semibold">Pusat Kendali TU</span>
+                        </a>
+
+                        <!-- Adm. Kesiswaan -->
+                        <a href="{{ route('tu.kesiswaan.index') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium leading-snug transition {{ request()->routeIs('tu.kesiswaan.*') ? 'bg-emerald-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                            <span class="w-2 h-2 rounded-full bg-blue-400"></span>
+                            <span class="font-semibold">Adm. Kesiswaan</span>
+                        </a>
+
+                        <!-- Adm. Kepegawaian -->
+                        <a href="{{ route('tu.kepegawaian.index') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium leading-snug transition {{ request()->routeIs('tu.kepegawaian.*') ? 'bg-emerald-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                            <span class="w-2 h-2 rounded-full bg-teal-400"></span>
+                            <span class="font-semibold">Adm. Kepegawaian</span>
+                        </a>
+
+                        <!-- Persuratan & Disposisi -->
+                        <a href="{{ route('tu.persuratan.index') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium leading-snug transition {{ (request()->routeIs('tu.persuratan.*') || request()->routeIs('letters.*') || request()->routeIs('dispositions.*')) ? 'bg-emerald-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                            <span class="w-2 h-2 rounded-full bg-sky-400"></span>
+                            <span class="font-semibold">Persuratan & Arsip</span>
+                        </a>
+
+                        <!-- Sarpras & SIPD e-BMD -->
+                        <a href="{{ route('tu.sarpras.index') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium leading-snug transition {{ (request()->routeIs('tu.sarpras.*') || request()->routeIs('sarpras.*') || request()->routeIs('warehouse.*')) ? 'bg-emerald-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                            <span class="w-2 h-2 rounded-full bg-purple-400"></span>
+                            <span class="font-semibold">Sarpras & SIPD e-BMD</span>
+                        </a>
+
+                        <!-- Keuangan (BKU) -->
+                        <a href="{{ route('tu.keuangan.index') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium leading-snug transition {{ (request()->routeIs('tu.keuangan.*') || request()->routeIs('finance.*')) ? 'bg-emerald-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                            <span class="w-2 h-2 rounded-full bg-rose-400"></span>
+                            <span class="font-semibold">Keuangan BKU</span>
+                        </a>
+
+                        <!-- Buku Tamu -->
+                        <a href="{{ route('guests.index') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium leading-snug transition {{ request()->routeIs('guests.*') ? 'bg-emerald-600 text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                            <span class="font-semibold">Buku Tamu Digital</span>
+                        </a>
                     </div>
-                    @if(in_array($currentActiveSlug, ['kepala_administrasi', 'ta_kesiswaan', 'ta_kepegawaian', 'ta_persuratan', 'ta_sarpras', 'bendahara_bosp', 'bendahara_bopd', 'bendahara_gaji', 'tu_piket', 'operator_dapodik']))
-                        <span class="px-1.5 py-0.5 text-[9px] font-extrabold rounded-md bg-emerald-500/25 text-emerald-300 border border-emerald-500/30">Aktif</span>
-                    @endif
-                </a>
+                </div>
                 @endif
 
                 @if($canNav('website_content'))

@@ -604,7 +604,7 @@
             </a>
 
             <!-- 14. Adm. Ketatausahaan -->
-            <a href="{{ route('reports.index') }}" class="p-3 bg-slate-900/90 hover:bg-slate-800 border border-slate-700/80 rounded-2xl text-slate-200 font-black transition flex flex-col items-center justify-center gap-1.5 hover:scale-[1.02] shadow-xs">
+            <a href="{{ route('tu.dashboard') }}" class="p-3 bg-slate-900/90 hover:bg-slate-800 border border-slate-700/80 rounded-2xl text-slate-200 font-black transition flex flex-col items-center justify-center gap-1.5 hover:scale-[1.02] shadow-xs">
                 <span class="text-lg">🗂️</span>
                 <span class="truncate w-full">Adm. Ketatausahaan</span>
             </a>

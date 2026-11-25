@@ -3104,7 +3104,11 @@ class LmsController extends Controller
         $stimulus = $request->input('stimulus') ? trim((string) $request->input('stimulus')) : null;
         $scoreWeight = (int) $request->input('score_weight', 10);
         $explanation = $request->input('explanation') ? trim((string) $request->input('explanation')) : null;
-        $levelKognitif = $request->input('level_kognitif', 'L2 / C3 (Aplikasi)');
+        $defaultLevel = ($qType === 'essay') ? 'L3 / C5 (Penalaran & Sintesis)' : 'L2 / C3 (Aplikasi)';
+        $levelKognitif = mb_substr(trim((string) $request->input('level_kognitif', $defaultLevel)), 0, 150);
+        if ($levelKognitif === '') {
+            $levelKognitif = $defaultLevel;
+        }
 
         $options = null;
         $correctAnswer = null;
@@ -3161,7 +3165,7 @@ class LmsController extends Controller
                 'petunjuk' => 'Jawablah butir soal uraian ini dengan analitis, komprehensif, dan jelas.',
             ];
             $correctAnswer = $request->input('correct_answer_essay', $request->input('correct_answer', 'Pedoman Penskoran: Kesesuaian konsep materi, kerunutan logika penalaran, dan kelengkapan argumen ilmiah.'));
-            $levelKognitif = $request->input('level_kognitif', 'L3 / C5 (Penalaran & Sintesis)');
+            $levelKognitif = mb_substr(trim((string) $request->input('level_kognitif', 'L3 / C5 (Penalaran & Sintesis)')), 0, 150);
         }
 
         return [
