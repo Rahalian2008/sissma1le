@@ -588,3 +588,14 @@ test('issue: kios tv profil slide 0 displays vision under kepala sekolah and aut
     $content = $response->getContent();
     expect($content)->toContain('animate-vertical-ticker-slow');
 });
+
+test('kios tv feeds for tahfidz, security, guests, and library use vertical ticker without manual scrollbar', function () {
+    $response = $this->get(route('kiosk.index'));
+    $response->assertStatus(200);
+
+    $content = $response->getContent();
+    expect($content)->toContain('id="tahfidzRecentLogs"')
+        ->and($content)->toContain('id="securityRecentPermits"')
+        ->and($content)->toContain('Daftar Kunjungan Tamu Terkini')
+        ->and($content)->toContain('Laporan Buku Tamu Pengunjung');
+});

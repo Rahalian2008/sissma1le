@@ -3181,11 +3181,32 @@ class LmsController extends Controller
     }
 
     /**
+     * Pastikan schema kolom level_kognitif sudah mendukung teks panjang (hingga 150 karakter).
+     */
+    private function ensureQuizQuestionsSchema(): void
+    {
+        static $checked = false;
+        if ($checked) {
+            return;
+        }
+        $checked = true;
+
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('lms_quiz_questions')) {
+                \Illuminate\Support\Facades\DB::statement('ALTER TABLE `lms_quiz_questions` MODIFY `level_kognitif` VARCHAR(150) NULL');
+            }
+        } catch (\Throwable $e) {
+            // Abaikan jika database SQLite (test environment) atau sudah diubah sebelumnya
+        }
+    }
+
+    /**
      * 4a. Tambah Butir Soal CBT secara Manual (Multi-Tipe: PG, PGK, B-S, Menjodohkan, Isian, Uraian)
      */
     public function storeQuizQuestion(Request $request, CourseClass $courseClass, LmsQuiz $quiz): RedirectResponse
     {
         $this->authorizeCourseManagement($courseClass);
+        $this->ensureQuizQuestionsSchema();
 
         if (! $request->has('score_weight') && $request->has('weight')) {
             $request->merge(['score_weight' => $request->input('weight')]);
@@ -3199,12 +3220,28 @@ class LmsController extends Controller
         $payload = $this->parseQuestionPayload($request);
         $nextOrder = (LmsQuizQuestion::where('quiz_id', $quiz->id)->max('order_number') ?? 0) + 1;
 
-        $created = LmsQuizQuestion::create(array_merge($payload, [
+        $createData = array_merge($payload, [
             'quiz_id' => $quiz->id,
             'indikator_soal' => 'Peserta didik mampu menganalisis konsep materi '.$quiz->title,
             'materi_pokok' => $quiz->topic ?: $quiz->title,
             'order_number' => $nextOrder,
-        ]));
+        ]);
+
+        try {
+            $created = LmsQuizQuestion::create($createData);
+        } catch (\Illuminate\Database\QueryException $e) {
+            if (isset($createData['level_kognitif'])) {
+                try {
+                    \Illuminate\Support\Facades\DB::statement('ALTER TABLE `lms_quiz_questions` MODIFY `level_kognitif` VARCHAR(150) NULL');
+                    $created = LmsQuizQuestion::create($createData);
+                } catch (\Throwable $ex) {
+                    $createData['level_kognitif'] = mb_substr((string) $createData['level_kognitif'], 0, 30);
+                    $created = LmsQuizQuestion::create($createData);
+                }
+            } else {
+                throw $e;
+            }
+        }
 
         return back()->with('success', "Butir soal nomor {$nextOrder} ({$created->type_label}) berhasil ditambahkan!");
     }
@@ -3215,6 +3252,7 @@ class LmsController extends Controller
     public function updateQuizQuestion(Request $request, CourseClass $courseClass, LmsQuiz $quiz, LmsQuizQuestion $question): RedirectResponse
     {
         $this->authorizeCourseManagement($courseClass);
+        $this->ensureQuizQuestionsSchema();
 
         if ($question->quiz_id !== $quiz->id) {
             abort(404, 'Butir soal tidak ditemukan pada paket asesmen ini.');
@@ -3231,7 +3269,21 @@ class LmsController extends Controller
 
         $payload = $this->parseQuestionPayload($request);
 
-        $question->update($payload);
+        try {
+            $question->update($payload);
+        } catch (\Illuminate\Database\QueryException $e) {
+            if (isset($payload['level_kognitif'])) {
+                try {
+                    \Illuminate\Support\Facades\DB::statement('ALTER TABLE `lms_quiz_questions` MODIFY `level_kognitif` VARCHAR(150) NULL');
+                    $question->update($payload);
+                } catch (\Throwable $ex) {
+                    $payload['level_kognitif'] = mb_substr((string) $payload['level_kognitif'], 0, 30);
+                    $question->update($payload);
+                }
+            } else {
+                throw $e;
+            }
+        }
 
         return back()->with('success', "Butir soal nomor {$question->order_number} ({$question->type_label}) dan kunci jawaban berhasil diperbarui!");
     }

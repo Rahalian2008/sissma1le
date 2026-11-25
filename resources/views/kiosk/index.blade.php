@@ -1260,28 +1260,36 @@
                             </div>
                         </div>
 
-                        <div class="flex-1 min-h-0 overflow-y-auto kiosk-scroll space-y-1.5 pt-2 pr-1">
-                            @forelse($data['library']['recent_visitors'] ?? [] as $lv)
-                                <div class="p-2 rounded-xl bg-slate-900/80 border border-white/5 flex items-center justify-between gap-2 hover:border-indigo-500/30 transition">
-                                    <div class="flex items-center gap-2 min-w-0 flex-1">
-                                        <div class="w-7 h-7 rounded-lg bg-indigo-500/20 text-indigo-300 flex items-center justify-center font-bold text-xs shrink-0">
-                                            {{ $lv['type'] === 'Siswa' ? '🎓' : ($lv['type'] === 'Guru/Tendik' ? '👨‍🏫' : '🏛️') }}
+                        <div class="flex-1 min-h-0 overflow-hidden relative">
+                            @if(!empty($data['library']['recent_visitors']) && count($data['library']['recent_visitors']) > 0)
+                                <div class="animate-vertical-ticker-slow w-full space-y-1.5 pt-2">
+                                    @for($copyLib = 0; $copyLib < 2; $copyLib++)
+                                        <div class="space-y-1.5 pb-1.5">
+                                            @foreach($data['library']['recent_visitors'] as $lv)
+                                                <div class="p-2 rounded-xl bg-slate-900/80 border border-white/5 flex items-center justify-between gap-2 hover:border-indigo-500/30 transition">
+                                                    <div class="flex items-center gap-2 min-w-0 flex-1">
+                                                        <div class="w-7 h-7 rounded-lg bg-indigo-500/20 text-indigo-300 flex items-center justify-center font-bold text-xs shrink-0">
+                                                            {{ $lv['type'] === 'Siswa' ? '🎓' : ($lv['type'] === 'Guru/Tendik' ? '👨‍🏫' : '🏛️') }}
+                                                        </div>
+                                                        <div class="min-w-0 flex-1">
+                                                            <div class="font-extrabold text-[11px] text-white truncate">{{ $lv['name'] }}</div>
+                                                            <div class="text-[9.5px] text-slate-400 truncate">{{ $lv['class'] }} &bull; <span class="text-indigo-300">{{ $lv['purpose'] }}</span></div>
+                                                        </div>
+                                                    </div>
+                                                    <span class="font-mono text-[9px] font-bold text-slate-300 bg-slate-950 px-1.5 py-0.5 rounded border border-white/5 shrink-0">
+                                                        {{ $lv['time'] }} WIB
+                                                    </span>
+                                                </div>
+                                            @endforeach
                                         </div>
-                                        <div class="min-w-0 flex-1">
-                                            <div class="font-extrabold text-[11px] text-white truncate">{{ $lv['name'] }}</div>
-                                            <div class="text-[9.5px] text-slate-400 truncate">{{ $lv['class'] }} &bull; <span class="text-indigo-300">{{ $lv['purpose'] }}</span></div>
-                                        </div>
-                                    </div>
-                                    <span class="font-mono text-[9px] font-bold text-slate-300 bg-slate-950 px-1.5 py-0.5 rounded border border-white/5 shrink-0">
-                                        {{ $lv['time'] }} WIB
-                                    </span>
+                                    @endfor
                                 </div>
-                            @empty
+                            @else
                                 <div class="h-full flex flex-col items-center justify-center text-center py-4 text-slate-500 text-xs space-y-1">
                                     <span class="text-xl">📖</span>
                                     <span class="font-semibold text-slate-400 text-[11px]">Belum ada pengunjung tercatat hari ini.</span>
                                 </div>
-                            @endforelse
+                            @endif
                         </div>
 
                         <!-- Mini Footer: Info Pojok Baca Digital -->
@@ -2115,26 +2123,34 @@
                         <span class="text-[10px] text-slate-400 font-mono">Buku Kontrol</span>
                     </div>
 
-                    <div id="tahfidzRecentLogs" class="flex-1 min-h-0 overflow-y-auto kiosk-scroll space-y-2 pr-1">
-                        @forelse($data['tahfidz']['recent'] as $rec)
-                            <div class="bg-slate-900/70 border border-white/5 rounded-xl px-3 py-2 flex items-center justify-between hover:border-emerald-500/30 transition">
-                                <div class="truncate mr-2">
-                                    <div class="font-bold text-xs text-white truncate">{{ $rec['name'] }} <span class="text-slate-400 font-normal">({{ $rec['class'] }})</span></div>
-                                    <div class="text-[10px] text-emerald-300 font-semibold">{{ $rec['surah'] }}</div>
-                                    <div class="text-[9px] text-slate-400">Tajwid: {{ $rec['tajwid'] }} &bull; Kelancaran: {{ $rec['kelancaran'] }}</div>
-                                </div>
-                                <div class="text-right shrink-0">
-                                    <span class="px-2 py-0.5 rounded text-[10px] font-black {{ $rec['grade'] === 'Lulus' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-amber-500/20 text-amber-300 border border-amber-500/30' }}">
-                                        {{ $rec['grade'] }}
-                                    </span>
-                                    <div class="text-[10px] text-slate-400 mt-1 font-mono">{{ $rec['time'] }}</div>
-                                </div>
+                    <div id="tahfidzRecentLogs" class="flex-1 min-h-0 overflow-hidden relative">
+                        @if(!empty($data['tahfidz']['recent']) && count($data['tahfidz']['recent']) > 0)
+                            <div class="animate-vertical-ticker-slow w-full space-y-2">
+                                @for($copyTahfidz = 0; $copyTahfidz < 2; $copyTahfidz++)
+                                    <div class="space-y-2 pb-2">
+                                        @foreach($data['tahfidz']['recent'] as $rec)
+                                            <div class="bg-slate-900/70 border border-white/5 rounded-xl px-3 py-2 flex items-center justify-between hover:border-emerald-500/30 transition">
+                                                <div class="truncate mr-2">
+                                                    <div class="font-bold text-xs text-white truncate">{{ $rec['name'] }} <span class="text-slate-400 font-normal">({{ $rec['class'] }})</span></div>
+                                                    <div class="text-[10px] text-emerald-300 font-semibold">{{ $rec['surah'] }}</div>
+                                                    <div class="text-[9px] text-slate-400">Tajwid: {{ $rec['tajwid'] }} &bull; Kelancaran: {{ $rec['kelancaran'] }}</div>
+                                                </div>
+                                                <div class="text-right shrink-0">
+                                                    <span class="px-2 py-0.5 rounded text-[10px] font-black {{ $rec['grade'] === 'Lulus' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-amber-500/20 text-amber-300 border border-amber-500/30' }}">
+                                                        {{ $rec['grade'] }}
+                                                    </span>
+                                                    <div class="text-[10px] text-slate-400 mt-1 font-mono">{{ $rec['time'] }}</div>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                @endfor
                             </div>
-                        @empty
+                        @else
                             <div class="h-full flex items-center justify-center text-slate-500 text-xs italic">
                                 Belum ada riwayat setoran hafalan hari ini.
                             </div>
-                        @endforelse
+                        @endif
                     </div>
                 </div>
             </div>
@@ -2343,25 +2359,33 @@
                     </div>
 
                     <!-- Recent Permits Feed -->
-                    <div id="securityRecentPermits" class="flex-1 min-h-0 overflow-y-auto kiosk-scroll space-y-2 pr-1">
-                        @forelse($data['security']['recent'] as $pm)
-                            <div class="p-2 rounded-xl bg-slate-900/70 border border-white/5 flex items-center justify-between text-xs">
-                                <div class="truncate mr-2">
-                                    <div class="font-bold text-white truncate">{{ $pm['students'] }}</div>
-                                    <div class="text-[10px] text-slate-400 truncate">{{ $pm['purpose'] }}</div>
-                                </div>
-                                <div class="text-right shrink-0">
-                                    <span class="px-2 py-0.5 rounded text-[9px] font-black {{ $pm['status'] === 'SUDAH KEMBALI' ? 'bg-emerald-500/20 text-emerald-300' : ($pm['status'] === 'DI LUAR SEKOLAH' ? 'bg-amber-500/20 text-amber-300' : 'bg-sky-500/20 text-sky-300') }}">
-                                        {{ $pm['status'] }}
-                                    </span>
-                                    <div class="text-[9px] text-slate-400 mt-0.5 font-mono">{{ $pm['time'] }}</div>
-                                </div>
+                    <div id="securityRecentPermits" class="flex-1 min-h-0 overflow-hidden relative">
+                        @if(!empty($data['security']['recent']) && count($data['security']['recent']) > 0)
+                            <div class="animate-vertical-ticker-slow w-full space-y-2">
+                                @for($copySec = 0; $copySec < 2; $copySec++)
+                                    <div class="space-y-2 pb-2">
+                                        @foreach($data['security']['recent'] as $pm)
+                                            <div class="p-2 rounded-xl bg-slate-900/70 border border-white/5 flex items-center justify-between text-xs hover:border-sky-500/30 transition">
+                                                <div class="truncate mr-2">
+                                                    <div class="font-bold text-white truncate">{{ $pm['students'] }}</div>
+                                                    <div class="text-[10px] text-slate-400 truncate">{{ $pm['purpose'] }}</div>
+                                                </div>
+                                                <div class="text-right shrink-0">
+                                                    <span class="px-2 py-0.5 rounded text-[9px] font-black {{ $pm['status'] === 'SUDAH KEMBALI' ? 'bg-emerald-500/20 text-emerald-300' : ($pm['status'] === 'DI LUAR SEKOLAH' ? 'bg-amber-500/20 text-amber-300' : 'bg-sky-500/20 text-sky-300') }}">
+                                                        {{ $pm['status'] }}
+                                                    </span>
+                                                    <div class="text-[9px] text-slate-400 mt-0.5 font-mono">{{ $pm['time'] }}</div>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                @endfor
                             </div>
-                        @empty
+                        @else
                             <div class="h-full flex items-center justify-center text-slate-500 text-xs italic py-4">
                                 Tidak ada siswa berizin keluar atau pulang cepat hari ini.
                             </div>
-                        @endforelse
+                        @endif
                     </div>
 
                     <div class="mt-2 pt-2 border-t border-white/5 text-[10px] text-slate-400 flex items-center justify-between shrink-0">
@@ -2764,30 +2788,38 @@
                         </span>
                     </div>
 
-                    <div class="flex-1 min-h-0 overflow-y-auto kiosk-scroll space-y-2 pt-2.5 pr-1">
-                        @forelse($data['guests']['recent'] ?? [] as $gst)
-                            <div class="p-2.5 rounded-xl bg-slate-900/80 border border-white/5 space-y-1.5 hover:border-amber-500/30 transition">
-                                <div class="flex items-start justify-between gap-2">
-                                    <div class="min-w-0 flex-1">
-                                        <div class="font-extrabold text-xs text-white truncate">{{ $gst['name'] }}</div>
-                                        <div class="text-[10px] text-amber-300 truncate font-semibold">{{ $gst['institution'] }}</div>
+                    <div class="flex-1 min-h-0 overflow-hidden relative">
+                        @if(!empty($data['guests']['recent']) && count($data['guests']['recent']) > 0)
+                            <div class="animate-vertical-ticker-slow w-full space-y-2 pt-2.5">
+                                @for($copyGuest = 0; $copyGuest < 2; $copyGuest++)
+                                    <div class="space-y-2 pb-2">
+                                        @foreach($data['guests']['recent'] as $gst)
+                                            <div class="p-2.5 rounded-xl bg-slate-900/80 border border-white/5 space-y-1.5 hover:border-amber-500/30 transition">
+                                                <div class="flex items-start justify-between gap-2">
+                                                    <div class="min-w-0 flex-1">
+                                                        <div class="font-extrabold text-xs text-white truncate">{{ $gst['name'] }}</div>
+                                                        <div class="text-[10px] text-amber-300 truncate font-semibold">{{ $gst['institution'] }}</div>
+                                                    </div>
+                                                    <span class="font-mono text-[10px] font-bold text-slate-300 bg-slate-950 px-2 py-0.5 rounded border border-white/5 shrink-0">
+                                                        {{ $gst['time'] }} WIB
+                                                    </span>
+                                                </div>
+                                                <div class="pt-1.5 border-t border-white/5 flex items-center justify-between text-[10px] text-slate-400">
+                                                    <span class="truncate">Bertemu: <strong class="text-slate-200">{{ $gst['destination'] }}</strong></span>
+                                                    <span class="px-1.5 py-0.2 rounded text-[9px] font-bold bg-slate-800 text-slate-300 shrink-0">{{ $gst['status'] }}</span>
+                                                </div>
+                                            </div>
+                                        @endforeach
                                     </div>
-                                    <span class="font-mono text-[10px] font-bold text-slate-300 bg-slate-950 px-2 py-0.5 rounded border border-white/5 shrink-0">
-                                        {{ $gst['time'] }} WIB
-                                    </span>
-                                </div>
-                                <div class="pt-1.5 border-t border-white/5 flex items-center justify-between text-[10px] text-slate-400">
-                                    <span class="truncate">Bertemu: <strong class="text-slate-200">{{ $gst['destination'] }}</strong></span>
-                                    <span class="px-1.5 py-0.2 rounded text-[9px] font-bold bg-slate-800 text-slate-300 shrink-0">{{ $gst['status'] }}</span>
-                                </div>
+                                @endfor
                             </div>
-                        @empty
+                        @else
                             <div class="h-full flex flex-col items-center justify-center text-center py-8 text-slate-500 text-xs space-y-1">
                                 <span class="text-2xl">👥</span>
                                 <span class="font-semibold text-slate-400">Belum ada catatan tamu kedinasan baru.</span>
                                 <span class="text-[10px] text-slate-500">Tamu yang mengisi formulir resepsionis akan langsung tercatat di sini.</span>
                             </div>
-                        @endforelse
+                        @endif
                     </div>
 
                     <div class="pt-2 mt-2 border-t border-white/5 text-[10px] text-slate-500 text-center shrink-0">
