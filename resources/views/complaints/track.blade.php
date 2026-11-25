@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pantau Status Tiket Pengaduan - {{ $school->name ?? 'SMAN 1 Lengkong' }}</title>
+    @php
+        $compFavicon = $schoolFaviconUrl ?? ($school?->logo_url ?? asset('images/logo.png'));
+        $compLogo = $schoolLogoUrl ?? ($school?->logo_url ?? asset('images/logo.png'));
+    @endphp
+    <link rel="icon" type="image/png" href="{{ $compFavicon }}">
+    <link rel="shortcut icon" href="{{ $compFavicon }}">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,8 +28,14 @@
     <header class="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800 sticky top-0 z-40">
         <div class="max-w-5xl mx-auto px-4 sm:px-6 h-18 sm:h-20 flex items-center justify-between gap-4">
             <a href="{{ url('/pengaduan') }}" class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-rose-600 to-indigo-600 flex items-center justify-center font-heading font-black text-white text-base shadow-md">
-                    SIS
+                <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-rose-600 to-indigo-600 p-0.5 shadow-md shrink-0 flex items-center justify-center">
+                    <div class="w-full h-full bg-white dark:bg-slate-900 rounded-[14px] flex items-center justify-center overflow-hidden p-1">
+                        @if($compLogo)
+                            <img src="{{ $compLogo }}" alt="Logo {{ $school->name ?? 'Sekolah' }}" class="w-full h-full object-contain">
+                        @else
+                            <span class="font-heading font-black text-white text-base">S1L</span>
+                        @endif
+                    </div>
                 </div>
                 <div>
                     <h1 class="font-heading font-black text-slate-900 dark:text-white text-base tracking-tight leading-none">

@@ -7,6 +7,9 @@
     <title>Pendaftaran SPMB Online - {{ $school->name ?? 'SMAN 1 Lengkong' }}</title>
     <meta name="description" content="Formulir resmi Pendaftaran Peserta Didik Baru (SPMB) Online SMA Negeri 1 Lengkong: Upload Berkas KTP, KK, Akta, Rapor SMP Semester 1-5, dan Sertifikat TKA.">
 
+    <link rel="icon" type="image/png" href="{{ $schoolFaviconUrl ?? ($school?->logo_url ?? asset('images/logo.png')) }}">
+    <link rel="shortcut icon" href="{{ $schoolFaviconUrl ?? ($school?->logo_url ?? asset('images/logo.png')) }}">
+
     <!-- Google Fonts & Tailwind -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -26,8 +29,8 @@
         <div class="max-w-6xl mx-auto px-4 sm:px-6 h-18 sm:h-20 flex items-center justify-between gap-4">
             <a href="{{ route('website.home') }}" class="flex items-center gap-3 group">
                 <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-emerald-400 p-0.5 shadow-md">
-                    <div class="w-full h-full bg-white dark:bg-slate-900 rounded-[14px] flex items-center justify-center overflow-hidden font-heading font-black text-indigo-600 text-base">
-                        1LE
+                    <div class="w-full h-full bg-white dark:bg-slate-900 rounded-[14px] flex items-center justify-center overflow-hidden font-heading font-black text-indigo-600 text-base p-1">
+                        <img src="{{ $schoolLogoUrl ?? ($schoolFaviconUrl ?? ($school?->logo_url ?? asset('images/logo.png'))) }}" alt="Logo" class="w-full h-full object-contain">
                     </div>
                 </div>
                 <div>

@@ -3,12 +3,21 @@
 use App\Models\Achievement;
 use App\Models\AchievementCategory;
 use App\Models\Attendance;
+use App\Models\ClassLearningAgenda;
+use App\Models\CourseClass;
 use App\Models\EarlyLeaveRequest;
+use App\Models\Guest;
 use App\Models\LibraryBook;
+use App\Models\LmsQuiz;
+use App\Models\LmsQuizQuestion;
 use App\Models\Role;
 use App\Models\SchoolClass;
 use App\Models\SchoolExitPermit;
+use App\Models\SchoolIdentity;
 use App\Models\Student;
+use App\Models\Subject;
+use App\Models\Teacher;
+use App\Models\TeachingJournal;
 use App\Models\User;
 use App\Models\Violation;
 use App\Models\ViolationCategory;
@@ -276,7 +285,7 @@ test('warehouse and sarpras modals are rendered without clipping and absen manua
 
 test('issue 6-item batch: guest report print displays Kepala Administrasi Sekolah and date range', function () {
     $admin = User::factory()->create(['role' => 'admin', 'roles' => ['admin']]);
-    \App\Models\SchoolIdentity::create([
+    SchoolIdentity::create([
         'name' => 'SMAN 1 Lengkong',
         'city' => 'Kabupaten Sukabumi',
         'headmaster_name' => 'PIAN SOPIAN, S.Pd, MM.Pd.',
@@ -289,7 +298,7 @@ test('issue 6-item batch: guest report print displays Kepala Administrasi Sekola
         'roles' => ['kepala_administrasi'],
     ]);
 
-    \App\Models\Guest::create([
+    Guest::create([
         'ticket_number' => 'TMU-20261124-001',
         'name' => 'Bapak Pengawas',
         'gender' => 'Laki-laki',
@@ -321,7 +330,7 @@ test('issue 6-item batch: guest report print displays Kepala Administrasi Sekola
 test('issue 6-item batch: guest index supports date_from and date_to range filter', function () {
     $admin = User::factory()->create(['role' => 'admin', 'roles' => ['admin']]);
 
-    \App\Models\Guest::create([
+    Guest::create([
         'ticket_number' => 'TMU-FILTER-001',
         'name' => 'Tamu Hari Ini',
         'gender' => 'Laki-laki',
@@ -353,7 +362,7 @@ test('issue 6-item batch: guest index supports date_from and date_to range filte
 test('issue 6-item batch: kios satpam displays guest list and can checkout guest', function () {
     $admin = User::factory()->create(['role' => 'admin', 'roles' => ['admin']]);
 
-    $guest = \App\Models\Guest::create([
+    $guest = Guest::create([
         'ticket_number' => 'TMU-SATPAM-001',
         'name' => 'Tamu Pos Satpam',
         'gender' => 'Laki-laki',
@@ -390,17 +399,17 @@ test('issue 6-item batch: kios satpam displays guest list and can checkout guest
 
 test('issue 6-item batch: class learning agenda syncs from teaching journals', function () {
     $class = SchoolClass::create(['name' => 'XII Merdeka 4', 'grade' => 'XII']);
-    $subject = \App\Models\Subject::create(['name' => 'Informatika Tingkat Lanjut', 'code' => 'INF-TL-XII']);
-    $teacher = \App\Models\Teacher::create(['name' => 'Rahmat Hidayat, S.Kom', 'nip' => '198501012010011005']);
+    $subject = Subject::create(['name' => 'Informatika Tingkat Lanjut', 'code' => 'INF-TL-XII']);
+    $teacher = Teacher::create(['name' => 'Rahmat Hidayat, S.Kom', 'nip' => '198501012010011005']);
 
-    $courseClass = \App\Models\CourseClass::create([
+    $courseClass = CourseClass::create([
         'subject_id' => $subject->id,
         'teacher_id' => $teacher->id,
         'class_id' => $class->id,
         'academic_year_id' => null,
     ]);
 
-    $journal = \App\Models\TeachingJournal::create([
+    $journal = TeachingJournal::create([
         'course_class_id' => $courseClass->id,
         'teacher_id' => $teacher->id,
         'date' => now()->toDateString(),
@@ -412,9 +421,9 @@ test('issue 6-item batch: class learning agenda syncs from teaching journals', f
         'learning_achievement_status' => 'TERCAPAI',
     ]);
 
-    \App\Models\ClassLearningAgenda::syncFromTeachingJournals('XII Merdeka 4');
+    ClassLearningAgenda::syncFromTeachingJournals('XII Merdeka 4');
 
-    $agenda = \App\Models\ClassLearningAgenda::where('rombel', 'XII Merdeka 4')
+    $agenda = ClassLearningAgenda::where('rombel', 'XII Merdeka 4')
         ->where('subject', 'Informatika Tingkat Lanjut')
         ->first();
 
@@ -517,7 +526,7 @@ test('issue: principal dashboard links Adm. Ketatausahaan to tu.dashboard and si
 
 test('issue: lms quiz questions level_kognitif supports long string like Penalaran & Analisis HOTS without truncation', function () {
     $teacherUser = User::factory()->create(['role' => 'guru', 'roles' => ['guru']]);
-    $teacher = \App\Models\Teacher::create([
+    $teacher = Teacher::create([
         'user_id' => $teacherUser->id,
         'name' => 'Guru Pengampu',
         'nip' => '198501012010011002',
@@ -526,20 +535,20 @@ test('issue: lms quiz questions level_kognitif supports long string like Penalar
     ]);
     $class = SchoolClass::create(['name' => 'XII Merdeka 1', 'grade' => 'XII']);
 
-    $subject = \App\Models\Subject::create([
+    $subject = Subject::create([
         'code' => 'INF-XII',
         'name' => 'Informatika',
         'order' => 1,
     ]);
 
-    $courseClass = \App\Models\CourseClass::create([
+    $courseClass = CourseClass::create([
         'subject_id' => $subject->id,
         'class_id' => $class->id,
         'teacher_id' => $teacher->id,
         'academic_year_id' => null,
     ]);
 
-    $quiz = \App\Models\LmsQuiz::create([
+    $quiz = LmsQuiz::create([
         'course_class_id' => $courseClass->id,
         'title' => 'Asesmen Sumatif Akhir Semester',
         'duration_minutes' => 60,
@@ -557,7 +566,7 @@ test('issue: lms quiz questions level_kognitif supports long string like Penalar
     ]);
 
     $response->assertSessionHasNoErrors();
-    $question = \App\Models\LmsQuizQuestion::where('quiz_id', $quiz->id)->first();
+    $question = LmsQuizQuestion::where('quiz_id', $quiz->id)->first();
     expect($question)->not->toBeNull()
         ->and($question->level_kognitif)->toBe($longLevel);
 

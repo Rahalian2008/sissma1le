@@ -23,9 +23,8 @@
         [x-cloak] { display: none !important; }
     </style>
 
-    @if(!empty($appLogoUrl))
-        <link rel="icon" type="image/png" href="{{ $appLogoUrl }}">
-    @endif
+    <link rel="icon" type="image/png" href="{{ $schoolFaviconUrl ?? ($appLogoUrl ?? asset('images/logo.png')) }}">
+    <link rel="shortcut icon" href="{{ $schoolFaviconUrl ?? ($appLogoUrl ?? asset('images/logo.png')) }}">
 
     <!-- Anti-flash Dark Mode Script with Safe Storage Fallback for Older Chrome/WebView -->
     <script>

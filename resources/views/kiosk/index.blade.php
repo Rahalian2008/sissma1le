@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Kios TV Display Layar &bull; {{ $data['profile']['name'] ?? ($school['name'] ?? 'SMAN 1 Lengkong') }}</title>
+    @php
+        $kioskFavicon = $schoolFaviconUrl ?? (!empty($data['school']['logo']) ? asset('storage/' . $data['school']['logo']) : asset('images/logo.png'));
+    @endphp
+    <link rel="icon" type="image/png" href="{{ $kioskFavicon }}">
+    <link rel="shortcut icon" href="{{ $kioskFavicon }}">
     
     <!-- Fonts & Tailwind CSS -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -245,9 +250,12 @@
         <!-- Brand Identity (Fixed, never shrinks or wraps into sibling) -->
         <div class="flex items-center gap-2.5 sm:gap-3 shrink-0">
             <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-gradient-to-tr from-teal-500 via-indigo-500 to-sky-400 p-0.5 shadow-lg shadow-teal-500/20 shrink-0">
-                <div id="kioskLogoContainer" class="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center overflow-hidden">
-                    @if(!empty($data['school']['logo']))
-                        <img src="{{ asset('storage/' . $data['school']['logo']) }}" alt="Logo" class="w-6 h-6 sm:w-7 sm:h-7 object-contain">
+                <div id="kioskLogoContainer" class="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center overflow-hidden p-0.5">
+                    @php
+                        $kioskHeaderLogo = $schoolLogoUrl ?? (!empty($data['school']['logo']) ? asset('storage/' . $data['school']['logo']) : asset('images/logo.png'));
+                    @endphp
+                    @if($kioskHeaderLogo)
+                        <img src="{{ $kioskHeaderLogo }}" alt="Logo" class="w-full h-full object-contain">
                     @else
                         <span class="text-xs sm:text-sm font-black text-transparent bg-clip-text bg-gradient-to-r from-teal-300 to-sky-300">S1L</span>
                     @endif
@@ -468,8 +476,8 @@
                             <span class="font-bold text-teal-300 text-[10.5px] truncate block">{{ $data['profile']['status'] }} &bull; Merdeka</span>
                         </div>
                         <div class="p-1.5 rounded-lg bg-slate-900/70 border border-white/5">
-                            <span class="text-[8.5px] text-slate-400 uppercase font-semibold block">Kepala TU</span>
-                            <span class="font-bold text-indigo-300 text-[10.5px] truncate block">{{ $data['profile']['head_of_admin'] }}</span>
+                            <span class="text-[8.5px] text-slate-400 uppercase font-semibold block">Email Resmi</span>
+                            <span class="font-mono text-indigo-300 text-[10px] truncate block" title="{{ $data['school']['email'] ?? 'sman1lengkong@gmail.com' }}">{{ $data['school']['email'] ?? 'sman1lengkong@gmail.com' }}</span>
                         </div>
                         <div class="p-1.5 rounded-lg bg-slate-900/70 border border-white/5">
                             <span class="text-[8.5px] text-slate-400 uppercase font-semibold block">Kontak / Web</span>
@@ -479,7 +487,7 @@
 
                     <div class="p-2 rounded-xl bg-gradient-to-r from-teal-950/60 via-slate-900/80 to-indigo-950/60 border border-teal-500/20 flex items-center justify-between text-[11px]">
                         <span class="text-teal-300 font-bold italic truncate">"{{ $data['profile']['vision'] }}"</span>
-                        <span class="text-[9.5px] text-slate-400 font-mono ml-2 shrink-0">📍 {{ $data['profile']['address'] }}</span>
+                        <span class="text-[9.5px] text-slate-400 font-mono ml-2 shrink-0">📍 {{ $data['profile']['address'] }} &bull; Ka. TU: {{ $data['profile']['head_of_admin'] }}</span>
                     </div>
                 </div>
             </div>
@@ -3053,7 +3061,7 @@
                         </div>
 
                         <div class="p-2 rounded-xl bg-slate-950/80 border border-white/5 text-[10px] text-slate-400 flex items-center justify-between shrink-0">
-                            <span>🕒 Jam Pelayanan Tamu Kedinasan: <strong>Senin - Jum'at (07:30 - 15:30 WIB)</strong></span>
+                            <span>🕒 Jam Pelayanan Tamu Kedinasan: <strong id="kioskGuestServiceHours">{{ $data['guests']['service_hours'] ?? 'Senin - Jum\'at (06:30 - 15:00 WIB)' }}</strong></span>
                             <span class="text-amber-300 font-bold">Resepsionis S1L</span>
                         </div>
                     </div>
@@ -3647,6 +3655,14 @@
                 if (d.library) {
                     const libTot = document.getElementById('libKioskVisitorsToday');
                     if (libTot) libTot.textContent = d.library.total_today;
+                }
+
+                // 9. Update Buku Tamu & Jam Pelayanan
+                if (d.guests) {
+                    const gHours = document.getElementById('kioskGuestServiceHours');
+                    if (gHours && d.guests.service_hours) {
+                        gHours.textContent = d.guests.service_hours;
+                    }
                 }
 
             } catch (e) {

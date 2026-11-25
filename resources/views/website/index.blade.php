@@ -42,9 +42,8 @@
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-    @if(!empty($appLogoUrl))
-        <link rel="icon" type="image/png" href="{{ $appLogoUrl }}">
-    @endif
+    <link rel="icon" type="image/png" href="{{ $schoolFaviconUrl ?? ($appLogoUrl ?? asset('images/logo.png')) }}">
+    <link rel="shortcut icon" href="{{ $schoolFaviconUrl ?? ($appLogoUrl ?? asset('images/logo.png')) }}">
 
     <!-- Anti-flash Dark Mode Script -->
     <script>

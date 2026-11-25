@@ -30,6 +30,7 @@ use App\Services\LmsAiCurriculumService;
 use App\Services\LmsProgressionService;
 use App\Services\LmsQuranAyahService;
 use Carbon\Carbon;
+use Illuminate\Database\QueryException;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\JsonResponse;
@@ -37,6 +38,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -3192,8 +3194,8 @@ class LmsController extends Controller
         $checked = true;
 
         try {
-            if (\Illuminate\Support\Facades\Schema::hasTable('lms_quiz_questions')) {
-                \Illuminate\Support\Facades\DB::statement('ALTER TABLE `lms_quiz_questions` MODIFY `level_kognitif` VARCHAR(150) NULL');
+            if (Schema::hasTable('lms_quiz_questions')) {
+                DB::statement('ALTER TABLE `lms_quiz_questions` MODIFY `level_kognitif` VARCHAR(150) NULL');
             }
         } catch (\Throwable $e) {
             // Abaikan jika database SQLite (test environment) atau sudah diubah sebelumnya
@@ -3229,10 +3231,10 @@ class LmsController extends Controller
 
         try {
             $created = LmsQuizQuestion::create($createData);
-        } catch (\Illuminate\Database\QueryException $e) {
+        } catch (QueryException $e) {
             if (isset($createData['level_kognitif'])) {
                 try {
-                    \Illuminate\Support\Facades\DB::statement('ALTER TABLE `lms_quiz_questions` MODIFY `level_kognitif` VARCHAR(150) NULL');
+                    DB::statement('ALTER TABLE `lms_quiz_questions` MODIFY `level_kognitif` VARCHAR(150) NULL');
                     $created = LmsQuizQuestion::create($createData);
                 } catch (\Throwable $ex) {
                     $createData['level_kognitif'] = mb_substr((string) $createData['level_kognitif'], 0, 30);
@@ -3271,10 +3273,10 @@ class LmsController extends Controller
 
         try {
             $question->update($payload);
-        } catch (\Illuminate\Database\QueryException $e) {
+        } catch (QueryException $e) {
             if (isset($payload['level_kognitif'])) {
                 try {
-                    \Illuminate\Support\Facades\DB::statement('ALTER TABLE `lms_quiz_questions` MODIFY `level_kognitif` VARCHAR(150) NULL');
+                    DB::statement('ALTER TABLE `lms_quiz_questions` MODIFY `level_kognitif` VARCHAR(150) NULL');
                     $question->update($payload);
                 } catch (\Throwable $ex) {
                     $payload['level_kognitif'] = mb_substr((string) $payload['level_kognitif'], 0, 30);

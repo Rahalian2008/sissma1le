@@ -8,6 +8,7 @@ use App\Models\AttendanceLocation;
 use App\Models\AttendanceSession;
 use App\Models\AuditLog;
 use App\Models\EarlyLeaveRequest;
+use App\Models\Guest;
 use App\Models\PicketSchedule;
 use App\Models\SchoolClass;
 use App\Models\SchoolExitPermit;
@@ -1891,7 +1892,7 @@ class AttendanceController extends Controller
 
         // 3. Data Tamu Masuk Sekolah Hari Ini (Buku Tamu Digital Terpadu)
         $todayGuests = Schema::hasTable('guests')
-            ? \App\Models\Guest::whereDate('check_in_at', $todayStr)
+            ? Guest::whereDate('check_in_at', $todayStr)
                 ->orderByDesc('check_in_at')
                 ->get()
             : collect();
@@ -1912,7 +1913,7 @@ class AttendanceController extends Controller
     /**
      * Konfirmasi Tamu Keluar / Selesai Berkunjung Langsung dari Kios Satpam
      */
-    public function kiosSatpamCheckoutGuest(Request $request, \App\Models\Guest $guest): RedirectResponse
+    public function kiosSatpamCheckoutGuest(Request $request, Guest $guest): RedirectResponse
     {
         $guest->update([
             'status' => 'selesai',

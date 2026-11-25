@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>CBT SMAN 1 Lengkong - {{ $exam->title }}</title>
+    <link rel="icon" type="image/png" href="{{ $schoolFaviconUrl ?? asset('images/logo.png') }}">
+    <link rel="shortcut icon" href="{{ $schoolFaviconUrl ?? asset('images/logo.png') }}">
     
     <!-- Fonts & Tailwind -->
     <link rel="preconnect" href="https://fonts.bunny.net">

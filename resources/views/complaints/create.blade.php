@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Layanan Pengaduan & Aspirasi Publik - {{ $school->name ?? 'SMAN 1 Lengkong' }}</title>
+    @php
+        $compFavicon = $schoolFaviconUrl ?? ($school?->logo_url ?? asset('images/logo.png'));
+        $compLogo = $schoolLogoUrl ?? ($school?->logo_url ?? asset('images/logo.png'));
+    @endphp
+    <link rel="icon" type="image/png" href="{{ $compFavicon }}">
+    <link rel="shortcut icon" href="{{ $compFavicon }}">
     <meta name="description" content="Kanal pengaduan masyarakat, orang tua, dan siswa SMAN 1 Lengkong. Sampaikan aspirasi, aduan fasilitas, layanan, atau pencegahan perundungan secara aman & terlindungi.">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -24,9 +30,13 @@
     <header class="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800 sticky top-0 z-40">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 h-18 sm:h-20 flex items-center justify-between gap-4">
             <a href="{{ route('website.home') }}" class="flex items-center gap-3 group">
-                <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-gradient-to-tr from-rose-600 via-indigo-600 to-emerald-400 p-0.5 shadow-md">
-                    <div class="w-full h-full bg-white dark:bg-slate-900 rounded-[14px] flex items-center justify-center overflow-hidden font-heading font-black text-rose-600 text-base">
-                        SIS
+                <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-gradient-to-tr from-rose-600 via-indigo-600 to-emerald-400 p-0.5 shadow-md shrink-0">
+                    <div class="w-full h-full bg-white dark:bg-slate-900 rounded-[14px] flex items-center justify-center overflow-hidden p-1">
+                        @if($compLogo)
+                            <img src="{{ $compLogo }}" alt="Logo {{ $school->name ?? 'Sekolah' }}" class="w-full h-full object-contain">
+                        @else
+                            <span class="font-heading font-black text-rose-600 text-base">S1L</span>
+                        @endif
                     </div>
                 </div>
                 <div>

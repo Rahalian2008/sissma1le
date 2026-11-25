@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Schema;
 
 class ClassLearningAgenda extends Model
 {
@@ -73,10 +74,10 @@ class ClassLearningAgenda extends Model
         }
 
         $subjectName = $journal->courseClass?->subject?->name ?? 'Mata Pelajaran';
-        $timeSlot = $journal->time_slot ?: ('Jam Ke-' . ($journal->meeting_number ?: '1'));
+        $timeSlot = $journal->time_slot ?: ('Jam Ke-'.($journal->meeting_number ?: '1'));
         $teacherName = $journal->teacher?->name ?? 'Guru Mata Pelajaran';
         $employee = Employee::where('nip', $journal->teacher?->nip)->first()
-            ?? Employee::where('name', 'like', '%' . $journal->teacher?->name . '%')->first();
+            ?? Employee::where('name', 'like', '%'.$journal->teacher?->name.'%')->first();
 
         $summary = $journal->student_attendance_summary ?? [];
         $present = (int) ($summary['hadir'] ?? 0);
@@ -112,7 +113,7 @@ class ClassLearningAgenda extends Model
      */
     public static function syncFromTeachingJournals(?string $rombel = null): int
     {
-        if (! class_exists(TeachingJournal::class) || ! \Illuminate\Support\Facades\Schema::hasTable('teaching_journals')) {
+        if (! class_exists(TeachingJournal::class) || ! Schema::hasTable('teaching_journals')) {
             return 0;
         }
 

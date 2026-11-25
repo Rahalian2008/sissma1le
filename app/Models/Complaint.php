@@ -6,6 +6,8 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
 class Complaint extends Model
@@ -182,8 +184,8 @@ class Complaint extends Model
     public static function ensureComplaintsTableExists(): void
     {
         try {
-            if (! \Illuminate\Support\Facades\Schema::hasTable('complaints')) {
-                \Illuminate\Support\Facades\Schema::create('complaints', function (\Illuminate\Database\Schema\Blueprint $table) {
+            if (! Schema::hasTable('complaints')) {
+                Schema::create('complaints', function (Blueprint $table) {
                     $table->id();
                     $table->string('ticket_number', 30)->unique();
                     $table->boolean('is_anonymous')->default(false);

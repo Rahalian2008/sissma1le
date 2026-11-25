@@ -13,9 +13,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    @if(!empty($appLogoUrl))
-        <link rel="icon" type="image/png" href="{{ $appLogoUrl }}">
-    @endif
+    <link rel="icon" type="image/png" href="{{ $schoolFaviconUrl ?? ($appLogoUrl ?? asset('images/logo.png')) }}">
+    <link rel="shortcut icon" href="{{ $schoolFaviconUrl ?? ($appLogoUrl ?? asset('images/logo.png')) }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>body { font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif; }</style>
 </head>

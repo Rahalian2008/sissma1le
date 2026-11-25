@@ -16,6 +16,7 @@ use App\Models\PpdbRegistration;
 use App\Models\QuranTahfidzRecord;
 use App\Models\SchoolClass;
 use App\Models\SchoolHoliday;
+use App\Models\SchoolIdentity;
 use App\Models\SchoolSetting;
 use App\Models\SpmbTrack;
 use App\Models\SpmbWave;
@@ -29,6 +30,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
+use Illuminate\View\View;
 
 class SchoolWebsiteController extends Controller
 {
@@ -548,9 +550,9 @@ class SchoolWebsiteController extends Controller
     /**
      * Cetak Standee Meja & Poster QR Code Layanan Mandiri Publik (Buku Tamu, Buku Perpus, Kanal Pengaduan)
      */
-    public function printQrcodes(Request $request): \Illuminate\View\View
+    public function printQrcodes(Request $request): View
     {
-        $school = \App\Models\SchoolIdentity::current();
+        $school = SchoolIdentity::current();
         $type = $request->query('type', 'all');
 
         return view('website.qrcodes-print', compact('school', 'type'));

@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Employee;
 use App\Models\Guest;
 use App\Models\SchoolIdentity;
+use App\Models\Teacher;
+use App\Models\User;
 use App\Services\AuditTrailService;
 use App\Services\QrCodeService;
 use Carbon\Carbon;
@@ -397,9 +400,9 @@ class GuestController extends Controller
             ->get();
 
         // Cari Kepala Administrasi (PTK) dari Master Data Guru & PTK
-        $headOfAdmin = \App\Models\User::whereJsonContains('roles', 'kepala_administrasi')->first()
-            ?? \App\Models\Teacher::where('name', 'like', '%Rachmat Sugiarto%')->first()
-            ?? \App\Models\Employee::where('name', 'like', '%Rachmat Sugiarto%')->first();
+        $headOfAdmin = User::whereJsonContains('roles', 'kepala_administrasi')->first()
+            ?? Teacher::where('name', 'like', '%Rachmat Sugiarto%')->first()
+            ?? Employee::where('name', 'like', '%Rachmat Sugiarto%')->first();
 
         AuditTrailService::log('print', 'kesiswaan', "Mencetak Laporan Buku Tamu dari {$dateFrom} s.d. {$dateTo}");
 

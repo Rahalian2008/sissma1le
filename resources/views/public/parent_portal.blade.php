@@ -7,9 +7,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    @if(!empty($schoolSetting?->logo_path))
-        <link rel="icon" type="image/png" href="{{ asset('storage/' . $schoolSetting->logo_path) }}">
-    @endif
+    <link rel="icon" type="image/png" href="{{ $schoolFaviconUrl ?? (!empty($schoolSetting?->logo_path) ? asset('storage/' . $schoolSetting->logo_path) : asset('images/logo.png')) }}">
+    <link rel="shortcut icon" href="{{ $schoolFaviconUrl ?? (!empty($schoolSetting?->logo_path) ? asset('storage/' . $schoolSetting->logo_path) : asset('images/logo.png')) }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <!-- Alpine.js (Local & Offline Capable with CDN Fallback) -->
     <script defer src="{{ asset('js/alpine.min.js') }}"></script>

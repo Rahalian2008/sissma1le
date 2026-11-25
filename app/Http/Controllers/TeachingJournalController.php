@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\AuditLog;
+use App\Models\ClassLearningAgenda;
 use App\Models\CourseClass;
 use App\Models\LmsSubjectAttendance;
 use App\Models\SchoolSetting;
@@ -147,8 +148,8 @@ class TeachingJournalController extends Controller
             'is_verified_by_kurikulum' => false,
         ]);
 
-        if (class_exists(\App\Models\ClassLearningAgenda::class)) {
-            \App\Models\ClassLearningAgenda::syncFromTeachingJournal($journal);
+        if (class_exists(ClassLearningAgenda::class)) {
+            ClassLearningAgenda::syncFromTeachingJournal($journal);
         }
 
         AuditLog::log('TEACHING_JOURNAL_CREATED', 'TeachingJournal', $journal->id, null, [

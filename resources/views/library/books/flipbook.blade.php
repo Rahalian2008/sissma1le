@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>E-Reader Dokumen: {{ $book->title }} - SMAN 1 Lengkong</title>
-    <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
+    <link rel="icon" type="image/png" href="{{ $schoolFaviconUrl ?? asset('images/logo.png') }}">
+    <link rel="shortcut icon" href="{{ $schoolFaviconUrl ?? asset('images/logo.png') }}">
     
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="preconnect" href="https://fonts.googleapis.com">

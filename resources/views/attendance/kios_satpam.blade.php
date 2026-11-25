@@ -4,7 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Kios Informasi Pos Satpam - Perizinan Siswa | {{ $school?->name ?? 'SMAN 1 Lengkong' }}</title>
-    <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
+    @php
+        $satpamFavicon = $schoolFaviconUrl ?? ($school?->logo_url ?? asset('images/logo.png'));
+        $satpamLogo = $schoolLogoUrl ?? ($school?->logo_url ?? asset('images/logo.png'));
+    @endphp
+    <link rel="icon" type="image/png" href="{{ $satpamFavicon }}">
+    <link rel="shortcut icon" href="{{ $satpamFavicon }}">
     
     <!-- Fonts & Tailwind -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -49,8 +54,14 @@
             
             <!-- Left: Brand Identity -->
             <div class="flex items-center gap-3 shrink-0 min-w-0">
-                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-teal-600 to-emerald-500 flex items-center justify-center text-white shadow-lg shadow-teal-500/25 shrink-0">
-                    <span class="text-lg">🛡️</span>
+                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-teal-600 via-emerald-600 to-indigo-600 p-0.5 shadow-lg shadow-teal-500/25 shrink-0">
+                    <div class="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center p-0.5 overflow-hidden">
+                        @if($satpamLogo)
+                            <img src="{{ $satpamLogo }}" alt="Logo {{ $school?->name ?? 'Sekolah' }}" class="w-full h-full object-contain">
+                        @else
+                            <span class="text-lg">🏫</span>
+                        @endif
+                    </div>
                 </div>
                 <div class="min-w-0">
                     <div class="flex items-center gap-2">

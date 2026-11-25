@@ -9,6 +9,7 @@ use App\Models\SchoolIdentity;
 use App\Models\Student;
 use App\Services\AuditTrailService;
 use Carbon\Carbon;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -167,9 +168,10 @@ class SchoolExitPermitController extends Controller
             try {
                 $permit = SchoolExitPermit::create($permitData);
                 break;
-            } catch (\Illuminate\Database\QueryException $e) {
+            } catch (QueryException $e) {
                 if ($retry < 4 && ($e->getCode() == 23000 || str_contains($e->getMessage(), 'Duplicate entry'))) {
                     $permitData['permit_number'] = SchoolExitPermit::generatePermitNumber($dateCarbon);
+
                     continue;
                 }
                 throw $e;

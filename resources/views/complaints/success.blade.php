@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pengaduan Berhasil Dikirim - {{ $school->name ?? 'SMAN 1 Lengkong' }}</title>
+    @php
+        $compFavicon = $schoolFaviconUrl ?? ($school?->logo_url ?? asset('images/logo.png'));
+    @endphp
+    <link rel="icon" type="image/png" href="{{ $compFavicon }}">
+    <link rel="shortcut icon" href="{{ $compFavicon }}">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

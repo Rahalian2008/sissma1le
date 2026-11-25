@@ -23,6 +23,7 @@ use App\Models\SchoolIdentity;
 use App\Models\SchoolSetting;
 use App\Models\Student;
 use App\Models\Teacher;
+use App\Models\TeachingJournal;
 use App\Models\User;
 use App\Models\WorshipAttendance;
 use App\Services\AttendanceService;
@@ -438,7 +439,7 @@ class KioskController extends Controller
                 'level' => $a->level ?: 'Tingkat Kabupaten',
                 'rank' => $a->rank ?: ($a->predicate ?: 'Juara'),
                 'points' => (int) ($a->points ?? 25),
-                'date' => $a->date ? \Carbon\Carbon::parse($a->date)->translatedFormat('d M Y') : $a->created_at->translatedFormat('d M Y'),
+                'date' => $a->date ? Carbon::parse($a->date)->translatedFormat('d M Y') : $a->created_at->translatedFormat('d M Y'),
             ]);
 
         if ($recentAchievements->isEmpty()) {
@@ -520,7 +521,7 @@ class KioskController extends Controller
         ];
 
         // 7d. Live Jurnal KBM LMS & Hitung Mundur Agenda (Slide 13)
-        $liveKbm = \App\Models\TeachingJournal::with(['courseClass.schoolClass', 'courseClass.subject', 'teacher'])
+        $liveKbm = TeachingJournal::with(['courseClass.schoolClass', 'courseClass.subject', 'teacher'])
             ->latest('id')
             ->limit(10)
             ->get()
@@ -1391,6 +1392,43 @@ class KioskController extends Controller
         $guestsTotalMonth = 0;
         $recentGuests = collect();
 
+        // Jam Pelayanan Tamu Kedinasan diambil dari Master Data - Jam Operasional Presensi Harian (2 Sesi: Masuk & Pulang)
+        $daysMap = [
+            'senin' => 'Senin',
+            'selasa' => 'Selasa',
+            'rabu' => 'Rabu',
+            'kamis' => 'Kamis',
+            'jumat' => "Jum'at",
+            'sabtu' => 'Sabtu',
+        ];
+        $activeDays = [];
+        $minInTime = null;
+        $maxOutTime = null;
+
+        foreach ($daysMap as $dayKey => $dayLabel) {
+            if (SchoolSetting::get("attendance_{$dayKey}_is_active", $dayKey === 'sabtu' ? '0' : '1') === '1') {
+                $activeDays[] = $dayLabel;
+                $inTime = SchoolSetting::get("attendance_{$dayKey}_in_on_time")
+                    ?: SchoolSetting::get("attendance_{$dayKey}_in_start", '06:30');
+                $outTime = SchoolSetting::get("attendance_{$dayKey}_out_start")
+                    ?: SchoolSetting::get("attendance_{$dayKey}_out_end", '15:00');
+
+                if (! $minInTime || ($inTime && $inTime < $minInTime)) {
+                    $minInTime = $inTime;
+                }
+                if (! $maxOutTime || ($outTime && $outTime > $maxOutTime)) {
+                    $maxOutTime = $outTime;
+                }
+            }
+        }
+
+        $dayRangeStr = ! empty($activeDays)
+            ? (count($activeDays) > 1 ? $activeDays[0].' - '.end($activeDays) : $activeDays[0])
+            : "Senin - Jum'at";
+        $inFormatted = $minInTime ? substr($minInTime, 0, 5) : '06:30';
+        $outFormatted = $maxOutTime ? substr($maxOutTime, 0, 5) : '15:00';
+        $guestServiceHours = "{$dayRangeStr} ({$inFormatted} - {$outFormatted} WIB)";
+
         try {
             $guestsToday = Guest::whereDate('created_at', $today)
                 ->orWhereDate('check_in_at', $today)
@@ -1561,6 +1599,7 @@ class KioskController extends Controller
                 'total_today' => $guestsTotalToday,
                 'total_month' => $guestsTotalMonth,
                 'recent' => $recentGuests,
+                'service_hours' => $guestServiceHours,
             ],
             'ticker' => implode('  •  ', $tickers),
         ];

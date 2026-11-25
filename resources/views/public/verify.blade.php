@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $title }} - Verifikasi Resmi SIKATAS SMA1LE</title>
+    <link rel="icon" type="image/png" href="{{ $schoolFaviconUrl ?? asset('images/logo.png') }}">
+    <link rel="shortcut icon" href="{{ $schoolFaviconUrl ?? asset('images/logo.png') }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,11 +20,11 @@
     <!-- Header Navigation -->
     <header class="max-w-2xl mx-auto w-full py-4 flex items-center justify-between border-b border-slate-200">
         <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-linear-to-tr from-indigo-600 to-purple-600 text-white flex items-center justify-center font-black text-base shadow-sm">
-                S
+            <div class="w-10 h-10 rounded-xl bg-white text-white flex items-center justify-center font-black text-base shadow-sm border border-slate-200 overflow-hidden p-1">
+                <img src="{{ $schoolLogoUrl ?? ($schoolFaviconUrl ?? asset('images/logo.png')) }}" alt="Logo" class="w-full h-full object-contain">
             </div>
             <div>
-                <h1 class="text-sm font-black text-slate-900 leading-tight">SIKATAS SMA1LE</h1>
+                <h1 class="text-sm font-black text-slate-900 leading-tight">{{ $school->name ?? 'SMA NEGERI 1 LENGKONG' }}</h1>
                 <p class="text-[11px] text-slate-500">Layanan Verifikasi Dokumen & Aset Digital</p>
             </div>
         </div>

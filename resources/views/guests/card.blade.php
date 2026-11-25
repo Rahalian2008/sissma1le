@@ -4,9 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kartu Kunjungan Tamu - {{ $guest->ticket_number }} | {{ $school->name ?? 'SIKATAS' }}</title>
-    @if(!empty($school->logo_url))
-        <link rel="icon" type="image/png" href="{{ $school->logo_url }}">
-    @endif
+    <link rel="icon" type="image/png" href="{{ $schoolFaviconUrl ?? ($school?->logo_url ?? asset('images/logo.png')) }}">
+    <link rel="shortcut icon" href="{{ $schoolFaviconUrl ?? ($school?->logo_url ?? asset('images/logo.png')) }}">
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=inter:300,400,500,600,700,800" rel="stylesheet" />

@@ -7,7 +7,6 @@ use App\Http\Controllers\AssessmentController;
 use App\Http\Controllers\AttendanceCardController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\ComplaintController;
 use App\Http\Controllers\BkAkpdController;
 use App\Http\Controllers\BkCaseConferenceController;
 use App\Http\Controllers\BkCounselingSessionController;
@@ -21,6 +20,7 @@ use App\Http\Controllers\BkRplController;
 use App\Http\Controllers\BkSociometryController;
 use App\Http\Controllers\Cbt\CbtController;
 use App\Http\Controllers\Cbt\CbtStudentController;
+use App\Http\Controllers\ComplaintController;
 use App\Http\Controllers\CurriculumDocumentController;
 use App\Http\Controllers\CurriculumPlanController;
 use App\Http\Controllers\DashboardController;
@@ -54,6 +54,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\ViolationController;
 use App\Http\Controllers\WebsiteContentController;
 use App\Http\Controllers\WorshipAttendanceController;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
 // Website Resmi SMAN 1 Lengkong (Publik, Modern, Edukatif & Responsif)
@@ -109,8 +110,8 @@ Route::get('/aspirasi', fn () => redirect()->route('complaints.create'));
 // Emergency Web Helper untuk Pembersihan Cache Server & Migrasi Database Otomatis Tanpa Terminal SSH
 Route::get('/artisan-optimize-clear', function () {
     try {
-        \Illuminate\Support\Facades\Artisan::call('optimize:clear');
-        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+        Artisan::call('optimize:clear');
+        Artisan::call('migrate', ['--force' => true]);
 
         return response("
             <div style='font-family: sans-serif; max-width: 600px; margin: 40px auto; padding: 24px; border: 2px solid #10b981; border-radius: 16px; background: #ecfdf5; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);'>
@@ -123,7 +124,7 @@ Route::get('/artisan-optimize-clear', function () {
                 </div>
             </div>
         ", 200, ['Content-Type' => 'text/html']);
-    } catch (\Throwable $e) {
+    } catch (Throwable $e) {
         return response('Error: '.$e->getMessage(), 500);
     }
 });
