@@ -190,6 +190,46 @@
         </div>
     </div>
 
+    {{-- Executive Whistleblowing & Complaint Alert Bar --}}
+    @php
+        $pendingComplaints = \App\Models\Complaint::where('status', 'MENUNGGU')->count();
+        $inProgressComplaints = \App\Models\Complaint::whereIn('status', ['DITELAAH', 'DIPROSES'])->count();
+    @endphp
+    <div class="rounded-3xl p-5 bg-gradient-to-r from-rose-950/60 via-slate-900 to-indigo-950/60 border border-rose-500/30 shadow-lg flex flex-col md:flex-row items-center justify-between gap-4">
+        <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-2xl bg-rose-500/20 text-rose-400 flex items-center justify-center font-bold text-xl border border-rose-500/30 shrink-0">
+                📢
+            </div>
+            <div>
+                <div class="flex items-center gap-2">
+                    <span class="text-xs font-bold text-rose-400 uppercase tracking-wider">Kanal Aspirasi & Pengaduan Publik</span>
+                    @if($pendingComplaints > 0)
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-rose-500 text-white animate-pulse">
+                            {{ $pendingComplaints }} Aduan Baru Menunggu
+                        </span>
+                    @else
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                            Semua Aduan Terkendali
+                        </span>
+                    @endif
+                </div>
+                <p class="text-xs text-slate-300 mt-0.5">
+                    Akses eksklusif Kepala Sekolah & Wakasek untuk menelaah dan memberi disposisi tindak lanjut aduan masyarakat, ortu, & siswa.
+                </p>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-2.5 shrink-0 w-full md:w-auto">
+            <a href="{{ route('complaints.admin.index') }}" class="w-full md:w-auto px-5 py-2.5 rounded-xl bg-gradient-to-r from-rose-600 to-indigo-600 hover:from-rose-500 hover:to-indigo-500 text-white font-bold text-xs shadow-md transition flex items-center justify-center gap-2">
+                <span>Buka Pusat Pengaduan</span>
+                <span class="text-xs">&rarr;</span>
+            </a>
+            <a href="{{ route('complaints.create') }}" target="_blank" class="px-3.5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold transition flex items-center gap-1.5" title="Lihat Formulir Publik">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+            </a>
+        </div>
+    </div>
+
     <!-- 8 KARTU KONTROLING PILAR UTAMA (The 8 Pillars of SMAN 1 Lengkong) -->
     <div>
         <div class="flex items-center justify-between mb-3">

@@ -7,6 +7,7 @@ use App\Http\Controllers\AssessmentController;
 use App\Http\Controllers\AttendanceCardController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ComplaintController;
 use App\Http\Controllers\BkAkpdController;
 use App\Http\Controllers\BkCaseConferenceController;
 use App\Http\Controllers\BkCounselingSessionController;
@@ -93,6 +94,13 @@ Route::post('/kiosk-tamu/checkout', [GuestController::class, 'checkout'])->name(
 Route::get('/kiosk-tamu/card/{ticket}', [GuestController::class, 'card'])->name('guests.card');
 Route::get('/kiosk-tamu/print/{ticket}', [GuestController::class, 'printCard'])->name('guests.print_card');
 Route::get('/kiosk-tamu/print-card/{ticket}', [GuestController::class, 'printCard'])->name('guests.print-card');
+
+// Kanal Layanan Pengaduan & Aspirasi Publik (Akses Terbuka / Whistleblowing)
+Route::get('/pengaduan', [ComplaintController::class, 'create'])->name('complaints.create');
+Route::post('/pengaduan', [ComplaintController::class, 'store'])->name('complaints.store');
+Route::get('/pengaduan/sukses/{ticketNumber}', [ComplaintController::class, 'success'])->name('complaints.success');
+Route::get('/pengaduan/tracking', [ComplaintController::class, 'track'])->name('complaints.track');
+Route::get('/aspirasi', fn () => redirect()->route('complaints.create'));
 
 // SPMB Publik (Pendaftaran Siswa Baru Online SMAN 1 Lengkong & Cek Bukti)
 Route::get('/spmb/daftar', [SpmbController::class, 'publicRegister'])->name('spmb.public.register');
@@ -650,6 +658,13 @@ Route::middleware('auth')->group(function () {
         Route::put('/{guest}', [GuestController::class, 'update'])->name('update');
         Route::patch('/{guest}/status', [GuestController::class, 'updateStatus'])->name('update_status');
         Route::delete('/{guest}', [GuestController::class, 'destroy'])->name('destroy');
+    });
+
+    // Kanal Pengaduan & Aspirasi Publik - Backoffice Eksekutif (Khusus Kepala Sekolah & Wakasek)
+    Route::prefix('admin/pengaduan')->name('complaints.admin.')->group(function () {
+        Route::get('/', [ComplaintController::class, 'adminIndex'])->name('index');
+        Route::get('/{complaint}', [ComplaintController::class, 'adminShow'])->name('show');
+        Route::put('/{complaint}/disposition', [ComplaintController::class, 'adminUpdateDisposition'])->name('disposition');
     });
 
     // Learning Management System (LMS SMA)

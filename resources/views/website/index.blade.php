@@ -256,6 +256,11 @@
                         <span>👨‍👩‍👧‍👦 <span class="hidden md:inline">Portal </span>Orang Tua</span>
                     </a>
 
+                    <!-- Kanal Pengaduan & Aspirasi Publik -->
+                    <a href="{{ route('complaints.create') }}" class="inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-rose-500/25 hover:bg-rose-500/40 text-rose-200 hover:text-white font-bold text-[10px] sm:text-[11px] transition border border-rose-400/30 shadow-2xs" title="Kanal Aspirasi & Pengaduan Publik SMAN 1 Lengkong">
+                        <span>📢 Pengaduan</span>
+                    </a>
+
                     <!-- Quick SPMB Registration Pill (Selalu Muncul & Menarik) -->
                     <a href="{{ route('spmb.public.register') }}" class="px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-300 hover:from-emerald-300 hover:to-teal-200 text-slate-950 font-black text-[10px] sm:text-[11px] shadow-sm transition hover:scale-105 flex items-center gap-1 shrink-0">
                         <span>🎓 <span class="hidden xs:inline">Daftar </span>SPMB</span>
@@ -313,6 +318,9 @@
                 </a>
                 <a href="#prestasi" class="px-3 py-1.5 rounded-full text-xs font-bold text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800 transition shadow-2xs whitespace-nowrap">
                     Prestasi
+                </a>
+                <a href="{{ route('complaints.create') }}" class="px-3 py-1.5 rounded-full text-xs font-bold text-rose-600 dark:text-rose-400 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/50 transition shadow-2xs whitespace-nowrap flex items-center gap-1">
+                    <span>📢 Pengaduan</span>
                 </a>
                 <a href="#ekosistem-sis" class="px-3.5 py-1.5 rounded-full text-xs font-extrabold text-indigo-600 dark:text-indigo-300 bg-white dark:bg-slate-800 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 border border-indigo-200/80 dark:border-indigo-800/80 transition shadow-xs flex items-center gap-1.5 whitespace-nowrap">
                     <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -404,6 +412,12 @@
                         <span>🎓 Pendaftaran SPMB Siswa Baru</span>
                     </span>
                     <span class="text-[10px] bg-white/20 text-white px-2 py-0.5 rounded-md font-bold">Buka</span>
+                </a>
+                <a href="{{ route('complaints.create') }}" class="mobile-nav-link px-3 py-2.5 rounded-xl bg-gradient-to-r from-rose-600 to-indigo-600 text-white font-bold transition flex items-center justify-between shadow-sm">
+                    <span class="flex items-center gap-2">
+                        <span>📢 Kanal Pengaduan & Aspirasi Publik</span>
+                    </span>
+                    <span class="text-[10px] bg-white/20 text-white px-2 py-0.5 rounded-md font-bold">Lapor</span>
                 </a>
                 <a href="#sambutan" class="mobile-nav-link px-3 py-2 rounded-xl hover:bg-indigo-50 dark:hover:bg-slate-800 hover:text-indigo-600 transition flex items-center justify-between">
                     <span>💬 Sambutan Kepala Sekolah</span>
@@ -2393,8 +2407,8 @@
                 </div>
             </div>
 
-            <!-- Role Pane: EKOSISTEM KIOS DIGITAL (5 Kios Terpadu Standalone Tanpa Perlu Login) -->
-            <div id="role-pane-kiosk" class="role-pane hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+            <!-- Role Pane: EKOSISTEM KIOS DIGITAL (6 Kios & Layanan Publik Terpadu Standalone Tanpa Perlu Login) -->
+            <div id="role-pane-kiosk" class="role-pane hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-6 gap-4">
                 <!-- 1. Kios TV Informasi Display -->
                 <div class="p-5 rounded-3xl glass-card border border-sky-400/30 hover:border-sky-400 text-left hover:shadow-xl hover:shadow-sky-500/10 transition-all duration-300 flex flex-col justify-between group">
                     <div>
@@ -2509,6 +2523,33 @@
                         <span>↗</span>
                     </a>
                 </div>
+
+                <!-- 6. Kanal Pengaduan & Aspirasi Publik -->
+                <div class="p-5 rounded-3xl glass-card border border-rose-400/30 hover:border-rose-400 text-left hover:shadow-xl hover:shadow-rose-500/10 transition-all duration-300 flex flex-col justify-between group">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-2xl p-2 rounded-2xl bg-rose-500/10 text-rose-400 border border-rose-500/20">📢</span>
+                            <span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-rose-500/15 text-rose-400 border border-rose-500/25">
+                                Whistleblowing &amp; Ortu
+                            </span>
+                        </div>
+                        <h4 class="font-heading font-bold text-slate-900 dark:text-white text-sm sm:text-base mb-1 group-hover:text-rose-400 transition">
+                            Kanal Pengaduan &amp; Aspirasi
+                        </h4>
+                        <p class="text-[10px] text-rose-500 font-semibold mb-2">Jalur Terlindung Kepala Sekolah</p>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mb-4 leading-relaxed">
+                            Layanan penyampaian aduan, kritik konstruktif, pencegahan perundungan, dan saran kemajuan sekolah secara aman &amp; rahasia.
+                        </p>
+                    </div>
+                    <div class="flex gap-2">
+                        <a href="{{ route('complaints.create') }}" class="flex-1 text-center py-2 px-3 rounded-xl bg-gradient-to-r from-rose-600 to-indigo-600 hover:from-rose-500 hover:to-indigo-500 text-white font-bold text-xs transition shadow-md shadow-rose-600/20">
+                            Buat Aduan ↗
+                        </a>
+                        <a href="{{ route('complaints.track') }}" class="py-2 px-3 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs transition" title="Cek Status Tiket">
+                            🔍
+                        </a>
+                    </div>
+                </div>
             </div>
 
         </div>
@@ -2620,6 +2661,29 @@
 
             </div>
 
+            <!-- Whistleblowing & Complaint Public Banner -->
+            <div class="mt-8 rounded-3xl p-6 sm:p-8 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white border border-indigo-900/60 shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
+                <div class="space-y-2 max-w-2xl">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/20 text-rose-300 text-xs font-bold border border-rose-500/30">
+                        <span>📢</span> Layanan Terpadu Masyarakat & Siswa
+                    </div>
+                    <h3 class="font-heading font-black text-xl sm:text-2xl text-white">
+                        Kanal Pengaduan, Aspirasi & Whistleblowing Publik
+                    </h3>
+                    <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                        Punya saran kemajuan, kendala fasilitas, atau laporan dugaan perundungan? Sampaikan secara aman, transparan, dan terlindungi. Dipantau dan ditindaklanjuti langsung oleh Kepala Sekolah & Jajaran Wakil Kepala Sekolah SMAN 1 Lengkong.
+                    </p>
+                </div>
+                <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto shrink-0">
+                    <a href="{{ route('complaints.create') }}" class="px-6 py-3 rounded-2xl bg-gradient-to-r from-rose-600 via-rose-500 to-indigo-600 hover:from-rose-500 hover:to-indigo-500 text-white font-bold text-xs sm:text-sm text-center shadow-lg shadow-rose-600/30 transition hover:scale-105">
+                        Sampaikan Pengaduan / Aspirasi ↗
+                    </a>
+                    <a href="{{ route('complaints.track') }}" class="px-5 py-3 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs sm:text-sm text-center border border-white/20 transition">
+                        Cek Status Tiket 🔍
+                    </a>
+                </div>
+            </div>
+
         </div>
     </section>
 
@@ -2703,6 +2767,12 @@
                             <a href="{{ route('guests.kiosk') }}" target="_blank" class="hover:text-white transition flex items-center gap-1.5">
                                 <span class="w-1.5 h-1.5 rounded-full bg-teal-400"></span>
                                 <span>Kios Buku Tamu & Resepsionis ↗</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('complaints.create') }}" class="hover:text-white transition flex items-center gap-1.5 text-rose-300 font-semibold">
+                                <span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span>
+                                <span>Kanal Pengaduan & Aspirasi Publik 📢</span>
                             </a>
                         </li>
                     </ul>
