@@ -102,6 +102,28 @@ Route::get('/pengaduan/sukses/{ticketNumber}', [ComplaintController::class, 'suc
 Route::get('/pengaduan/tracking', [ComplaintController::class, 'track'])->name('complaints.track');
 Route::get('/aspirasi', fn () => redirect()->route('complaints.create'));
 
+// Emergency Web Helper untuk Pembersihan Cache Server & Migrasi Database Otomatis Tanpa Terminal SSH
+Route::get('/artisan-optimize-clear', function () {
+    try {
+        \Illuminate\Support\Facades\Artisan::call('optimize:clear');
+        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+
+        return response("
+            <div style='font-family: sans-serif; max-width: 600px; margin: 40px auto; padding: 24px; border: 2px solid #10b981; border-radius: 16px; background: #ecfdf5; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);'>
+                <h2 style='color: #065f46; margin-top: 0;'>✓ Sukses! Cache Bersih &amp; Database Terupdate</h2>
+                <p style='color: #047857; font-size: 14px;'>Semua cache rute, template tampilan, dan konfigurasi server telah dibersihkan. Migrasi database telah berhasil dijalankan.</p>
+                <div style='margin-top: 20px; display: flex; gap: 10px;'>
+                    <a href='/' style='display: inline-block; padding: 10px 18px; background: #059669; color: #fff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 13px;'>Buka Beranda</a>
+                    <a href='/pengaduan' style='display: inline-block; padding: 10px 18px; background: #4f46e5; color: #fff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 13px;'>Buka Form Pengaduan</a>
+                    <a href='/admin/pengaduan' style='display: inline-block; padding: 10px 18px; background: #e11d48; color: #fff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 13px;'>Pusat Kontrol Kepsek</a>
+                </div>
+            </div>
+        ", 200, ['Content-Type' => 'text/html']);
+    } catch (\Throwable $e) {
+        return response('Error: '.$e->getMessage(), 500);
+    }
+});
+
 // SPMB Publik (Pendaftaran Siswa Baru Online SMAN 1 Lengkong & Cek Bukti)
 Route::get('/spmb/daftar', [SpmbController::class, 'publicRegister'])->name('spmb.public.register');
 Route::post('/spmb/daftar', [SpmbController::class, 'storePublicRegister'])->name('spmb.public.store');
