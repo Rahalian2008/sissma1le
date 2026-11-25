@@ -2,6 +2,7 @@
 
 use App\Models\Achievement;
 use App\Models\AchievementCategory;
+use App\Models\Attendance;
 use App\Models\EarlyLeaveRequest;
 use App\Models\LibraryBook;
 use App\Models\Role;
@@ -423,4 +424,62 @@ test('issue 6-item batch: class learning agenda syncs from teaching journals', f
         ->and($agenda->teacher_name)->toBe('Rahmat Hidayat, S.Kom')
         ->and($agenda->students_present)->toBe(30)
         ->and($agenda->students_sick)->toBe(2);
+});
+
+test('kiosk tv: profil shows kepala sekolah at top, rekap siswa and gtk, and attendance ticker filters to hadir only', function () {
+    $class = SchoolClass::create(['name' => 'X Merdeka 1', 'grade' => 'X']);
+    $studentHadir = Student::create([
+        'name' => 'Siswa Hadir Alpha',
+        'nis' => '998811',
+        'nisn' => '0099881101',
+        'school_class_id' => $class->id,
+        'gender' => 'L',
+        'is_active' => true,
+    ]);
+    $studentIzin = Student::create([
+        'name' => 'Siswi Izin Beta',
+        'nis' => '998812',
+        'nisn' => '0099881102',
+        'school_class_id' => $class->id,
+        'gender' => 'P',
+        'is_active' => true,
+    ]);
+
+    Attendance::create([
+        'student_id' => $studentHadir->id,
+        'date' => now('Asia/Jakarta')->toDateString(),
+        'time' => '06:30:00',
+        'status' => 'HADIR',
+        'method' => 'RFID',
+    ]);
+
+    Attendance::create([
+        'student_id' => $studentIzin->id,
+        'date' => now('Asia/Jakarta')->toDateString(),
+        'time' => '07:15:00',
+        'status' => 'IZIN',
+        'method' => 'Manual',
+    ]);
+
+    // Test Kios TV view
+    $response = $this->get(route('kiosk.index'));
+    $response->assertStatus(200);
+    $response->assertSee('PIMPINAN SEKOLAH');
+    $response->assertSee('Rekapitulasi Peserta Didik (Siswa)');
+    $response->assertSee('Rekapitulasi Guru &amp; TU', false);
+    $response->assertSee('animate-vertical-ticker');
+
+    // Test Kios TV JSON API
+    $apiResponse = $this->get(route('kiosk.data'));
+    $apiResponse->assertStatus(200);
+    $apiData = $apiResponse->json();
+
+    expect($apiData)->toHaveKeys(['recap_students', 'recap_gtk', 'daily'])
+        ->and($apiData['recap_students'])->toHaveKeys(['classes', 'total_students', 'total_male', 'total_female'])
+        ->and($apiData['recap_gtk'])->toHaveKeys(['guru', 'tu', 'grand_total']);
+
+    // Ensure all recent attendance items only have HADIR status
+    foreach ($apiData['daily']['recent'] as $rec) {
+        expect($rec['status'])->toBe('HADIR');
+    }
 });

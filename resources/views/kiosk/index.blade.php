@@ -96,6 +96,21 @@
             animation-play-state: paused;
         }
 
+        /* Smooth Continuous Vertical Upward Ticker for Live Attendance Feed */
+        @keyframes verticalScrollUp {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-50%); }
+        }
+        .animate-vertical-ticker {
+            display: flex;
+            flex-direction: column;
+            animation: verticalScrollUp 32s linear infinite;
+            will-change: transform;
+        }
+        .animate-vertical-ticker:hover {
+            animation-play-state: paused;
+        }
+
         /* Clean Hide Scrollbar */
         .no-scrollbar::-webkit-scrollbar {
             display: none;
@@ -344,180 +359,305 @@
         <!-- ========================================================================= -->
         <!-- SLIDE 0: PROFIL RESMI KELEMBAGAAN & KEPEMIMPINAN SMAN 1 LENGKONG -->
         <!-- ========================================================================= -->
-        <section id="slide-0" class="kiosk-slide  h-full w-full flex-col justify-between overflow-hidden gap-3">
+        <section id="slide-0" class="kiosk-slide h-full w-full flex-col justify-between overflow-hidden gap-2.5">
             <!-- Slide Title Header -->
             <div class="flex items-center justify-between shrink-0 pb-1 border-b border-white/5">
                 <div class="flex items-center gap-2">
                     <div class="w-7 h-7 rounded-lg bg-teal-500/20 text-teal-300 flex items-center justify-center font-black text-sm">01</div>
                     <div>
                         <h2 class="text-sm sm:text-base font-extrabold text-white flex items-center gap-2">
-                            <span>Profil Resmi Kelembagaan &amp; Kepemimpinan Sekolah</span>
+                            <span>Profil Resmi Kelembagaan, Kepemimpinan &amp; Rekapitulasi Sekolah</span>
                         </h2>
-                        <p class="text-[11px] text-slate-400">Identitas lengkap, legalitas institusi, akreditasi, pimpinan kepala sekolah, serta visi &amp; misi resmi</p>
+                        <p class="text-[11px] text-slate-400">Identitas institusi, pimpinan kepala sekolah, rekapitulasi jumlah siswa (per kelas &amp; gender), serta rekapitulasi GTK (Guru &amp; TU)</p>
                     </div>
                 </div>
                 <div class="text-[11px] text-teal-300 font-mono hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-teal-500/10 border border-teal-500/30">
-                    <span>🏛️ Profil Lembaga &amp; Pimpinan</span>
+                    <span>🏛️ Profil &amp; Rekapitulasi Data Pokok</span>
                 </div>
             </div>
 
-            <!-- Main Grid: Left 5 Cols (Identitas Lengkap & Kepala Sekolah), Right 7 Cols (Visi & Misi Terbaca Jelas) -->
-            <div class="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-3 lg:gap-4 overflow-hidden">
-                <!-- Left Column (5 Cols): Identitas Sekolah & Kepala Sekolah -->
-                <div class="lg:col-span-5 flex flex-col h-full min-h-0 gap-3 justify-between overflow-hidden">
-                    <!-- School Identity Specs Card (Data dari Master Data - Identitas Sekolah) -->
-                    <div class="glass-panel rounded-2xl border border-white/10 p-3 sm:p-3.5 shadow-lg flex-1 min-h-0 flex flex-col justify-between">
-                        <div>
-                            <div class="flex items-center justify-between pb-2 mb-2 border-b border-white/10">
-                                <div class="flex items-center gap-2.5">
-                                    <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-teal-500 to-indigo-600 p-0.5 shadow-md shrink-0">
-                                        <div class="w-full h-full bg-slate-900 rounded-[10px] flex items-center justify-center font-black text-white text-xs">
-                                            1LE
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <h3 class="text-xs sm:text-sm font-black text-white leading-tight">{{ $data['profile']['name'] }}</h3>
-                                        <div class="text-[10px] text-slate-400 mt-0.5 truncate">
-                                            {{ $data['profile']['province_dept'] }} &bull; {{ $data['profile']['branch_office'] }}
-                                        </div>
-                                    </div>
+            <!-- Top Row: Kepala Sekolah (DI ATAS) & Identitas Kelembagaan / Visi Misi -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-2.5 shrink-0">
+                <!-- Kepala Sekolah Card (DI ATAS) - 5 Cols -->
+                <div class="lg:col-span-5 glass-panel rounded-2xl border border-amber-500/30 p-3 sm:p-3.5 shadow-xl bg-gradient-to-r from-slate-900/90 via-slate-900/95 to-amber-950/20 glow-gold flex items-center gap-3.5">
+                    <!-- Photo Portrait (object-position: top center, head NOT cut off) -->
+                    <div class="w-20 h-24 sm:w-22 sm:h-26 xl:w-24 xl:h-28 rounded-2xl overflow-hidden p-1 bg-gradient-to-tr from-amber-400 via-yellow-500 to-amber-600 shadow-xl shrink-0">
+                        <div class="w-full h-full bg-slate-950 rounded-[12px] overflow-hidden flex items-center justify-center">
+                            @if(!empty($data['profile']['principal_photo']))
+                                <img src="{{ $data['profile']['principal_photo'] }}" alt="{{ $data['profile']['principal_name'] }}" class="w-full h-full object-cover" style="object-position: top center;">
+                            @else
+                                <div class="w-full h-full flex items-center justify-center bg-gradient-to-tr from-slate-900 to-amber-950 text-amber-300 font-extrabold text-xl">
+                                    PS
                                 </div>
-                                <span class="px-2 py-0.5 rounded-full text-[9.5px] font-extrabold bg-teal-500/20 text-teal-300 border border-teal-500/30">
-                                    {{ str_starts_with($data['profile']['accreditation'], 'Akreditasi') ? $data['profile']['accreditation'] : 'Akreditasi ' . $data['profile']['accreditation'] }}
-                                </span>
-                            </div>
-
-                            <!-- 6-Grid School Meta Details -->
-                            <div class="grid grid-cols-2 gap-2 text-xs">
-                                <div class="p-2 rounded-xl bg-slate-900/70 border border-white/5">
-                                    <div class="text-[9px] text-slate-400 uppercase tracking-wider font-semibold">NPSN</div>
-                                    <div class="font-mono font-bold text-white text-[11px] mt-0.5">{{ $data['profile']['npsn'] }}</div>
-                                </div>
-                                <div class="p-2 rounded-xl bg-slate-900/70 border border-white/5">
-                                    <div class="text-[9px] text-slate-400 uppercase tracking-wider font-semibold">NSS</div>
-                                    <div class="font-mono font-bold text-white text-[11px] mt-0.5">{{ $data['profile']['nss'] }}</div>
-                                </div>
-                                <div class="p-2 rounded-xl bg-slate-900/70 border border-white/5">
-                                    <div class="text-[9px] text-slate-400 uppercase tracking-wider font-semibold">Status / Kurikulum</div>
-                                    <div class="font-bold text-teal-300 text-[10.5px] truncate mt-0.5">{{ $data['profile']['status'] }} &bull; Merdeka</div>
-                                </div>
-                                <div class="p-2 rounded-xl bg-slate-900/70 border border-white/5">
-                                    <div class="text-[9px] text-slate-400 uppercase tracking-wider font-semibold">Telepon / Kontak</div>
-                                    <div class="font-mono text-slate-200 text-[10.5px] mt-0.5 truncate">{{ $data['profile']['phone'] }}</div>
-                                </div>
-                                <div class="p-2 rounded-xl bg-slate-900/70 border border-white/5">
-                                    <div class="text-[9px] text-slate-400 uppercase tracking-wider font-semibold">Email Resmi</div>
-                                    <div class="font-mono text-slate-200 text-[10.5px] mt-0.5 truncate">{{ $data['profile']['email'] }}</div>
-                                </div>
-                                <div class="p-2 rounded-xl bg-slate-900/70 border border-white/5">
-                                    <div class="text-[9px] text-slate-400 uppercase tracking-wider font-semibold">Kepala Tata Usaha</div>
-                                    <div class="font-bold text-indigo-300 text-[10.5px] mt-0.5 truncate">{{ $data['profile']['head_of_admin'] }}</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Address bar -->
-                        <div class="mt-2 pt-2 border-t border-white/5 flex items-center justify-between text-[10px] text-slate-300">
-                            <span class="truncate">📍 {{ $data['profile']['address'] }}</span>
-                            <span class="font-mono text-teal-300 shrink-0 ml-2">{{ $data['profile']['website'] }}</span>
+                            @endif
                         </div>
                     </div>
 
-                    <!-- Kepala Sekolah Card (Cukup Photo, Nama, NIP dari Master Data - Identitas Sekolah) -->
-                    <div class="glass-panel rounded-2xl border border-amber-500/30 p-3 sm:p-3.5 xl:p-4 shadow-xl bg-gradient-to-r from-slate-900/90 via-slate-900/95 to-amber-950/20 glow-gold shrink-0">
-                        <div class="flex items-center gap-3.5 xl:gap-4">
-                            <!-- Photo Portrait (object-position: top center, head NOT cut off) -->
-                            <div class="w-20 h-24 sm:w-24 sm:h-28 xl:w-26 xl:h-32 rounded-2xl overflow-hidden p-1 bg-gradient-to-tr from-amber-400 via-yellow-500 to-amber-600 shadow-xl shrink-0">
-                                <div class="w-full h-full bg-slate-950 rounded-[12px] overflow-hidden flex items-center justify-center">
-                                    @if(!empty($data['profile']['principal_photo']))
-                                        <img src="{{ $data['profile']['principal_photo'] }}" alt="{{ $data['profile']['principal_name'] }}" class="w-full h-full object-cover" style="object-position: top center;">
-                                    @else
-                                        <div class="w-full h-full flex items-center justify-center bg-gradient-to-tr from-slate-900 to-amber-950 text-amber-300 font-extrabold text-xl xl:text-2xl">
-                                            PS
-                                        </div>
-                                    @endif
-                                </div>
-                            </div>
+                    <div class="min-w-0 flex-1">
+                        <span class="px-2 py-0.5 rounded-full text-[8.5px] font-black uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/40 inline-flex items-center gap-1 mb-1">
+                            <span>👑</span> PIMPINAN SEKOLAH
+                        </span>
+                        <h3 class="text-sm sm:text-base font-black text-white leading-tight truncate" title="{{ $data['profile']['principal_name'] }}">
+                            {{ $data['profile']['principal_name'] }}
+                        </h3>
+                        <div class="text-[11px] font-bold text-amber-300 mt-0.5">
+                            {{ $data['profile']['principal_title'] ?? 'Kepala SMAN 1 Lengkong' }}
+                        </div>
+                        <div class="mt-1 inline-block px-2.5 py-0.5 rounded-md bg-slate-900/90 border border-white/10 text-[10px] font-mono font-bold text-slate-200">
+                            NIP {{ $data['profile']['principal_nip'] }}
+                        </div>
+                        <div class="mt-1.5 text-[9.5px] text-slate-300 italic flex items-center gap-1 border-t border-amber-500/20 pt-1 truncate">
+                            <span>💬</span> "Maju Bersama, Hebat Semua! Menuju S1L Berkarakter &amp; Unggul"
+                        </div>
+                    </div>
+                </div>
 
-                            <div class="min-w-0 flex-1">
-                                <span class="px-2 py-0.5 rounded-full text-[8.5px] xl:text-[9.5px] font-black uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/40 inline-flex items-center gap-1 mb-1">
-                                    <span>👑</span> PIMPINAN SEKOLAH
-                                </span>
-                                <h3 class="text-sm sm:text-base xl:text-lg font-black text-white leading-tight truncate" title="{{ $data['profile']['principal_name'] }}">
-                                    {{ $data['profile']['principal_name'] }}
+                <!-- Identitas Institusi & Visi Singkat - 7 Cols -->
+                <div class="lg:col-span-7 glass-panel rounded-2xl border border-white/10 p-3 sm:p-3.5 shadow-lg flex flex-col justify-between">
+                    <div class="flex items-center justify-between pb-1.5 border-b border-white/10">
+                        <div class="flex items-center gap-2">
+                            <div class="w-7 h-7 rounded-lg bg-teal-500/20 text-teal-300 flex items-center justify-center font-bold text-xs">
+                                🏫
+                            </div>
+                            <div>
+                                <h3 class="text-xs sm:text-sm font-black text-white leading-tight">{{ $data['profile']['name'] }}</h3>
+                                <div class="text-[9.5px] text-slate-400 truncate">{{ $data['profile']['province_dept'] }} &bull; {{ $data['profile']['branch_office'] }}</div>
+                            </div>
+                        </div>
+                        <span class="px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-teal-500/20 text-teal-300 border border-teal-500/30">
+                            {{ str_starts_with($data['profile']['accreditation'], 'Akreditasi') ? $data['profile']['accreditation'] : 'Akreditasi ' . $data['profile']['accreditation'] }}
+                        </span>
+                    </div>
+
+                    <!-- Meta Badges & Visi -->
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5 my-1.5 text-[10px]">
+                        <div class="p-1.5 rounded-lg bg-slate-900/70 border border-white/5">
+                            <span class="text-[8.5px] text-slate-400 uppercase font-semibold block">NPSN</span>
+                            <span class="font-mono font-bold text-white text-[10.5px]">{{ $data['profile']['npsn'] }}</span>
+                        </div>
+                        <div class="p-1.5 rounded-lg bg-slate-900/70 border border-white/5">
+                            <span class="text-[8.5px] text-slate-400 uppercase font-semibold block">Kurikulum</span>
+                            <span class="font-bold text-teal-300 text-[10.5px] truncate block">{{ $data['profile']['status'] }} &bull; Merdeka</span>
+                        </div>
+                        <div class="p-1.5 rounded-lg bg-slate-900/70 border border-white/5">
+                            <span class="text-[8.5px] text-slate-400 uppercase font-semibold block">Kepala TU</span>
+                            <span class="font-bold text-indigo-300 text-[10.5px] truncate block">{{ $data['profile']['head_of_admin'] }}</span>
+                        </div>
+                        <div class="p-1.5 rounded-lg bg-slate-900/70 border border-white/5">
+                            <span class="text-[8.5px] text-slate-400 uppercase font-semibold block">Kontak / Web</span>
+                            <span class="font-mono text-slate-200 text-[10px] truncate block">{{ $data['profile']['website'] }}</span>
+                        </div>
+                    </div>
+
+                    <div class="p-2 rounded-xl bg-gradient-to-r from-teal-950/60 via-slate-900/80 to-indigo-950/60 border border-teal-500/20 flex items-center justify-between text-[11px]">
+                        <span class="text-teal-300 font-bold italic truncate">"{{ $data['profile']['vision'] }}"</span>
+                        <span class="text-[9.5px] text-slate-400 font-mono ml-2 shrink-0">📍 {{ $data['profile']['address'] }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Row: Rekapitulasi Siswa (Per Kelas, L/P, Total) & Rekapitulasi Guru & TU (Status & L/P) -->
+            <div class="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-2.5 overflow-hidden">
+                <!-- Left: Rekapitulasi Siswa (Per Kelas, L, P, Total) - 7 Cols -->
+                <div class="lg:col-span-7 glass-panel rounded-2xl border border-white/10 p-3 sm:p-3.5 flex flex-col justify-between overflow-hidden shadow-lg">
+                    <div class="flex items-center justify-between pb-2 mb-2 border-b border-white/10 shrink-0">
+                        <div class="flex items-center gap-2">
+                            <span class="text-sm">👥</span>
+                            <div>
+                                <h3 class="text-xs sm:text-sm font-extrabold text-white flex items-center gap-1.5">
+                                    <span>Rekapitulasi Peserta Didik (Siswa)</span>
                                 </h3>
-                                <div class="text-[11px] xl:text-xs font-bold text-amber-300 mt-0.5">
-                                    {{ $data['profile']['principal_title'] ?? 'Kepala SMAN 1 Lengkong' }}
-                                </div>
-                                <div class="mt-1.5 inline-block px-2.5 py-0.5 rounded-md bg-slate-900/90 border border-white/10 text-[10px] xl:text-[11px] font-mono font-bold text-slate-200">
-                                    NIP {{ $data['profile']['principal_nip'] }}
-                                </div>
-                                <div class="mt-2 text-[10px] xl:text-[11px] text-slate-300 italic flex items-center gap-1.5 border-t border-amber-500/20 pt-1.5 truncate">
-                                    <span>💬</span> "Maju Bersama, Hebat Semua! Menuju S1L Berkarakter & Unggul"
-                                </div>
+                                <span class="text-[9.5px] text-slate-400">Rincian data siswa aktif per kelas, jenis kelamin (L/P), dan total</span>
                             </div>
                         </div>
+                        <div class="flex items-center gap-1.5">
+                            <span class="px-2 py-0.5 rounded-lg bg-blue-500/20 text-blue-300 border border-blue-500/30 text-[10px] font-bold font-mono">
+                                L: {{ $data['recap_students']['total_male'] ?? $data['rombels']['total_male'] }}
+                            </span>
+                            <span class="px-2 py-0.5 rounded-lg bg-rose-500/20 text-rose-300 border border-rose-500/30 text-[10px] font-bold font-mono">
+                                P: {{ $data['recap_students']['total_female'] ?? $data['rombels']['total_female'] }}
+                            </span>
+                            <span class="px-2.5 py-0.5 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] font-black font-mono">
+                                Total: {{ $data['recap_students']['total_students'] ?? $data['rombels']['total_students'] }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Table of Classes -->
+                    <div class="flex-1 min-h-0 overflow-y-auto kiosk-scroll pr-1">
+                        <table class="w-full text-left border-collapse text-xs">
+                            <thead>
+                                <tr class="text-[10px] font-bold text-slate-400 border-b border-white/10 uppercase tracking-wider sticky top-0 bg-slate-950/90 backdrop-blur-xs">
+                                    <th class="py-1.5 pl-2 font-mono">No</th>
+                                    <th class="py-1.5 font-bold">Rombel / Kelas</th>
+                                    <th class="py-1.5 text-center font-bold text-blue-400">Laki-laki (L)</th>
+                                    <th class="py-1.5 text-center font-bold text-rose-400">Perempuan (P)</th>
+                                    <th class="py-1.5 text-right pr-2 font-bold text-emerald-400">Jumlah Total</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-white/5 font-medium">
+                                @forelse($data['recap_students']['classes'] ?? $data['rombels']['list'] as $idx => $cls)
+                                    <tr class="hover:bg-white/5 transition">
+                                        <td class="py-1.5 pl-2 font-mono text-slate-400 text-[11px]">{{ $idx + 1 }}</td>
+                                        <td class="py-1.5 font-bold text-white text-[11px] flex items-center gap-1.5">
+                                            <span class="w-2 h-2 rounded-full {{ str_starts_with($cls['grade'] ?? '', 'X') ? 'bg-teal-400' : (str_starts_with($cls['grade'] ?? '', 'XI') ? 'bg-indigo-400' : 'bg-amber-400') }}"></span>
+                                            <span>{{ $cls['name'] }}</span>
+                                        </td>
+                                        <td class="py-1.5 text-center font-mono font-bold text-blue-300 text-[11px]">
+                                            <span class="px-2 py-0.5 rounded bg-blue-500/10 border border-blue-500/20 inline-block min-w-7">
+                                                {{ $cls['male_count'] }}
+                                            </span>
+                                        </td>
+                                        <td class="py-1.5 text-center font-mono font-bold text-rose-300 text-[11px]">
+                                            <span class="px-2 py-0.5 rounded bg-rose-500/10 border border-rose-500/20 inline-block min-w-7">
+                                                {{ $cls['female_count'] }}
+                                            </span>
+                                        </td>
+                                        <td class="py-1.5 text-right pr-2 font-mono font-black text-white text-xs">
+                                            <span class="px-2.5 py-0.5 rounded bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 inline-block min-w-8">
+                                                {{ $cls['total_count'] }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="5" class="py-3 text-center text-slate-500 italic text-xs">Data kelas belum tersedia.</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Table Footer: Total Keseluruhan Siswa -->
+                    <div class="mt-2 pt-2 border-t border-white/10 flex items-center justify-between text-xs shrink-0 bg-slate-900/60 rounded-xl px-3 py-1.5">
+                        <span class="font-extrabold text-white uppercase tracking-wider text-[11px]">Total Keseluruhan Peserta Didik</span>
+                        <div class="flex items-center gap-3 font-mono font-black text-xs">
+                            <span class="text-blue-300">L: {{ $data['recap_students']['total_male'] ?? $data['rombels']['total_male'] }}</span>
+                            <span class="text-slate-500">&bull;</span>
+                            <span class="text-rose-300">P: {{ $data['recap_students']['total_female'] ?? $data['rombels']['total_female'] }}</span>
+                            <span class="text-slate-500">&bull;</span>
+                            <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-sm">
+                                Total: {{ $data['recap_students']['total_students'] ?? $data['rombels']['total_students'] }} Siswa
+                            </span>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Right Column (7 Cols): VISI & MISI SEKOLAH (Harus Terbaca Jelas & Terbuka) -->
-                <div class="lg:col-span-7 flex flex-col h-full min-h-0 glass-panel rounded-2xl border border-white/10 p-3.5 sm:p-4 xl:p-5 justify-between overflow-hidden shadow-lg">
-                    <!-- Visi Section (Prominent Banner) -->
-                    <div class="p-3 sm:p-3.5 xl:p-4 rounded-xl bg-gradient-to-r from-teal-950/60 via-slate-900/80 to-indigo-950/60 border border-teal-500/30 shrink-0 shadow-md">
-                        <div class="flex items-center justify-between mb-1.5">
-                            <span class="text-[10px] xl:text-xs font-black text-teal-400 uppercase tracking-wider flex items-center gap-1.5">
-                                <span>🌟</span> VISI SEKOLAH RESMI
+                <!-- Right: Rekapitulasi Guru & TU (Status & Gender) - 5 Cols -->
+                <div class="lg:col-span-5 glass-panel rounded-2xl border border-white/10 p-3 sm:p-3.5 flex flex-col justify-between overflow-hidden shadow-lg">
+                    <div class="flex items-center justify-between pb-2 mb-2 border-b border-white/10 shrink-0">
+                        <div class="flex items-center gap-2">
+                            <span class="text-sm">👨‍🏫</span>
+                            <div>
+                                <h3 class="text-xs sm:text-sm font-extrabold text-white flex items-center gap-1.5">
+                                    <span>Rekapitulasi Guru &amp; TU</span>
+                                </h3>
+                                <span class="text-[9.5px] text-slate-400">Pendidik &amp; Tenaga Kependidikan</span>
+                            </div>
+                        </div>
+                        <span class="px-2 py-0.5 rounded-lg bg-teal-500/20 text-teal-300 border border-teal-500/30 text-[10px] font-black font-mono">
+                            GTK: {{ $data['recap_gtk']['grand_total']['total'] ?? 35 }} Orang
+                        </span>
+                    </div>
+
+                    <div class="flex-1 min-h-0 overflow-y-auto kiosk-scroll space-y-2.5 pr-1">
+                        <!-- Sub-Section 1: Guru (Pendidik) -->
+                        <div class="p-2.5 rounded-xl bg-slate-900/70 border border-white/5 space-y-1.5">
+                            <div class="flex items-center justify-between pb-1 border-b border-white/5">
+                                <span class="text-[11px] font-black text-indigo-300 uppercase tracking-wide flex items-center gap-1">
+                                    <span>📚</span> Dewan Guru (Pendidik)
+                                </span>
+                                <span class="text-[10px] font-mono font-bold text-white bg-indigo-500/20 px-2 py-0.2 rounded border border-indigo-500/30">
+                                    {{ $data['recap_gtk']['guru']['total'] ?? 28 }} Guru
+                                </span>
+                            </div>
+                            <table class="w-full text-left text-[11px] border-collapse">
+                                <thead>
+                                    <tr class="text-[9px] text-slate-400 font-bold uppercase">
+                                        <th class="py-1">Status Kepegawaian</th>
+                                        <th class="py-1 text-center text-blue-400">L</th>
+                                        <th class="py-1 text-center text-rose-400">P</th>
+                                        <th class="py-1 text-right text-emerald-400">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-white/5 font-mono">
+                                    @foreach($data['recap_gtk']['guru']['statuses'] ?? [] as $st)
+                                        <tr>
+                                            <td class="py-1 text-slate-200 font-sans font-medium text-[10.5px]">{{ $st['status'] }}</td>
+                                            <td class="py-1 text-center text-blue-300">{{ $st['male'] }}</td>
+                                            <td class="py-1 text-center text-rose-300">{{ $st['female'] }}</td>
+                                            <td class="py-1 text-right font-bold text-white">{{ $st['total'] }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                                <tfoot>
+                                    <tr class="border-t border-white/10 font-bold text-[10.5px]">
+                                        <td class="py-1 text-indigo-300 font-sans">Subtotal Guru</td>
+                                        <td class="py-1 text-center text-blue-300 font-mono">{{ $data['recap_gtk']['guru']['total_male'] ?? 14 }}</td>
+                                        <td class="py-1 text-center text-rose-300 font-mono">{{ $data['recap_gtk']['guru']['total_female'] ?? 14 }}</td>
+                                        <td class="py-1 text-right text-emerald-300 font-mono font-black">{{ $data['recap_gtk']['guru']['total'] ?? 28 }}</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+
+                        <!-- Sub-Section 2: Tenaga Kependidikan (TU) -->
+                        <div class="p-2.5 rounded-xl bg-slate-900/70 border border-white/5 space-y-1.5">
+                            <div class="flex items-center justify-between pb-1 border-b border-white/5">
+                                <span class="text-[11px] font-black text-amber-300 uppercase tracking-wide flex items-center gap-1">
+                                    <span>🏢</span> Tenaga Kependidikan (TU)
+                                </span>
+                                <span class="text-[10px] font-mono font-bold text-white bg-amber-500/20 px-2 py-0.2 rounded border border-amber-500/30">
+                                    {{ $data['recap_gtk']['tu']['total'] ?? 7 }} Orang
+                                </span>
+                            </div>
+                            <table class="w-full text-left text-[11px] border-collapse">
+                                <thead>
+                                    <tr class="text-[9px] text-slate-400 font-bold uppercase">
+                                        <th class="py-1">Status Kepegawaian</th>
+                                        <th class="py-1 text-center text-blue-400">L</th>
+                                        <th class="py-1 text-center text-rose-400">P</th>
+                                        <th class="py-1 text-right text-emerald-400">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-white/5 font-mono">
+                                    @foreach($data['recap_gtk']['tu']['statuses'] ?? [] as $st)
+                                        <tr>
+                                            <td class="py-1 text-slate-200 font-sans font-medium text-[10.5px]">{{ $st['status'] }}</td>
+                                            <td class="py-1 text-center text-blue-300">{{ $st['male'] }}</td>
+                                            <td class="py-1 text-center text-rose-300">{{ $st['female'] }}</td>
+                                            <td class="py-1 text-right font-bold text-white">{{ $st['total'] }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                                <tfoot>
+                                    <tr class="border-t border-white/10 font-bold text-[10.5px]">
+                                        <td class="py-1 text-amber-300 font-sans">Subtotal TU</td>
+                                        <td class="py-1 text-center text-blue-300 font-mono">{{ $data['recap_gtk']['tu']['total_male'] ?? 5 }}</td>
+                                        <td class="py-1 text-center text-rose-300 font-mono">{{ $data['recap_gtk']['tu']['total_female'] ?? 2 }}</td>
+                                        <td class="py-1 text-right text-emerald-300 font-mono font-black">{{ $data['recap_gtk']['tu']['total'] ?? 7 }}</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Grand Total GTK -->
+                    <div class="mt-2 pt-2 border-t border-white/10 flex items-center justify-between text-xs shrink-0 bg-slate-900/60 rounded-xl px-3 py-1.5">
+                        <span class="font-extrabold text-white uppercase tracking-wider text-[11px]">Total GTK (Guru &amp; TU)</span>
+                        <div class="flex items-center gap-2.5 font-mono font-black text-xs">
+                            <span class="text-blue-300">L: {{ $data['recap_gtk']['grand_total']['male'] ?? 19 }}</span>
+                            <span class="text-slate-500">&bull;</span>
+                            <span class="text-rose-300">P: {{ $data['recap_gtk']['grand_total']['female'] ?? 16 }}</span>
+                            <span class="text-slate-500">&bull;</span>
+                            <span class="px-2 py-0.5 rounded bg-teal-500/20 text-teal-300 border border-teal-500/30 text-sm">
+                                Total: {{ $data['recap_gtk']['grand_total']['total'] ?? 35 }}
                             </span>
-                            <span class="text-[9.5px] xl:text-[11px] text-slate-400 font-mono">SMAN 1 Lengkong</span>
                         </div>
-                        <p class="text-xs sm:text-sm md:text-base xl:text-lg text-white font-bold italic leading-relaxed">
-                            "{{ $data['profile']['vision'] }}"
-                        </p>
-                        @if(!empty($data['profile']['vision_sub']))
-                            <p class="text-[11px] sm:text-xs xl:text-sm text-teal-300 font-semibold mt-1">
-                                {{ $data['profile']['vision_sub'] }}
-                            </p>
-                        @endif
-                    </div>
-
-                    <!-- Misi Section (2x2 Grid, Legible, No Cutoff, Fills Height) -->
-                    <div class="flex-1 min-h-0 flex flex-col justify-between my-2 overflow-hidden">
-                        <div class="flex items-center justify-between pb-1.5 mb-1.5 border-b border-white/10 shrink-0">
-                            <span class="text-[10px] xl:text-xs font-black text-indigo-400 uppercase tracking-wider flex items-center gap-1.5">
-                                <span>🎯</span> MISI SEKOLAH
-                            </span>
-                            <span class="text-[9.5px] xl:text-[11px] text-slate-400 font-mono">{{ count($data['profile']['missions'] ?? []) }} Misi Unggulan</span>
-                        </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-2 grid-rows-2 gap-2.5 xl:gap-3.5 flex-1 min-h-0 overflow-hidden">
-                            @forelse($data['profile']['missions'] ?? [] as $misi)
-                                <div class="p-3 xl:p-3.5 rounded-xl bg-slate-900/80 border border-white/10 hover:border-indigo-500/30 transition flex flex-col justify-center h-full">
-                                    <div class="flex items-center gap-2 mb-1">
-                                        <div class="w-6 h-6 xl:w-7 xl:h-7 rounded-lg bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 flex items-center justify-center font-black text-[10px] xl:text-xs shrink-0 font-mono">
-                                            {{ $misi['number'] ?? '01' }}
-                                        </div>
-                                        <h4 class="text-xs sm:text-sm xl:text-base font-extrabold text-white leading-tight truncate">{{ $misi['title'] ?? '' }}</h4>
-                                    </div>
-                                    <p class="text-[11px] sm:text-xs xl:text-sm text-slate-300 leading-relaxed">
-                                        {{ $misi['desc'] ?? '' }}
-                                    </p>
-                                </div>
-                            @empty
-                                <div class="col-span-2 text-center text-slate-500 text-xs italic py-4">
-                                    Data misi sekolah belum dikonfigurasi.
-                                </div>
-                            @endforelse
-                        </div>
-                    </div>
-
-                    <!-- Bottom Tagline -->
-                    <div class="pt-2 border-t border-white/5 flex items-center justify-between text-[10px] xl:text-xs text-slate-400 shrink-0">
-                        <span>Mewujudkan Generasi Berakhlak Mulia, Cerdas, Terampil &amp; Berwawasan Global</span>
-                        <span class="font-mono text-teal-400 font-bold hidden sm:inline">SIS-SMA1LE &bull; TV KIOSK</span>
-                    </div>
-                        <span class="text-teal-400 font-semibold font-mono">SIS-SMA1LE</span>
                     </div>
                 </div>
+            </div>
+        </section>
             </div>
         </section>
 
@@ -1441,33 +1581,63 @@
                             <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
                             <span class="text-xs font-black text-white uppercase tracking-wider">Aktivitas Presensi Terkini</span>
                         </div>
-                        <span class="text-[10px] text-slate-400 font-mono">Live Tap Log</span>
+                        <span class="text-[10px] text-emerald-400 font-mono font-bold bg-emerald-500/20 px-2.5 py-0.5 rounded-full border border-emerald-500/30 flex items-center gap-1">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Khusus Hadir &bull; Berjalan Ke Atas
+                        </span>
                     </div>
 
-                    <div id="dailyRecentLogs" class="flex-1 min-h-0 overflow-y-auto kiosk-scroll space-y-2 pr-1">
-                        @forelse($data['daily']['recent'] as $rec)
-                            <div class="bg-slate-900/70 border border-white/5 rounded-xl px-3 py-2 flex items-center justify-between hover:border-teal-500/30 transition">
-                                <div class="flex items-center gap-2.5 truncate mr-2">
-                                    <div class="w-7 h-7 rounded-lg bg-teal-500/20 text-teal-300 flex items-center justify-center font-bold text-xs shrink-0">
-                                        {{ substr($rec['name'], 0, 1) }}
+                    <div id="dailyRecentLogsContainer" class="flex-1 min-h-0 overflow-hidden relative">
+                        <div id="dailyRecentLogs" class="animate-vertical-ticker space-y-2 pr-1">
+                            @php
+                                $hadirOnly = collect($data['daily']['recent'])->filter(fn ($r) => strtoupper($r['status'] ?? '') === 'HADIR')->values();
+                            @endphp
+                            @forelse($hadirOnly as $rec)
+                                <div class="bg-slate-900/80 border border-emerald-500/20 hover:border-emerald-500/50 rounded-xl px-3 py-2 flex items-center justify-between transition shadow-xs">
+                                    <div class="flex items-center gap-2.5 truncate mr-2">
+                                        <div class="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center justify-center font-bold text-xs shrink-0">
+                                            {{ substr($rec['name'], 0, 1) }}
+                                        </div>
+                                        <div class="truncate">
+                                            <div class="font-bold text-xs text-white truncate">{{ $rec['name'] }}</div>
+                                            <div class="text-[10px] text-slate-400 truncate">{{ $rec['class'] }} &bull; {{ $rec['method'] }}</div>
+                                        </div>
                                     </div>
-                                    <div class="truncate">
-                                        <div class="font-bold text-xs text-white truncate">{{ $rec['name'] }}</div>
-                                        <div class="text-[10px] text-slate-400 truncate">{{ $rec['class'] }} &bull; {{ $rec['method'] }}</div>
+                                    <div class="flex items-center gap-2 shrink-0">
+                                        <span class="px-2 py-0.5 rounded text-[10px] font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                                            HADIR
+                                        </span>
+                                        <span class="text-[11px] font-mono font-bold text-emerald-300">{{ $rec['time'] }}</span>
                                     </div>
                                 </div>
-                                <div class="flex items-center gap-2 shrink-0">
-                                    <span class="px-2 py-0.5 rounded text-[10px] font-black {{ $rec['status'] === 'HADIR' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-amber-500/20 text-amber-300 border border-amber-500/30' }}">
-                                        {{ $rec['status'] }}
-                                    </span>
-                                    <span class="text-[11px] font-mono font-bold text-slate-300">{{ $rec['time'] }}</span>
+                            @empty
+                                <div class="h-full flex items-center justify-center text-slate-500 text-xs italic py-8">
+                                    Belum ada presensi siswa hadir hari ini.
                                 </div>
-                            </div>
-                        @empty
-                            <div class="h-full flex items-center justify-center text-slate-500 text-xs italic">
-                                Belum ada aktivitas presensi masuk hari ini.
-                            </div>
-                        @endforelse
+                            @endforelse
+
+                            {{-- Duplicate set for seamless continuous vertical upward loop --}}
+                            @if($hadirOnly->count() > 2)
+                                @foreach($hadirOnly as $rec)
+                                    <div class="bg-slate-900/80 border border-emerald-500/20 hover:border-emerald-500/50 rounded-xl px-3 py-2 flex items-center justify-between transition shadow-xs">
+                                        <div class="flex items-center gap-2.5 truncate mr-2">
+                                            <div class="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center justify-center font-bold text-xs shrink-0">
+                                                {{ substr($rec['name'], 0, 1) }}
+                                            </div>
+                                            <div class="truncate">
+                                                <div class="font-bold text-xs text-white truncate">{{ $rec['name'] }}</div>
+                                                <div class="text-[10px] text-slate-400 truncate">{{ $rec['class'] }} &bull; {{ $rec['method'] }}</div>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center gap-2 shrink-0">
+                                            <span class="px-2 py-0.5 rounded text-[10px] font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                                                HADIR
+                                            </span>
+                                            <span class="text-[11px] font-mono font-bold text-emerald-300">{{ $rec['time'] }}</span>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            @endif
+                        </div>
                     </div>
                 </div>
             </div>
@@ -3034,25 +3204,38 @@
                         if (el) el.textContent = countMap[id];
                     });
 
-                    renderList('dailyRecentLogs', d.daily.recent, item => `
-                        <div class="bg-slate-900/70 border border-white/5 rounded-xl px-3 py-2 flex items-center justify-between hover:border-teal-500/30 transition">
-                            <div class="flex items-center gap-2.5 truncate mr-2">
-                                <div class="w-7 h-7 rounded-lg bg-teal-500/20 text-teal-300 flex items-center justify-center font-bold text-xs shrink-0">
-                                    ${item.name.charAt(0)}
+                    const hadirItems = (d.daily.recent || []).filter(item => String(item.status).toUpperCase() === 'HADIR');
+                    const logsEl = document.getElementById('dailyRecentLogs');
+                    if (logsEl) {
+                        if (hadirItems.length === 0) {
+                            logsEl.innerHTML = '<div class="h-full flex items-center justify-center text-slate-500 text-xs italic py-8">Belum ada siswa hadir hari ini.</div>';
+                        } else {
+                            const renderHadirCard = item => `
+                                <div class="bg-slate-900/80 border border-emerald-500/20 hover:border-emerald-500/50 rounded-xl px-3 py-2 flex items-center justify-between transition shadow-xs">
+                                    <div class="flex items-center gap-2.5 truncate mr-2">
+                                        <div class="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center justify-center font-bold text-xs shrink-0">
+                                            ${item.name.charAt(0)}
+                                        </div>
+                                        <div class="truncate">
+                                            <div class="font-bold text-xs text-white truncate">${item.name}</div>
+                                            <div class="text-[10px] text-slate-400 truncate">${item.class} &bull; ${item.method}</div>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-2 shrink-0">
+                                        <span class="px-2 py-0.5 rounded text-[10px] font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                                            HADIR
+                                        </span>
+                                        <span class="text-[11px] font-mono font-bold text-emerald-300">${item.time}</span>
+                                    </div>
                                 </div>
-                                <div class="truncate">
-                                    <div class="font-bold text-xs text-white truncate">${item.name}</div>
-                                    <div class="text-[10px] text-slate-400 truncate">${item.class} &bull; ${item.method}</div>
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-2 shrink-0">
-                                <span class="px-2 py-0.5 rounded text-[10px] font-black ${item.status === 'HADIR' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'}">
-                                    ${item.status}
-                                </span>
-                                <span class="text-[11px] font-mono font-bold text-slate-300">${item.time}</span>
-                            </div>
-                        </div>
-                    `, 'Belum ada aktivitas presensi masuk hari ini.');
+                            `;
+                            let cardsHtml = hadirItems.map(renderHadirCard).join('');
+                            if (hadirItems.length > 2) {
+                                cardsHtml += hadirItems.map(renderHadirCard).join('');
+                            }
+                            logsEl.innerHTML = cardsHtml;
+                        }
+                    }
                 }
 
                 // 2. Update Worship Stats
