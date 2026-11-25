@@ -506,6 +506,7 @@ Route::middleware([
 
     Route::get('/students/learning-agendas', [ClassLearningAgendaController::class, 'index'])->name('students.learning-agendas.index');
     Route::post('/students/learning-agendas', [ClassLearningAgendaController::class, 'store'])->name('students.learning-agendas.store');
+    Route::post('/students/learning-agendas/sync', [ClassLearningAgendaController::class, 'syncLms'])->name('students.learning-agendas.sync');
     Route::put('/students/learning-agendas/{learningAgenda}', [ClassLearningAgendaController::class, 'update'])->name('students.learning-agendas.update');
     Route::delete('/students/learning-agendas/{learningAgenda}', [ClassLearningAgendaController::class, 'destroy'])->name('students.learning-agendas.destroy');
     Route::get('/students/learning-agendas/print', [ClassLearningAgendaController::class, 'print'])->name('students.learning-agendas.print');

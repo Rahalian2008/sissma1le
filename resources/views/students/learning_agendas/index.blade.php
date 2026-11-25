@@ -16,6 +16,14 @@
             <p class="text-xs text-slate-500 mt-0.5">Format baku Kurikulum Merdeka: Catatan harian KBM, Tujuan Pembelajaran (TP), presensi kelas, dan verifikasi guru pengampu.</p>
         </div>
         <div class="flex flex-wrap items-center gap-2">
+            <form action="{{ route('students.learning-agendas.sync') }}" method="POST" class="inline">
+                @csrf
+                <input type="hidden" name="rombel" value="{{ $selectedRombel }}">
+                <button type="submit" class="inline-flex items-center px-3.5 py-2 bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 text-white font-bold text-xs rounded-xl shadow-xs transition cursor-pointer" title="Ambil dan sinkronkan data terkini dari LMS Jurnal Mengajar Guru">
+                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                    🔄 Sinkronkan Data dari LMS
+                </button>
+            </form>
             <a href="{{ route('students.learning-agendas.print', ['rombel' => $selectedRombel, 'month' => $selectedMonth, 'blank' => 1]) }}" target="_blank" class="inline-flex items-center px-3.5 py-2 bg-amber-50 hover:bg-amber-100 text-amber-900 font-bold text-xs rounded-xl border border-amber-300 transition shadow-2xs cursor-pointer">
                 <svg class="w-4 h-4 mr-1.5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                 📄 Cetak Format Kosong (10 Baris Manual)

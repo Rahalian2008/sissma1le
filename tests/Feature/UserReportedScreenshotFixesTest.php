@@ -599,3 +599,71 @@ test('kios tv feeds for tahfidz, security, guests, and library use vertical tick
         ->and($content)->toContain('Daftar Kunjungan Tamu Terkini')
         ->and($content)->toContain('Laporan Buku Tamu Pengunjung');
 });
+
+test('kios tv slide transition has vertical upward glide and slide 7, 10, 11, 13 are properly enhanced', function () {
+    $response = $this->get(route('kiosk.index'));
+    $response->assertStatus(200);
+
+    $content = $response->getContent();
+
+    // 1. Upward Slide Transition
+    expect($content)->toContain('kioskSlideUp')
+        ->and($content)->toContain('kiosk-slide-active');
+
+    // 2. Slide 7 (Ibadah & 7 KAIH): Expanded worship panels with tickers & compact 7 KAIH
+    expect($content)->toContain('id="dhuhaRecentLogs"')
+        ->and($content)->toContain('id="dzuhurRecentLogs"')
+        ->and($content)->toContain('id="keputrianRecentLogs"')
+        ->and($content)->toContain('Daftar Jamaah Hadir (Live Berjalan Ke Atas)');
+
+    // 3. Slide 10 (Prestasi): Live Upward Ticker for recent achievements
+    expect($content)->toContain('Prestasi &amp; Kejuaraan Siswa Terbaru');
+
+    // 4. Slide 11 (Piket): Picket zones filling empty space
+    expect($content)->toContain('Zona &amp; Posko Pengawasan Piket Sekolah');
+
+    // 5. Slide 13 (Agenda): Countdown and live KBM
+    expect($content)->toContain('Hitung Mundur Agenda Terdekat')
+        ->and($content)->toContain('Live Jurnal Mengajar Guru (LMS)');
+});
+
+test('principal dashboard contains executive command center and full operational control hubs', function () {
+    $kepsek = User::factory()->create([
+        'role' => 'kepala_sekolah',
+        'roles' => ['kepala_sekolah'],
+    ]);
+
+    $response = $this->actingAs($kepsek)->get(route('dashboard'));
+    $response->assertStatus(200);
+
+    $content = $response->getContent();
+    expect($content)->toContain('Pusat Kendali Operasional Sekolah (Executive Command Center)')
+        ->and($content)->toContain('Adm. Ketatausahaan &amp; Aset BMD')
+        ->and($content)->toContain('Supervisi Pembelajaran &amp; LMS')
+        ->and($content)->toContain('Kesiswaan, Tatib &amp; Konseling')
+        ->and($content)->toContain('Display KIOSK, Bel &amp; Keamanan');
+});
+
+test('agenda kbm is linked in sidebar under kurikulum and sync route works properly', function () {
+    $admin = User::factory()->create([
+        'role' => 'admin',
+        'roles' => ['admin'],
+    ]);
+
+    // Check sidebar contains Agenda KBM (Jurnal)
+    $response = $this->actingAs($admin)->get(route('dashboard'));
+    $response->assertStatus(200);
+    $response->assertSee('Agenda KBM (Jurnal)');
+
+    // Check sync route
+    $syncResponse = $this->actingAs($admin)->post(route('students.learning-agendas.sync'), [
+        'rombel' => 'X-1',
+    ]);
+    $syncResponse->assertRedirect();
+    $syncResponse->assertSessionHas('success');
+});
+
+test('sim bmd search modal has top z-index 999999 to always stay in front of modal-receipt', function () {
+    $view = (string) $this->blade('<x-sim-bmd-search-modal />');
+    expect($view)->toContain('z-index: 999999 !important;');
+});

@@ -120,6 +120,21 @@
             animation-play-state: paused;
         }
 
+        /* Slide Transition Animations (Vertical Upward Glide) */
+        @keyframes kioskSlideUp {
+            0% {
+                opacity: 0.2;
+                transform: translateY(45px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .kiosk-slide-active {
+            animation: kioskSlideUp 0.52s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
         /* Clean Hide Scrollbar */
         .no-scrollbar::-webkit-scrollbar {
             display: none;
@@ -1702,133 +1717,174 @@
                 </div>
             </div>
 
-            <!-- Top Grid: 3 Worship Panels (Dhuha, Dzuhur, Keputrian) -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 shrink-0">
+            <!-- Expanded Grid: 3 Main Worship Panels (Dhuha, Dzuhur, Keputrian with Upward Running Student Names) -->
+            <div class="flex-1 min-h-0 grid grid-cols-1 md:grid-cols-3 gap-3 overflow-hidden">
                 <!-- Card 1: Shalat Dhuha Bersama -->
-                <div class="p-3 sm:p-3.5 rounded-2xl glass-card border border-teal-500/30 flex flex-col justify-between">
-                    <div class="flex items-center justify-between mb-1.5">
+                <div class="p-3 sm:p-4 rounded-2xl glass-card border border-teal-500/30 flex flex-col justify-between overflow-hidden shadow-xl">
+                    <div class="flex items-center justify-between pb-1.5 border-b border-white/5 shrink-0">
                         <div class="flex items-center gap-2">
-                            <span class="text-base">🕌</span>
-                            <h3 class="text-xs font-bold text-white uppercase tracking-wider">Shalat Dhuha Bersama</h3>
+                            <span class="text-base sm:text-lg">🕌</span>
+                            <h3 class="text-xs sm:text-sm font-bold text-white uppercase tracking-wider">Shalat Dhuha Bersama</h3>
                         </div>
-                        <span id="dhuhaStatusBadge" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black {{ $data['dhuha']['is_open'] ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 animate-pulse' : 'bg-slate-800 text-slate-400 border border-white/10' }}">
+                        <span id="dhuhaStatusBadge" class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black {{ $data['dhuha']['is_open'] ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 animate-pulse' : 'bg-slate-800 text-slate-400 border border-white/10' }}">
                             {{ $data['dhuha']['is_open'] ? 'SESI BUKA' : 'SESI TUTUP' }}
                         </span>
                     </div>
-                    <div class="flex items-baseline justify-between my-1">
-                        <span class="text-[10px] text-slate-400">{{ $data['dhuha']['schedule'] }}</span>
+                    <div class="flex items-baseline justify-between my-2 shrink-0">
+                        <span class="text-[10.5px] text-slate-300 font-mono">{{ $data['dhuha']['schedule'] }}</span>
                         <div class="text-right">
-                            <span id="dhuhaTotalToday" class="text-xl sm:text-2xl font-black text-teal-300 font-mono">{{ $data['dhuha']['total_today'] }}</span>
+                            <span id="dhuhaTotalToday" class="text-2xl sm:text-3xl font-black text-teal-300 font-mono">{{ $data['dhuha']['total_today'] }}</span>
                             <span class="text-[10px] text-slate-400">Jamaah</span>
                         </div>
                     </div>
-                    <div id="dhuhaRecentLogs" class="max-h-24 overflow-y-auto kiosk-scroll space-y-1.5 mt-1 border-t border-white/5 pt-1.5">
-                        @forelse(collect($data['dhuha']['recent'])->take(3) as $dw)
-                            <div class="text-[11px] flex items-center justify-between text-slate-300 bg-slate-900/50 px-2 py-1 rounded-lg">
-                                <span class="truncate mr-2 font-medium">{{ $dw['name'] }} <span class="text-slate-500">({{ $dw['class'] }})</span></span>
-                                <span class="font-mono text-teal-400 shrink-0">{{ $dw['time'] }}</span>
+                    <div class="text-[10px] font-bold text-teal-300/80 uppercase tracking-wider mb-1 flex items-center justify-between shrink-0">
+                        <span>Daftar Jamaah Hadir (Live Berjalan Ke Atas)</span>
+                        <span class="text-[9px] text-slate-400 font-mono">Real-time</span>
+                    </div>
+                    <!-- Upward Running Ticker for Dhuha Attendees -->
+                    <div id="dhuhaRecentLogs" class="flex-1 min-h-0 overflow-hidden relative bg-slate-950/40 rounded-xl p-1.5 border border-white/5">
+                        @if(!empty($data['dhuha']['recent']) && count($data['dhuha']['recent']) > 0)
+                            <div class="animate-vertical-ticker-slow w-full space-y-1.5">
+                                @for($copyDh = 0; $copyDh < 2; $copyDh++)
+                                    <div class="space-y-1.5 pb-1.5">
+                                        @foreach($data['dhuha']['recent'] as $dw)
+                                            <div class="text-[11px] sm:text-xs flex items-center justify-between text-slate-200 bg-slate-900/80 border border-white/5 px-2.5 py-1.5 rounded-xl hover:border-teal-500/40 transition shadow-2xs">
+                                                <span class="truncate mr-2 font-medium">{{ $dw['name'] }} <span class="text-teal-400 font-bold">({{ $dw['class'] }})</span></span>
+                                                <span class="font-mono text-teal-300 font-bold shrink-0 text-[10px] bg-teal-950/60 px-2 py-0.5 rounded border border-teal-500/20">{{ $dw['time'] }} WIB</span>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                @endfor
                             </div>
-                        @empty
-                            <div class="text-slate-500 text-[10px] italic py-1">Belum ada jamaah dhuha yang tercatat.</div>
-                        @endforelse
+                        @else
+                            <div class="h-full flex items-center justify-center text-slate-400 text-xs italic py-4">
+                                Belum ada jamaah dhuha yang tercatat hari ini.
+                            </div>
+                        @endif
                     </div>
                 </div>
 
                 <!-- Card 2: Shalat Dzuhur / Jum'at Berjamaah -->
-                <div class="p-3 sm:p-3.5 rounded-2xl glass-card border border-indigo-500/30 flex flex-col justify-between">
-                    <div class="flex items-center justify-between mb-1.5">
+                <div class="p-3 sm:p-4 rounded-2xl glass-card border border-indigo-500/30 flex flex-col justify-between overflow-hidden shadow-xl">
+                    <div class="flex items-center justify-between pb-1.5 border-b border-white/5 shrink-0">
                         <div class="flex items-center gap-2">
-                            <span class="text-base">🕌</span>
-                            <h3 class="text-xs font-bold text-white uppercase tracking-wider">Shalat Dzuhur / Jum'at</h3>
+                            <span class="text-base sm:text-lg">🕌</span>
+                            <h3 class="text-xs sm:text-sm font-bold text-white uppercase tracking-wider">Shalat Dzuhur / Jum'at</h3>
                         </div>
-                        <span id="dzuhurStatusBadge" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black {{ $data['dzuhur']['is_open'] ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 animate-pulse' : 'bg-slate-800 text-slate-400 border border-white/10' }}">
+                        <span id="dzuhurStatusBadge" class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black {{ $data['dzuhur']['is_open'] ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 animate-pulse' : 'bg-slate-800 text-slate-400 border border-white/10' }}">
                             {{ $data['dzuhur']['is_open'] ? 'SESI BUKA' : 'SESI TUTUP' }}
                         </span>
                     </div>
-                    <div class="flex items-baseline justify-between my-1">
-                        <span class="text-[10px] text-slate-400">{{ $data['dzuhur']['schedule'] }}</span>
+                    <div class="flex items-baseline justify-between my-2 shrink-0">
+                        <span class="text-[10.5px] text-slate-300 font-mono">{{ $data['dzuhur']['schedule'] }}</span>
                         <div class="text-right">
-                            <span id="dzuhurTotalToday" class="text-xl sm:text-2xl font-black text-indigo-300 font-mono">{{ $data['dzuhur']['total_today'] }}</span>
+                            <span id="dzuhurTotalToday" class="text-2xl sm:text-3xl font-black text-indigo-300 font-mono">{{ $data['dzuhur']['total_today'] }}</span>
                             <span class="text-[10px] text-slate-400">Jamaah</span>
                         </div>
                     </div>
-                    <div id="dzuhurRecentLogs" class="max-h-24 overflow-y-auto kiosk-scroll space-y-1.5 mt-1 border-t border-white/5 pt-1.5">
-                        @forelse(collect($data['dzuhur']['recent'])->take(3) as $dz)
-                            <div class="text-[11px] flex items-center justify-between text-slate-300 bg-slate-900/50 px-2 py-1 rounded-lg">
-                                <span class="truncate mr-2 font-medium">{{ $dz['name'] }} <span class="text-slate-500">({{ $dz['class'] }})</span></span>
-                                <span class="font-mono text-indigo-400 shrink-0">{{ $dz['time'] }}</span>
+                    <div class="text-[10px] font-bold text-indigo-300/80 uppercase tracking-wider mb-1 flex items-center justify-between shrink-0">
+                        <span>Daftar Jamaah Hadir (Live Berjalan Ke Atas)</span>
+                        <span class="text-[9px] text-slate-400 font-mono">Real-time</span>
+                    </div>
+                    <!-- Upward Running Ticker for Dzuhur Attendees -->
+                    <div id="dzuhurRecentLogs" class="flex-1 min-h-0 overflow-hidden relative bg-slate-950/40 rounded-xl p-1.5 border border-white/5">
+                        @if(!empty($data['dzuhur']['recent']) && count($data['dzuhur']['recent']) > 0)
+                            <div class="animate-vertical-ticker-slow w-full space-y-1.5">
+                                @for($copyDz = 0; $copyDz < 2; $copyDz++)
+                                    <div class="space-y-1.5 pb-1.5">
+                                        @foreach($data['dzuhur']['recent'] as $dz)
+                                            <div class="text-[11px] sm:text-xs flex items-center justify-between text-slate-200 bg-slate-900/80 border border-white/5 px-2.5 py-1.5 rounded-xl hover:border-indigo-500/40 transition shadow-2xs">
+                                                <span class="truncate mr-2 font-medium">{{ $dz['name'] }} <span class="text-indigo-400 font-bold">({{ $dz['class'] }})</span></span>
+                                                <span class="font-mono text-indigo-300 font-bold shrink-0 text-[10px] bg-indigo-950/60 px-2 py-0.5 rounded border border-indigo-500/20">{{ $dz['time'] }} WIB</span>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                @endfor
                             </div>
-                        @empty
-                            <div class="text-slate-500 text-[10px] italic py-1">Belum ada jamaah dzuhur yang tercatat.</div>
-                        @endforelse
+                        @else
+                            <div class="h-full flex items-center justify-center text-slate-400 text-xs italic py-4">
+                                Belum ada jamaah dzuhur yang tercatat hari ini.
+                            </div>
+                        @endif
                     </div>
                 </div>
 
                 <!-- Card 3: Presensi Keputrian -->
-                <div class="p-3 sm:p-3.5 rounded-2xl glass-card border border-rose-500/30 flex flex-col justify-between">
-                    <div class="flex items-center justify-between mb-1.5">
+                <div class="p-3 sm:p-4 rounded-2xl glass-card border border-rose-500/30 flex flex-col justify-between overflow-hidden shadow-xl">
+                    <div class="flex items-center justify-between pb-1.5 border-b border-white/5 shrink-0">
                         <div class="flex items-center gap-2">
-                            <span class="text-base">✨</span>
-                            <h3 class="text-xs font-bold text-white uppercase tracking-wider">Presensi Keputrian</h3>
+                            <span class="text-base sm:text-lg">✨</span>
+                            <h3 class="text-xs sm:text-sm font-bold text-white uppercase tracking-wider">Presensi Keputrian</h3>
                         </div>
-                        <span id="keputrianStatusBadge" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black {{ $data['keputrian']['is_open'] ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 animate-pulse' : 'bg-slate-800 text-slate-400 border border-white/10' }}">
+                        <span id="keputrianStatusBadge" class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black {{ $data['keputrian']['is_open'] ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 animate-pulse' : 'bg-slate-800 text-slate-400 border border-white/10' }}">
                             {{ $data['keputrian']['is_open'] ? 'SESI BUKA' : 'SESI TUTUP' }}
                         </span>
                     </div>
-                    <div class="flex items-baseline justify-between my-1">
-                        <span class="text-[10px] text-slate-400">{{ $data['keputrian']['schedule'] }}</span>
+                    <div class="flex items-baseline justify-between my-2 shrink-0">
+                        <span class="text-[10.5px] text-slate-300 font-mono">{{ $data['keputrian']['schedule'] }}</span>
                         <div class="text-right">
-                            <span id="keputrianTotalToday" class="text-xl sm:text-2xl font-black text-rose-300 font-mono">{{ $data['keputrian']['total_today'] }}</span>
+                            <span id="keputrianTotalToday" class="text-2xl sm:text-3xl font-black text-rose-300 font-mono">{{ $data['keputrian']['total_today'] }}</span>
                             <span class="text-[10px] text-slate-400">Siswi</span>
                         </div>
                     </div>
-                    <div id="keputrianRecentLogs" class="max-h-24 overflow-y-auto kiosk-scroll space-y-1.5 mt-1 border-t border-white/5 pt-1.5">
-                        @forelse(collect($data['keputrian']['recent'])->take(3) as $kp)
-                            <div class="text-[11px] flex items-center justify-between text-slate-300 bg-slate-900/50 px-2 py-1 rounded-lg">
-                                <span class="truncate mr-2 font-medium">{{ $kp['name'] }} <span class="text-slate-500">({{ $kp['class'] }})</span></span>
-                                <span class="font-mono text-rose-400 shrink-0">{{ $kp['time'] }}</span>
+                    <div class="text-[10px] font-bold text-rose-300/80 uppercase tracking-wider mb-1 flex items-center justify-between shrink-0">
+                        <span>Daftar Siswi Hadir (Live Berjalan Ke Atas)</span>
+                        <span class="text-[9px] text-slate-400 font-mono">Real-time</span>
+                    </div>
+                    <!-- Upward Running Ticker for Keputrian Attendees -->
+                    <div id="keputrianRecentLogs" class="flex-1 min-h-0 overflow-hidden relative bg-slate-950/40 rounded-xl p-1.5 border border-white/5">
+                        @if(!empty($data['keputrian']['recent']) && count($data['keputrian']['recent']) > 0)
+                            <div class="animate-vertical-ticker-slow w-full space-y-1.5">
+                                @for($copyKp = 0; $copyKp < 2; $copyKp++)
+                                    <div class="space-y-1.5 pb-1.5">
+                                        @foreach($data['keputrian']['recent'] as $kp)
+                                            <div class="text-[11px] sm:text-xs flex items-center justify-between text-slate-200 bg-slate-900/80 border border-white/5 px-2.5 py-1.5 rounded-xl hover:border-rose-500/40 transition shadow-2xs">
+                                                <span class="truncate mr-2 font-medium">{{ $kp['name'] }} <span class="text-rose-400 font-bold">({{ $kp['class'] }})</span></span>
+                                                <span class="font-mono text-rose-300 font-bold shrink-0 text-[10px] bg-rose-950/60 px-2 py-0.5 rounded border border-rose-500/20">{{ $kp['time'] }} WIB</span>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                @endfor
                             </div>
-                        @empty
-                            <div class="text-slate-500 text-[10px] italic py-1">Belum ada kehadiran keputrian yang tercatat.</div>
-                        @endforelse
+                        @else
+                            <div class="h-full flex items-center justify-center text-slate-400 text-xs italic py-4">
+                                Belum ada siswi keputrian yang tercatat hari ini.
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>
 
-            <!-- Bottom Panel: 7 Kebiasaan Anak Indonesia Hebat (7 KAIH) -->
-            <div class="flex-1 min-h-0 rounded-2xl glass-panel border border-white/10 p-3 sm:p-4 flex flex-col justify-between overflow-hidden shadow-xl">
-                <div class="flex items-center justify-between pb-2 mb-2 border-b border-white/10 shrink-0">
+            <!-- Compact Bottom Panel: 7 Kebiasaan Anak Indonesia Hebat (7 KAIH) -->
+            <div class="shrink-0 rounded-2xl glass-panel border border-white/10 p-2.5 sm:p-3 flex flex-col justify-between shadow-xl">
+                <div class="flex items-center justify-between pb-1.5 border-b border-white/10">
                     <div class="flex items-center gap-2">
-                        <span class="text-lg">🌟</span>
+                        <span class="text-base sm:text-lg">🌟</span>
                         <div>
                             <h3 class="text-xs sm:text-sm font-extrabold text-white uppercase tracking-wider">
                                 Pembiasaan Karakter &bull; 7 Kebiasaan Anak Indonesia Hebat (7 KAIH)
                             </h3>
-                            <p class="text-[10px] text-slate-400">Pencatatan pembiasaan harian siswa untuk membangun profil pelajar berintegritas</p>
+                            <p class="text-[9.5px] text-slate-400 hidden sm:block">Pencatatan pembiasaan harian siswa untuk membangun profil pelajar Pancasila berintegritas</p>
                         </div>
                     </div>
-                    <div class="text-right">
-                        <span id="habitsCompletedToday" class="text-sm font-black text-emerald-400 font-mono">{{ $data['habits']['completed_today'] ?? 0 }}</span>
-                        <span class="text-[10px] text-slate-400 block">Aktivitas Terisi Hari Ini</span>
+                    <div class="flex items-center gap-2">
+                        <span class="text-[10px] text-slate-400">Total Terisi Hari Ini:</span>
+                        <span id="habitsCompletedToday" class="text-xs sm:text-sm font-black text-emerald-400 font-mono px-2 py-0.5 rounded-lg bg-emerald-950/60 border border-emerald-500/30">+{{ $data['habits']['completed_today'] ?? 0 }}</span>
                     </div>
                 </div>
 
-                <!-- 7 Habits Horizontal Cards Grid -->
-                <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2.5 flex-1 min-h-0 overflow-y-auto kiosk-scroll">
+                <!-- 7 Habits Horizontal Cards Compact Grid -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2 mt-2">
                     @foreach($data['habits']['list'] as $hb)
-                        <div class="p-2.5 rounded-xl bg-slate-900/70 border border-white/5 flex flex-col justify-between hover:border-teal-500/40 transition">
-                            <div class="flex items-center justify-between">
-                                <span class="text-lg">{{ $hb['icon'] }}</span>
-                                <span class="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-white/5 text-slate-400">#{{ $hb['order'] }}</span>
+                        <div class="p-2 rounded-xl bg-slate-900/80 border border-white/5 flex items-center justify-between hover:border-teal-500/40 transition">
+                            <div class="flex items-center gap-1.5 truncate mr-1">
+                                <span class="text-base shrink-0">{{ $hb['icon'] }}</span>
+                                <div class="truncate">
+                                    <h4 class="text-[11px] font-bold text-white truncate leading-tight">{{ $hb['name'] }}</h4>
+                                    <span class="text-[8.5px] text-slate-400 font-mono">#{{ $hb['order'] }}</span>
+                                </div>
                             </div>
-                            <div class="my-1">
-                                <h4 class="text-xs font-bold text-white truncate">{{ $hb['name'] }}</h4>
-                                <p class="text-[9px] text-slate-400 line-clamp-1">{{ $hb['tagline'] }}</p>
-                            </div>
-                            <div class="pt-1.5 border-t border-white/5 flex items-center justify-between text-[10px]">
-                                <span class="text-slate-500">Hari ini:</span>
-                                <span class="font-bold text-emerald-400 font-mono">+{{ $hb['completed'] }}</span>
-                            </div>
+                            <span class="font-bold text-emerald-400 font-mono text-[10.5px] shrink-0 bg-white/5 px-1.5 py-0.5 rounded">+{{ $hb['completed'] }}</span>
                         </div>
                     @endforeach
                 </div>
@@ -2176,84 +2232,149 @@
                 </div>
             </div>
 
-            <!-- Main Podium & Leaderboard View -->
-            <div class="flex-1 min-h-0 flex flex-col justify-between gap-3 overflow-hidden">
-                <!-- Top 3 Grand Stage Podium -->
-                <div class="grid grid-cols-3 gap-3 sm:gap-4 shrink-0">
-                    @php
-                        $top1 = $data['ranking'][0] ?? null;
-                        $top2 = $data['ranking'][1] ?? null;
-                        $top3 = $data['ranking'][2] ?? null;
-                    @endphp
+            <!-- Main 2-Column Layout: Left Podium & Leaderboard, Right Live Upward Ticker for Recent Achievements -->
+            <div class="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-3 lg:gap-4 overflow-hidden">
+                <!-- Left Column (5 Cols): Podium Top 3 & Leaderboard Top 10 -->
+                <div class="lg:col-span-5 flex flex-col justify-between gap-2.5 overflow-hidden">
+                    <!-- Top 3 Grand Stage Podium -->
+                    <div class="grid grid-cols-3 gap-2 shrink-0">
+                        @php
+                            $top1 = $data['ranking'][0] ?? null;
+                            $top2 = $data['ranking'][1] ?? null;
+                            $top3 = $data['ranking'][2] ?? null;
+                        @endphp
 
-                    <!-- Rank 2 (Silver) -->
-                    <div class="p-3 sm:p-4 rounded-2xl glass-card border border-slate-300/30 flex flex-col items-center text-center justify-between order-1 shadow-lg">
-                        <div class="w-7 h-7 rounded-full bg-slate-300 text-slate-950 font-black text-xs flex items-center justify-center shadow-md">2</div>
-                        <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-tr from-slate-400 to-slate-200 p-0.5 my-1.5 shadow-md">
-                            <div class="w-full h-full bg-slate-900 rounded-[14px] flex items-center justify-center font-black text-lg text-slate-200">
-                                {{ $top2 ? substr($top2['name'], 0, 2) : '--' }}
+                        <!-- Rank 2 (Silver) -->
+                        <div class="p-2 sm:p-2.5 rounded-2xl glass-card border border-slate-300/30 flex flex-col items-center text-center justify-between order-1 shadow-md">
+                            <div class="w-6 h-6 rounded-full bg-slate-300 text-slate-950 font-black text-[11px] flex items-center justify-center shadow-xs">2</div>
+                            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-slate-400 to-slate-200 p-0.5 my-1 shadow-xs">
+                                <div class="w-full h-full bg-slate-900 rounded-[10px] flex items-center justify-center font-black text-xs text-slate-200">
+                                    {{ $top2 ? substr($top2['name'], 0, 2) : '--' }}
+                                </div>
+                            </div>
+                            <h4 class="text-[11px] font-bold text-white truncate max-w-full leading-tight">{{ $top2['name'] ?? 'Belum Ada' }}</h4>
+                            <span class="text-[9px] text-slate-400">{{ $top2['class'] ?? '-' }}</span>
+                            <div class="mt-1 px-2 py-0.5 rounded-full bg-slate-300/20 text-slate-200 font-mono font-black text-[10px]">
+                                +{{ $top2['points'] ?? 0 }} Poin
                             </div>
                         </div>
-                        <h4 class="text-xs sm:text-sm font-bold text-white truncate max-w-full">{{ $top2['name'] ?? 'Belum Ada' }}</h4>
-                        <span class="text-[10px] text-slate-400">{{ $top2['class'] ?? '-' }}</span>
-                        <div class="mt-1 px-3 py-0.5 rounded-full bg-slate-300/20 text-slate-200 font-mono font-black text-xs sm:text-sm">
-                            +{{ $top2['points'] ?? 0 }} Poin
+
+                        <!-- Rank 1 (Gold) - Higher & Glowing -->
+                        <div class="p-2.5 sm:p-3 rounded-2xl glass-panel border border-yellow-500/60 flex flex-col items-center text-center justify-between order-2 glow-gold scale-102">
+                            <span class="text-lg animate-bounce">👑</span>
+                            <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-yellow-400 via-amber-300 to-yellow-500 p-0.5 my-1 shadow-md shadow-yellow-500/30">
+                                <div class="w-full h-full bg-slate-900 rounded-[10px] flex items-center justify-center font-black text-sm text-yellow-300">
+                                    {{ $top1 ? substr($top1['name'], 0, 2) : '--' }}
+                                </div>
+                            </div>
+                            <h4 class="text-xs font-black text-white truncate max-w-full leading-tight">{{ $top1['name'] ?? 'Belum Ada' }}</h4>
+                            <span class="text-[9.5px] text-yellow-200 font-semibold">{{ $top1['class'] ?? '-' }}</span>
+                            <div class="mt-1 px-2.5 py-0.5 rounded-full bg-gradient-to-r from-yellow-500 to-amber-500 text-slate-950 font-mono font-black text-xs shadow-sm">
+                                +{{ $top1['points'] ?? 0 }} POIN
+                            </div>
+                        </div>
+
+                        <!-- Rank 3 (Bronze) -->
+                        <div class="p-2 sm:p-2.5 rounded-2xl glass-card border border-amber-600/30 flex flex-col items-center text-center justify-between order-3 shadow-md">
+                            <div class="w-6 h-6 rounded-full bg-amber-600 text-white font-black text-[11px] flex items-center justify-center shadow-xs">3</div>
+                            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-600 to-amber-400 p-0.5 my-1 shadow-xs">
+                                <div class="w-full h-full bg-slate-900 rounded-[10px] flex items-center justify-center font-black text-xs text-amber-300">
+                                    {{ $top3 ? substr($top3['name'], 0, 2) : '--' }}
+                                </div>
+                            </div>
+                            <h4 class="text-[11px] font-bold text-white truncate max-w-full leading-tight">{{ $top3['name'] ?? 'Belum Ada' }}</h4>
+                            <span class="text-[9px] text-slate-400">{{ $top3['class'] ?? '-' }}</span>
+                            <div class="mt-1 px-2 py-0.5 rounded-full bg-amber-600/20 text-amber-300 font-mono font-black text-[10px]">
+                                +{{ $top3['points'] ?? 0 }} Poin
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Rank 1 (Gold) - Higher & Glowing -->
-                    <div class="p-3 sm:p-4 rounded-2xl glass-panel border border-yellow-500/60 flex flex-col items-center text-center justify-between order-2 glow-gold scale-102">
-                        <span class="text-xl sm:text-2xl animate-bounce">👑</span>
-                        <div class="w-14 h-14 sm:w-18 sm:h-18 rounded-2xl bg-gradient-to-tr from-yellow-400 via-amber-300 to-yellow-500 p-1 my-1 shadow-xl shadow-yellow-500/30">
-                            <div class="w-full h-full bg-slate-900 rounded-[14px] flex items-center justify-center font-black text-xl sm:text-2xl text-yellow-300">
-                                {{ $top1 ? substr($top1['name'], 0, 2) : '--' }}
-                            </div>
-                        </div>
-                        <h4 class="text-sm sm:text-base font-black text-white truncate max-w-full">{{ $top1['name'] ?? 'Belum Ada' }}</h4>
-                        <span class="text-[10px] sm:text-xs text-yellow-200/90 font-semibold">{{ $top1['class'] ?? '-' }} &bull; {{ $top1['achievements_count'] ?? 0 }} Prestasi</span>
-                        <div class="mt-1 px-4 py-1 rounded-full bg-gradient-to-r from-yellow-500 to-amber-500 text-slate-950 font-mono font-black text-sm sm:text-base shadow-lg">
-                            +{{ $top1['points'] ?? 0 }} POIN
-                        </div>
-                    </div>
-
-                    <!-- Rank 3 (Bronze) -->
-                    <div class="p-3 sm:p-4 rounded-2xl glass-card border border-amber-600/30 flex flex-col items-center text-center justify-between order-3 shadow-lg">
-                        <div class="w-7 h-7 rounded-full bg-amber-600 text-white font-black text-xs flex items-center justify-center shadow-md">3</div>
-                        <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-tr from-amber-600 to-amber-400 p-0.5 my-1.5 shadow-md">
-                            <div class="w-full h-full bg-slate-900 rounded-[14px] flex items-center justify-center font-black text-lg text-amber-300">
-                                {{ $top3 ? substr($top3['name'], 0, 2) : '--' }}
-                            </div>
-                        </div>
-                        <h4 class="text-xs sm:text-sm font-bold text-white truncate max-w-full">{{ $top3['name'] ?? 'Belum Ada' }}</h4>
-                        <span class="text-[10px] text-slate-400">{{ $top3['class'] ?? '-' }}</span>
-                        <div class="mt-1 px-3 py-0.5 rounded-full bg-amber-600/20 text-amber-300 font-mono font-black text-xs sm:text-sm">
-                            +{{ $top3['points'] ?? 0 }} Poin
+                    <!-- Ranks 4 to 10 Compact List -->
+                    <div class="flex-1 min-h-0 rounded-2xl glass-card border border-white/10 p-2.5 flex flex-col justify-between overflow-hidden shadow-lg">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 block shrink-0">Peringkat 4 s.d. 10 Poin Prestasi</span>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 flex-1 min-h-0 overflow-y-auto kiosk-scroll pr-1">
+                            @forelse(collect($data['ranking'])->slice(3, 7) as $rk)
+                                <div class="rounded-xl px-2.5 py-1.5 bg-slate-900/60 border border-white/5 flex items-center justify-between">
+                                    <div class="flex items-center gap-2 truncate mr-1.5">
+                                        <span class="w-4.5 h-4.5 rounded bg-slate-800 text-slate-300 flex items-center justify-center text-[9px] font-bold shrink-0">
+                                            {{ $rk['rank'] }}
+                                        </span>
+                                        <div class="truncate">
+                                            <div class="font-bold text-[11px] text-white truncate leading-tight">{{ $rk['name'] }}</div>
+                                            <div class="text-[8.5px] text-slate-400 truncate">{{ $rk['class'] }}</div>
+                                        </div>
+                                    </div>
+                                    <span class="font-mono font-black text-[11px] text-yellow-400 shrink-0">+{{ $rk['points'] }}</span>
+                                </div>
+                            @empty
+                                <div class="col-span-full text-center text-slate-500 text-xs italic py-2">
+                                    Belum ada data peringkat lainnya.
+                                </div>
+                            @endforelse
                         </div>
                     </div>
                 </div>
 
-                <!-- Ranks 4 to 10 Horizontal Grid -->
-                <div class="flex-1 min-h-0 rounded-2xl glass-card border border-white/10 p-3 flex flex-col justify-between overflow-hidden">
-                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 block shrink-0">Peringkat 4 s.d. 10 Poin Prestasi Sekolah</span>
-                    <div id="rankingList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 flex-1 min-h-0 overflow-y-auto kiosk-scroll pr-1">
-                        @forelse(collect($data['ranking'])->slice(3, 8) as $rk)
-                            <div class="rounded-xl px-3 py-2 bg-slate-900/60 border border-white/5 flex items-center justify-between">
-                                <div class="flex items-center gap-2 truncate mr-2">
-                                    <span class="w-5 h-5 rounded-md bg-slate-800 text-slate-400 flex items-center justify-center text-[10px] font-bold">
-                                        {{ $rk['rank'] }}
-                                    </span>
-                                    <div class="truncate">
-                                        <div class="font-bold text-xs text-white truncate">{{ $rk['name'] }}</div>
-                                        <div class="text-[9px] text-slate-400 truncate">{{ $rk['class'] }}</div>
+                <!-- Right Column (7 Cols): Prestasi & Kejuaraan Terbaru Siswa (Auto Upward Ticker) -->
+                <div class="lg:col-span-7 rounded-2xl glass-panel border border-white/10 p-3 sm:p-4 flex flex-col justify-between overflow-hidden shadow-2xl">
+                    <div class="flex items-center justify-between pb-2 mb-2 border-b border-white/10 shrink-0">
+                        <div class="flex items-center gap-2">
+                            <span class="text-base sm:text-lg">🏅</span>
+                            <div>
+                                <h3 class="text-xs sm:text-sm font-extrabold text-white uppercase tracking-wider">
+                                    Prestasi &amp; Kejuaraan Siswa Terbaru
+                                </h3>
+                                <p class="text-[10px] text-slate-400">Daftar kejuaraan akademik, seni, dan olahraga tingkat Kab/Prov/Nasional (Berjalan Ke Atas)</p>
+                            </div>
+                        </div>
+                        <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-yellow-500/20 text-yellow-300 border border-yellow-500/30 font-mono flex items-center gap-1 shrink-0">
+                            <span class="w-1.5 h-1.5 rounded-full bg-yellow-400 animate-ping"></span>
+                            Live Updates
+                        </span>
+                    </div>
+
+                    <!-- Continuous Upward Running Ticker -->
+                    <div class="flex-1 min-h-0 overflow-hidden relative bg-slate-950/40 rounded-xl p-2 border border-white/5">
+                        @if(!empty($data['recent_achievements']) && count($data['recent_achievements']) > 0)
+                            <div class="animate-vertical-ticker-slow w-full space-y-2">
+                                @for($copyAch = 0; $copyAch < 2; $copyAch++)
+                                    <div class="space-y-2 pb-2">
+                                        @foreach($data['recent_achievements'] as $ach)
+                                            <div class="p-2.5 rounded-xl bg-slate-900/85 border border-white/5 flex items-center justify-between gap-3 hover:border-yellow-500/40 transition shadow-xs">
+                                                <div class="flex items-center gap-2.5 min-w-0 flex-1">
+                                                    <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-yellow-500 to-amber-600 text-slate-950 flex items-center justify-center font-black text-xs shrink-0 shadow-xs">
+                                                        🏆
+                                                    </div>
+                                                    <div class="min-w-0 flex-1">
+                                                        <div class="flex items-center gap-2">
+                                                            <h4 class="font-bold text-xs text-white truncate">{{ $ach['name'] }}</h4>
+                                                            <span class="px-2 py-0.5 rounded text-[9.5px] font-bold bg-teal-500/20 text-teal-300 border border-teal-500/30 shrink-0">{{ $ach['class'] }}</span>
+                                                        </div>
+                                                        <div class="text-[11px] text-yellow-300 font-semibold truncate mt-0.5">{{ $ach['title'] }}</div>
+                                                        <div class="text-[9.5px] text-slate-400 mt-0.5 flex items-center gap-2">
+                                                            <span>{{ $ach['level'] }}</span>
+                                                            <span>&bull;</span>
+                                                            <span class="text-amber-300 font-bold">{{ $ach['rank'] }}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="text-right shrink-0">
+                                                    <span class="px-2 py-0.5 rounded bg-yellow-500/20 text-yellow-300 border border-yellow-500/30 font-mono font-bold text-xs block">
+                                                        +{{ $ach['points'] }} Poin
+                                                    </span>
+                                                    <span class="text-[9px] text-slate-400 font-mono mt-0.5 block">{{ $ach['date'] }}</span>
+                                                </div>
+                                            </div>
+                                        @endforeach
                                     </div>
-                                </div>
-                                <span class="font-mono font-black text-xs text-yellow-400 shrink-0">+{{ $rk['points'] }}</span>
+                                @endfor
                             </div>
-                        @empty
-                            <div class="col-span-full text-center text-slate-500 text-xs italic py-2">
-                                Belum ada data prestasi lainnya.
+                        @else
+                            <div class="h-full flex items-center justify-center text-slate-400 text-xs italic py-6">
+                                Belum ada riwayat prestasi terbaru.
                             </div>
-                        @endforelse
+                        @endif
                     </div>
                 </div>
             </div>
@@ -2281,25 +2402,29 @@
 
             <!-- Main Grid: Left Duty Pickets, Right Security & Exit Permits -->
             <div class="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-3 lg:gap-4 overflow-hidden">
-                <!-- Left Column: Picket Schedule (6 Cols) -->
+                <!-- Left Column: Picket Schedule & Duty Zones (6 Cols) -->
                 <div class="lg:col-span-6 rounded-2xl glass-panel border border-white/10 p-3 sm:p-4 flex flex-col justify-between overflow-hidden shadow-xl">
                     <div class="flex items-center justify-between pb-2 mb-2 border-b border-white/10 shrink-0">
                         <div class="flex items-center gap-2">
-                            <span class="text-base">📋</span>
-                            <h3 class="text-xs sm:text-sm font-extrabold text-white uppercase tracking-wider">
-                                Petugas Piket Hari Ini ({{ $data['picket']['day_name'] ?? 'Aktif' }})
-                            </h3>
+                            <span class="text-base sm:text-lg">📋</span>
+                            <div>
+                                <h3 class="text-xs sm:text-sm font-extrabold text-white uppercase tracking-wider">
+                                    Petugas Piket Hari Ini ({{ $data['picket']['day_name'] ?? 'Aktif' }})
+                                </h3>
+                                <p class="text-[9.5px] text-slate-400">Jadwal pembagian tugas &amp; posko monitoring ketertiban</p>
+                            </div>
                         </div>
-                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-teal-500/20 text-teal-300">
+                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-teal-500/20 text-teal-300 border border-teal-500/30 font-mono">
                             {{ $data['picket']['total'] ?? 0 }} Petugas Bertugas
                         </span>
                     </div>
 
-                    <div id="picketOfficersList" class="flex-1 min-h-0 overflow-y-auto kiosk-scroll space-y-2 pr-1">
+                    <!-- Officers List (Compact) -->
+                    <div id="picketOfficersList" class="shrink-0 space-y-1.5 mb-2.5">
                         @forelse($data['picket']['officers'] as $pk)
-                            <div class="p-2.5 rounded-xl bg-slate-900/70 border border-white/5 flex items-center justify-between hover:border-teal-500/30 transition">
+                            <div class="p-2 sm:p-2.5 rounded-xl bg-slate-900/80 border border-white/5 flex items-center justify-between hover:border-teal-500/30 transition shadow-2xs">
                                 <div class="flex items-center gap-2.5 truncate mr-2">
-                                    <div class="w-8 h-8 rounded-xl bg-teal-500/20 text-teal-300 flex items-center justify-center font-bold text-xs shrink-0">
+                                    <div class="w-8 h-8 rounded-xl bg-teal-500/20 text-teal-300 flex items-center justify-center font-bold text-xs shrink-0 border border-teal-500/30">
                                         {{ substr($pk['name'], 0, 2) }}
                                     </div>
                                     <div class="truncate">
@@ -2308,22 +2433,46 @@
                                     </div>
                                 </div>
                                 <div class="text-right shrink-0">
-                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-800 text-teal-300 border border-teal-500/20">
+                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-teal-950/60 text-teal-300 border border-teal-500/30">
                                         {{ $pk['role_type'] }}
                                     </span>
-                                    <div class="text-[9px] text-slate-400 mt-1 font-mono">{{ $pk['time'] }}</div>
+                                    <div class="text-[9px] text-slate-400 mt-0.5 font-mono">{{ $pk['time'] }}</div>
                                 </div>
                             </div>
                         @empty
-                            <div class="h-full flex items-center justify-center text-slate-500 text-xs italic py-6">
+                            <div class="p-3 rounded-xl bg-slate-900/60 text-slate-400 text-xs italic text-center">
                                 Belum ada petugas piket yang terjadwal untuk hari ini.
                             </div>
                         @endforelse
                     </div>
 
-                    <div class="mt-2 pt-2 border-t border-white/5 text-[10px] text-slate-400 flex items-center justify-between shrink-0">
-                        <span>Standby di Pos Piket Lobi Utama &amp; Pos Gerbang</span>
-                        <span class="font-mono text-teal-400">SMAN 1 Lengkong</span>
+                    <!-- Enhanced Section: Posko & Zona Pengawasan Piket (Fills Empty Space) -->
+                    <div class="flex-1 min-h-0 flex flex-col justify-between bg-slate-950/40 rounded-xl p-2.5 border border-white/5 overflow-hidden">
+                        <div class="flex items-center justify-between pb-1.5 mb-1.5 border-b border-white/5 shrink-0">
+                            <span class="text-[10.5px] font-bold text-teal-300 uppercase tracking-wider flex items-center gap-1.5">
+                                <span>📍</span> Zona &amp; Posko Pengawasan Piket Sekolah
+                            </span>
+                            <span class="text-[9px] font-mono text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-500/30 font-bold">Kondusif</span>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 flex-1 min-h-0 overflow-y-auto kiosk-scroll">
+                            @foreach($data['picket']['zones'] ?? [] as $zn)
+                                <div class="p-2 rounded-xl bg-slate-900/70 border border-white/5 flex flex-col justify-between hover:border-teal-500/30 transition">
+                                    <div class="flex items-center justify-between gap-1 mb-1">
+                                        <span class="font-bold text-[11px] text-white truncate leading-tight">{{ $zn['pos'] }}</span>
+                                        <span class="text-[8.5px] font-bold font-mono px-1.5 py-0.5 rounded bg-white/5 text-teal-300 shrink-0">{{ $zn['status'] }}</span>
+                                    </div>
+                                    <p class="text-[9.5px] text-slate-400 leading-snug line-clamp-2">{{ $zn['task'] }}</p>
+                                </div>
+                            @endforeach
+                        </div>
+                        <!-- Mini SOP Strip -->
+                        <div class="mt-2 pt-1.5 border-t border-white/5 flex items-center justify-between text-[9.5px] text-slate-400 shrink-0">
+                            <span class="flex items-center gap-1">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                                Standby di Pos Piket Lobi Utama &amp; Pos Gerbang
+                            </span>
+                            <span class="font-mono text-teal-400 font-bold">SIS-SMA1LE KIOSK</span>
+                        </div>
                     </div>
                 </div>
 
@@ -2578,90 +2727,166 @@
                 </div>
             </div>
 
-            <!-- Content Area: Agenda Grid & Info Cards -->
-            <div class="flex-1 min-h-0 flex flex-col gap-3 overflow-hidden">
-                <!-- Top Summary Ribbon -->
-                <div class="p-2.5 sm:p-3 rounded-xl bg-gradient-to-r from-indigo-950/70 via-slate-900/80 to-teal-950/70 border border-indigo-500/20 flex flex-wrap items-center justify-between gap-3 shrink-0 shadow-md">
-                    <div class="flex items-center gap-3">
-                        <div class="w-9 h-9 rounded-xl bg-indigo-500/20 text-indigo-300 flex items-center justify-center text-lg font-black shrink-0">
-                            🗓️
+            <!-- Content Area: 2-Column Split (Left Agenda Cards, Right Countdown & Live LMS KBM Journal) -->
+            <div class="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-3 lg:gap-4 overflow-hidden">
+                <!-- Left Column (7 Cols): Kalender Agenda Terpadu -->
+                <div class="lg:col-span-7 flex flex-col justify-between gap-2.5 overflow-hidden">
+                    <!-- Top Summary Ribbon -->
+                    <div class="p-2.5 rounded-xl bg-gradient-to-r from-indigo-950/70 via-slate-900/80 to-teal-950/70 border border-indigo-500/20 flex items-center justify-between gap-2 shrink-0 shadow-md">
+                        <div class="flex items-center gap-2.5 truncate mr-2">
+                            <div class="w-8 h-8 rounded-xl bg-indigo-500/20 text-indigo-300 flex items-center justify-center text-base font-black shrink-0">
+                                🗓️
+                            </div>
+                            <div class="truncate">
+                                <div class="text-xs font-bold text-white truncate">Kalender Aktivitas Terpadu</div>
+                                <div class="text-[9.5px] text-slate-300 truncate">Agenda resmi &amp; kalender pendidikan semester berjalan</div>
+                            </div>
                         </div>
-                        <div>
-                            <div class="text-xs sm:text-sm font-bold text-white">Kalender Aktivitas Terpadu SMAN 1 Lengkong</div>
-                            <div class="text-[10.5px] text-slate-300">Seluruh agenda resmi mengacu pada kalender pendidikan &amp; agenda semester berjalan</div>
+                        <div class="flex items-center gap-1.5 font-mono text-[11px] shrink-0">
+                            <span class="px-2.5 py-0.5 rounded-lg bg-indigo-500/30 text-indigo-300 font-bold border border-indigo-500/40">
+                                {{ count($data['agendas'] ?? []) }} Terdaftar
+                            </span>
                         </div>
                     </div>
-                    <div class="flex items-center gap-2 font-mono text-xs">
-                        <span class="px-3 py-1 rounded-lg bg-indigo-500/30 text-indigo-300 font-bold border border-indigo-500/40">
-                            {{ count($data['agendas'] ?? []) }} Agenda Terdaftar
-                        </span>
-                        <span class="px-3 py-1 rounded-lg bg-teal-500/30 text-teal-300 font-bold border border-teal-500/40 hidden sm:inline-block">
-                            Semester Ganjil 2026/2027
-                        </span>
+
+                    <!-- Agenda Cards Grid -->
+                    <div class="flex-1 min-h-0 overflow-y-auto kiosk-scroll grid grid-cols-1 sm:grid-cols-2 gap-2.5 pr-1">
+                        @forelse($data['agendas'] ?? [] as $idx => $agenda)
+                            @php
+                                $dateObj = null;
+                                try {
+                                    $dateObj = \Carbon\Carbon::parse($agenda['date']);
+                                } catch (\Throwable $e) {}
+                                $dayNum = $dateObj ? $dateObj->format('d') : '25';
+                                $monthStr = $dateObj ? $dateObj->translatedFormat('M') : 'NOV';
+                                $dayName = $dateObj ? $dateObj->translatedFormat('l') : 'Rabu';
+                            @endphp
+                            <div class="glass-card rounded-2xl border border-white/10 p-3 flex flex-col justify-between hover:border-indigo-500/40 transition group glow-indigo relative overflow-hidden shadow-md">
+                                <!-- Top Ribbon: Date Badge + Tag -->
+                                <div class="flex items-start justify-between gap-2 mb-1.5">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-10 h-11 rounded-xl bg-gradient-to-b from-indigo-500 to-indigo-700 text-white flex flex-col items-center justify-center shadow-md shrink-0 border border-indigo-400/30">
+                                            <span class="text-[8px] font-black tracking-widest uppercase">{{ $monthStr }}</span>
+                                            <span class="text-sm font-extrabold leading-tight">{{ $dayNum }}</span>
+                                        </div>
+                                        <div>
+                                            <span class="px-2 py-0.5 rounded text-[8.5px] font-black uppercase bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                                                {{ $agenda['tag'] ?? 'Akademik' }}
+                                            </span>
+                                            <div class="text-[9.5px] text-slate-400 font-mono mt-0.5">
+                                                {{ $dayName }}, {{ $agenda['date'] ?? '' }}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <span class="w-6 h-6 rounded-lg bg-slate-900 border border-white/10 flex items-center justify-center text-[10px] text-indigo-300 font-mono shrink-0">
+                                        #{{ $idx + 1 }}
+                                    </span>
+                                </div>
+
+                                <!-- Title & Description -->
+                                <div class="flex-1 min-h-0 my-1">
+                                    <h4 class="text-xs font-extrabold text-white leading-snug group-hover:text-indigo-300 transition line-clamp-2">
+                                        {{ $agenda['title'] }}
+                                    </h4>
+                                    <p class="text-[10px] text-slate-300 leading-relaxed mt-1 line-clamp-2">
+                                        {{ $agenda['description'] ?? 'Agenda resmi sekolah yang wajib diikuti oleh seluruh civitas akademika.' }}
+                                    </p>
+                                </div>
+
+                                <!-- Footer Card Status -->
+                                <div class="pt-1.5 mt-1 border-t border-white/5 flex items-center justify-between text-[9.5px] text-slate-400 shrink-0">
+                                    <span class="flex items-center gap-1 text-teal-400 font-medium">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse"></span> Terjadwal
+                                    </span>
+                                    <span class="font-mono text-slate-500 text-[9px]">SMAN 1 Lengkong</span>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="col-span-full h-full flex items-center justify-center text-slate-500 text-xs italic py-8">
+                                Belum ada jadwal agenda yang dipublikasikan.
+                            </div>
+                        @endforelse
                     </div>
                 </div>
 
-                <!-- Grid of Agenda Cards -->
-                <div class="flex-1 min-h-0 overflow-y-auto kiosk-scroll grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-3 pr-1">
-                    @forelse($data['agendas'] ?? [] as $idx => $agenda)
-                        @php
-                            $dateObj = null;
-                            try {
-                                $dateObj = \Carbon\Carbon::parse($agenda['date']);
-                            } catch (\Throwable $e) {}
-                            $dayNum = $dateObj ? $dateObj->format('d') : '25';
-                            $monthStr = $dateObj ? $dateObj->translatedFormat('M') : 'NOV';
-                            $dayName = $dateObj ? $dateObj->translatedFormat('l') : 'Rabu';
-                        @endphp
-                        <div class="glass-card rounded-2xl border border-white/10 p-3.5 flex flex-col justify-between hover:border-indigo-500/40 transition group glow-indigo relative overflow-hidden">
-                            <!-- Top Ribbon: Date Badge + Tag -->
-                            <div class="flex items-start justify-between gap-3 mb-2">
-                                <div class="flex items-center gap-2.5">
-                                    <div class="w-12 h-13 rounded-xl bg-gradient-to-b from-indigo-500 to-indigo-700 text-white flex flex-col items-center justify-center shadow-lg shrink-0 border border-indigo-400/30">
-                                        <span class="text-[9px] font-black tracking-widest uppercase">{{ $monthStr }}</span>
-                                        <span class="text-base font-extrabold leading-tight">{{ $dayNum }}</span>
-                                    </div>
-                                    <div>
-                                        <span class="px-2 py-0.5 rounded text-[9px] font-black uppercase bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-                                            {{ $agenda['tag'] ?? 'Akademik' }}
-                                        </span>
-                                        <div class="text-[10px] text-slate-400 font-mono mt-0.5">
-                                            {{ $dayName }}, {{ $agenda['date'] ?? '' }}
-                                            @if(!empty($agenda['end_date']))
-                                                s.d. {{ $agenda['end_date'] }}
-                                            @endif
+                <!-- Right Column (5 Cols): Countdown Agenda Terdekat & Live LMS Jurnal KBM (Fills Empty Space) -->
+                <div class="lg:col-span-5 flex flex-col justify-between gap-3 overflow-hidden">
+                    <!-- Widget 1: Countdown Hitung Mundur Agenda Terdekat -->
+                    <div class="rounded-2xl glass-panel border border-indigo-500/30 p-3 sm:p-3.5 shadow-xl shrink-0">
+                        <div class="flex items-center justify-between pb-1.5 mb-2 border-b border-white/10">
+                            <span class="text-[10.5px] font-bold text-indigo-300 uppercase tracking-wider flex items-center gap-1.5">
+                                <span>⏳</span> Hitung Mundur Agenda Terdekat
+                            </span>
+                            <span class="text-[9px] font-mono text-teal-300 bg-teal-950/60 px-2 py-0.5 rounded border border-teal-500/30 font-bold">Target Akademik</span>
+                        </div>
+                        <div class="space-y-2">
+                            @foreach($data['agenda_countdowns'] ?? [] as $cd)
+                                <div class="p-2.5 rounded-xl bg-slate-900/80 border border-white/5 flex items-center justify-between gap-2 hover:border-indigo-500/40 transition">
+                                    <div class="truncate flex-1">
+                                        <div class="flex items-center gap-1.5 mb-0.5">
+                                            <span class="px-1.5 py-0.2 rounded text-[8.5px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 uppercase">{{ $cd['badge'] }}</span>
+                                            <span class="text-[9.5px] text-slate-400 font-mono">{{ $cd['date'] }}</span>
                                         </div>
+                                        <h5 class="font-bold text-xs text-white truncate">{{ $cd['title'] }}</h5>
+                                    </div>
+                                    <div class="text-right shrink-0 bg-indigo-950/70 border border-indigo-500/30 px-2.5 py-1 rounded-xl">
+                                        <span class="text-base font-black text-amber-300 font-mono block leading-none">{{ $cd['days_left'] }}</span>
+                                        <span class="text-[8.5px] text-slate-400 font-bold block uppercase mt-0.5">Hari Lagi</span>
                                     </div>
                                 </div>
-
-                                <span class="w-7 h-7 rounded-lg bg-slate-900 border border-white/10 flex items-center justify-center text-xs text-indigo-300 font-mono">
-                                    #{{ $idx + 1 }}
-                                </span>
-                            </div>
-
-                            <!-- Title & Description -->
-                            <div class="flex-1 min-h-0 my-1">
-                                <h4 class="text-sm font-extrabold text-white leading-snug group-hover:text-indigo-300 transition line-clamp-2">
-                                    {{ $agenda['title'] }}
-                                </h4>
-                                <p class="text-xs text-slate-300 leading-relaxed mt-1.5 line-clamp-3">
-                                    {{ $agenda['description'] ?? 'Agenda resmi sekolah yang wajib diikuti oleh warga sekolah yang bersangkutan.' }}
-                                </p>
-                            </div>
-
-                            <!-- Footer Card Status -->
-                            <div class="pt-2 mt-2 border-t border-white/5 flex items-center justify-between text-[10.5px] text-slate-400 shrink-0">
-                                <span class="flex items-center gap-1 text-teal-400 font-medium">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse"></span> Terjadwal Resmi
-                                </span>
-                                <span class="font-mono text-slate-500 text-[10px]">SMAN 1 Lengkong</span>
-                            </div>
+                            @endforeach
                         </div>
-                    @empty
-                        <div class="col-span-full h-full flex items-center justify-center text-slate-500 text-xs italic py-12">
-                            Belum ada jadwal agenda yang dipublikasikan.
+                    </div>
+
+                    <!-- Widget 2: Live Jurnal Mengajar KBM Guru (Langsung Sinkron dari LMS) -->
+                    <div class="flex-1 min-h-0 rounded-2xl glass-panel border border-teal-500/30 p-3 sm:p-3.5 flex flex-col justify-between overflow-hidden shadow-2xl">
+                        <div class="flex items-center justify-between pb-1.5 mb-2 border-b border-white/10 shrink-0">
+                            <div class="flex items-center gap-1.5 truncate mr-2">
+                                <span class="text-base">📖</span>
+                                <div>
+                                    <h4 class="text-xs font-bold text-white uppercase tracking-wider truncate">
+                                        Live Jurnal Mengajar Guru (LMS)
+                                    </h4>
+                                    <span class="text-[9px] text-slate-400 block truncate">Sinkronisasi aktivitas KBM di kelas secara real-time</span>
+                                </div>
+                            </div>
+                            <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-teal-500/20 text-teal-300 border border-teal-500/30 font-mono shrink-0">
+                                Live KBM
+                            </span>
                         </div>
-                    @endforelse
+
+                        <!-- Continuous Upward Ticker for LMS Journals -->
+                        <div class="flex-1 min-h-0 overflow-hidden relative bg-slate-950/40 rounded-xl p-2 border border-white/5">
+                            @if(!empty($data['live_kbm']) && count($data['live_kbm']) > 0)
+                                <div class="animate-vertical-ticker-slow w-full space-y-1.5">
+                                    @for($copyKbm = 0; $copyKbm < 2; $copyKbm++)
+                                        <div class="space-y-1.5 pb-1.5">
+                                            @foreach($data['live_kbm'] as $kbm)
+                                                <div class="p-2 rounded-xl bg-slate-900/80 border border-white/5 flex items-center justify-between text-xs hover:border-teal-500/40 transition">
+                                                    <div class="truncate mr-2 flex-1">
+                                                        <div class="flex items-center gap-1.5 mb-0.5">
+                                                            <span class="font-bold text-white text-[11px] truncate">{{ $kbm['subject'] }}</span>
+                                                            <span class="px-1.5 py-0.2 rounded text-[8.5px] font-bold bg-teal-500/20 text-teal-300 border border-teal-500/30 shrink-0">{{ $kbm['class'] }}</span>
+                                                        </div>
+                                                        <div class="text-[9.5px] text-slate-300 truncate font-medium">{{ $kbm['teacher'] }} &bull; <span class="text-teal-400">{{ $kbm['topic'] }}</span></div>
+                                                    </div>
+                                                    <div class="text-right shrink-0">
+                                                        <span class="px-1.5 py-0.5 rounded bg-white/5 text-slate-300 text-[9px] font-mono block">{{ $kbm['time'] }}</span>
+                                                        <span class="text-[8.5px] font-bold text-emerald-400 font-mono block mt-0.5">{{ $kbm['status'] }}</span>
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    @endfor
+                                </div>
+                            @else
+                                <div class="h-full flex items-center justify-center text-slate-400 text-xs italic py-4">
+                                    Belum ada jurnal mengajar guru yang terekam hari ini.
+                                </div>
+                            @endif
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -3054,9 +3279,13 @@
                     if (i === currentSlideIdx) {
                         slideEl.classList.remove('hidden');
                         slideEl.classList.add('flex');
+                        slideEl.classList.remove('kiosk-slide-active');
+                        void slideEl.offsetWidth; // trigger reflow for smooth animation
+                        slideEl.classList.add('kiosk-slide-active');
                     } else {
                         slideEl.classList.add('hidden');
                         slideEl.classList.remove('flex');
+                        slideEl.classList.remove('kiosk-slide-active');
                     }
                 }
 

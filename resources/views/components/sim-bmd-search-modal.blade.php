@@ -8,11 +8,11 @@
     'presetSelectId' => 'preset-sim-bmd',
 ])
 
-<div id="sim-bmd-modal" class="fixed inset-0 z-50 hidden overflow-y-auto" style="z-index: 99999 !important;" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+<div id="sim-bmd-modal" class="fixed inset-0 hidden overflow-y-auto" style="z-index: 999999 !important;" aria-labelledby="modal-title" role="dialog" aria-modal="true">
     <!-- Backdrop -->
-    <div class="fixed inset-0 bg-slate-900/75 backdrop-blur-xs transition-opacity" style="z-index: 1;" onclick="closeSimBmdModal()"></div>
+    <div class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm transition-opacity" style="z-index: 999998 !important;" onclick="closeSimBmdModal()"></div>
 
-    <div class="flex min-h-full items-center justify-center p-3 sm:p-4 text-center relative" style="z-index: 2;">
+    <div class="flex min-h-full items-center justify-center p-3 sm:p-4 text-center relative" style="z-index: 999999 !important;">
         <div class="relative transform overflow-hidden rounded-3xl bg-white text-left shadow-2xl transition-all w-full max-w-4xl border border-slate-200">
             <!-- Modal Header -->
             <div class="p-5 bg-gradient-to-r from-blue-700 via-indigo-700 to-blue-800 text-white flex items-center justify-between">
@@ -133,26 +133,39 @@ function openSimBmdModal(customConfig = null) {
     if (customConfig) {
         window.simBmdConfig = Object.assign({}, window.simBmdConfig, customConfig);
     }
+    const receiptModal = document.getElementById('modal-receipt');
+    if (receiptModal) {
+        receiptModal.style.zIndex = '1000';
+    }
     const modal = document.getElementById('sim-bmd-modal');
     if (!modal) return;
     if (modal.parentElement !== document.body) {
         document.body.appendChild(modal);
     }
-    modal.style.zIndex = '99999';
+    modal.style.setProperty('z-index', '999999', 'important');
     modal.classList.remove('hidden');
     document.body.classList.add('overflow-hidden');
     const input = document.getElementById('sim-bmd-search-input');
-    input.value = '';
-    renderSimBmdResults();
-    setTimeout(() => input.focus(), 80);
+    if (input) {
+        input.value = '';
+        renderSimBmdResults();
+        setTimeout(() => input.focus(), 80);
+    }
 }
 // Alias for SIPD e-BMD
 window.openSipdBmdModal = openSimBmdModal;
 
 function closeSimBmdModal() {
     const modal = document.getElementById('sim-bmd-modal');
-    modal.classList.add('hidden');
-    document.body.classList.remove('overflow-hidden');
+    if (modal) {
+        modal.classList.add('hidden');
+    }
+    const receiptModal = document.getElementById('modal-receipt');
+    if (receiptModal && !receiptModal.classList.contains('hidden')) {
+        receiptModal.style.zIndex = '1050';
+    } else {
+        document.body.classList.remove('overflow-hidden');
+    }
 }
 window.closeSipdBmdModal = closeSimBmdModal;
 

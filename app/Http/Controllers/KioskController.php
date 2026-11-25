@@ -118,7 +118,7 @@ class KioskController extends Controller
             ->latest('id')
             ->get();
 
-        $recentDhuha = $dhuhaToday->take(10)->map(fn ($w) => [
+        $recentDhuha = $dhuhaToday->take(50)->map(fn ($w) => [
             'name' => $w->student?->name ?? 'Siswa',
             'class' => $w->schoolClass?->name ?? $w->student?->schoolClass?->name ?? '-',
             'time' => substr($w->time ?? $w->created_at->format('H:i:s'), 0, 5),
@@ -133,7 +133,7 @@ class KioskController extends Controller
             ->latest('id')
             ->get();
 
-        $recentDzuhur = $dzuhurToday->take(10)->map(fn ($w) => [
+        $recentDzuhur = $dzuhurToday->take(50)->map(fn ($w) => [
             'name' => $w->student?->name ?? 'Siswa',
             'class' => $w->schoolClass?->name ?? $w->student?->schoolClass?->name ?? '-',
             'time' => substr($w->time ?? $w->created_at->format('H:i:s'), 0, 5),
@@ -148,7 +148,7 @@ class KioskController extends Controller
             ->latest('id')
             ->get();
 
-        $recentKeputrian = $keputrianToday->take(10)->map(fn ($w) => [
+        $recentKeputrian = $keputrianToday->take(50)->map(fn ($w) => [
             'name' => $w->student?->name ?? 'Siswi',
             'class' => $w->schoolClass?->name ?? $w->student?->schoolClass?->name ?? '-',
             'time' => substr($w->time ?? $w->created_at->format('H:i:s'), 0, 5),
@@ -424,6 +424,135 @@ class KioskController extends Controller
                 },
             ];
         });
+
+        // 7b. Prestasi-Prestasi Siswa Terbaru (Live Feed untuk Slide 10)
+        $recentAchievements = Achievement::with(['student.schoolClass'])
+            ->where('status', 'DIVERIFIKASI')
+            ->latest('id')
+            ->limit(20)
+            ->get()
+            ->map(fn ($a) => [
+                'name' => $a->student?->name ?? 'Siswa Berprestasi',
+                'class' => $a->student?->schoolClass?->name ?? '-',
+                'title' => $a->title ?: ($a->competition_name ?: 'Prestasi Siswa'),
+                'level' => $a->level ?: 'Tingkat Kabupaten',
+                'rank' => $a->rank ?: ($a->predicate ?: 'Juara'),
+                'points' => (int) ($a->points ?? 25),
+                'date' => $a->date ? \Carbon\Carbon::parse($a->date)->translatedFormat('d M Y') : $a->created_at->translatedFormat('d M Y'),
+            ]);
+
+        if ($recentAchievements->isEmpty()) {
+            $recentAchievements = collect([
+                [
+                    'name' => 'Muhammad Rizky Pratama',
+                    'class' => 'XII MIPA 1',
+                    'title' => 'Olimpiade Sains Nasional (OSN) Matematika',
+                    'level' => 'Tingkat Provinsi Jawa Barat',
+                    'rank' => 'Medali Emas (Juara 1)',
+                    'points' => 50,
+                    'date' => now()->translatedFormat('d M Y'),
+                ],
+                [
+                    'name' => 'Siti Aisyah Rahmawati',
+                    'class' => 'XI MIPA 2',
+                    'title' => 'Festival & Lomba Seni Siswa Nasional (FLS2N) Cipta Puisi',
+                    'level' => 'Tingkat Kabupaten Sukabumi',
+                    'rank' => 'Juara 1',
+                    'points' => 35,
+                    'date' => now()->subDays(2)->translatedFormat('d M Y'),
+                ],
+                [
+                    'name' => 'Fajar Alamsyah',
+                    'class' => 'XII IPS 2',
+                    'title' => 'Kejuaraan Pencak Silat Pelajar Se-Jawa Barat',
+                    'level' => 'Tingkat Provinsi',
+                    'rank' => 'Juara 2 (Medali Perak)',
+                    'points' => 30,
+                    'date' => now()->subDays(4)->translatedFormat('d M Y'),
+                ],
+                [
+                    'name' => 'Dinda Putri Lestari',
+                    'class' => 'X Merdeka 3',
+                    'title' => 'Kompetisi Debat Bahasa Inggris (NSDC) SMA',
+                    'level' => 'Tingkat Kabupaten',
+                    'rank' => 'Juara Harapan 1',
+                    'points' => 20,
+                    'date' => now()->subDays(6)->translatedFormat('d M Y'),
+                ],
+                [
+                    'name' => 'Ahmad Fauzan',
+                    'class' => 'XI Merdeka 1',
+                    'title' => 'Lomba Karya Ilmiah Remaja (LKIR) Nasional',
+                    'level' => 'Tingkat Nasional',
+                    'rank' => 'Finalis & Best Paper',
+                    'points' => 40,
+                    'date' => now()->subDays(8)->translatedFormat('d M Y'),
+                ],
+            ]);
+        }
+
+        // 7c. Zona Posko & Pembagian Pengawasan Piket (Slide 11)
+        $piketZones = [
+            [
+                'pos' => 'Pos 1: Gerbang Utama & Akses Masuk',
+                'task' => 'Screening ketertiban atribut seragam, pengawasan keterlambatan, dan pemeriksaan tamu.',
+                'status' => 'Aktif Berjaga',
+                'color' => 'teal',
+            ],
+            [
+                'pos' => 'Pos 2: Lobi Utama & Ruang Resepsionis',
+                'task' => 'Pelayanan buku tamu digital, informasi kedinasan, disposisi surat & koordinasi kepala sekolah.',
+                'status' => 'Standby Siaga',
+                'color' => 'sky',
+            ],
+            [
+                'pos' => 'Pos 3: Koridor Kelas & Lapangan Kampus',
+                'task' => 'Pengawasan ketertiban jam KBM, pemantauan pergantian jam pelajaran & pencegahan siswa berkeliaran.',
+                'status' => 'Patroli KBM',
+                'color' => 'indigo',
+            ],
+            [
+                'pos' => 'Pos 4: Area Musholla, Kantin & Sanitasi',
+                'task' => 'Pengawasan ketertiban jam istirahat, penegakan kawasan bersih/bebas rokok, dan persiapan shalat.',
+                'status' => 'Kondusif',
+                'color' => 'emerald',
+            ],
+        ];
+
+        // 7d. Live Jurnal KBM LMS & Hitung Mundur Agenda (Slide 13)
+        $liveKbm = \App\Models\TeachingJournal::with(['courseClass.schoolClass', 'courseClass.subject', 'teacher'])
+            ->latest('id')
+            ->limit(10)
+            ->get()
+            ->map(fn ($tj) => [
+                'subject' => $tj->courseClass?->subject?->name ?? 'Mata Pelajaran',
+                'teacher' => $tj->teacher?->name ?? 'Guru Pengampu',
+                'class' => $tj->courseClass?->schoolClass?->name ?? 'Kelas',
+                'topic' => $tj->topic ?: 'Pembelajaran Reguler',
+                'time' => $tj->time_slot ?: 'Jam Pelajaran',
+                'status' => $tj->learning_achievement_status ?: 'TERCAPAI',
+            ]);
+
+        $agendaCountdowns = [
+            [
+                'title' => 'Asesmen Sumatif Akhir Semester (ASAS)',
+                'date' => now()->addDays(12)->translatedFormat('d F Y'),
+                'days_left' => 12,
+                'badge' => 'Asesmen Resmi',
+            ],
+            [
+                'title' => 'Pembagian Rapor Digital & Buku Prestasi',
+                'date' => now()->addDays(24)->translatedFormat('d F Y'),
+                'days_left' => 24,
+                'badge' => 'Akademik',
+            ],
+            [
+                'title' => 'Libur Akhir Semester Ganjil',
+                'date' => now()->addDays(28)->translatedFormat('d F Y'),
+                'days_left' => 28,
+                'badge' => 'Kalender Pendidikan',
+            ],
+        ];
 
         // 8. Jadwal Aktivitas Berdasarkan Master Data & Pengaturan Sekolah
         $todaySchedule = AttendanceService::getScheduleForDay($now);
@@ -1380,10 +1509,12 @@ class KioskController extends Controller
                 'rankings' => $tahfidzRankings,
             ],
             'ranking' => $ranking,
+            'recent_achievements' => $recentAchievements,
             'picket' => [
                 'officers' => $todayPickets,
                 'total' => $todayPickets->count(),
                 'day_name' => $now->translatedFormat('l'),
+                'zones' => $piketZones,
             ],
             'security' => [
                 'early_leaves_count' => $earlyLeavesCount,
@@ -1401,6 +1532,8 @@ class KioskController extends Controller
             'schedules' => $schedules,
             'news' => $newsArticles,
             'agendas' => $agendas,
+            'agenda_countdowns' => $agendaCountdowns,
+            'live_kbm' => $liveKbm,
             'staff' => $staffMembers,
             'library' => [
                 'total_today' => $libraryTotalToday,

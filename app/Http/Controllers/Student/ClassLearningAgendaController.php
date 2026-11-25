@@ -312,4 +312,17 @@ class ClassLearningAgendaController extends Controller
             'rowCount'
         ));
     }
+
+    /**
+     * Sinkronisasi data Jurnal Mengajar Guru dari LMS ke Agenda Pembelajaran Kelas
+     */
+    public function syncLms(Request $request): RedirectResponse
+    {
+        $rombel = $request->input('rombel');
+        $synced = ClassLearningAgenda::syncFromTeachingJournals($rombel ?: null);
+
+        AuditTrailService::log('sync', 'agenda_kelas', "Sinkronisasi Agenda Pembelajaran Kelas dari LMS Teaching Journal ({$synced} data diperbarui)");
+
+        return back()->with('success', "Sinkronisasi berhasil! {$synced} catatan Jurnal Mengajar Guru dari LMS berhasil disinkronkan ke Agenda Pembelajaran Kelas.");
+    }
 }

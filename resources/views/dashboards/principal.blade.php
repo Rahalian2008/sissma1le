@@ -29,7 +29,7 @@
             </div>
             <div>
                 <span class="font-extrabold text-white uppercase tracking-wide">Fungsi Pengawasan & Kontroling Terpadu:</span>
-                <span class="text-slate-300 block sm:inline"> Akses pengawasan penuh ke seluruh presensi, tata tertib, ibadah, ekskul, tahfidz, dan karakter tanpa hambatan operasional input harian.</span>
+                <span class="text-slate-300 block sm:inline"> Akses kendali eksekutif penuh ke seluruh lini operasional: Administrasi TU, Kurikulum/LMS, Kesiswaan, Keuangan BKU, Sarana BMD, dan Pos Keamanan.</span>
             </div>
         </div>
         <div class="flex items-center gap-2 shrink-0">
@@ -37,8 +37,156 @@
                 Total Siswa: <strong class="text-white">{{ $totalStudents }}</strong>
             </span>
             <span class="px-2.5 py-1 rounded-lg bg-rose-500/20 border border-rose-500/30 text-rose-300 font-mono text-[11px]">
-                Kasus SP Kritis: <strong class="text-rose-200">{{ $criticalGuidanceStudents->count() }}</strong>
+                Kasus SP: <strong class="text-rose-200">{{ $criticalGuidanceStudents->count() }}</strong>
             </span>
+        </div>
+    </div>
+
+    <!-- PUSAT KENDALI EKSEKUTIF UTAMA (EXECUTIVE COMMAND CENTER) -->
+    <div class="space-y-3">
+        <div class="flex items-center justify-between">
+            <h2 class="text-sm sm:text-base font-black text-slate-800 dark:text-white flex items-center gap-2">
+                <span>🎛️</span> Pusat Kendali Operasional Sekolah (Executive Command Center)
+            </h2>
+            <span class="text-xs text-slate-400 font-medium">Navigasi Terintegrasi 1-Klik</span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <!-- Hub 1: Adm. Ketatausahaan (TU) & SIPD e-BMD -->
+            <div class="bg-gradient-to-br from-emerald-950/40 via-slate-900 to-slate-900 p-4 sm:p-5 rounded-3xl border border-emerald-500/30 shadow-lg flex flex-col justify-between hover:border-emerald-500/60 transition group">
+                <div>
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="w-10 h-10 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-lg border border-emerald-500/30">
+                            🏛️
+                        </div>
+                        <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-mono">
+                            Tata Usaha
+                        </span>
+                    </div>
+                    <h3 class="font-extrabold text-sm sm:text-base text-white group-hover:text-emerald-300 transition">
+                        Adm. Ketatausahaan &amp; Aset BMD
+                    </h3>
+                    <p class="text-[11px] text-slate-400 mt-1 leading-relaxed">
+                        Pusat kendali BKU Kas BOS/BOPD, KIB-KIR Aset BMD Jawa Barat, DUK Kepegawaian &amp; Persuratan/Disposisi.
+                    </p>
+                </div>
+                <div class="pt-3 mt-3 border-t border-white/5 space-y-1.5">
+                    <a href="{{ route('tu.dashboard') }}" class="w-full py-2 px-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl flex items-center justify-between transition shadow-xs">
+                        <span>Pusat Kendali TU Terpadu</span>
+                        <span>&rarr;</span>
+                    </a>
+                    <div class="grid grid-cols-2 gap-1.5 text-[10.5px]">
+                        <a href="{{ route('tu.keuangan.index') }}" class="py-1 px-2 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 text-center truncate">
+                            💰 BKU Kas
+                        </a>
+                        <a href="{{ route('tu.sarpras.index') }}" class="py-1 px-2 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 text-center truncate">
+                            📦 Aset KIB-KIR
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hub 2: Supervisi Kurikulum & KBM Terpadu -->
+            <div class="bg-gradient-to-br from-indigo-950/40 via-slate-900 to-slate-900 p-4 sm:p-5 rounded-3xl border border-indigo-500/30 shadow-lg flex flex-col justify-between hover:border-indigo-500/60 transition group">
+                <div>
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="w-10 h-10 rounded-2xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-lg border border-indigo-500/30">
+                            📚
+                        </div>
+                        <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-mono">
+                            Kurikulum
+                        </span>
+                    </div>
+                    <h3 class="font-extrabold text-sm sm:text-base text-white group-hover:text-indigo-300 transition">
+                        Supervisi Pembelajaran &amp; LMS
+                    </h3>
+                    <p class="text-[11px] text-slate-400 mt-1 leading-relaxed">
+                        Pantau realisasi Jurnal Mengajar Guru, materi &amp; tugas siswa di LMS, serta pelaksanaan Asesmen CBT.
+                    </p>
+                </div>
+                <div class="pt-3 mt-3 border-t border-white/5 space-y-1.5">
+                    <a href="{{ route('students.learning-agendas.index') }}" class="w-full py-2 px-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl flex items-center justify-between transition shadow-xs">
+                        <span>Buku Jurnal KBM Kelas</span>
+                        <span>&rarr;</span>
+                    </a>
+                    <div class="grid grid-cols-2 gap-1.5 text-[10.5px]">
+                        <a href="{{ route('lms.index') }}" class="py-1 px-2 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 text-center truncate">
+                            💻 LMS Guru
+                        </a>
+                        <a href="{{ route('cbt.index') }}" class="py-1 px-2 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 text-center truncate">
+                            📝 Ujian CBT
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hub 3: Kesiswaan, Disiplin & Karakter -->
+            <div class="bg-gradient-to-br from-amber-950/40 via-slate-900 to-slate-900 p-4 sm:p-5 rounded-3xl border border-amber-500/30 shadow-lg flex flex-col justify-between hover:border-amber-500/60 transition group">
+                <div>
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="w-10 h-10 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-lg border border-amber-500/30">
+                            👥
+                        </div>
+                        <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 font-mono">
+                            Kesiswaan
+                        </span>
+                    </div>
+                    <h3 class="font-extrabold text-sm sm:text-base text-white group-hover:text-amber-300 transition">
+                        Kesiswaan, Tatib &amp; Konseling
+                    </h3>
+                    <p class="text-[11px] text-slate-400 mt-1 leading-relaxed">
+                        Monitoring surat peringatan (SP), pembinaan konseling BP/BK, serta papan kehormatan prestasi siswa.
+                    </p>
+                </div>
+                <div class="pt-3 mt-3 border-t border-white/5 space-y-1.5">
+                    <a href="{{ route('discipline.report') }}" class="w-full py-2 px-3 bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold text-xs rounded-xl flex items-center justify-between transition shadow-xs">
+                        <span>Laporan Tata Tertib &amp; SP</span>
+                        <span>&rarr;</span>
+                    </a>
+                    <div class="grid grid-cols-2 gap-1.5 text-[10.5px]">
+                        <a href="{{ route('achievements.index') }}" class="py-1 px-2 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 text-center truncate">
+                            🏆 Prestasi Siswa
+                        </a>
+                        <a href="{{ route('bk.dashboard') }}" class="py-1 px-2 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 text-center truncate">
+                            🧭 Konseling BK
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hub 4: Sarana, Keamanan & Informasi Publik -->
+            <div class="bg-gradient-to-br from-sky-950/40 via-slate-900 to-slate-900 p-4 sm:p-5 rounded-3xl border border-sky-500/30 shadow-lg flex flex-col justify-between hover:border-sky-500/60 transition group">
+                <div>
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="w-10 h-10 rounded-2xl bg-sky-500/20 text-sky-400 flex items-center justify-center font-bold text-lg border border-sky-500/30">
+                            🛡️
+                        </div>
+                        <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-sky-500/20 text-sky-300 border border-sky-500/30 font-mono">
+                            Keamanan
+                        </span>
+                    </div>
+                    <h3 class="font-extrabold text-sm sm:text-base text-white group-hover:text-sky-300 transition">
+                        Display KIOSK, Bel &amp; Keamanan
+                    </h3>
+                    <p class="text-[11px] text-slate-400 mt-1 leading-relaxed">
+                        Akses monitor TV Kiosk display informasi, otomatisasi bel sekolah, perpustakaan, dan buku tamu posko.
+                    </p>
+                </div>
+                <div class="pt-3 mt-3 border-t border-white/5 space-y-1.5">
+                    <a href="{{ route('kiosk.index') }}" target="_blank" class="w-full py-2 px-3 bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs rounded-xl flex items-center justify-between transition shadow-xs">
+                        <span>📺 Buka Monitor KIOSK TV</span>
+                        <span>&rarr;</span>
+                    </a>
+                    <div class="grid grid-cols-2 gap-1.5 text-[10.5px]">
+                        <a href="{{ route('school_bell.index') }}" class="py-1 px-2 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 text-center truncate">
+                            🔔 Bel Sekolah
+                        </a>
+                        <a href="{{ route('guests.index') }}" class="py-1 px-2 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 text-center truncate">
+                            📖 Buku Tamu
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
