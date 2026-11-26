@@ -16,6 +16,7 @@ use App\Models\SchoolClass;
 use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\View\View;
 
 class BkDashboardController extends Controller
@@ -105,13 +106,16 @@ class BkDashboardController extends Controller
             ->get();
 
         // 7. Jadwal Pertemuan Rencana Tindak Lanjut (RTL) Mendatang
-        $upcomingRtlSessions = BkCounselingSession::with(['student.schoolClass', 'counselor'])
-            ->whereNotNull('follow_up_date')
-            ->whereDate('follow_up_date', '>=', now()->toDateString())
-            ->when($isHomeroomOnly && $classId, fn ($q) => $q->whereHas('student', fn ($sq) => $sq->where('class_id', $classId)))
-            ->orderBy('follow_up_date', 'asc')
-            ->take(6)
-            ->get();
+        $hasFollowUpDate = Schema::hasColumn('bk_counseling_sessions', 'follow_up_date');
+        $upcomingRtlSessions = $hasFollowUpDate
+            ? BkCounselingSession::with(['student.schoolClass', 'counselor'])
+                ->whereNotNull('follow_up_date')
+                ->whereDate('follow_up_date', '>=', now()->toDateString())
+                ->when($isHomeroomOnly && $classId, fn ($q) => $q->whereHas('student', fn ($sq) => $sq->where('class_id', $classId)))
+                ->orderBy('follow_up_date', 'asc')
+                ->take(6)
+                ->get()
+            : collect();
 
         // 8. Hasil Psikotes Terkini
         $recentPsychResults = BkPsychologicalTestResult::with(['student.schoolClass', 'test'])

@@ -13,6 +13,7 @@ use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 
@@ -22,6 +23,9 @@ class BkCounselingSessionController extends Controller
     {
         $user = Auth::user();
         $isHomeroomOnly = $user && $user->hasRole('wali_kelas') && ! $user->hasAnyRole(['admin', 'super_admin', 'koordinator_bk', 'guru_bk', 'bk', 'kepala_sekolah']);
+
+        $hasCareerPath = Schema::hasColumn('bk_counseling_sessions', 'career_path');
+        $hasFollowUpDate = Schema::hasColumn('bk_counseling_sessions', 'follow_up_date');
 
         $query = BkCounselingSession::with(['student.schoolClass', 'counselor'])
             ->latest('date');
@@ -37,7 +41,7 @@ class BkCounselingSessionController extends Controller
             $query->where('field_of_service', $request->field_of_service);
         }
 
-        if ($request->filled('career_path')) {
+        if ($hasCareerPath && $request->filled('career_path')) {
             $query->where('career_path', $request->career_path);
         }
 
@@ -63,26 +67,30 @@ class BkCounselingSessionController extends Controller
 
         if ($request->filled('search')) {
             $search = $request->search;
-            $query->where(function ($q) use ($search) {
+            $query->where(function ($q) use ($search, $hasCareerPath) {
                 $q->where('topic', 'like', "%{$search}%")
-                    ->orWhere('session_code', 'like', "%{$search}%")
-                    ->orWhere('campus_name', 'like', "%{$search}%")
-                    ->orWhere('study_program', 'like', "%{$search}%")
-                    ->orWhere('work_field', 'like', "%{$search}%")
-                    ->orWhereHas('student', fn ($sq) => $sq->where('name', 'like', "%{$search}%")->orWhere('nisn', 'like', "%{$search}%"));
+                    ->orWhere('session_code', 'like', "%{$search}%");
+
+                if ($hasCareerPath) {
+                    $q->orWhere('campus_name', 'like', "%{$search}%")
+                        ->orWhere('study_program', 'like', "%{$search}%")
+                        ->orWhere('work_field', 'like', "%{$search}%");
+                }
+
+                $q->orWhereHas('student', fn ($sq) => $sq->where('name', 'like', "%{$search}%")->orWhere('nisn', 'like', "%{$search}%"));
             });
         }
 
         $sessions = $query->paginate(15)->withQueryString();
         $classes = SchoolClass::orderBy('name')->get();
 
-        // Statistik Cepat untuk Baris Header
+        // Statistik Cepat untuk Baris Header (Resilient jika kolom baru belum ter-migrate)
         $summary = [
             'total' => BkCounselingSession::count(),
             'career' => BkCounselingSession::where('field_of_service', 'KARIER')->count(),
-            'college' => BkCounselingSession::where('field_of_service', 'KARIER')->where('career_path', 'KULIAH')->count(),
-            'work' => BkCounselingSession::where('field_of_service', 'KARIER')->where('career_path', 'BEKERJA')->count(),
-            'upcoming_rtl' => BkCounselingSession::whereNotNull('follow_up_date')->whereDate('follow_up_date', '>=', Carbon::today())->count(),
+            'college' => $hasCareerPath ? BkCounselingSession::where('field_of_service', 'KARIER')->where('career_path', 'KULIAH')->count() : 0,
+            'work' => $hasCareerPath ? BkCounselingSession::where('field_of_service', 'KARIER')->where('career_path', 'BEKERJA')->count() : 0,
+            'upcoming_rtl' => $hasFollowUpDate ? BkCounselingSession::whereNotNull('follow_up_date')->whereDate('follow_up_date', '>=', Carbon::today())->count() : 0,
         ];
 
         return view('bk.counseling.index', compact('sessions', 'classes', 'summary'));
@@ -288,11 +296,13 @@ class BkCounselingSessionController extends Controller
             'paper_size' => in_array($request->query('paper_size'), ['A4', 'F4']) ? $request->query('paper_size') : 'A4',
         ];
 
+        $hasCareerPath = Schema::hasColumn('bk_counseling_sessions', 'career_path');
+
         if (! empty($filters['field_of_service'])) {
             $query->where('field_of_service', $filters['field_of_service']);
         }
 
-        if (! empty($filters['career_path'])) {
+        if ($hasCareerPath && ! empty($filters['career_path'])) {
             $query->where('career_path', $filters['career_path']);
         }
 
@@ -330,8 +340,8 @@ class BkCounselingSessionController extends Controller
             'sosial' => $sessions->where('field_of_service', 'SOSIAL')->count(),
             'belajar' => $sessions->where('field_of_service', 'BELAJAR')->count(),
             'karier' => $sessions->where('field_of_service', 'KARIER')->count(),
-            'kuliah' => $sessions->where('field_of_service', 'KARIER')->where('career_path', 'KULIAH')->count(),
-            'bekerja' => $sessions->where('field_of_service', 'KARIER')->where('career_path', 'BEKERJA')->count(),
+            'kuliah' => $hasCareerPath ? $sessions->where('field_of_service', 'KARIER')->where('career_path', 'KULIAH')->count() : 0,
+            'bekerja' => $hasCareerPath ? $sessions->where('field_of_service', 'KARIER')->where('career_path', 'BEKERJA')->count() : 0,
             'selesai' => $sessions->where('status', 'SELESAI')->count(),
             'terjadwal' => $sessions->where('status', 'TERJADWAL')->count(),
         ];
