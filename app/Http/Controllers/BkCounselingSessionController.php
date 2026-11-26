@@ -9,6 +9,7 @@ use App\Models\SchoolIdentity;
 use App\Models\Student;
 use App\Models\Teacher;
 use App\Models\User;
+use App\Services\HigherEducationService;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -101,8 +102,10 @@ class BkCounselingSessionController extends Controller
         $selectedStudent = $request->filled('student_id') ? Student::with('schoolClass')->find($request->student_id) : null;
         $classes = SchoolClass::with('students')->orderBy('name')->get();
         $students = Student::where('is_active', true)->orderBy('name')->get();
+        $universities = HigherEducationService::getJavaUniversities();
+        $standardMajors = HigherEducationService::getAllStandardMajors();
 
-        return view('bk.counseling.create', compact('selectedStudent', 'classes', 'students'));
+        return view('bk.counseling.create', compact('selectedStudent', 'classes', 'students', 'universities', 'standardMajors'));
     }
 
     public function store(Request $request): RedirectResponse
@@ -191,8 +194,10 @@ class BkCounselingSessionController extends Controller
         $session->load(['student.schoolClass']);
         $classes = SchoolClass::with('students')->orderBy('name')->get();
         $students = Student::where('is_active', true)->orderBy('name')->get();
+        $universities = HigherEducationService::getJavaUniversities();
+        $standardMajors = HigherEducationService::getAllStandardMajors();
 
-        return view('bk.counseling.edit', compact('session', 'classes', 'students'));
+        return view('bk.counseling.edit', compact('session', 'classes', 'students', 'universities', 'standardMajors'));
     }
 
     public function update(Request $request, BkCounselingSession $session): RedirectResponse
