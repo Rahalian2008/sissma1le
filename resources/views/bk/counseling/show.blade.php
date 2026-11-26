@@ -97,19 +97,44 @@
             </div>
 
             @if($session->career_path === 'KULIAH')
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+            <div class="space-y-2 pt-1">
                 <div class="p-3 rounded-xl bg-white/80 dark:bg-slate-800/80 border border-sky-100 dark:border-sky-900/40">
-                    <span class="text-[10px] text-slate-500 dark:text-slate-400 block font-semibold mb-0.5">Jalur Masuk Kuliah</span>
+                    <span class="text-[10px] text-slate-500 dark:text-slate-400 block font-semibold mb-0.5">Jalur Masuk Kuliah Target</span>
                     <span class="text-sm font-black text-sky-700 dark:text-sky-300">{{ $session->study_admission_track ?: 'Belum ditentukan' }}</span>
                 </div>
-                <div class="p-3 rounded-xl bg-white/80 dark:bg-slate-800/80 border border-sky-100 dark:border-sky-900/40">
-                    <span class="text-[10px] text-slate-500 dark:text-slate-400 block font-semibold mb-0.5">Perguruan Tinggi Target</span>
-                    <span class="text-sm font-bold text-slate-900 dark:text-white">{{ $session->campus_name ?: '-' }}</span>
+
+                @if(!empty($session->campus_choices) && is_array($session->campus_choices))
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    @foreach($session->campus_choices as $idx => $choice)
+                    <div class="p-3 rounded-xl bg-white/80 dark:bg-slate-800/80 border {{ $idx === 0 ? 'border-sky-300 dark:border-sky-700 ring-1 ring-sky-400/20' : 'border-slate-200 dark:border-slate-700' }} space-y-1">
+                        <div class="flex items-center justify-between">
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold {{ $idx === 0 ? 'bg-sky-100 dark:bg-sky-900/60 text-sky-800 dark:text-sky-300' : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300' }}">
+                                Pilihan {{ $choice['order'] ?? ($idx + 1) }} {{ $idx === 0 ? '(Prioritas Utama)' : '(Alternatif)' }}
+                            </span>
+                        </div>
+                        <div>
+                            <span class="text-[10px] text-slate-400 block">Perguruan Tinggi</span>
+                            <span class="text-xs font-bold text-slate-900 dark:text-white block">{{ $choice['campus'] ?: '-' }}</span>
+                        </div>
+                        <div>
+                            <span class="text-[10px] text-slate-400 block">Program Studi</span>
+                            <span class="text-xs font-bold text-indigo-600 dark:text-indigo-400 block">{{ $choice['major'] ?: '-' }}</span>
+                        </div>
+                    </div>
+                    @endforeach
                 </div>
-                <div class="p-3 rounded-xl bg-white/80 dark:bg-slate-800/80 border border-sky-100 dark:border-sky-900/40">
-                    <span class="text-[10px] text-slate-500 dark:text-slate-400 block font-semibold mb-0.5">Program Studi / Jurusan</span>
-                    <span class="text-sm font-bold text-indigo-700 dark:text-indigo-300">{{ $session->study_program ?: '-' }}</span>
+                @else
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div class="p-3 rounded-xl bg-white/80 dark:bg-slate-800/80 border border-sky-100 dark:border-sky-900/40">
+                        <span class="text-[10px] text-slate-500 dark:text-slate-400 block font-semibold mb-0.5">Perguruan Tinggi Target</span>
+                        <span class="text-sm font-bold text-slate-900 dark:text-white">{{ $session->campus_name ?: '-' }}</span>
+                    </div>
+                    <div class="p-3 rounded-xl bg-white/80 dark:bg-slate-800/80 border border-sky-100 dark:border-sky-900/40">
+                        <span class="text-[10px] text-slate-500 dark:text-slate-400 block font-semibold mb-0.5">Program Studi / Jurusan</span>
+                        <span class="text-sm font-bold text-indigo-700 dark:text-indigo-300">{{ $session->study_program ?: '-' }}</span>
+                    </div>
                 </div>
+                @endif
             </div>
             @elseif($session->career_path === 'BEKERJA')
             <div class="p-3 rounded-xl bg-white/80 dark:bg-slate-800/80 border border-sky-100 dark:border-sky-900/40">

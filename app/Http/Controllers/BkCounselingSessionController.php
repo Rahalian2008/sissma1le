@@ -118,6 +118,10 @@ class BkCounselingSessionController extends Controller
             'study_admission_track' => ['nullable', 'string', 'max:50'],
             'campus_name' => ['nullable', 'string', 'max:191'],
             'study_program' => ['nullable', 'string', 'max:191'],
+            'campus_choices' => ['nullable', 'array'],
+            'campus_choices.*.campus' => ['nullable', 'string', 'max:191'],
+            'campus_choices.*.major' => ['nullable', 'string', 'max:191'],
+            'campus_choices.*.order' => ['nullable', 'integer'],
             'work_field' => ['nullable', 'string', 'max:191'],
             'service_category' => ['required', 'in:LAYANAN_DASAR,LAYANAN_RESPONSIF,PERENCANAAN_INDIVIDUAL,DUKUNGAN_SISTEM'],
             'date' => ['required', 'date'],
@@ -135,19 +139,54 @@ class BkCounselingSessionController extends Controller
             'is_confidential' => ['nullable', 'boolean'],
         ]);
 
-        // Sanitasi field peminatan karier sesuai pilihan
+        // Sanitasi field peminatan karier sesuai pilihan & olah pilihan perguruan tinggi
         if ($validated['field_of_service'] !== 'KARIER') {
             $validated['career_path'] = null;
             $validated['study_admission_track'] = null;
             $validated['campus_name'] = null;
             $validated['study_program'] = null;
+            $validated['campus_choices'] = null;
             $validated['work_field'] = null;
         } elseif (($validated['career_path'] ?? null) === 'KULIAH') {
             $validated['work_field'] = null;
+
+            // Olah pilihan multi-kampus & prodi
+            $rawChoices = $request->input('campus_choices', []);
+            $cleanedChoices = [];
+            if (is_array($rawChoices)) {
+                foreach ($rawChoices as $idx => $choice) {
+                    $cName = trim($choice['campus'] ?? '');
+                    $mName = trim($choice['major'] ?? '');
+                    if ($cName !== '' || $mName !== '') {
+                        $cleanedChoices[] = [
+                            'order' => (int) ($choice['order'] ?? ($idx + 1)),
+                            'campus' => $cName,
+                            'major' => $mName,
+                        ];
+                    }
+                }
+            }
+
+            if (! empty($cleanedChoices)) {
+                $validated['campus_choices'] = $cleanedChoices;
+                $validated['campus_name'] = $cleanedChoices[0]['campus'] ?? null;
+                $validated['study_program'] = $cleanedChoices[0]['major'] ?? null;
+            } elseif (! empty($validated['campus_name']) || ! empty($validated['study_program'])) {
+                $validated['campus_choices'] = [
+                    [
+                        'order' => 1,
+                        'campus' => $validated['campus_name'] ?? '',
+                        'major' => $validated['study_program'] ?? '',
+                    ],
+                ];
+            } else {
+                $validated['campus_choices'] = null;
+            }
         } elseif (($validated['career_path'] ?? null) === 'BEKERJA') {
             $validated['study_admission_track'] = null;
             $validated['campus_name'] = null;
             $validated['study_program'] = null;
+            $validated['campus_choices'] = null;
         }
 
         $sessionCode = 'BK-'.date('Ym').'-'.strtoupper(Str::random(5));
@@ -155,14 +194,18 @@ class BkCounselingSessionController extends Controller
             $sessionCode = 'BK-'.date('Ym').'-'.strtoupper(Str::random(5));
         }
 
-        $session = BkCounselingSession::create([
+        // Amankan attributes hanya untuk kolom yang benar-benar ada di tabel (resilient)
+        $tableColumns = Schema::getColumnListing('bk_counseling_sessions');
+        $attributesToSave = array_intersect_key([
             ...$validated,
             'session_code' => $sessionCode,
             'counselor_id' => Auth::id(),
             'place' => (! empty($validated['place'])) ? $validated['place'] : 'Ruang Bimbingan Konseling',
             'is_confidential' => $request->boolean('is_confidential', true),
             'follow_up_status' => $validated['follow_up_status'] ?? 'PENDING',
-        ]);
+        ], array_flip($tableColumns));
+
+        $session = BkCounselingSession::create($attributesToSave);
 
         // Kirim Notifikasi RTL ke Koordinator BK dan Guru BK jika tanggal pertemuan diisi
         if (! empty($session->follow_up_date)) {
@@ -209,6 +252,10 @@ class BkCounselingSessionController extends Controller
             'study_admission_track' => ['nullable', 'string', 'max:50'],
             'campus_name' => ['nullable', 'string', 'max:191'],
             'study_program' => ['nullable', 'string', 'max:191'],
+            'campus_choices' => ['nullable', 'array'],
+            'campus_choices.*.campus' => ['nullable', 'string', 'max:191'],
+            'campus_choices.*.major' => ['nullable', 'string', 'max:191'],
+            'campus_choices.*.order' => ['nullable', 'integer'],
             'work_field' => ['nullable', 'string', 'max:191'],
             'service_category' => ['required', 'in:LAYANAN_DASAR,LAYANAN_RESPONSIF,PERENCANAAN_INDIVIDUAL,DUKUNGAN_SISTEM'],
             'date' => ['required', 'date'],
@@ -231,21 +278,58 @@ class BkCounselingSessionController extends Controller
             $validated['study_admission_track'] = null;
             $validated['campus_name'] = null;
             $validated['study_program'] = null;
+            $validated['campus_choices'] = null;
             $validated['work_field'] = null;
         } elseif (($validated['career_path'] ?? null) === 'KULIAH') {
             $validated['work_field'] = null;
+
+            $rawChoices = $request->input('campus_choices', []);
+            $cleanedChoices = [];
+            if (is_array($rawChoices)) {
+                foreach ($rawChoices as $idx => $choice) {
+                    $cName = trim($choice['campus'] ?? '');
+                    $mName = trim($choice['major'] ?? '');
+                    if ($cName !== '' || $mName !== '') {
+                        $cleanedChoices[] = [
+                            'order' => (int) ($choice['order'] ?? ($idx + 1)),
+                            'campus' => $cName,
+                            'major' => $mName,
+                        ];
+                    }
+                }
+            }
+
+            if (! empty($cleanedChoices)) {
+                $validated['campus_choices'] = $cleanedChoices;
+                $validated['campus_name'] = $cleanedChoices[0]['campus'] ?? null;
+                $validated['study_program'] = $cleanedChoices[0]['major'] ?? null;
+            } elseif (! empty($validated['campus_name']) || ! empty($validated['study_program'])) {
+                $validated['campus_choices'] = [
+                    [
+                        'order' => 1,
+                        'campus' => $validated['campus_name'] ?? '',
+                        'major' => $validated['study_program'] ?? '',
+                    ],
+                ];
+            } else {
+                $validated['campus_choices'] = null;
+            }
         } elseif (($validated['career_path'] ?? null) === 'BEKERJA') {
             $validated['study_admission_track'] = null;
             $validated['campus_name'] = null;
             $validated['study_program'] = null;
+            $validated['campus_choices'] = null;
         }
 
         $previousFollowUpDate = $session->follow_up_date?->toDateString();
 
-        $session->update([
+        $tableColumns = Schema::getColumnListing('bk_counseling_sessions');
+        $attributesToUpdate = array_intersect_key([
             ...$validated,
             'is_confidential' => $request->boolean('is_confidential', true),
-        ]);
+        ], array_flip($tableColumns));
+
+        $session->update($attributesToUpdate);
 
         // Kirim notifikasi jika tanggal RTL baru ditentukan atau berubah
         if (! empty($session->follow_up_date) && $session->follow_up_date->toDateString() !== $previousFollowUpDate) {

@@ -80,7 +80,15 @@
             <td>:</td>
             <td>
                 @if($session->career_path === 'KULIAH')
-                    <strong>Kuliah Perguruan Tinggi</strong> (Jalur: {{ $session->study_admission_track ?: '-' }} | Kampus: {{ $session->campus_name ?: '-' }} | Prodi: {{ $session->study_program ?: '-' }})
+                    <strong>Kuliah Perguruan Tinggi</strong> (Jalur: {{ $session->study_admission_track ?: '-' }} | 
+                    @if(!empty($session->campus_choices) && is_array($session->campus_choices))
+                        @foreach($session->campus_choices as $cIdx => $c)
+                            Pilihan {{ $c['order'] ?? ($cIdx + 1) }}: {{ $c['campus'] ?: '-' }} (Prodi: {{ $c['major'] ?: '-' }}){{ !$loop->last ? ' ; ' : '' }}
+                        @endforeach
+                    @else
+                        Kampus: {{ $session->campus_name ?: '-' }} | Prodi: {{ $session->study_program ?: '-' }}
+                    @endif
+                    )
                 @else
                     <strong>Bekerja / Wirausaha</strong> (Bidang: {{ $session->work_field ?: '-' }})
                 @endif

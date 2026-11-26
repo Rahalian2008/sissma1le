@@ -18,6 +18,7 @@ use App\Http\Controllers\BkPsychologicalTestController;
 use App\Http\Controllers\BkReferralController;
 use App\Http\Controllers\BkRplController;
 use App\Http\Controllers\BkSociometryController;
+use App\Http\Controllers\BkTracerAlumniController;
 use App\Http\Controllers\Cbt\CbtController;
 use App\Http\Controllers\Cbt\CbtStudentController;
 use App\Http\Controllers\ComplaintController;
@@ -136,6 +137,12 @@ Route::get('/spmb/bukti/{registrationNumber}', [SpmbController::class, 'publicSu
 Route::get('/spmb/bukti/{registrationNumber}/cetak', [SpmbController::class, 'publicPrintCard'])->name('spmb.public.print');
 Route::get('/daftar-spmb', fn () => redirect()->route('spmb.public.register'));
 Route::get('/ppdb/daftar', fn () => redirect()->route('spmb.public.register'));
+
+// Tracer Study Alumni SMAN 1 Lengkong (Kuesioner Penelusuran Tamatan Online)
+Route::get('/tracer-alumni', [BkTracerAlumniController::class, 'publicForm'])->name('bk.tracer.public_form');
+Route::post('/tracer-alumni', [BkTracerAlumniController::class, 'publicStore'])->name('bk.tracer.public_store');
+Route::get('/tracer-alumni/sukses', [BkTracerAlumniController::class, 'publicSuccess'])->name('bk.tracer.public_success');
+Route::get('/tracer-study', fn () => redirect()->route('bk.tracer.public_form'));
 
 // Aplikasi Bel Sekolah Terpadu & Murottal Al-Qur'an 114 Surah (Akses Publik: Tampil & Bisa Digunakan Tanpa Harus Login)
 Route::prefix('school-bell')->name('school_bell.')->group(function () {
@@ -397,6 +404,14 @@ Route::middleware('auth')->group(function () {
             Route::put('/referral/{referral}', [BkReferralController::class, 'update'])->name('referral.update');
             Route::delete('/referral/{referral}', [BkReferralController::class, 'destroy'])->name('referral.destroy');
             Route::get('/referral/{referral}/print', [BkReferralController::class, 'print'])->name('referral.print');
+
+            // Tracer Alumni (Penelusuran Tamatan & Rekapitulasi Resmi)
+            Route::get('/tracer-alumni', [BkTracerAlumniController::class, 'index'])->name('tracer.index');
+            Route::get('/tracer-alumni/cetak', [BkTracerAlumniController::class, 'printReport'])->name('tracer.print');
+            Route::get('/tracer-alumni/{tracer}', [BkTracerAlumniController::class, 'show'])->name('tracer.show');
+            Route::get('/tracer-alumni/{tracer}/edit', [BkTracerAlumniController::class, 'edit'])->name('tracer.edit');
+            Route::put('/tracer-alumni/{tracer}', [BkTracerAlumniController::class, 'update'])->name('tracer.update');
+            Route::delete('/tracer-alumni/{tracer}', [BkTracerAlumniController::class, 'destroy'])->name('tracer.destroy');
         });
 
         // Akses Terbuka / Khusus Peserta Didik & Guru Bina (Index, Detail & Submisi)

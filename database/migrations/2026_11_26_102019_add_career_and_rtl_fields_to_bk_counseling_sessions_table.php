@@ -16,7 +16,8 @@ return new class extends Migration
             $table->string('study_admission_track', 50)->nullable()->after('career_path');
             $table->string('campus_name', 191)->nullable()->after('study_admission_track');
             $table->string('study_program', 191)->nullable()->after('campus_name');
-            $table->string('work_field', 191)->nullable()->after('study_program');
+            $table->text('campus_choices')->nullable()->after('study_program');
+            $table->string('work_field', 191)->nullable()->after('campus_choices');
             $table->date('follow_up_date')->nullable()->after('follow_up_plan');
             $table->string('follow_up_status', 30)->default('PENDING')->after('follow_up_date');
         });
@@ -33,6 +34,7 @@ return new class extends Migration
                 'study_admission_track',
                 'campus_name',
                 'study_program',
+                'campus_choices',
                 'work_field',
                 'follow_up_date',
                 'follow_up_status',

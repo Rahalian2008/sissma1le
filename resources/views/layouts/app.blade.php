@@ -1539,12 +1539,12 @@
             </a>
 
             <!-- Presensi Siswa -->
-            <a href="{{ route('attendance.index') }}" class="flex-1 min-w-0 flex flex-col items-center justify-center gap-0.5 py-1 px-1 touch-target text-[11px] xs:text-[12px] font-semibold tracking-tight transition active:scale-95 {{ request()->routeIs('attendance.index*') || request()->routeIs('attendance.manual*') ? 'text-indigo-600 dark:text-indigo-400 font-extrabold bg-indigo-50/80 dark:bg-indigo-950/60 rounded-xl' : 'text-slate-500 dark:text-slate-400 hover:text-indigo-500' }}">
+            <button type="button" onclick="openPresensiModal(event)" class="flex-1 min-w-0 flex flex-col items-center justify-center gap-0.5 py-1 px-1 touch-target text-[11px] xs:text-[12px] font-semibold tracking-tight transition active:scale-95 cursor-pointer text-slate-500 dark:text-slate-400 hover:text-indigo-500">
                 <svg class="w-5 h-5 text-indigo-600 dark:text-indigo-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
                 </svg>
                 <span class="truncate max-w-[56px] xs:max-w-none">Presensi</span>
-            </a>
+            </button>
         @elseif($bHasRole('siswa'))
             <!-- Siswa: Ajuan Izin/Sakit -->
             <a href="{{ route('attendance.leave') }}" class="flex-1 min-w-0 flex flex-col items-center justify-center gap-0.5 py-1 px-1 touch-target text-[11px] xs:text-[12px] font-semibold tracking-tight transition active:scale-95 {{ request()->routeIs('attendance.leave*') ? 'text-indigo-600 dark:text-indigo-400 font-extrabold bg-indigo-50/80 dark:bg-indigo-950/60 rounded-xl' : 'text-slate-500 dark:text-slate-400 hover:text-indigo-500' }}">
@@ -1634,14 +1634,14 @@
             </a>
 
             <!-- CENTER FAB: Pusat Presensi Terpadu -->
-            <a href="{{ route('attendance.index') }}" class="flex-1 min-w-0 flex flex-col items-center justify-center -mt-5 group" title="Pusat Presensi & Absensi">
+            <button type="button" onclick="openPresensiModal(event)" class="flex-1 min-w-0 flex flex-col items-center justify-center -mt-5 group cursor-pointer" title="Pusat Presensi & Perizinan">
                 <div class="nav-fab-btn w-12 h-12 rounded-full bg-gradient-to-tr from-indigo-600 to-emerald-500 text-white flex items-center justify-center shadow-lg shadow-indigo-600/35 border-3 border-white dark:border-slate-900 group-hover:scale-105 transition-transform">
                     <svg class="w-5.5 h-5.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
                     </svg>
                 </div>
                 <span class="text-[11px] font-extrabold text-indigo-600 dark:text-indigo-400 -mt-1 truncate">Presensi</span>
-            </a>
+            </button>
 
             <!-- Pelanggaran Tata Tertib Siswa -->
             <a href="{{ route('violations.index') }}" class="flex-1 min-w-0 flex flex-col items-center justify-center gap-0.5 py-1 px-1 touch-target text-[10px] xs:text-[11px] font-semibold tracking-tight transition active:scale-95 {{ request()->routeIs('violations.*') ? 'text-rose-600 dark:text-rose-400 font-extrabold bg-rose-50/80 dark:bg-rose-950/60 rounded-xl' : 'text-slate-500 dark:text-slate-400 hover:text-rose-500' }}">
@@ -1721,14 +1721,14 @@
             </a>
 
             <!-- CENTER FAB: Presensi Utama -->
-            <a href="{{ route('attendance.index') }}" class="flex-1 min-w-0 flex flex-col items-center justify-center -mt-5 group" title="Pusat Presensi">
+            <button type="button" onclick="openPresensiModal(event)" class="flex-1 min-w-0 flex flex-col items-center justify-center -mt-5 group cursor-pointer" title="Pusat Presensi & Perizinan">
                 <div class="nav-fab-btn w-12 h-12 rounded-full bg-gradient-to-tr from-indigo-600 to-emerald-500 text-white flex items-center justify-center shadow-lg shadow-indigo-600/35 border-3 border-white dark:border-slate-900 group-hover:scale-105 transition-transform">
                     <svg class="w-5.5 h-5.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
                     </svg>
                 </div>
                 <span class="text-[11px] font-extrabold text-indigo-600 dark:text-indigo-400 -mt-1 truncate">Presensi</span>
-            </a>
+            </button>
 
             <!-- Prestasi / Pencapaian Siswa -->
             <a href="{{ route('achievements.index') }}" class="flex-1 min-w-0 flex flex-col items-center justify-center gap-0.5 py-1 px-1 touch-target text-[11px] xs:text-[12px] font-semibold tracking-tight transition active:scale-95 {{ request()->routeIs('achievements.*') ? 'text-indigo-600 dark:text-indigo-400 font-extrabold bg-indigo-50/80 dark:bg-indigo-950/60 rounded-xl' : 'text-slate-500 dark:text-slate-400 hover:text-indigo-500' }}">
@@ -2076,10 +2076,210 @@
             }
             toggleMobileDrawer(false);
         });
+        // Modal Pop-up Presensi & Perizinan (Saat klik tombol Presensi di Navigasi Mobile)
+        function openPresensiModal(event) {
+            if (event) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            const backdrop = document.getElementById('presensi-modal-backdrop');
+            const panel = document.getElementById('presensi-modal-panel');
+            if (!backdrop || !panel) return;
+
+            backdrop.classList.remove('opacity-0', 'pointer-events-none');
+            backdrop.classList.add('opacity-100');
+            panel.classList.remove('translate-y-full', 'sm:translate-y-4', 'sm:scale-95');
+            panel.classList.add('translate-y-0', 'sm:translate-y-0', 'sm:scale-100');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closePresensiModal() {
+            const backdrop = document.getElementById('presensi-modal-backdrop');
+            const panel = document.getElementById('presensi-modal-panel');
+            if (!backdrop || !panel) return;
+
+            backdrop.classList.remove('opacity-100');
+            backdrop.classList.add('opacity-0', 'pointer-events-none');
+            panel.classList.remove('translate-y-0', 'sm:translate-y-0', 'sm:scale-100');
+            panel.classList.add('translate-y-full', 'sm:translate-y-4', 'sm:scale-95');
+            document.body.style.overflow = '';
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closePresensiModal();
+        });
     </script>
 
     <!-- Universal Searchable Select for Students & Teachers across SIS-SMA1LE -->
     <script src="{{ asset('js/searchable-select.js') }}"></script>
+
+    <!-- ========================================================
+         MODAL POP-UP MENU PRESENSI & PERIZINAN TERPADU
+         (Pilihan modul presensi & perizinan saat klik Presensi di Bottom Nav)
+         ======================================================== -->
+    <div id="presensi-modal-backdrop"
+         class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4 opacity-0 pointer-events-none transition-all duration-300"
+         onclick="if(event.target === this) closePresensiModal()">
+        
+        <div id="presensi-modal-panel"
+             class="w-full sm:max-w-md bg-white dark:bg-slate-900 border-t sm:border border-slate-200 dark:border-slate-800 rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden transform translate-y-full sm:translate-y-4 sm:scale-95 transition-all duration-300 max-h-[90vh] flex flex-col">
+            
+            <!-- Handle Drag Indicator untuk Mobile Bottom Sheet -->
+            <div class="pt-3 pb-1 flex justify-center sm:hidden">
+                <div class="w-12 h-1.5 rounded-full bg-slate-300 dark:bg-slate-700"></div>
+            </div>
+
+            <!-- Modal Header -->
+            <div class="p-4 sm:p-5 border-b border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-600 to-emerald-500 text-white flex items-center justify-center shadow-md shadow-indigo-500/20">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-extrabold text-slate-900 dark:text-white">Layanan Presensi & Perizinan</h3>
+                        <p class="text-[11px] text-slate-500 dark:text-slate-400">Pilih modul presensi atau perizinan siswa</p>
+                    </div>
+                </div>
+                <button type="button"
+                        onclick="closePresensiModal()"
+                        class="p-2 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                        title="Tutup Menu">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+
+            <!-- Modal Content Menu Options -->
+            <div class="p-3 sm:p-4 overflow-y-auto space-y-2 flex-1">
+                <!-- 1. Presensi Harian -->
+                <a href="{{ route('attendance.index') }}"
+                   class="group flex items-center gap-3.5 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 border border-slate-100 dark:border-slate-800 hover:border-indigo-200 dark:hover:border-indigo-800 transition">
+                    <div class="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                        </svg>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center justify-between">
+                            <h4 class="text-xs font-bold text-slate-800 dark:text-slate-100 group-hover:text-indigo-600 dark:group-hover:text-indigo-400">Presensi Harian</h4>
+                            <span class="text-[10px] font-semibold text-indigo-600 dark:text-indigo-400">Utama &rarr;</span>
+                        </div>
+                        <p class="text-[11px] text-slate-500 dark:text-slate-400 truncate">Presensi kehadiran masuk, pulang & rekap harian siswa</p>
+                    </div>
+                </a>
+
+                <!-- 2. Presensi Ekstra -->
+                <a href="{{ route('extracurricular.index') }}"
+                   class="group flex items-center gap-3.5 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50 hover:bg-purple-50 dark:hover:bg-purple-950/40 border border-slate-100 dark:border-slate-800 hover:border-purple-200 dark:hover:border-purple-800 transition">
+                    <div class="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                        </svg>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center justify-between">
+                            <h4 class="text-xs font-bold text-slate-800 dark:text-slate-100 group-hover:text-purple-600 dark:group-hover:text-purple-400">Presensi Ekstra</h4>
+                            <span class="text-[10px] font-semibold text-purple-600 dark:text-purple-400">Ekskul &rarr;</span>
+                        </div>
+                        <p class="text-[11px] text-slate-500 dark:text-slate-400 truncate">Presensi kehadiran kegiatan ekstrakurikuler & klub</p>
+                    </div>
+                </a>
+
+                <!-- 3. Presensi Shalat Dzuhur -->
+                <a href="{{ route('worship.index', 'dzuhur') }}"
+                   class="group flex items-center gap-3.5 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 border border-slate-100 dark:border-slate-800 hover:border-emerald-200 dark:hover:border-emerald-800 transition">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                        </svg>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center justify-between">
+                            <h4 class="text-xs font-bold text-slate-800 dark:text-slate-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400">Presensi Shalat Dzuhur</h4>
+                            <span class="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400">Berjamaah &rarr;</span>
+                        </div>
+                        <p class="text-[11px] text-slate-500 dark:text-slate-400 truncate">Monitoring presensi ibadah Shalat Dzuhur berjamaah</p>
+                    </div>
+                </a>
+
+                <!-- 4. Presensi Shalat Dzuha -->
+                <a href="{{ route('worship.index', 'dhuha') }}"
+                   class="group flex items-center gap-3.5 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50 hover:bg-amber-50 dark:hover:bg-amber-950/40 border border-slate-100 dark:border-slate-800 hover:border-amber-200 dark:hover:border-amber-800 transition">
+                    <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center justify-between">
+                            <h4 class="text-xs font-bold text-slate-800 dark:text-slate-100 group-hover:text-amber-600 dark:group-hover:text-amber-400">Presensi Shalat Dzuha</h4>
+                            <span class="text-[10px] font-semibold text-amber-600 dark:text-amber-400">Sunnah Pagi &rarr;</span>
+                        </div>
+                        <p class="text-[11px] text-slate-500 dark:text-slate-400 truncate">Pembiasaan Shalat Sunnah Dhuha pagi hari</p>
+                    </div>
+                </a>
+
+                <!-- 5. Presensi Keputrian -->
+                <a href="{{ route('worship.index', 'keputrian') }}"
+                   class="group flex items-center gap-3.5 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50 hover:bg-rose-50 dark:hover:bg-rose-950/40 border border-slate-100 dark:border-slate-800 hover:border-rose-200 dark:hover:border-rose-800 transition">
+                    <div class="w-10 h-10 rounded-xl bg-rose-500/10 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                        </svg>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center justify-between">
+                            <h4 class="text-xs font-bold text-slate-800 dark:text-slate-100 group-hover:text-rose-600 dark:group-hover:text-rose-400">Presensi Keputrian</h4>
+                            <span class="text-[10px] font-semibold text-rose-600 dark:text-rose-400">Khusus Putri &rarr;</span>
+                        </div>
+                        <p class="text-[11px] text-slate-500 dark:text-slate-400 truncate">Kajian & amaliyah ibadah keputrian hari Jumat</p>
+                    </div>
+                </a>
+
+                <!-- 6. Ajuan Izin Keluar & Izin Pulang Cepat -->
+                <div class="pt-2 border-t border-slate-100 dark:border-slate-800/80">
+                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-1 block mb-2">Ajuan Perizinan Siswa</span>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <!-- Izin Keluar Lingkungan Sekolah -->
+                        <a href="{{ route('attendance.school-pass.index') }}"
+                           class="group p-3 rounded-2xl bg-sky-50/60 dark:bg-sky-950/30 hover:bg-sky-100 dark:hover:bg-sky-900/40 border border-sky-100 dark:border-sky-900/40 transition flex items-center gap-2.5">
+                            <div class="w-8 h-8 rounded-lg bg-sky-600 text-white flex items-center justify-center shrink-0">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                                </svg>
+                            </div>
+                            <div class="min-w-0">
+                                <h4 class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">Izin Keluar Sekolah</h4>
+                                <p class="text-[10px] text-slate-500 dark:text-slate-400 truncate">Izin keluar sementara / dinas</p>
+                            </div>
+                        </a>
+
+                        <!-- Izin Pulang Cepat -->
+                        <a href="{{ route('attendance.early-leave.index') }}"
+                           class="group p-3 rounded-2xl bg-amber-50/60 dark:bg-amber-950/30 hover:bg-amber-100 dark:hover:bg-amber-900/40 border border-amber-100 dark:border-amber-900/40 transition flex items-center gap-2.5">
+                            <div class="w-8 h-8 rounded-lg bg-amber-500 text-slate-950 flex items-center justify-center shrink-0">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                                </svg>
+                            </div>
+                            <div class="min-w-0">
+                                <h4 class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">Izin Pulang Cepat</h4>
+                                <p class="text-[10px] text-slate-500 dark:text-slate-400 truncate">Sakit / keperluan mendesak</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="p-3 bg-slate-50 dark:bg-slate-800/40 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[11px] text-slate-500">
+                <span>SIS-SMA1LE &bull; Presensi Terpadu</span>
+                <button type="button" onclick="closePresensiModal()" class="px-3 py-1 rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold hover:bg-slate-300 transition">Tutup</button>
+            </div>
+        </div>
+    </div>
 
     @stack('modals')
     @stack('scripts')

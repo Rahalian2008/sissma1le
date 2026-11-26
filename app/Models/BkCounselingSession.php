@@ -23,6 +23,7 @@ class BkCounselingSession extends Model
         'study_admission_track',
         'campus_name',
         'study_program',
+        'campus_choices',
         'work_field',
         'service_category',
         'date',
@@ -43,6 +44,7 @@ class BkCounselingSession extends Model
     protected $casts = [
         'date' => 'date',
         'follow_up_date' => 'date',
+        'campus_choices' => 'array',
         'is_confidential' => 'boolean',
     ];
 
@@ -104,11 +106,26 @@ class BkCounselingSession extends Model
             if ($this->study_admission_track) {
                 $parts[] = 'Jalur '.$this->study_admission_track;
             }
-            if ($this->campus_name) {
-                $parts[] = $this->campus_name;
-            }
-            if ($this->study_program) {
-                $parts[] = 'Prodi '.$this->study_program;
+            if (! empty($this->campus_choices) && is_array($this->campus_choices)) {
+                $choiceList = [];
+                foreach ($this->campus_choices as $idx => $choice) {
+                    $order = $choice['order'] ?? ($idx + 1);
+                    $c = $choice['campus'] ?? '';
+                    $m = $choice['major'] ?? '';
+                    if ($c || $m) {
+                        $choiceList[] = "Pilihan {$order}: {$c}".($m ? " ({$m})" : '');
+                    }
+                }
+                if (! empty($choiceList)) {
+                    $parts[] = implode('; ', $choiceList);
+                }
+            } else {
+                if ($this->campus_name) {
+                    $parts[] = $this->campus_name;
+                }
+                if ($this->study_program) {
+                    $parts[] = 'Prodi '.$this->study_program;
+                }
             }
 
             return 'Kuliah'.(! empty($parts) ? ' ('.implode(' - ', $parts).')' : '');
