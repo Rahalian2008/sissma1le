@@ -279,12 +279,16 @@ class CsvImportService
                 'tenaga_administrasi', 'kepala_administrasi', 'kepala_perpustakaan', 'pengelola_perpustakaan', 'pustakawan',
                 'ta_kesiswaan', 'ta_kepegawaian', 'ta_persuratan', 'bendahara', 'ta_sarpras', 'operator',
                 'wakasek_kesiswaan', 'wakasek_kurikulum', 'wakasek_humas', 'wakasek_sarpras',
-                'bk', 'koordinator_keagamaan', 'pembina_ekstra',
+                'bk', 'koordinator_keagamaan', 'pembina_ekstra', 'satpam', 'security',
             ];
             if (! in_array($role, $validRoles, true)) {
-                $role = 'guru';
+                $role = (str_contains(strtolower($title), 'satpam') || str_contains(strtolower($title), 'keamanan')) ? 'satpam' : 'guru';
             }
             $password = ! empty($row['password']) ? $row['password'] : $nip;
+
+            $isSatpamRole = in_array($role, ['satpam', 'security'], true) || str_contains(strtolower($title), 'satpam') || str_contains(strtolower($title), 'keamanan');
+            $empStatus = $isSatpamRole ? 'Satpam/Keamanan' : 'PNS';
+            $empType = $isSatpamRole ? 'Tenaga Keamanan' : ($role === 'guru' ? 'Guru' : 'Tenaga Kependidikan');
 
             $teacher = Teacher::where('nip', $nip)->first();
 
@@ -293,6 +297,9 @@ class CsvImportService
                     'name' => $name,
                     'gender' => $gender,
                     'title' => $title,
+                    'position' => $isSatpamRole ? 'Satpam/Keamanan' : ($teacher->position ?: $title),
+                    'employment_status' => $isSatpamRole ? 'Satpam/Keamanan' : $teacher->employment_status,
+                    'employment_type' => $isSatpamRole ? 'Tenaga Keamanan' : $teacher->employment_type,
                     'phone' => $phone ?? $teacher->phone,
                 ]);
 
@@ -311,6 +318,7 @@ class CsvImportService
                         'email' => $email,
                         'password' => Hash::make($password),
                         'role' => $role,
+                        'roles' => [$role],
                         'phone' => $phone,
                         'is_active' => true,
                     ]
@@ -322,6 +330,9 @@ class CsvImportService
                     'name' => $name,
                     'gender' => $gender,
                     'title' => $title,
+                    'position' => $isSatpamRole ? 'Satpam/Keamanan' : $title,
+                    'employment_status' => $empStatus,
+                    'employment_type' => $empType,
                     'phone' => $phone,
                     'is_active' => true,
                 ]);

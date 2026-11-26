@@ -356,6 +356,18 @@ class User extends Authenticatable
         ]) || $this->isScheduledPicketToday();
     }
 
+    public function isSatpam(): bool
+    {
+        return $this->hasAnyRole(['satpam', 'security'])
+            || in_array($this->role, ['satpam', 'security'], true)
+            || ($this->teacher && (
+                str_contains(strtolower($this->teacher->position ?? ''), 'satpam') ||
+                str_contains(strtolower($this->teacher->position ?? ''), 'keamanan') ||
+                str_contains(strtolower($this->teacher->employment_status ?? ''), 'satpam') ||
+                str_contains(strtolower($this->teacher->employment_status ?? ''), 'keamanan')
+            ));
+    }
+
     /**
      * Cek apakah user sedang terjadwal piket hari ini berdasarkan jadwal piket sekolah
      */

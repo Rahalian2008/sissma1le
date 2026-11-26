@@ -28,6 +28,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -927,6 +928,16 @@ class MasterDataController extends Controller
                 $q->where('employment_type', '!=', 'Guru')
                     ->orWhereHas('user.employee', fn ($eq) => $eq->where('employment_type', '!=', 'Guru'));
             });
+        } elseif ($type === 'satpam') {
+            $query->where(function ($q) {
+                $q->where('employment_type', 'like', '%Satpam%')
+                    ->orWhere('employment_type', 'like', '%Keamanan%')
+                    ->orWhere('position', 'like', '%Satpam%')
+                    ->orWhere('position', 'like', '%Keamanan%')
+                    ->orWhere('employment_status', 'like', '%Satpam%')
+                    ->orWhere('employment_status', 'like', '%Keamanan%')
+                    ->orWhereHas('user', fn ($uq) => $uq->whereJsonContains('roles', 'satpam')->orWhere('role', 'satpam'));
+            });
         }
 
         if ($status) {
@@ -939,6 +950,17 @@ class MasterDataController extends Controller
                 $query->where(function ($q) {
                     $q->whereIn('employment_status', ['GTT', 'PTT', 'Honorer', 'NON ASN'])
                         ->orWhereHas('user.employee', fn ($eq) => $eq->whereIn('employment_status', ['GTT', 'PTT', 'Honorer', 'NON ASN']));
+                });
+            } elseif ($status === 'Satpam/Keamanan' || $status === 'Satpam') {
+                $query->where(function ($q) {
+                    $q->where('employment_status', 'like', '%Satpam%')
+                        ->orWhere('employment_status', 'like', '%Keamanan%')
+                        ->orWhere('position', 'like', '%Satpam%')
+                        ->orWhere('position', 'like', '%Keamanan%')
+                        ->orWhere('additional_tasks', 'like', '%Satpam%')
+                        ->orWhere('additional_tasks', 'like', '%Keamanan%')
+                        ->orWhereHas('user', fn ($uq) => $uq->whereJsonContains('roles', 'satpam')->orWhere('role', 'satpam'))
+                        ->orWhereHas('user.employee', fn ($eq) => $eq->where('employment_status', 'like', '%Satpam%')->orWhere('position', 'like', '%Satpam%'));
                 });
             } else {
                 $query->where(function ($q) use ($status) {
@@ -970,8 +992,17 @@ class MasterDataController extends Controller
         $totalPtk = Teacher::count();
         $totalGuru = Teacher::where('employment_type', 'Guru')->count();
         $totalTendik = Teacher::where('employment_type', '!=', 'Guru')->count();
+        $totalSatpam = Teacher::where(function ($q) {
+            $q->where('position', 'like', '%Satpam%')
+                ->orWhere('position', 'like', '%Keamanan%')
+                ->orWhere('employment_status', 'like', '%Satpam%')
+                ->orWhere('employment_status', 'like', '%Keamanan%')
+                ->orWhere('employment_type', 'like', '%Satpam%')
+                ->orWhere('employment_type', 'like', '%Keamanan%')
+                ->orWhereHas('user', fn ($uq) => $uq->whereJsonContains('roles', 'satpam')->orWhere('role', 'satpam'));
+        })->count();
 
-        return view('master.teachers', compact('teachers', 'search', 'type', 'status', 'extracurriculars', 'totalPtk', 'totalGuru', 'totalTendik'));
+        return view('master.teachers', compact('teachers', 'search', 'type', 'status', 'extracurriculars', 'totalPtk', 'totalGuru', 'totalTendik', 'totalSatpam'));
     }
 
     /**
@@ -1022,9 +1053,10 @@ class MasterDataController extends Controller
         }
         $roles = array_values(array_unique(array_filter($roles)));
 
-        $identifier = $validated['nip'] ?: Str::slug($validated['name'], '.');
+        $nipVal = $validated['nip'] ?? null;
+        $identifier = $nipVal ?: Str::slug($validated['name'], '.');
         $username = ! empty($validated['username']) ? $validated['username'] : $identifier;
-        $initialPassword = ! empty($validated['password']) ? $validated['password'] : ($validated['nip'] ?: 'sman1lengkong');
+        $initialPassword = ! empty($validated['password']) ? $validated['password'] : ($nipVal ?: 'sman1lengkong');
 
         $user = User::create([
             'name' => $validated['name'],
@@ -1049,15 +1081,20 @@ class MasterDataController extends Controller
         $defaultTitle = match ($validated['role']) {
             'admin' => 'Administrator Sekolah',
             'staff' => 'Tenaga Kependidikan (Staf TU)',
+            'satpam', 'security' => 'Satpam / Petugas Keamanan',
             default => 'Guru Mata Pelajaran',
         };
 
         $pos = $validated['position'] ?? ($validated['title'] ?? $defaultTitle);
-        $empType = $validated['employment_type'] ?? ($validated['role'] === 'staff' ? 'Tenaga Kependidikan' : 'Guru');
+        $empType = $validated['employment_type'] ?? (
+            in_array($validated['role'], ['satpam', 'security'], true) || ($validated['employment_status'] ?? '') === 'Satpam/Keamanan'
+                ? 'Tenaga Keamanan'
+                : ($validated['role'] === 'staff' ? 'Tenaga Kependidikan' : 'Guru')
+        );
 
         $teacher = Teacher::create([
             'user_id' => $user->id,
-            'nip' => $validated['nip'] ?: null,
+            'nip' => $nipVal ?: null,
             'nuptk' => $validated['nuptk'] ?? null,
             'nik' => $validated['nik'] ?? null,
             'name' => $validated['name'],
@@ -1126,7 +1163,7 @@ class MasterDataController extends Controller
 
         AuditLog::log('CREATE_TEACHER', 'Teacher', $teacher->id);
 
-        return back()->with('success', 'Data pegawai '.$teacher->name.' dengan peran '.str_replace('_', ' ', $validated['role']).' berhasil ditambahkan (Username & Password: '.($validated['nip'] ?: $username).').');
+        return back()->with('success', 'Data pegawai '.$teacher->name.' dengan peran '.str_replace('_', ' ', $validated['role']).' berhasil ditambahkan (Username & Password: '.($nipVal ?: $username).').');
     }
 
     /**
@@ -1177,11 +1214,15 @@ class MasterDataController extends Controller
         }
         $roles = array_values(array_unique(array_filter($roles)));
 
-        $empType = $validated['employment_type'] ?? ($teacher->employment_type ?: ($validated['role'] === 'staff' ? 'Tenaga Kependidikan' : 'Guru'));
+        $empType = $validated['employment_type'] ?? ($teacher->employment_type ?: (
+            in_array($validated['role'], ['satpam', 'security'], true) || ($validated['employment_status'] ?? '') === 'Satpam/Keamanan'
+                ? 'Tenaga Keamanan'
+                : ($validated['role'] === 'staff' ? 'Tenaga Kependidikan' : 'Guru')
+        ));
         $pos = $validated['position'] ?? ($validated['title'] ?? $teacher->title);
 
         $teacher->update([
-            'nip' => $validated['nip'] ?: null,
+            'nip' => ($validated['nip'] ?? null) ?: null,
             'nuptk' => $validated['nuptk'] ?? $teacher->nuptk,
             'nik' => $validated['nik'] ?? $teacher->nik,
             'name' => $validated['name'],
@@ -2186,6 +2227,7 @@ class MasterDataController extends Controller
                 ['198004172010012014', 'Anne Listiyani, S.Si., M.Pd.', 'P', 'Kepala Perpustakaan', '081234567894', 'anne@sman1lengkong.sch.id', '198004172010012014', 'kepala_perpustakaan', '198004172010012014'],
                 ['199008202020121008', 'Rizki Pratama, S.Kom.', 'L', 'Operator Sekolah', '081234567895', 'operator@sman1lengkong.sch.id', '199008202020121008', 'operator', '199008202020121008'],
                 ['196803151994031004', 'Drs. H. Ahmad Sudrajat, M.Pd.', 'L', 'Kepala Sekolah', '081234567892', 'kepsek@sman1lengkong.sch.id', '196803151994031004', 'kepala_sekolah', '196803151994031004'],
+                ['', 'Asep Saepudin', 'L', 'Satpam/Keamanan', '081234567896', 'satpam@sman1lengkong.sch.id', 'satpam.asep', 'satpam', 'sman1lengkong'],
             ]
         );
     }

@@ -43,6 +43,10 @@
                    class="px-3 py-1.5 rounded-xl transition {{ ($type ?? '') === 'tendik' ? 'bg-teal-600 text-white shadow-xs' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200' }}">
                    💼 Tenaga Kependidikan (TU) ({{ $totalTendik ?? 0 }})
                 </a>
+                <a href="{{ route('master.teachers', array_filter(['type' => 'satpam', 'search' => $search, 'status' => $status])) }}" 
+                   class="px-3 py-1.5 rounded-xl transition {{ ($type ?? '') === 'satpam' ? 'bg-amber-600 text-white shadow-xs' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200' }}">
+                   🛡️ Satpam / Keamanan ({{ $totalSatpam ?? 0 }})
+                </a>
             </div>
             <div class="text-[11px] text-slate-400 font-medium">
                 Tampilan & Struktur Database Identik dengan Meja Kerja Adm. Kepegawaian
@@ -59,6 +63,7 @@
                     <option value="PNS" {{ ($status ?? '') === 'PNS' ? 'selected' : '' }}>PNS</option>
                     <option value="PPPK" {{ ($status ?? '') === 'PPPK' ? 'selected' : '' }}>PPPK / PPPK PW</option>
                     <option value="Honorer" {{ ($status ?? '') === 'Honorer' ? 'selected' : '' }}>GTT / Honorer / NON ASN</option>
+                    <option value="Satpam/Keamanan" {{ ($status ?? '') === 'Satpam/Keamanan' ? 'selected' : '' }}>🛡️ Satpam / Keamanan</option>
                 </select>
             </div>
             <div class="relative flex-1 min-w-[240px]">
@@ -155,7 +160,13 @@
 
                             <!-- 3. Jabatan & Tugas -->
                             <td class="py-3 px-4 text-slate-600 dark:text-slate-400">
-                                <span class="font-medium text-slate-800 dark:text-slate-200 block">{{ $posName }}</span>
+                                @if(str_contains(strtolower($posName), 'satpam') || str_contains(strtolower($posName), 'keamanan'))
+                                    <span class="inline-flex items-center gap-1 font-bold text-amber-700 dark:text-amber-400">
+                                        <span>🛡️</span> {{ $posName }}
+                                    </span>
+                                @else
+                                    <span class="font-medium text-slate-800 dark:text-slate-200 block">{{ $posName }}</span>
+                                @endif
                                 @if($teachingSubj && $teachingSubj !== $posName)
                                     <div class="text-[10px] text-slate-500 dark:text-slate-400">Mapel: {{ $teachingSubj }}</div>
                                 @endif
@@ -171,8 +182,13 @@
                             <td class="py-3 px-4">
                                 <div class="flex items-center gap-1.5 flex-wrap">
                                     <span class="px-2 py-0.5 rounded-full text-[10px] font-bold 
-                                        {{ $empStatus === 'PNS' ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20' : (str_contains($empStatus, 'PPPK') ? 'bg-cyan-500/10 text-cyan-700 dark:text-cyan-300 border border-cyan-500/20' : 'bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/20') }}">
-                                        {{ $empStatus }} {{ $rankGroup && $rankGroup !== '-' ? "({$rankGroup})" : '' }}
+                                        {{ $empStatus === 'PNS' ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20' : (str_contains($empStatus, 'PPPK') ? 'bg-cyan-500/10 text-cyan-700 dark:text-cyan-300 border border-cyan-500/20' : (str_contains(strtolower($empStatus), 'satpam') || str_contains(strtolower($empStatus), 'keamanan') ? 'bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/40' : 'bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/20')) }}">
+                                        @if(str_contains(strtolower($empStatus), 'satpam') || str_contains(strtolower($empStatus), 'keamanan'))
+                                            🛡️ {{ $empStatus }}
+                                        @else
+                                            {{ $empStatus }}
+                                        @endif
+                                        {{ $rankGroup && $rankGroup !== '-' ? "({$rankGroup})" : '' }}
                                     </span>
                                 </div>
                                 @if(!is_null($mkTh))
@@ -226,6 +242,7 @@
                                                 'bendahara' => 'bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700',
                                                 'ta_sarpras' => 'bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-700',
                                                 'operator' => 'bg-purple-100 dark:bg-purple-950/80 text-purple-800 dark:text-purple-300 border border-purple-300 dark:border-purple-700',
+                                                'satpam', 'security' => 'bg-amber-100 dark:bg-amber-950/80 text-amber-900 dark:text-amber-200 border border-amber-300 dark:border-amber-700',
                                                 default => 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700',
                                             } }}">
                                             {{ str_replace('_', ' ', $uRole) }}
@@ -391,19 +408,23 @@
                     <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
                         <div>
                             <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Jenis PTK <span class="text-rose-500">*</span></label>
-                            <select name="employment_type" required class="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-bold">
+                            <select name="employment_type" id="add_teacher_employment_type" required class="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-bold">
                                 <option value="Guru">Tenaga Pendidik (Guru)</option>
                                 <option value="Tenaga Kependidikan">Tenaga Kependidikan (Tendik / TU)</option>
+                                <option value="Tenaga Keamanan">Tenaga Keamanan (Satpam)</option>
                             </select>
                         </div>
                         <div>
                             <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Status Kepegawaian</label>
-                            <select name="employment_status" class="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                            <select name="employment_status" id="add_teacher_employment_status" class="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-semibold">
                                 <option value="PNS">PNS</option>
                                 <option value="PPPK">PPPK</option>
                                 <option value="PPPK PW">PPPK PW</option>
                                 <option value="GTT">GTT / Honorer</option>
                                 <option value="NON ASN">NON ASN</option>
+                                <option value="Satpam/Keamanan">Satpam/Keamanan</option>
+                                <option value="Kontrak / Satpam">Kontrak / Satpam</option>
+                                <option value="Honorer / Satpam">Honorer / Satpam</option>
                             </select>
                         </div>
                         <div>
@@ -417,8 +438,14 @@
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
                         <div class="sm:col-span-2">
-                            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Jabatan / Tugas</label>
-                            <input type="text" name="position" placeholder="Kepala Sekolah / Guru Matematika / Staf Kepegawaian" class="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-medium">
+                            <div class="flex items-center justify-between mb-1">
+                                <label class="block font-bold text-slate-700 dark:text-slate-300">Jabatan / Penugasan</label>
+                                <div class="flex items-center gap-1">
+                                    <button type="button" onclick="setAddPosition('Satpam/Keamanan')" class="text-[10px] font-bold text-amber-700 dark:text-amber-400 hover:underline bg-amber-50 dark:bg-amber-950/40 px-2 py-0.5 rounded border border-amber-300/60 cursor-pointer">+ Satpam/Keamanan</button>
+                                    <button type="button" onclick="setAddPosition('Danru Satpam')" class="text-[10px] font-bold text-amber-700 dark:text-amber-400 hover:underline bg-amber-50 dark:bg-amber-950/40 px-2 py-0.5 rounded border border-amber-300/60 cursor-pointer">+ Danru</button>
+                                </div>
+                            </div>
+                            <input type="text" name="position" id="add_teacher_position" list="position_suggestions" placeholder="Kepala Sekolah / Guru Matematika / Staf TU / Satpam/Keamanan" class="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-medium">
                         </div>
                         <div>
                             <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Mata Pelajaran (Mapel)</label>
@@ -439,8 +466,11 @@
                             <input type="number" name="years_of_service_months" min="0" max="11" placeholder="0" class="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
                         </div>
                         <div class="sm:col-span-2">
-                            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Tugas Tambahan</label>
-                            <input type="text" name="additional_tasks" placeholder="Wakasek, Pembina, dll" class="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                            <div class="flex items-center justify-between mb-1">
+                                <label class="block font-bold text-slate-700 dark:text-slate-300">Tugas Tambahan</label>
+                                <button type="button" onclick="setAddAdditionalTask('Petugas Keamanan Gerbang & Pos Satpam')" class="text-[10px] font-bold text-amber-700 dark:text-amber-400 hover:underline bg-amber-50 dark:bg-amber-950/40 px-2 py-0.5 rounded border border-amber-300/60 cursor-pointer">+ Pos Satpam</button>
+                            </div>
+                            <input type="text" name="additional_tasks" id="add_teacher_additional_tasks" list="additional_task_suggestions" placeholder="Wakasek, Pembina, Petugas Keamanan, dll" class="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
                         </div>
                     </div>
                 </div>
@@ -490,6 +520,7 @@
                             <select name="role" id="add_teacher_role" onchange="handleTeacherPrimaryRoleChange('add')" required class="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-bold text-emerald-800 dark:text-emerald-300">
                                 <option value="guru" selected>Tenaga Pendidik (Guru)</option>
                                 <option value="staff">Tenaga Kependidikan (Staf TU)</option>
+                                <option value="satpam">Petugas Keamanan / Satpam</option>
                                 <option value="admin">Administrator Sekolah</option>
                             </select>
                         </div>
@@ -582,6 +613,10 @@
                                 <input type="checkbox" name="roles[]" value="pustakawan" class="w-3.5 h-3.5 rounded text-cyan-600 focus:ring-0">
                                 <span>Pustakawan / Perpustakaan</span>
                             </label>
+                            <label class="flex items-center gap-1.5 cursor-pointer font-semibold text-amber-800 dark:text-amber-300">
+                                <input type="checkbox" name="roles[]" value="satpam" id="add_role_satpam" class="w-3.5 h-3.5 rounded text-amber-600 focus:ring-0">
+                                <span>Satpam / Petugas Keamanan</span>
+                            </label>
                         </div>
                     </div>
                 </div>
@@ -666,16 +701,20 @@
                             <select name="employment_type" id="edit_teacher_employment_type" required class="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-bold">
                                 <option value="Guru">Tenaga Pendidik (Guru)</option>
                                 <option value="Tenaga Kependidikan">Tenaga Kependidikan (Tendik / TU)</option>
+                                <option value="Tenaga Keamanan">Tenaga Keamanan (Satpam)</option>
                             </select>
                         </div>
                         <div>
                             <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Status Kepegawaian</label>
-                            <select name="employment_status" id="edit_teacher_employment_status" class="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                            <select name="employment_status" id="edit_teacher_employment_status" class="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-semibold">
                                 <option value="PNS">PNS</option>
                                 <option value="PPPK">PPPK</option>
                                 <option value="PPPK PW">PPPK PW</option>
                                 <option value="GTT">GTT / Honorer</option>
                                 <option value="NON ASN">NON ASN</option>
+                                <option value="Satpam/Keamanan">Satpam/Keamanan</option>
+                                <option value="Kontrak / Satpam">Kontrak / Satpam</option>
+                                <option value="Honorer / Satpam">Honorer / Satpam</option>
                             </select>
                         </div>
                         <div>
@@ -689,8 +728,14 @@
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
                         <div class="sm:col-span-2">
-                            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Jabatan / Tugas</label>
-                            <input type="text" name="position" id="edit_teacher_position" class="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-medium">
+                            <div class="flex items-center justify-between mb-1">
+                                <label class="block font-bold text-slate-700 dark:text-slate-300">Jabatan / Penugasan</label>
+                                <div class="flex items-center gap-1">
+                                    <button type="button" onclick="setEditPosition('Satpam/Keamanan')" class="text-[10px] font-bold text-amber-700 dark:text-amber-400 hover:underline bg-amber-50 dark:bg-amber-950/40 px-2 py-0.5 rounded border border-amber-300/60 cursor-pointer">+ Satpam/Keamanan</button>
+                                    <button type="button" onclick="setEditPosition('Danru Satpam')" class="text-[10px] font-bold text-amber-700 dark:text-amber-400 hover:underline bg-amber-50 dark:bg-amber-950/40 px-2 py-0.5 rounded border border-amber-300/60 cursor-pointer">+ Danru</button>
+                                </div>
+                            </div>
+                            <input type="text" name="position" id="edit_teacher_position" list="position_suggestions" class="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-medium">
                         </div>
                         <div>
                             <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Mata Pelajaran (Mapel)</label>
@@ -711,8 +756,11 @@
                             <input type="number" name="years_of_service_months" id="edit_teacher_mk_bln" min="0" max="11" class="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
                         </div>
                         <div class="sm:col-span-2">
-                            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Tugas Tambahan</label>
-                            <input type="text" name="additional_tasks" id="edit_teacher_additional_tasks" class="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                            <div class="flex items-center justify-between mb-1">
+                                <label class="block font-bold text-slate-700 dark:text-slate-300">Tugas Tambahan</label>
+                                <button type="button" onclick="setEditAdditionalTask('Petugas Keamanan Gerbang & Pos Satpam')" class="text-[10px] font-bold text-amber-700 dark:text-amber-400 hover:underline bg-amber-50 dark:bg-amber-950/40 px-2 py-0.5 rounded border border-amber-300/60 cursor-pointer">+ Pos Satpam</button>
+                            </div>
+                            <input type="text" name="additional_tasks" id="edit_teacher_additional_tasks" list="additional_task_suggestions" class="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
                         </div>
                     </div>
                     @if(isset($extracurriculars) && $extracurriculars->isNotEmpty())
@@ -775,6 +823,7 @@
                             <select name="role" id="edit_teacher_role" onchange="handleTeacherPrimaryRoleChange('edit')" required class="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-bold text-emerald-800 dark:text-emerald-300">
                                 <option value="guru">Tenaga Pendidik (Guru)</option>
                                 <option value="staff">Tenaga Kependidikan (Staf TU)</option>
+                                <option value="satpam">Petugas Keamanan / Satpam</option>
                                 <option value="admin">Admin</option>
                             </select>
                         </div>
@@ -870,6 +919,10 @@
                                 <input type="checkbox" name="roles[]" value="pustakawan" id="edit_role_tendik_pengelola_perpustakaan" class="w-3.5 h-3.5 rounded text-cyan-600 focus:ring-0">
                                 <span>Pustakawan / Perpustakaan</span>
                             </label>
+                            <label class="flex items-center gap-1.5 cursor-pointer font-semibold text-amber-800 dark:text-amber-300">
+                                <input type="checkbox" name="roles[]" value="satpam" id="edit_role_satpam" class="w-3.5 h-3.5 rounded text-amber-600 focus:ring-0">
+                                <span>Satpam / Petugas Keamanan</span>
+                            </label>
                         </div>
                     </div>
                 </div>
@@ -883,7 +936,72 @@
     </div>
 </div>
 
+<!-- Datalist Suggestions for Positions & Additional Tasks -->
+<datalist id="position_suggestions">
+    <option value="Satpam/Keamanan">
+    <option value="Petugas Keamanan Gerbang">
+    <option value="Komandan Regu (Danru) Satpam">
+    <option value="Staf Kepegawaian">
+    <option value="Staf Kesiswaan">
+    <option value="Staf Persuratan & Arsip">
+    <option value="Staf Sarana Prasarana">
+    <option value="Bendahara BOSP">
+    <option value="Pustakawan">
+    <option value="Kepala Tata Usaha (KTU)">
+    <option value="Guru Mata Pelajaran">
+</datalist>
+
+<datalist id="additional_task_suggestions">
+    <option value="Petugas Keamanan Gerbang & Pos Satpam">
+    <option value="Koordinator Keamanan Lingkungan Sekolah">
+    <option value="Piket Pos Keamanan & Kios Tamu">
+    <option value="Wali Kelas">
+    <option value="Pembina Ekstrakurikuler">
+</datalist>
+
 <script>
+    function setAddPosition(val) {
+        const el = document.getElementById('add_teacher_position');
+        if (el) el.value = val;
+        const empType = document.getElementById('add_teacher_employment_type');
+        if (empType && val.toLowerCase().includes('satpam')) {
+            empType.value = 'Tenaga Keamanan';
+            const empStatus = document.getElementById('add_teacher_employment_status');
+            if (empStatus) empStatus.value = 'Satpam/Keamanan';
+            const roleSelect = document.getElementById('add_teacher_role');
+            if (roleSelect) {
+                roleSelect.value = 'satpam';
+                handleTeacherPrimaryRoleChange('add');
+            }
+        }
+    }
+
+    function setEditPosition(val) {
+        const el = document.getElementById('edit_teacher_position');
+        if (el) el.value = val;
+        const empType = document.getElementById('edit_teacher_employment_type');
+        if (empType && val.toLowerCase().includes('satpam')) {
+            empType.value = 'Tenaga Keamanan';
+            const empStatus = document.getElementById('edit_teacher_employment_status');
+            if (empStatus) empStatus.value = 'Satpam/Keamanan';
+            const roleSelect = document.getElementById('edit_teacher_role');
+            if (roleSelect) {
+                roleSelect.value = 'satpam';
+                handleTeacherPrimaryRoleChange('edit');
+            }
+        }
+    }
+
+    function setAddAdditionalTask(val) {
+        const el = document.getElementById('add_teacher_additional_tasks');
+        if (el) el.value = val;
+    }
+
+    function setEditAdditionalTask(val) {
+        const el = document.getElementById('edit_teacher_additional_tasks');
+        if (el) el.value = val;
+    }
+
     function handleTeacherPrimaryRoleChange(prefix) {
         const roleSelect = document.getElementById(prefix === 'edit' ? 'edit_teacher_role' : 'add_teacher_role');
         const role = roleSelect ? roleSelect.value : 'guru';
@@ -895,8 +1013,12 @@
 
         if (role === 'guru') {
             if (pendidikBox) pendidikBox.classList.remove('hidden');
-        } else if (role === 'staff') {
+        } else if (role === 'staff' || role === 'satpam') {
             if (tendikBox) tendikBox.classList.remove('hidden');
+            if (role === 'satpam') {
+                const satpamCb = document.getElementById(prefix === 'edit' ? 'edit_role_satpam' : 'add_role_satpam');
+                if (satpamCb) satpamCb.checked = true;
+            }
         }
     }
 
@@ -944,6 +1066,8 @@
         let mappedPrimaryRole = 'guru';
         if (rawRole === 'admin' || userRoles.includes('admin')) {
             mappedPrimaryRole = 'admin';
+        } else if (rawRole === 'satpam' || userRoles.includes('satpam') || (t.position && t.position.toLowerCase().includes('satpam')) || (t.employment_status && t.employment_status.toLowerCase().includes('satpam'))) {
+            mappedPrimaryRole = 'satpam';
         } else if (['staff', 'tenaga_administrasi', 'kepala_administrasi', 'bendahara_bosp', 'bendahara_bopd', 'bendahara_gaji', 'operator_dapodik', 'ta_kesiswaan', 'ta_kepegawaian', 'ta_sarpras', 'ta_persuratan', 'tu_piket', 'bendahara', 'operator'].includes(rawRole)) {
             mappedPrimaryRole = 'staff';
         } else {

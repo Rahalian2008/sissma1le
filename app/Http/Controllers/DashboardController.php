@@ -124,6 +124,9 @@ class DashboardController extends Controller
             if (in_array($activeRole, ['guru_piket', 'tu_piket', 'petugas_piket'], true)) {
                 return redirect()->route('attendance.index');
             }
+            if (in_array($activeRole, ['satpam', 'security'], true)) {
+                return redirect()->route('attendance.kiosk-satpam');
+            }
             if (in_array($activeRole, ['kepala_perpustakaan', 'pengelola_perpustakaan', 'pustakawan'], true)) {
                 return redirect()->route('library.index');
             }
@@ -184,6 +187,9 @@ class DashboardController extends Controller
         }
         if (in_array($primary, ['guru_piket', 'tu_piket', 'petugas_piket'], true)) {
             return redirect()->route('attendance.index');
+        }
+        if (in_array($primary, ['satpam', 'security'], true)) {
+            return redirect()->route('attendance.kiosk-satpam');
         }
         if ($primary === 'pembina_ekstra') {
             return $this->teacherDashboard();

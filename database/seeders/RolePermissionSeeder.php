@@ -43,6 +43,7 @@ class RolePermissionSeeder extends Seeder
             ['name' => 'guru_piket', 'display_name' => 'Petugas Piket (Guru)', 'description' => 'Petugas piket harian KBM dan izin siswa', 'level' => 6],
             ['name' => 'tu_piket', 'display_name' => 'Petugas Piket (TU)', 'description' => 'Petugas piket administrasi dan persuratan', 'level' => 7],
             ['name' => 'petugas_piket', 'display_name' => 'Petugas Piket', 'description' => 'Petugas piket ketertiban sekolah', 'level' => 6],
+            ['name' => 'satpam', 'display_name' => 'Satpam / Petugas Keamanan', 'description' => 'Petugas keamanan pos gerbang, izin keluar siswa (School Pass), dan tamu sekolah', 'level' => 7],
             ['name' => 'bendahara_bosp', 'display_name' => 'Bendahara BOSP', 'description' => 'Bendahara Bantuan Operasional Satuan Pendidikan', 'level' => 6],
             ['name' => 'bendahara_bopd', 'display_name' => 'Bendahara BOPD', 'description' => 'Bendahara Bantuan Operasional Pendidikan Daerah', 'level' => 6],
             ['name' => 'bendahara_gaji', 'display_name' => 'Bendahara Gaji', 'description' => 'Bendahara penggajian dan kesejahteraan pegawai', 'level' => 6],

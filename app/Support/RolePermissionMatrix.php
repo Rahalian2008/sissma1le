@@ -61,6 +61,7 @@ class RolePermissionMatrix
                 'super_admin', 'admin', 'kepala_sekolah',
                 'wakasek_kesiswaan', 'kesiswaan', 'ta_kesiswaan',
                 'guru_piket', 'tu_piket', 'petugas_piket', 'piket',
+                'satpam', 'security',
                 'wali_kelas', 'guru', 'staff', 'tu', 'siswa', 'orang_tua',
             ],
 
@@ -68,6 +69,7 @@ class RolePermissionMatrix
                 'super_admin', 'admin', 'kepala_sekolah',
                 'wakasek_kesiswaan', 'kesiswaan', 'ta_kesiswaan',
                 'guru_piket', 'tu_piket', 'petugas_piket', 'piket',
+                'satpam', 'security',
                 'wali_kelas', 'guru', 'siswa', 'orang_tua',
             ],
 
@@ -75,6 +77,7 @@ class RolePermissionMatrix
                 'super_admin', 'admin', 'kepala_sekolah',
                 'wakasek_kesiswaan', 'kesiswaan', 'ta_kesiswaan',
                 'guru_piket', 'tu_piket', 'petugas_piket', 'piket',
+                'satpam', 'security',
                 'wali_kelas', 'guru', 'siswa',
             ],
 
@@ -118,6 +121,7 @@ class RolePermissionMatrix
             'kiosk' => [
                 'super_admin', 'admin', 'kepala_sekolah',
                 'wakasek_kesiswaan', 'guru_piket', 'tu_piket', 'petugas_piket',
+                'satpam', 'security',
                 'kepala_administrasi',
             ],
 
@@ -324,6 +328,7 @@ class RolePermissionMatrix
             'kepala_laboratorium' => 'Kepala Laboratorium',
             'guru' => self::resolveTeacherTitle($user),
             'staff', 'tu', 'tenaga_administrasi' => 'Tenaga Kependidikan (Staf TU)',
+            'satpam', 'security' => 'Satpam / Petugas Keamanan',
             'siswa' => 'Peserta Didik (Siswa)',
             'sekretaris_kelas' => 'Sekretaris Kelas',
             'sekretaris_ekstra' => 'Sekretaris Ekstrakurikuler',
