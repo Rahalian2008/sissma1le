@@ -287,16 +287,108 @@
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                         <div>
-                            <label class="block font-semibold text-slate-300 mb-1">Ditujukan Kepada Bagian / Pejabat <span class="text-rose-400">*</span></label>
-                            <select name="destination_department" required class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white focus:border-indigo-500">
+                            <label for="destination_department" class="block font-semibold text-slate-300 mb-1">Ditujukan Kepada Bagian / Pejabat <span class="text-rose-400">*</span></label>
+                            <select name="destination_department" id="destination_department" required class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white focus:border-indigo-500">
                                 @foreach($departments as $dept)
                                     <option value="{{ $dept }}" {{ old('destination_department') === $dept ? 'selected' : '' }}>{{ $dept }}</option>
                                 @endforeach
                             </select>
                         </div>
-                        <div>
-                            <label class="block font-semibold text-slate-300 mb-1">Nama Pegawai / Guru yang Dituju <span class="text-slate-500 font-normal">(Jika spesifik)</span></label>
-                            <input type="text" name="destination_person_name" value="{{ old('destination_person_name') }}" placeholder="Contoh: {{ $school->headmaster_name ?? 'Kepala Sekolah' }}" class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:border-indigo-500">
+                        <div class="relative" id="staff-combobox-container">
+                            <div class="flex items-center justify-between mb-1">
+                                <label for="destination_person_name" class="block font-semibold text-slate-300">
+                                    Nama Pegawai / Guru yang Dituju <span class="text-slate-500 font-normal">(Jika spesifik)</span>
+                                </label>
+                                <span class="text-[11px] text-emerald-400 font-medium hidden sm:inline-flex items-center gap-1">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                                    Master Data Guru & TU
+                                </span>
+                            </div>
+
+                            <!-- Input Combobox dengan Search Icon, Clear Button & Toggle Dropdown -->
+                            <div class="relative flex items-center">
+                                <span class="absolute left-3.5 text-slate-400 pointer-events-none">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                    </svg>
+                                </span>
+
+                                <input type="text"
+                                       name="destination_person_name"
+                                       id="destination_person_name"
+                                       autocomplete="off"
+                                       list="staff_datalist"
+                                       value="{{ old('destination_person_name') }}"
+                                       placeholder="Ketik nama atau pilih dari daftar Guru & TU..."
+                                       class="w-full pl-10 pr-24 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors text-sm">
+
+                                <div class="absolute right-2 flex items-center gap-1">
+                                    <button type="button"
+                                            id="btn-clear-staff"
+                                            class="p-1 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition hidden"
+                                            title="Hapus / Reset"
+                                            aria-label="Hapus isian">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                        </svg>
+                                    </button>
+                                    <button type="button"
+                                            id="btn-toggle-staff-dropdown"
+                                            class="px-2 py-1 text-xs bg-slate-800 hover:bg-indigo-600/50 text-slate-300 hover:text-white rounded-lg border border-slate-700 transition flex items-center gap-1 font-medium"
+                                            title="Buka / Tutup Daftar Guru & TU">
+                                        <span>Daftar</span>
+                                        <svg id="chevron-staff" class="w-3.5 h-3.5 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Native HTML5 Datalist for mobile/fallback -->
+                            <datalist id="staff_datalist">
+                                @if(isset($staffMembers) && count($staffMembers) > 0)
+                                    @foreach($staffMembers as $staff)
+                                        <option value="{{ $staff['name'] }}">{{ $staff['role'] }} ({{ $staff['badge'] }})</option>
+                                    @endforeach
+                                @endif
+                            </datalist>
+
+                            <!-- Interactive Searchable Dropdown Popup -->
+                            <div id="staff-dropdown-panel"
+                                 class="hidden absolute z-50 left-0 right-0 mt-1.5 bg-slate-900/95 backdrop-blur-md border border-slate-700 rounded-xl shadow-2xl overflow-hidden ring-1 ring-black/50 text-xs">
+                                <!-- Filter Pills Bar -->
+                                <div class="p-2 border-b border-slate-800 bg-slate-950/80 flex items-center justify-between gap-1 flex-wrap">
+                                    <div class="flex items-center gap-1">
+                                        <button type="button" data-filter="all" class="staff-filter-btn px-2 py-0.5 rounded text-[11px] font-medium bg-indigo-600 text-white transition">Semua (<span id="count-all">{{ isset($staffMembers) ? count($staffMembers) : 0 }}</span>)</button>
+                                        <button type="button" data-filter="guru" class="staff-filter-btn px-2 py-0.5 rounded text-[11px] font-medium bg-slate-800 text-slate-300 hover:text-white transition">Guru</button>
+                                        <button type="button" data-filter="tu" class="staff-filter-btn px-2 py-0.5 rounded text-[11px] font-medium bg-slate-800 text-slate-300 hover:text-white transition">Staf TU</button>
+                                    </div>
+                                    <span class="text-[10px] text-slate-400">Ketik untuk mencari</span>
+                                </div>
+
+                                <!-- Items List -->
+                                <div id="staff-items-list" class="max-h-60 overflow-y-auto divide-y divide-slate-800/60 scrollbar-thin scrollbar-thumb-slate-700">
+                                    <!-- Rendered dynamically via JS for fast instant filtering -->
+                                </div>
+
+                                <!-- Footer Notice (Bisa Tulis Manual) -->
+                                <div class="p-2 border-t border-slate-800 bg-slate-950/90 flex items-center justify-between text-[11px] text-slate-400">
+                                    <span class="flex items-center gap-1.5 text-slate-400">
+                                        <svg class="w-3.5 h-3.5 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                        </svg>
+                                        Jika tidak ada di daftar, ketik nama bebas secara manual.
+                                    </span>
+                                    <button type="button" id="btn-close-staff-dropdown" class="text-indigo-400 hover:text-indigo-300 hover:underline">Tutup</button>
+                                </div>
+                            </div>
+
+                            <p class="text-[11px] text-slate-400 mt-1 flex items-center gap-1">
+                                <svg class="w-3.5 h-3.5 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                                </svg>
+                                Data dari Master Guru & TU. Jika nama tidak terdaftar, ketik nama secara manual.
+                            </p>
                         </div>
                     </div>
 
@@ -634,6 +726,281 @@
         function closeCheckoutModal() {
             document.getElementById('modal-checkout').classList.add('hidden');
         }
+
+        // ==========================================================
+        // COMBOBOX & PENCARIAN GURU & TENAGA KEPENDIDIKAN (TU)
+        // ==========================================================
+        const MASTER_STAFF = @json($staffMembers ?? []);
+        const staffInput = document.getElementById('destination_person_name');
+        const staffDropdown = document.getElementById('staff-dropdown-panel');
+        const staffItemsList = document.getElementById('staff-items-list');
+        const btnToggleStaff = document.getElementById('btn-toggle-staff-dropdown');
+        const btnClearStaff = document.getElementById('btn-clear-staff');
+        const btnCloseStaff = document.getElementById('btn-close-staff-dropdown');
+        const chevronStaff = document.getElementById('chevron-staff');
+        const staffContainer = document.getElementById('staff-combobox-container');
+        const destinationDeptSelect = document.getElementById('destination_department');
+
+        let currentStaffFilter = 'all';
+        let focusedStaffIndex = -1;
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function highlightMatch(text, query) {
+            if (!query || !text) return escapeHtml(text);
+            const safeText = escapeHtml(text);
+            const safeQuery = escapeHtml(query);
+            const reg = new RegExp('(' + safeQuery.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&') + ')', 'gi');
+            return safeText.replace(reg, '<span class="bg-indigo-500/30 text-indigo-300 font-bold px-0.5 rounded">$1</span>');
+        }
+
+        function renderStaffDropdown() {
+            if (!staffItemsList) return;
+            const query = (staffInput.value || '').trim().toLowerCase();
+
+            let filtered = MASTER_STAFF.filter(item => {
+                if (currentStaffFilter === 'guru' && item.is_tu) return false;
+                if (currentStaffFilter === 'tu' && !item.is_tu) return false;
+
+                if (!query) return true;
+                const matchName = item.name.toLowerCase().includes(query);
+                const matchRole = item.role.toLowerCase().includes(query);
+                const matchNip = item.nip && item.nip.toLowerCase().includes(query);
+                const matchBadge = item.badge && item.badge.toLowerCase().includes(query);
+                return matchName || matchRole || matchNip || matchBadge;
+            });
+
+            if (filtered.length === 0) {
+                staffItemsList.innerHTML = `
+                    <div class="p-4 text-center">
+                        <div class="w-9 h-9 mx-auto mb-2 rounded-full bg-slate-800 text-slate-400 flex items-center justify-center">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                            </svg>
+                        </div>
+                        <p class="text-white font-medium text-xs mb-1">Nama "${escapeHtml(staffInput.value)}" tidak ditemukan di Master Data</p>
+                        <p class="text-slate-400 text-[11px] mb-2.5">Anda tetap dapat menggunakan nama ini secara manual.</p>
+                        <button type="button" id="btn-use-custom-name" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-semibold shadow transition inline-flex items-center gap-1.5">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Gunakan Nama Ini (Tulis Manual)
+                        </button>
+                    </div>
+                `;
+
+                const btnUseCustom = document.getElementById('btn-use-custom-name');
+                if (btnUseCustom) {
+                    btnUseCustom.addEventListener('click', () => {
+                        hideStaffDropdown();
+                    });
+                }
+                return;
+            }
+
+            let html = '';
+            filtered.forEach((item, idx) => {
+                let badgeClass = 'bg-emerald-950/80 text-emerald-300 border-emerald-800';
+                let iconColor = 'text-emerald-400';
+                if (item.badge === 'KEPALA SEKOLAH') {
+                    badgeClass = 'bg-amber-950/80 text-amber-300 border-amber-800';
+                    iconColor = 'text-amber-400';
+                } else if (item.badge === 'WAKASEK') {
+                    badgeClass = 'bg-indigo-950/80 text-indigo-300 border-indigo-800';
+                    iconColor = 'text-indigo-400';
+                } else if (item.badge === 'STAF TU') {
+                    badgeClass = 'bg-sky-950/80 text-sky-300 border-sky-800';
+                    iconColor = 'text-sky-400';
+                }
+
+                html += `
+                    <div class="staff-option-item p-2.5 hover:bg-indigo-950/50 cursor-pointer transition flex items-center justify-between gap-3 ${idx === focusedStaffIndex ? 'bg-indigo-900/40 ring-1 ring-inset ring-indigo-500' : ''}"
+                         data-index="${idx}"
+                         data-name="${escapeHtml(item.name)}"
+                         data-dept="${escapeHtml(item.dept_suggestion || '')}">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <div class="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center shrink-0 ${iconColor} font-bold text-xs">
+                                ${escapeHtml(item.name.charAt(0))}
+                            </div>
+                            <div class="min-w-0">
+                                <div class="text-white font-medium text-xs truncate">
+                                    ${highlightMatch(item.name, query)}
+                                </div>
+                                <div class="text-slate-400 text-[11px] truncate flex items-center gap-2">
+                                    <span>${highlightMatch(item.role, query)}</span>
+                                    ${item.nip && item.nip !== '-' ? `<span class="text-slate-500">NIP: ${escapeHtml(item.nip)}</span>` : ''}
+                                </div>
+                            </div>
+                        </div>
+                        <span class="px-2 py-0.5 rounded text-[10px] font-semibold border ${badgeClass} shrink-0">
+                            ${escapeHtml(item.badge)}
+                        </span>
+                    </div>
+                `;
+            });
+
+            staffItemsList.innerHTML = html;
+
+            // Bind click events to items
+            const optionEls = staffItemsList.querySelectorAll('.staff-option-item');
+            optionEls.forEach(el => {
+                el.addEventListener('click', function() {
+                    const selName = this.getAttribute('data-name');
+                    const selDept = this.getAttribute('data-dept');
+                    selectStaff(selName, selDept);
+                });
+            });
+        }
+
+        function selectStaff(name, dept) {
+            if (!staffInput) return;
+            staffInput.value = name;
+            if (dept && destinationDeptSelect) {
+                // Auto-match department if currently default
+                const matchingOption = Array.from(destinationDeptSelect.options).find(opt => opt.value === dept);
+                if (matchingOption) {
+                    destinationDeptSelect.value = dept;
+                }
+            }
+            updateClearButton();
+            hideStaffDropdown();
+        }
+
+        function showStaffDropdown() {
+            if (!staffDropdown) return;
+            staffDropdown.classList.remove('hidden');
+            if (chevronStaff) chevronStaff.classList.add('rotate-180');
+            renderStaffDropdown();
+        }
+
+        function hideStaffDropdown() {
+            if (!staffDropdown) return;
+            staffDropdown.classList.add('hidden');
+            if (chevronStaff) chevronStaff.classList.remove('rotate-180');
+            focusedStaffIndex = -1;
+        }
+
+        function updateClearButton() {
+            if (!btnClearStaff || !staffInput) return;
+            if (staffInput.value.trim().length > 0) {
+                btnClearStaff.classList.remove('hidden');
+            } else {
+                btnClearStaff.classList.add('hidden');
+            }
+        }
+
+        if (staffInput) {
+            staffInput.addEventListener('focus', function() {
+                showStaffDropdown();
+            });
+
+            staffInput.addEventListener('input', function() {
+                updateClearButton();
+                showStaffDropdown();
+            });
+
+            staffInput.addEventListener('keydown', function(e) {
+                if (staffDropdown.classList.contains('hidden')) {
+                    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+                        e.preventDefault();
+                        showStaffDropdown();
+                        return;
+                    }
+                }
+
+                const options = staffItemsList.querySelectorAll('.staff-option-item');
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    focusedStaffIndex = Math.min(focusedStaffIndex + 1, options.length - 1);
+                    renderStaffDropdown();
+                    if (options[focusedStaffIndex]) {
+                        options[focusedStaffIndex].scrollIntoView({ block: 'nearest' });
+                    }
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    focusedStaffIndex = Math.max(focusedStaffIndex - 1, 0);
+                    renderStaffDropdown();
+                    if (options[focusedStaffIndex]) {
+                        options[focusedStaffIndex].scrollIntoView({ block: 'nearest' });
+                    }
+                } else if (e.key === 'Enter') {
+                    if (!staffDropdown.classList.contains('hidden') && focusedStaffIndex >= 0 && options[focusedStaffIndex]) {
+                        e.preventDefault();
+                        const selName = options[focusedStaffIndex].getAttribute('data-name');
+                        const selDept = options[focusedStaffIndex].getAttribute('data-dept');
+                        selectStaff(selName, selDept);
+                    }
+                } else if (e.key === 'Escape') {
+                    hideStaffDropdown();
+                }
+            });
+
+            updateClearButton();
+        }
+
+        if (btnToggleStaff) {
+            btnToggleStaff.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (staffDropdown.classList.contains('hidden')) {
+                    staffInput.focus();
+                    showStaffDropdown();
+                } else {
+                    hideStaffDropdown();
+                }
+            });
+        }
+
+        if (btnClearStaff) {
+            btnClearStaff.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                staffInput.value = '';
+                updateClearButton();
+                staffInput.focus();
+                showStaffDropdown();
+            });
+        }
+
+        if (btnCloseStaff) {
+            btnCloseStaff.addEventListener('click', function(e) {
+                e.preventDefault();
+                hideStaffDropdown();
+            });
+        }
+
+        // Filter pills handler
+        document.querySelectorAll('.staff-filter-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                document.querySelectorAll('.staff-filter-btn').forEach(b => {
+                    b.classList.remove('bg-indigo-600', 'text-white');
+                    b.classList.add('bg-slate-800', 'text-slate-300');
+                });
+                this.classList.remove('bg-slate-800', 'text-slate-300');
+                this.classList.add('bg-indigo-600', 'text-white');
+
+                currentStaffFilter = this.getAttribute('data-filter');
+                focusedStaffIndex = -1;
+                renderStaffDropdown();
+            });
+        });
+
+        // Close on outside click
+        document.addEventListener('click', function(e) {
+            if (staffContainer && !staffContainer.contains(e.target)) {
+                hideStaffDropdown();
+            }
+        });
     </script>
 </body>
 </html>

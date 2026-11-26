@@ -306,8 +306,15 @@
                             </select>
                         </div>
                         <div>
-                            <label class="block font-semibold text-slate-700 mb-1">Nama Pejabat/Guru Dituju</label>
-                            <input type="text" id="edit-guest-person-name" name="destination_person_name" class="w-full px-3 py-2 border border-slate-300 rounded-xl">
+                            <label class="block font-semibold text-slate-700 mb-1">Nama Pejabat/Guru Dituju <span class="text-xs text-slate-500 font-normal">(Dari Master / Bebas Manual)</span></label>
+                            <input type="text" id="edit-guest-person-name" name="destination_person_name" list="staff_datalist_admin" placeholder="Pilih dari Master Guru/TU atau ketik..." class="w-full px-3 py-2 border border-slate-300 rounded-xl">
+                            <datalist id="staff_datalist_admin">
+                                @if(isset($staffMembers))
+                                    @foreach($staffMembers as $staff)
+                                        <option value="{{ $staff['name'] }}">{{ $staff['role'] }} ({{ $staff['badge'] }})</option>
+                                    @endforeach
+                                @endif
+                            </datalist>
                         </div>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">

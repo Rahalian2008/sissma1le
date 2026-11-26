@@ -12,6 +12,7 @@ use App\Services\QrCodeService;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -65,7 +66,85 @@ class GuestController extends Controller
             'Keperluan Lainnya',
         ];
 
-        return view('guests.kiosk', compact('school', 'institutionTypes', 'departments', 'purposes'));
+        $staffMembers = $this->getStaffDirectory();
+
+        return view('guests.kiosk', compact('school', 'institutionTypes', 'departments', 'purposes', 'staffMembers'));
+    }
+
+    /**
+     * Dapatkan direktori data Guru dan Tenaga Kependidikan (TU) aktif dari Master Data
+     *
+     * @return Collection<int, array{id: int, name: string, nip: string, role: string, badge: string, is_tu: bool, dept_suggestion: string}>
+     */
+    protected function getStaffDirectory()
+    {
+        return Teacher::where('is_active', true)
+            ->with(['homeroomClass', 'user'])
+            ->orderBy('name')
+            ->get()
+            ->map(function ($t) {
+                $name = $t->formatted_name ?: $t->name;
+                $nip = $t->nip ?: '-';
+                $employmentType = $t->employment_type ?? 'Guru';
+                $isTu = ($employmentType === 'Tenaga Kependidikan' || stripos($t->position ?? '', 'Kependidikan') !== false || stripos($t->position ?? '', 'Tata Usaha') !== false);
+                $isKepsek = (stripos($t->name, 'Pian Sopian') !== false || ($t->title && stripos($t->title, 'Kepala') !== false));
+
+                $role = 'Guru Pengajar';
+                $badge = 'GURU';
+                $deptSuggestion = 'Guru / Wali Kelas';
+
+                if ($isKepsek) {
+                    $role = 'Kepala SMAN 1 Lengkong';
+                    $badge = 'KEPALA SEKOLAH';
+                    $deptSuggestion = 'Kepala Sekolah';
+                } elseif ($isTu) {
+                    $role = $t->position ?: 'Staf Tenaga Administrasi (TU)';
+                    $badge = 'STAF TU';
+                    $deptSuggestion = 'Layanan Administrasi TU';
+                } elseif ($t->user && in_array('wakasek_kurikulum', $t->user->all_roles, true)) {
+                    $role = 'Wakasek Bid. Kurikulum';
+                    $badge = 'WAKASEK';
+                    $deptSuggestion = 'Guru / Wali Kelas';
+                } elseif ($t->user && in_array('wakasek_kesiswaan', $t->user->all_roles, true)) {
+                    $role = 'Wakasek Bid. Kesiswaan';
+                    $badge = 'WAKASEK';
+                    $deptSuggestion = 'Sub. Bagian Kesiswaan';
+                } elseif ($t->user && in_array('wakasek_humas', $t->user->all_roles, true)) {
+                    $role = 'Wakasek Bid. Humas';
+                    $badge = 'WAKASEK';
+                    $deptSuggestion = 'Sub. Bagian Humas';
+                } elseif ($t->user && in_array('wakasek_sarpras', $t->user->all_roles, true)) {
+                    $role = 'Wakasek Bid. Sarpras';
+                    $badge = 'WAKASEK';
+                    $deptSuggestion = 'Pengelola Sarpras';
+                } elseif ($t->user && in_array('bk', $t->user->all_roles, true)) {
+                    $role = 'Guru BK / Konselor Sekolah';
+                    $badge = 'GURU BK';
+                    $deptSuggestion = 'Koord. BP/BK';
+                } elseif ($t->homeroomClass) {
+                    $role = 'Wali Kelas '.$t->homeroomClass->name.($t->position ? ' ('.$t->position.')' : '');
+                    $badge = 'WALI KELAS';
+                    $deptSuggestion = 'Guru / Wali Kelas';
+                } elseif ($t->position) {
+                    $role = 'Guru '.$t->position;
+                    $badge = 'GURU';
+                    $deptSuggestion = 'Guru / Wali Kelas';
+                } elseif ($t->teaching_subject) {
+                    $role = 'Guru '.$t->teaching_subject;
+                    $badge = 'GURU';
+                    $deptSuggestion = 'Guru / Wali Kelas';
+                }
+
+                return [
+                    'id' => $t->id,
+                    'name' => $name,
+                    'nip' => $nip,
+                    'role' => $role,
+                    'badge' => $badge,
+                    'is_tu' => $isTu,
+                    'dept_suggestion' => $deptSuggestion,
+                ];
+            });
     }
 
     /**
@@ -303,7 +382,9 @@ class GuestController extends Controller
             'Keperluan Lainnya',
         ];
 
-        return view('guests.index', compact('guests', 'stats', 'departments', 'institutionTypes', 'purposes', 'dateFrom', 'dateTo', 'filterAll'));
+        $staffMembers = $this->getStaffDirectory();
+
+        return view('guests.index', compact('guests', 'stats', 'departments', 'institutionTypes', 'purposes', 'dateFrom', 'dateTo', 'filterAll', 'staffMembers'));
     }
 
     public function update(Request $request, Guest $guest): RedirectResponse
