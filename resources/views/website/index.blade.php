@@ -192,11 +192,11 @@
     <!-- ==================== 1 & 2. STICKY TOP HEADER & NAVIGATION WRAPPER ==================== -->
     <div id="sticky-header-wrapper" class="sticky top-0 z-50 w-full transition-all duration-300 shadow-md bg-gradient-to-r from-indigo-700 via-indigo-600 to-blue-700 dark:from-slate-950 dark:via-indigo-950 dark:to-slate-950">
         <!-- 1. TOP ANNOUNCEMENT TICKER (Rapih, Fleksibel, Responsif & Tidak Terpotong) -->
-        <aside aria-label="Pengumuman Resmi Sekolah" class="bg-gradient-to-r from-indigo-700/95 via-indigo-600/95 to-blue-700/95 dark:from-indigo-950/95 dark:via-slate-900/95 dark:to-indigo-950/95 backdrop-blur-md text-white py-1.5 sm:py-2 px-3 sm:px-4 shadow-xs border-b border-indigo-500/30 dark:border-indigo-900/50 pt-[env(safe-area-inset-top,0px)]">
-            <div class="max-w-7xl 2xl:max-w-[1536px] mx-auto flex items-center justify-between gap-2 sm:gap-4">
+        <aside aria-label="Pengumuman Resmi Sekolah" class="bg-gradient-to-r from-indigo-700/95 via-indigo-600/95 to-blue-700/95 dark:from-indigo-950/95 dark:via-slate-900/95 dark:to-indigo-950/95 backdrop-blur-md text-white py-1.5 sm:py-2 px-2.5 sm:px-4 shadow-xs border-b border-indigo-500/30 dark:border-indigo-900/50 pt-[env(safe-area-inset-top,0px)]">
+            <div class="max-w-7xl 2xl:max-w-[1536px] mx-auto flex items-center justify-between gap-2 overflow-x-auto no-scrollbar scroll-smooth">
                 
                 <!-- Left: Identitas Resmi & Info Sekolah (Adaptif Tanpa Terpotong Teks) -->
-                <div class="flex items-center gap-1.5 sm:gap-2 min-w-0 shrink-0">
+                <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
                     <span class="inline-flex items-center gap-1 px-1.5 sm:px-2 py-0.5 rounded-full bg-amber-400 text-slate-950 text-[9px] sm:text-[10px] font-black uppercase tracking-wider shrink-0 shadow-xs">
                         <span class="w-1.5 h-1.5 rounded-full bg-slate-950 animate-ping"></span>
                         Resmi
@@ -212,61 +212,61 @@
                     </div>
                 </div>
 
-                <!-- Right: Quick Utilities & Akses Kiosk Digital (Modern Pills, Elegan & Fleksibel) -->
-                <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+                <!-- Right: Quick Utilities & Akses Kiosk Digital (Scrollable Horizontal di Mobile, Tidak Terpotong) -->
+                <div class="flex items-center gap-1 sm:gap-1.5 overflow-x-auto no-scrollbar scroll-smooth shrink-0 py-0.5">
                     <!-- Status Online (Layar 2xl) -->
-                    <span class="hidden 2xl:inline-flex items-center gap-1.5 text-[11px] text-emerald-300 font-medium px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-400/25">
+                    <span class="hidden 2xl:inline-flex items-center gap-1.5 text-[11px] text-emerald-300 font-medium px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-400/25 whitespace-nowrap">
                         <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
                         Sistem Online
                     </span>
 
                     <!-- Kios TV Display (Layar lg+) -->
-                    <a href="{{ route('kiosk.index') }}" target="_blank" class="hidden lg:inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-sky-400/15 hover:bg-sky-400/25 text-sky-300 font-bold text-[10px] sm:text-[11px] transition border border-sky-400/30 shadow-2xs" title="Layar Display TV Informasi Lobby">
+                    <a href="{{ route('kiosk.index') }}" target="_blank" class="hidden lg:inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-sky-400/15 hover:bg-sky-400/25 text-sky-300 font-bold text-[10px] sm:text-[11px] transition border border-sky-400/30 shadow-2xs whitespace-nowrap" title="Layar Display TV Informasi Lobby">
                         <span>📺 Kios TV</span>
                     </a>
 
                     <!-- Bel Sekolah Kiosk Direct Link (Layar md+) -->
-                    <a href="{{ route('school_bell.index') }}" target="_blank" class="hidden md:inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-amber-400/15 hover:bg-amber-400/25 text-amber-300 font-bold text-[10px] sm:text-[11px] transition border border-amber-400/30 shadow-2xs" title="Bel Sekolah Digital & Murottal 114 Surah">
+                    <a href="{{ route('school_bell.index') }}" target="_blank" class="hidden md:inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-amber-400/15 hover:bg-amber-400/25 text-amber-300 font-bold text-[10px] sm:text-[11px] transition border border-amber-400/30 shadow-2xs whitespace-nowrap" title="Bel Sekolah Digital & Murottal 114 Surah">
                         <span>🔔 Bel<span class="hidden xl:inline"> Sekolah</span></span>
                     </a>
 
                     <!-- Kios Tamu Resepsionis (Layar lg+) -->
-                    <a href="{{ route('guests.kiosk') }}" target="_blank" class="hidden lg:inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-white/10 hover:bg-white/20 text-white font-medium text-[10px] sm:text-[11px] transition border border-white/10 shadow-2xs" title="Kios Buku Tamu Digital Resepsionis">
+                    <a href="{{ route('guests.kiosk') }}" target="_blank" class="hidden lg:inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-white/10 hover:bg-white/20 text-white font-medium text-[10px] sm:text-[11px] transition border border-white/10 shadow-2xs whitespace-nowrap" title="Kios Buku Tamu Digital Resepsionis">
                         <span>👥 Kios Tamu</span>
                     </a>
 
                     <!-- Kios Buku Tamu Perpustakaan (Layar xl+) -->
-                    <a href="{{ route('library.guest_book.index') }}" target="_blank" class="hidden xl:inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-white/10 hover:bg-white/20 text-white font-medium text-[10px] sm:text-[11px] transition border border-white/10 shadow-2xs" title="Kios Mandiri Perpustakaan">
+                    <a href="{{ route('library.guest_book.index') }}" target="_blank" class="hidden xl:inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-white/10 hover:bg-white/20 text-white font-medium text-[10px] sm:text-[11px] transition border border-white/10 shadow-2xs whitespace-nowrap" title="Kios Mandiri Perpustakaan">
                         <span>📚 Kios Perpus</span>
                     </a>
 
                     <!-- Kios Pos Satpam & Gerbang (Layar 2xl+) -->
-                    <a href="{{ route('attendance.kiosk-satpam') }}" target="_blank" class="hidden 2xl:inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-teal-400/15 hover:bg-teal-400/25 text-teal-300 font-bold text-[10px] sm:text-[11px] transition border border-teal-400/30 shadow-2xs" title="Kios Pos Satpam & Perizinan Siswa">
+                    <a href="{{ route('attendance.kiosk-satpam') }}" target="_blank" class="hidden 2xl:inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-teal-400/15 hover:bg-teal-400/25 text-teal-300 font-bold text-[10px] sm:text-[11px] transition border border-teal-400/30 shadow-2xs whitespace-nowrap" title="Kios Pos Satpam & Perizinan Siswa">
                         <span>🛡️ Kios Satpam</span>
                     </a>
 
                     <!-- Quick Kios Launcher Button (Di Ponsel & Layar Sedang) -->
-                    <button type="button" onclick="openPortalModal()" class="inline-flex lg:hidden items-center gap-1 px-2 py-0.5 sm:py-1 rounded-full bg-white/15 hover:bg-white/25 text-white font-bold text-[10px] sm:text-[11px] transition border border-white/20 shadow-2xs" title="Buka Ekosistem Kios Digital Mandiri">
-                        <span>🏛️ Kios<span class="hidden xs:inline"> (5)</span></span>
+                    <button type="button" onclick="openPortalModal()" class="inline-flex lg:hidden items-center gap-1 px-2 py-0.5 sm:py-1 rounded-full bg-white/15 hover:bg-white/25 text-white font-bold text-[10px] sm:text-[11px] transition border border-white/20 shadow-2xs whitespace-nowrap" title="Buka Ekosistem Kios Digital Mandiri">
+                        <span>🏛️ Kios</span>
                     </button>
 
                     <!-- Portal Orang Tua (sm+) -->
-                    <a href="{{ route('parent.portal') }}" class="hidden sm:inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-indigo-500/30 hover:bg-indigo-500/50 text-indigo-100 hover:text-white font-semibold text-[10px] sm:text-[11px] transition border border-indigo-400/30 shadow-2xs" title="Portal Orang Tua Siswa Tanpa Login">
+                    <a href="{{ route('parent.portal') }}" class="hidden sm:inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-indigo-500/30 hover:bg-indigo-500/50 text-indigo-100 hover:text-white font-semibold text-[10px] sm:text-[11px] transition border border-indigo-400/30 shadow-2xs whitespace-nowrap" title="Portal Orang Tua Siswa Tanpa Login">
                         <span>👨‍👩‍👧‍👦 <span class="hidden md:inline">Portal </span>Orang Tua</span>
                     </a>
 
                     <!-- Kanal Pengaduan & Aspirasi Publik -->
-                    <a href="{{ url('/pengaduan') }}" class="inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-rose-500/25 hover:bg-rose-500/40 text-rose-200 hover:text-white font-bold text-[10px] sm:text-[11px] transition border border-rose-400/30 shadow-2xs" title="Kanal Aspirasi & Pengaduan Publik SMAN 1 Lengkong">
+                    <a href="{{ url('/pengaduan') }}" class="inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-rose-500/25 hover:bg-rose-500/40 text-rose-200 hover:text-white font-bold text-[10px] sm:text-[11px] transition border border-rose-400/30 shadow-2xs whitespace-nowrap" title="Kanal Aspirasi & Pengaduan Publik SMAN 1 Lengkong">
                         <span>📢 Pengaduan</span>
                     </a>
 
                     <!-- Kuesioner Tracer Study Alumni -->
-                    <a href="{{ route('bk.tracer.public_form') }}" class="inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-amber-500/25 hover:bg-amber-500/40 text-amber-200 hover:text-white font-bold text-[10px] sm:text-[11px] transition border border-amber-400/30 shadow-2xs" title="Kuesioner Penelusuran Tamatan & Alumni SMAN 1 Lengkong">
+                    <a href="{{ route('bk.tracer.public_form') }}" class="inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-amber-500/25 hover:bg-amber-500/40 text-amber-200 hover:text-white font-bold text-[10px] sm:text-[11px] transition border border-amber-400/30 shadow-2xs whitespace-nowrap" title="Kuesioner Penelusuran Tamatan & Alumni SMAN 1 Lengkong">
                         <span>🎓 Tracer Alumni</span>
                     </a>
 
                     <!-- Quick SPMB Registration Pill (Selalu Muncul & Menarik) -->
-                    <a href="{{ route('spmb.public.register') }}" class="px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-300 hover:from-emerald-300 hover:to-teal-200 text-slate-950 font-black text-[10px] sm:text-[11px] shadow-sm transition hover:scale-105 flex items-center gap-1 shrink-0">
+                    <a href="{{ route('spmb.public.register') }}" class="px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-300 hover:from-emerald-300 hover:to-teal-200 text-slate-950 font-black text-[10px] sm:text-[11px] shadow-sm transition hover:scale-105 flex items-center gap-1 shrink-0 whitespace-nowrap">
                         <span>🎓 <span class="hidden xs:inline">Daftar </span>SPMB</span>
                     </a>
                 </div>
@@ -289,13 +289,14 @@
                         @endif
                     </div>
                 </div>
-                <div class="min-w-0 max-w-[150px] xs:max-w-[220px] sm:max-w-none">
+                <div class="min-w-0 flex-1 max-w-[210px] xs:max-w-[280px] sm:max-w-none">
                     <h1 class="font-heading font-black text-slate-900 dark:text-white text-xs sm:text-base lg:text-lg tracking-tight leading-none group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors truncate">
                         {{ $settings['school_name'] ?? 'SMAN 1 LENGKONG' }}
                     </h1>
                     <p class="text-[9px] sm:text-[11px] font-semibold text-slate-500 dark:text-slate-400 mt-0.5 sm:mt-1 flex items-center gap-1 sm:gap-1.5 truncate">
                         <span class="inline-block w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
-                        <span class="font-bold text-indigo-600 dark:text-indigo-400">{{ $settings['app_name'] ?? 'SIS-SMA1LE' }}</span> • Sukabumi, Jawa Barat
+                        <span class="font-bold text-indigo-600 dark:text-indigo-400">{{ $settings['app_name'] ?? 'SIS-SMA1LE' }}</span>
+                        <span class="text-slate-400 font-normal truncate">• Sukabumi<span class="hidden xs:inline">, Jawa Barat</span></span>
                     </p>
                 </div>
             </a>
@@ -367,13 +368,49 @@
                 @endauth
 
                 <!-- Mobile Hamburger Button -->
-                <button type="button" id="mobile-menu-btn" class="lg:hidden p-1.5 sm:p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition" aria-label="Buka Menu">
+                <button type="button" id="mobile-menu-btn" class="lg:hidden p-1.5 sm:p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer" aria-label="Buka Menu Lengkap">
                     <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                     </svg>
                 </button>
             </div>
         </div>
+        </header>
+
+        <!-- 2b. MOBILE QUICK MENU BAR (Langsung Tampil di Ponsel, Fleksibel, Touch-Scrollable, Tidak Terpotong) -->
+        <nav aria-label="Menu Cepat Website" class="lg:hidden w-full overflow-x-auto no-scrollbar scroll-smooth flex items-center gap-1.5 px-3 py-1.5 sm:py-2 bg-white/95 dark:bg-slate-950/95 border-b border-slate-200/80 dark:border-slate-800/80 backdrop-blur-md shadow-2xs select-none">
+            <a href="#hero" class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-indigo-600 text-white shadow-2xs whitespace-nowrap shrink-0">
+                Beranda
+            </a>
+            <a href="#sambutan" class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white border border-slate-200/60 dark:border-slate-700/60 whitespace-nowrap shrink-0">
+                Sambutan
+            </a>
+            <a href="#profil" class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white border border-slate-200/60 dark:border-slate-700/60 whitespace-nowrap shrink-0">
+                Profil
+            </a>
+            <a href="#berita" class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white border border-slate-200/60 dark:border-slate-700/60 whitespace-nowrap shrink-0">
+                Berita
+            </a>
+            <a href="#guru-staf" class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white border border-slate-200/60 dark:border-slate-700/60 whitespace-nowrap shrink-0">
+                Guru, TU &amp; Satpam
+            </a>
+            <a href="#agenda" class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white border border-slate-200/60 dark:border-slate-700/60 whitespace-nowrap shrink-0">
+                Agenda
+            </a>
+            <a href="#prestasi" class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white border border-slate-200/60 dark:border-slate-700/60 whitespace-nowrap shrink-0">
+                Prestasi
+            </a>
+            <a href="{{ route('bk.tracer.public_form') }}" class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30 whitespace-nowrap shrink-0 flex items-center gap-1">
+                <span>🎓 Tracer Alumni</span>
+            </a>
+            <a href="{{ url('/pengaduan') }}" class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-rose-500/15 text-rose-700 dark:text-rose-300 border border-rose-500/30 whitespace-nowrap shrink-0 flex items-center gap-1">
+                <span>📢 Pengaduan</span>
+            </a>
+            <a href="#ekosistem-sis" class="px-2.5 py-1 rounded-full text-[11px] font-black bg-indigo-50 dark:bg-indigo-950/70 text-indigo-600 dark:text-indigo-400 border border-indigo-300/80 dark:border-indigo-800 whitespace-nowrap shrink-0 flex items-center gap-1">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span>SIS-SMA1LE</span>
+            </a>
+        </nav>
 
         <!-- Dedicated Full-Width Announcement Running Text Bar (Semua Perangkat: Laptop, Desktop, Tablet, Mobile) -->
         @php
