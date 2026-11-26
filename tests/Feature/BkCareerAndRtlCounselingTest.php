@@ -210,3 +210,82 @@ test('bk dashboard highlights upcoming rtl session', function () {
     $response->assertSee('Agenda Pertemuan Tindak Lanjut (RTL) Konseling', false);
     $response->assertSee($this->student->name, false);
 });
+
+test('bk edit form renders student selection, campus choices, and techniques', function () {
+    $session = BkCounselingSession::create([
+        'session_code' => 'BK-TEST-EDIT-'.rand(1000, 9999),
+        'student_id' => $this->student->id,
+        'counselor_id' => $this->bkTeacher->id,
+        'date' => now()->toDateString(),
+        'field_of_service' => 'KARIER',
+        'session_type' => 'INDIVIDUAL',
+        'service_category' => 'LAYANAN_RESPONSIF',
+        'place' => 'Ruang BK',
+        'start_time' => '08:00',
+        'end_time' => '09:00',
+        'topic' => 'Konsultasi Multi Kampus',
+        'problem_description' => 'Memilih kampus terbaik di Jawa Barat.',
+        'counseling_approach' => 'Cognitive Behavior Therapy (CBT)',
+        'agreement_result' => 'Mantap mendaftar SNBP.',
+        'career_path' => 'KULIAH',
+        'study_admission_track' => 'SNBP',
+        'campus_choices' => [
+            ['order' => 1, 'campus' => 'Universitas Indonesia', 'major' => 'Ilmu Komputer'],
+            ['order' => 2, 'campus' => 'Institut Teknologi Bandung', 'major' => 'Teknik Informatika'],
+        ],
+        'status' => 'SEDANG_BERLANGSUNG',
+    ]);
+
+    $response = $this->actingAs($this->bkTeacher)->get(route('bk.counseling.edit', $session));
+
+    $response->assertStatus(200);
+    $response->assertSee('Edit Sesi Bimbingan', false);
+    $response->assertSee('name="student_id"', false);
+    $response->assertSee('career_guidance_panel', false);
+    $response->assertSee('Universitas Indonesia', false);
+    $response->assertSee('Ilmu Komputer', false);
+    $response->assertSee('Pilihan Jalur Masuk Kuliah', false);
+    $response->assertSee('Pendekatan / Teknik Konseling', false);
+});
+
+test('bk print official renders berita acara with multi campus choices and pop-bk technique', function () {
+    $session = BkCounselingSession::create([
+        'session_code' => 'BK-TEST-PRINT-'.rand(1000, 9999),
+        'student_id' => $this->student->id,
+        'counselor_id' => $this->bkTeacher->id,
+        'date' => now()->toDateString(),
+        'field_of_service' => 'KARIER',
+        'session_type' => 'INDIVIDUAL',
+        'service_category' => 'LAYANAN_RESPONSIF',
+        'place' => 'Ruang Konseling Khusus',
+        'start_time' => '13:00',
+        'end_time' => '14:00',
+        'topic' => 'Finalisasi Pilihan SNBP Siswa Berprestasi',
+        'problem_description' => 'Siswa menimbang prodi unggulan berdasarkan nilai rapor semester 1-5.',
+        'counseling_approach' => 'Solution-Focused Brief Counseling (SFBC)',
+        'agreement_result' => 'Siswa menyepakati pilihan prodi prioritas utama dan cadangan.',
+        'follow_up_plan' => 'Cek kelengkapan berkas portofolio prestasi sebelum upload.',
+        'follow_up_date' => now()->addDays(3)->toDateString(),
+        'follow_up_status' => 'PENDING',
+        'career_path' => 'KULIAH',
+        'study_admission_track' => 'SNBP',
+        'campus_choices' => [
+            ['order' => 1, 'campus' => 'Universitas Padjadjaran', 'major' => 'Kedokteran'],
+            ['order' => 2, 'campus' => 'Universitas Indonesia', 'major' => 'Farmasi'],
+        ],
+        'status' => 'SELESAI',
+    ]);
+
+    $response = $this->actingAs($this->bkTeacher)->get(route('bk.counseling.print', $session));
+
+    $response->assertStatus(200);
+    $response->assertSee('BERITA ACARA LAYANAN BIMBINGAN', false);
+    $response->assertSee('Universitas Padjadjaran', false);
+    $response->assertSee('Kedokteran', false);
+    $response->assertSee('Universitas Indonesia', false);
+    $response->assertSee('Farmasi', false);
+    $response->assertSee('Solution-Focused Brief Counseling (SFBC)', false);
+    $response->assertSee('Ruang Konseling Khusus', false);
+    $response->assertSee('13:00', false);
+    $response->assertSee('Kepala SMAN 1 Lengkong', false);
+});

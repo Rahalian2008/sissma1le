@@ -246,6 +246,7 @@ class BkCounselingSessionController extends Controller
     public function update(Request $request, BkCounselingSession $session): RedirectResponse
     {
         $validated = $request->validate([
+            'student_id' => ['sometimes', 'exists:students,id'],
             'session_type' => ['required', 'in:INDIVIDUAL,KELOMPOK,KLASIKAL,MEDIASI,KONFERENSI_KASUS,KOLABORASI,REFERRAL'],
             'field_of_service' => ['required', 'in:PRIBADI,SOSIAL,BELAJAR,KARIER'],
             'career_path' => ['nullable', 'string', 'in:KULIAH,BEKERJA'],
@@ -352,8 +353,10 @@ class BkCounselingSessionController extends Controller
     {
         $session->load(['student.schoolClass', 'counselor']);
         $school = SchoolIdentity::first();
+        $headmaster = Teacher::getHeadmaster();
+        $bkCoordinator = Teacher::getBkCoordinator();
 
-        return view('bk.counseling.print', compact('session', 'school'));
+        return view('bk.counseling.print', compact('session', 'school', 'headmaster', 'bkCoordinator'));
     }
 
     /**

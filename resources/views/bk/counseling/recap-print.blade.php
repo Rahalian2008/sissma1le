@@ -206,16 +206,29 @@
                     <div style="font-size: 7pt; color: #666; margin-top: 2px;">
                         {{ Str::limit($s->problem_description, 80) }}
                     </div>
+                    @if($s->counseling_approach)
+                        <div style="font-size: 6.5pt; color: #047857; margin-top: 2px;">
+                            <em>Teknik: {{ $s->counseling_approach }}</em>
+                        </div>
+                    @endif
                 </td>
                 <td>
                     @if($s->field_of_service === 'KARIER' && $s->career_path)
                         @if($s->career_path === 'KULIAH')
                             <strong style="color: #0369a1;">🏛️ Kuliah:</strong> {{ $s->study_admission_track ?: 'Jalur Mandiri/Umum' }}<br>
-                            @if($s->campus_name)
-                                <span>PTN/PTS: {{ $s->campus_name }}</span><br>
-                            @endif
-                            @if($s->study_program)
-                                <span style="font-style: italic;">Prodi: {{ $s->study_program }}</span>
+                            @if(!empty($s->campus_choices) && is_array($s->campus_choices))
+                                <div style="font-size: 6.8pt; line-height: 1.25; margin-top: 2px;">
+                                @foreach($s->campus_choices as $cIdx => $c)
+                                    <div><strong>P{{ $c['order'] ?? ($cIdx + 1) }}:</strong> {{ $c['campus'] ?: '-' }} (<em>{{ $c['major'] ?: '-' }}</em>)</div>
+                                @endforeach
+                                </div>
+                            @else
+                                @if($s->campus_name)
+                                    <span>PTN/PTS: {{ $s->campus_name }}</span><br>
+                                @endif
+                                @if($s->study_program)
+                                    <span style="font-style: italic;">Prodi: {{ $s->study_program }}</span>
+                                @endif
                             @endif
                         @else
                             <strong style="color: #15803d;">💼 Bekerja / Wirausaha:</strong><br>

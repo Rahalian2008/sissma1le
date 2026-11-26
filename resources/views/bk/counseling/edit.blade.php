@@ -7,37 +7,51 @@
     <div class="flex items-center gap-2 text-xs text-slate-500 mb-1">
         <a href="{{ route('bk.dashboard') }}" class="hover:text-emerald-600 font-medium">Bimbingan Konseling</a>
         <span>/</span>
+        <a href="{{ route('bk.counseling.index') }}" class="hover:text-emerald-600 font-medium">Layanan Konseling</a>
+        <span>/</span>
         <a href="{{ route('bk.counseling.show', $session) }}" class="hover:text-emerald-600 font-medium">{{ $session->session_code }}</a>
         <span>/</span>
         <span class="text-slate-800 dark:text-white font-bold">Edit Sesi</span>
     </div>
 
     <div class="p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs">
-        <div class="mb-6 pb-4 border-b border-slate-100 dark:border-slate-800">
-            <h1 class="text-xl font-black text-slate-900 dark:text-white">Edit Sesi Bimbingan & Konseling [{{ $session->session_code }}]</h1>
-            <p class="text-xs text-slate-400 mt-1">Konseli: <strong class="text-slate-700 dark:text-slate-300">{{ $session->student?->name }}</strong> ({{ $session->student?->schoolClass?->name }})</p>
+        <div class="mb-6 pb-4 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div>
+                <h1 class="text-xl font-black text-slate-900 dark:text-white">Edit Sesi Bimbingan &amp; Konseling</h1>
+                <p class="text-xs text-slate-400 mt-1">Kode Sesi: <strong class="font-mono text-emerald-600 dark:text-emerald-400">{{ $session->session_code }}</strong> &bull; Berstandar Panduan Operasional Penyelenggaraan BK (POP-BK)</p>
+            </div>
+            <a href="{{ route('bk.counseling.show', $session) }}" class="text-xs font-bold text-slate-500 hover:text-slate-800 dark:hover:text-white">
+                &larr; Kembali ke Detail
+            </a>
         </div>
 
         <form action="{{ route('bk.counseling.update', $session) }}" method="POST" class="space-y-5">
             @csrf
             @method('PUT')
 
-            <!-- Tanggal & Tempat -->
+            <!-- Siswa & Tanggal -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Pilih Siswa Konseli *</label>
+                    <select name="student_id" required class="w-full text-xs rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 py-2.5 px-3">
+                        <option value="">-- Pilih Siswa --</option>
+                        @foreach($students as $s)
+                            <option value="{{ $s->id }}" {{ (old('student_id', $session->student_id) == $s->id) ? 'selected' : '' }}>
+                                {{ $s->name }} ({{ $s->schoolClass?->name ?: 'Kelas -' }}) - NISN: {{ $s->nisn }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
                 <div>
                     <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Tanggal Konseling *</label>
                     <input type="date" name="date" value="{{ old('date', $session->date ? $session->date->format('Y-m-d') : date('Y-m-d')) }}" required class="w-full text-xs rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 py-2 px-3">
                 </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Tempat</label>
-                    <input type="text" name="place" value="{{ old('place', $session->place) }}" class="w-full text-xs rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 py-2 px-3">
-                </div>
             </div>
 
-            <!-- Bidang Layanan & Jenis -->
+            <!-- Bidang Layanan & Komponen Program -->
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Bidang Layanan *</label>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Bidang Layanan BK *</label>
                     <select name="field_of_service" id="field_of_service" required class="w-full text-xs rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 py-2.5 px-3">
                         <option value="PRIBADI" {{ old('field_of_service', $session->field_of_service) == 'PRIBADI' ? 'selected' : '' }}>Bimbingan Pribadi</option>
                         <option value="SOSIAL" {{ old('field_of_service', $session->field_of_service) == 'SOSIAL' ? 'selected' : '' }}>Bimbingan Sosial</option>
@@ -75,7 +89,7 @@
                             🎓
                         </span>
                         <div>
-                            <h3 class="text-xs font-bold text-sky-950 dark:text-sky-300">Peminatan Bimbingan Karier & Arah Masa Depan Siswa</h3>
+                            <h3 class="text-xs font-bold text-sky-950 dark:text-sky-300">Peminatan Bimbingan Karier &amp; Arah Masa Depan Siswa</h3>
                             <p class="text-[11px] text-sky-700 dark:text-sky-400">Pilihan rencana studi lanjut (Kuliah) atau bekerja pasca kelulusan</p>
                         </div>
                     </div>
@@ -105,7 +119,7 @@
                     </div>
                 </div>
 
-                <!-- Sub-Pilihan 1: Jika Memilih Kuliah -->
+                <!-- Sub-Pilihan 1: Jika Memilih Kuliah (Multi Kampus & Prodi Target) -->
                 <div id="college_detail_group" class="hidden space-y-4 pt-3 border-t border-sky-100 dark:border-sky-900/30">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <!-- Pilihan Jalur Kuliah -->
@@ -130,7 +144,7 @@
                         <div class="flex items-center justify-between">
                             <div>
                                 <label class="block text-xs font-bold text-slate-700 dark:text-slate-300">
-                                    Target Perguruan Tinggi & Program Studi (Bisa Lebih Dari Satu) *
+                                    Target Perguruan Tinggi &amp; Program Studi (Bisa Lebih Dari Satu) *
                                 </label>
                                 <p class="text-[11px] text-slate-500 dark:text-slate-400">
                                     Tentukan prioritas kampus dan jurusan yang dituju siswa (Pilihan 1, Pilihan 2, dst.)
@@ -233,8 +247,12 @@
                 </div>
             </div>
 
-            <!-- Waktu & Tempat -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <!-- Tempat & Waktu -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Tempat Sesi</label>
+                    <input type="text" name="place" value="{{ old('place', $session->place ?? 'Ruang Bimbingan Konseling') }}" class="w-full text-xs rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 py-2 px-3">
+                </div>
                 <div>
                     <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Waktu Mulai</label>
                     <input type="time" name="start_time" value="{{ old('start_time', $session->start_time) }}" class="w-full text-xs rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 py-2 px-3">
@@ -245,19 +263,18 @@
                 </div>
             </div>
 
-            <!-- Topik -->
+            <!-- Topik & Deskripsi Masalah -->
             <div>
                 <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Topik / Pokok Bahasan *</label>
-                <input type="text" name="topic" value="{{ old('topic', $session->topic) }}" required class="w-full text-xs rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 py-2 px-3">
+                <input type="text" name="topic" value="{{ old('topic', $session->topic) }}" placeholder="Contoh: Konsultasi pemilihan jalur masuk PTN dan peminatan prodi saintek" required class="w-full text-xs rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 py-2 px-3">
             </div>
 
-            <!-- Masalah -->
             <div>
-                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Deskripsi Masalah *</label>
-                <textarea name="problem_description" rows="3" required class="w-full text-xs rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 p-3">{{ old('problem_description', $session->problem_description) }}</textarea>
+                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Latar Belakang &amp; Deskripsi Masalah *</label>
+                <textarea name="problem_description" rows="3" required placeholder="Uraikan keluhan, gejala, atau latar belakang konseling secara komprehensif..." class="w-full text-xs rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 p-3">{{ old('problem_description', $session->problem_description) }}</textarea>
             </div>
 
-            <!-- Pendekatan & Status -->
+            <!-- Pendekatan & Kesepakatan -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                     <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
@@ -269,11 +286,11 @@
                         <option value="Solution-Focused Brief Therapy (SFBT)">Solution-Focused Brief Therapy (SFBT) - Berfokus Solusi</option>
                         <option value="Konseling Realitas / WDEP">Konseling Realitas / WDEP (Wants, Direction, Evaluation, Plan)</option>
                         <option value="Rational Emotive Behavior Therapy (REBT)">Rational Emotive Behavior Therapy (REBT) - Terapi Rasional Emotif</option>
-                        <option value="Behavioral Therapy">Behavioral Therapy - Penguatan Positif & Kontrak Perilaku</option>
+                        <option value="Behavioral Therapy">Behavioral Therapy - Penguatan Positif &amp; Kontrak Perilaku</option>
                         <option value="Person-Centered Therapy (Carl Rogers)">Person-Centered Therapy (Carl Rogers) - Humanistik</option>
-                        <option value="Trait and Factor">Trait and Factor - Keselarasan Potensi, Minat & Karier</option>
-                        <option value="Konseling Gestalt">Konseling Gestalt - Eksplorasi Kesadaran Diri & Kursi Kosong</option>
-                        <option value="Relaksasi & Regulasi Emosi (Mindfulness)">Relaksasi & Regulasi Emosi (Mindfulness) - Regulasi Kecemasan</option>
+                        <option value="Trait and Factor">Trait and Factor - Keselarasan Potensi, Minat &amp; Karier</option>
+                        <option value="Konseling Gestalt">Konseling Gestalt - Eksplorasi Kesadaran Diri &amp; Kursi Kosong</option>
+                        <option value="Relaksasi &amp; Regulasi Emosi (Mindfulness)">Relaksasi &amp; Regulasi Emosi (Mindfulness) - Regulasi Kecemasan</option>
                         <option value="Konseling Singkat Berorientasi Solusi (KSBS)">Konseling Singkat Berorientasi Solusi (KSBS)</option>
                         <option value="Peer Counseling (Bimbingan Teman Sebaya)">Peer Counseling (Bimbingan Teman Sebaya)</option>
                         <option value="CUSTOM">Lainnya (Ketik Manual / Kustom)</option>
@@ -297,10 +314,9 @@
                 </div>
             </div>
 
-            <!-- Kesepakatan -->
             <div>
-                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Hasil Konseling & Komitmen</label>
-                <textarea name="agreement_result" rows="2" class="w-full text-xs rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 p-3">{{ old('agreement_result', $session->agreement_result) }}</textarea>
+                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Hasil Konseling &amp; Komitmen Siswa</label>
+                <textarea name="agreement_result" rows="2" placeholder="Komitmen tindakan nyata yang disepakati oleh siswa..." class="w-full text-xs rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 p-3">{{ old('agreement_result', $session->agreement_result) }}</textarea>
             </div>
 
             <!-- Rencana Tindak Lanjut (RTL) & Tanggal Rencana Pertemuan -->
@@ -309,7 +325,7 @@
                     <div class="flex items-center gap-2">
                         <span class="text-base">📅</span>
                         <div>
-                            <h3 class="text-xs font-bold text-amber-900 dark:text-amber-300">Rencana Tindak Lanjut (RTL) & Jadwal Pertemuan Lanjutan</h3>
+                            <h3 class="text-xs font-bold text-amber-900 dark:text-amber-300">Rencana Tindak Lanjut (RTL) &amp; Jadwal Pertemuan Lanjutan</h3>
                             <p class="text-[11px] text-amber-700 dark:text-amber-400">Tentukan rencana pemantauan serta tanggal pertemuan sesi tindak lanjut berikutnya</p>
                         </div>
                     </div>
@@ -330,7 +346,7 @@
                                class="w-full text-xs rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 py-2 px-3">
                         <p class="text-[10px] text-amber-600 dark:text-amber-400 mt-1 flex items-center gap-1">
                             <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                            Tanggal ini otomatis terkirim sebagai notifikasi pengingat ke akun Koordinator BK & Guru BK.
+                            Tanggal ini otomatis terkirim sebagai notifikasi pengingat ke akun Koordinator BK &amp; Guru BK.
                         </p>
                     </div>
                     <div>
@@ -346,11 +362,18 @@
 
                 <div>
                     <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Uraian Rencana Tindak Lanjut (RTL)</label>
-                    <textarea name="follow_up_plan" rows="2" class="w-full text-xs rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 p-3">{{ old('follow_up_plan', $session->follow_up_plan) }}</textarea>
+                    <textarea name="follow_up_plan" rows="2" placeholder="Langkah pemantauan bersama wali kelas, orang tua, konsultasi lanjutan dengan Guru BK, atau latihan soal/persiapan tes..." class="w-full text-xs rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 p-3">{{ old('follow_up_plan', $session->follow_up_plan) }}</textarea>
                 </div>
             </div>
 
-            <div class="pt-4 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center">
+            <div class="flex items-center gap-2 pt-2">
+                <input type="checkbox" name="is_confidential" value="1" id="is_confidential" {{ old('is_confidential', $session->is_confidential) ? 'checked' : '' }} class="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500">
+                <label for="is_confidential" class="text-xs text-slate-600 dark:text-slate-400">
+                    Jaga Asas Kerahasiaan BK (Hanya dapat diakses oleh Guru BK dan Kepala Sekolah)
+                </label>
+            </div>
+
+            <div class="pt-4 border-t border-slate-100 dark:border-slate-800 flex justify-end gap-2">
                 <a href="{{ route('bk.counseling.show', $session) }}" class="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-bold text-xs hover:bg-slate-50 transition">
                     Batal
                 </a>
@@ -405,12 +428,11 @@ document.addEventListener('DOMContentLoaded', function() {
         radioBekerja.addEventListener('change', togglePathDetails);
     }
 
-    // Inisialisasi kondisi awal form
-    // Inisialisasi kondisi awal form
+    // Run initial state
     toggleCareerPanel();
 
     // ========================================================
-    // LOGIKA MULTI PILIHAN PERGURUAN TINGGI & JURUSAN SE-JAWA
+    // LOGIKA PILIHAN MULTI KAMPUS & PROGRAM STUDI TARGET
     // ========================================================
     const choicesContainer = document.getElementById('campus_choices_container');
     const btnAddChoice = document.getElementById('btn-add-choice');
@@ -432,6 +454,16 @@ document.addEventListener('DOMContentLoaded', function() {
             { order: 1, campus: '', major: '' },
             { order: 2, campus: '', major: '' }
         ];
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
     }
 
     function renderChoices() {
@@ -576,22 +608,15 @@ document.addEventListener('DOMContentLoaded', function() {
         approachSelect.addEventListener('change', function() {
             if (this.value === 'CUSTOM') {
                 approachInput.classList.remove('hidden');
-                approachInput.value = '';
                 approachInput.focus();
-            } else if (this.value) {
-                approachInput.value = this.value;
+            } else if (this.value === '') {
+                approachInput.value = '';
                 approachInput.classList.add('hidden');
             } else {
-                approachInput.value = '';
+                approachInput.value = this.value;
                 approachInput.classList.add('hidden');
             }
         });
-    }
-
-    function escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
     }
 });
 </script>
