@@ -175,13 +175,13 @@
                 </div>
             </a>
 
-            <!-- 6. Adm. Ketatausahaan -->
+            <!-- 6. Laporan Perkembangan Siswa -->
             <a href="{{ route('reports.index') }}" class="group p-3.5 rounded-2xl bg-purple-50/40 dark:bg-purple-950/20 border border-purple-200/80 dark:border-purple-900/60 hover:border-purple-400 hover:shadow-md transition duration-200 flex flex-col justify-between overflow-hidden">
                 <div class="w-9 h-9 rounded-xl bg-purple-500/15 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold text-base mb-2 group-hover:scale-110 transition">
                     🗂️
                 </div>
                 <div>
-                    <div class="font-extrabold text-xs text-slate-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition truncate">Adm. Ketatausahaan</div>
+                    <div class="font-extrabold text-xs text-slate-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition truncate">Laporan Siswa</div>
                     <div class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 truncate">Rekap & berkas anak</div>
                 </div>
             </a>

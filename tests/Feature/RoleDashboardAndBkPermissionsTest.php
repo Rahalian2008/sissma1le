@@ -81,9 +81,9 @@ test('bk menu is accessible to koordinator_bk, guru_bk, kepala_sekolah, admin, a
     session(['active_role' => 'guru']);
     expect($guru->canAccessInActiveRole('bk'))->toBeFalse();
 
-    // Wali kelas cannot access BK in active role
+    // Wali kelas can access BK for homeroom student consultation overview
     session(['active_role' => 'wali_kelas']);
-    expect($waliKelas->canAccessInActiveRole('bk'))->toBeFalse();
+    expect($waliKelas->canAccessInActiveRole('bk'))->toBeTrue();
 
     // Koordinator BK can access BK
     session(['active_role' => 'koordinator_bk']);

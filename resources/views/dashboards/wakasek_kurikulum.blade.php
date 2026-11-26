@@ -183,12 +183,12 @@
                     <div class="text-[10px] text-slate-400 mt-0.5">Katalog buku fisik & E-Book Flip 3D</div>
                 </a>
 
-                <a href="{{ route('reports.index') }}" class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 hover:border-teal-500 transition group">
+                <a href="{{ route('tu.dashboard') }}" class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 hover:border-teal-500 transition group">
                     <div class="w-8 h-8 rounded-xl bg-teal-100 dark:bg-teal-950 text-teal-600 dark:text-teal-400 flex items-center justify-center font-bold mb-2 group-hover:scale-105 transition-transform">
                         🗂️
                     </div>
                     <div class="font-bold text-xs text-slate-800 dark:text-slate-200">Adm. Ketatausahaan</div>
-                    <div class="text-[10px] text-slate-400 mt-0.5">Pusat dokumen & arsip dossier</div>
+                    <div class="text-[10px] text-slate-400 mt-0.5">5 Modul operasional TU & aset</div>
                 </a>
             </div>
         </div>

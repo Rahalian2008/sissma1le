@@ -64,6 +64,7 @@
                     <span>Aktivitas</span>
                 </a>
             </div>
+        </div>
     </div>
 
     <!-- Type Switcher Tabs (Responsive & Multi-row Wrapping) -->
@@ -361,6 +362,8 @@
                     📄 Cetak A4
                 </a>
                 <a href="{{ route('tahfidz.print', ['class_id' => $classId, 'paper' => 'f4']) }}" target="_blank" class="flex-1 text-center py-2 bg-slate-800 hover:bg-slate-700 text-emerald-300 border border-emerald-500/40 font-bold rounded-xl text-xs transition">
+                    📜 Cetak F4
+                </a>
             </div>
         </div>
     </div>

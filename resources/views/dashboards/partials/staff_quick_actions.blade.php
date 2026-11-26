@@ -421,7 +421,7 @@
 
         <!-- ================= ADM. KETATAUSAHAAN (KHUSUS TENAGA KEPENDIDIKAN / TU) ================= -->
         @if(auth()->user()?->canAccessTuModule())
-        <a href="{{ route('reports.index') }}" class="group p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-purple-50/40 dark:bg-purple-950/20 border border-purple-200/80 dark:border-purple-900/60 hover:border-purple-400 hover:shadow-md transition duration-200 flex flex-col justify-between overflow-hidden">
+        <a href="{{ route('tu.dashboard') }}" class="group p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-purple-50/40 dark:bg-purple-950/20 border border-purple-200/80 dark:border-purple-900/60 hover:border-purple-400 hover:shadow-md transition duration-200 flex flex-col justify-between overflow-hidden">
             <div>
                 <div class="flex items-start justify-between gap-1.5 sm:gap-2 mb-2 sm:mb-2.5">
                     <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-purple-500/15 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold text-base sm:text-lg group-hover:scale-110 transition shrink-0">
@@ -438,13 +438,13 @@
                         Adm. Ketatausahaan
                     </h4>
                     <p class="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 sm:mt-1 line-clamp-1 sm:line-clamp-2">
-                        Pusat berkas resmi & rekap TU
+                        Pusat kendali 5 modul TU, persuratan & aset
                     </p>
                 </div>
             </div>
             <div class="mt-2.5 sm:mt-3 pt-2 sm:pt-2.5 border-t border-purple-200/60 dark:border-purple-900/40 flex items-center justify-between text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400">
-                <span class="font-semibold text-purple-600 dark:text-purple-400 truncate">Arsip</span>
-                <span class="font-bold text-purple-600 dark:text-purple-400 group-hover:translate-x-0.5 transition-transform flex items-center gap-0.5 shrink-0">Pusat Berkas →</span>
+                <span class="font-semibold text-purple-600 dark:text-purple-400 truncate">Pusat TU</span>
+                <span class="font-bold text-purple-600 dark:text-purple-400 group-hover:translate-x-0.5 transition-transform flex items-center gap-0.5 shrink-0">Buka Modul TU →</span>
             </div>
         </a>
         @endif
