@@ -206,7 +206,7 @@
                         <span class="hidden sm:inline text-indigo-300/60">•</span>
                         <span class="hidden sm:inline-flex items-center px-1.5 py-0.5 rounded-md text-[10px] font-semibold text-emerald-300 bg-emerald-400/15 border border-emerald-300/25">Akreditasi A</span>
                         <span class="hidden lg:inline text-indigo-300/60">•</span>
-                        <span class="hidden lg:inline text-indigo-200 text-[11px]">NPSN: <span class="font-semibold text-white">{{ $settings['school_npsn'] ?? '20202265' }}</span></span>
+                        <span class="hidden lg:inline text-indigo-200 text-[11px]">NPSN: {{ $settings['school_npsn'] ?? '20202265' }}</span>
                         <span class="hidden 2xl:inline text-indigo-300/60">•</span>
                         <span class="hidden 2xl:inline text-indigo-200 text-[11px]">Ekosistem <strong class="text-amber-300 font-bold">{{ $settings['app_name'] ?? 'SIS-SMA1LE' }}</strong></span>
                     </div>
@@ -260,6 +260,11 @@
                         <span>📢 Pengaduan</span>
                     </a>
 
+                    <!-- Kuesioner Tracer Study Alumni -->
+                    <a href="{{ route('bk.tracer.public_form') }}" class="inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-amber-500/25 hover:bg-amber-500/40 text-amber-200 hover:text-white font-bold text-[10px] sm:text-[11px] transition border border-amber-400/30 shadow-2xs" title="Kuesioner Penelusuran Tamatan & Alumni SMAN 1 Lengkong">
+                        <span>🎓 Tracer Alumni</span>
+                    </a>
+
                     <!-- Quick SPMB Registration Pill (Selalu Muncul & Menarik) -->
                     <a href="{{ route('spmb.public.register') }}" class="px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-300 hover:from-emerald-300 hover:to-teal-200 text-slate-950 font-black text-[10px] sm:text-[11px] shadow-sm transition hover:scale-105 flex items-center gap-1 shrink-0">
                         <span>🎓 <span class="hidden xs:inline">Daftar </span>SPMB</span>
@@ -310,13 +315,16 @@
                     Berita
                 </a>
                 <a href="#guru-staf" class="px-3 py-1.5 rounded-full text-xs font-bold text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800 transition shadow-2xs whitespace-nowrap">
-                    Guru & Staf
+                    Guru, TU & Satpam
                 </a>
                 <a href="#agenda" class="px-3 py-1.5 rounded-full text-xs font-bold text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800 transition shadow-2xs whitespace-nowrap">
                     Agenda
                 </a>
                 <a href="#prestasi" class="px-3 py-1.5 rounded-full text-xs font-bold text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800 transition shadow-2xs whitespace-nowrap">
                     Prestasi
+                </a>
+                <a href="{{ route('bk.tracer.public_form') }}" class="px-3 py-1.5 rounded-full text-xs font-bold text-amber-600 dark:text-amber-400 hover:text-amber-700 hover:bg-amber-50 dark:hover:bg-amber-950/50 transition shadow-2xs whitespace-nowrap flex items-center gap-1" title="Kuesioner Tracer Alumni">
+                    <span>🎓 Tracer Alumni</span>
                 </a>
                 <a href="{{ url('/pengaduan') }}" class="px-3 py-1.5 rounded-full text-xs font-bold text-rose-600 dark:text-rose-400 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/50 transition shadow-2xs whitespace-nowrap flex items-center gap-1">
                     <span>📢 Pengaduan</span>
@@ -418,6 +426,12 @@
                     </span>
                     <span class="text-[10px] bg-white/20 text-white px-2 py-0.5 rounded-md font-bold">Lapor</span>
                 </a>
+                <a href="{{ route('bk.tracer.public_form') }}" class="mobile-nav-link px-3 py-2.5 rounded-xl bg-gradient-to-r from-amber-600 via-orange-600 to-amber-700 text-white font-bold transition flex items-center justify-between shadow-sm">
+                    <span class="flex items-center gap-2">
+                        <span>🎓 Kuesioner Tracer Alumni</span>
+                    </span>
+                    <span class="text-[10px] bg-white/20 text-white px-2 py-0.5 rounded-md font-bold">Isi Form</span>
+                </a>
                 <a href="#sambutan" class="mobile-nav-link px-3 py-2 rounded-xl hover:bg-indigo-50 dark:hover:bg-slate-800 hover:text-indigo-600 transition flex items-center justify-between">
                     <span>💬 Sambutan Kepala Sekolah</span>
                     <span class="text-[10px] text-slate-400">Amanat</span>
@@ -431,7 +445,7 @@
                     <span class="text-[10px] bg-amber-100 dark:bg-amber-950/80 px-2 py-0.5 rounded-md">Update</span>
                 </a>
                 <a href="#guru-staf" class="mobile-nav-link px-3 py-2 rounded-xl hover:bg-indigo-50 dark:hover:bg-slate-800 hover:text-indigo-600 transition flex items-center justify-between">
-                    <span>👨‍🏫 Tenaga Pendidik & Kependidikan</span>
+                    <span>👨‍🏫 Guru, Staf TU & Satpam</span>
                     <span class="text-[10px] text-slate-400">{{ count($staffMembers ?? []) }} Pegawai</span>
                 </a>
                 <a href="#fasilitas" class="mobile-nav-link px-3 py-2 rounded-xl hover:bg-indigo-50 dark:hover:bg-slate-800 hover:text-indigo-600 transition flex items-center justify-between">
@@ -844,23 +858,24 @@
                 $totalStaffCount = count($staffList);
                 $guruCount = collect($staffList)->where('category', 'guru')->count();
                 $tuCount = collect($staffList)->where('category', 'staf_tu')->count();
+                $satpamCount = collect($staffList)->where('category', 'satpam')->count();
             @endphp
 
             <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
                 <div>
                     <div class="flex flex-wrap items-center gap-2 mb-2">
                         <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                            <span>👨‍🏫 Tenaga Pendidik & Kependidikan</span>
+                            <span>👨‍🏫 Tenaga Pendidik, Kependidikan & Satpam</span>
                         </span>
                         <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800">
                             {{ $totalStaffCount }} Pegawai Terdaftar
                         </span>
                     </div>
                     <h2 class="font-heading font-black text-2xl sm:text-4xl text-slate-900 dark:text-white tracking-tight">
-                        Dewan Guru & Staf Tata Usaha
+                        Dewan Guru & Staf Tata Usaha, serta Satpam
                     </h2>
                     <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1 max-w-2xl leading-relaxed">
-                        Mengenal lebih dekat para pendidik berdedikasi dan tenaga kependidikan profesional yang membimbing, mengajar, serta mengawal tata kelola {{ $settings['school_name'] ?? 'SMAN 1 Lengkong' }}.
+                        Mengenal lebih dekat para pendidik berdedikasi, tenaga kependidikan profesional, serta petugas keamanan yang membimbing, mengajar, mengawal tata kelola dan ketertiban lingkungan {{ $settings['school_name'] ?? 'SMAN 1 Lengkong' }}.
                     </p>
                 </div>
 
@@ -869,7 +884,7 @@
                         <div class="shrink-0">
                             <a href="{{ route('master.website_content', ['tab' => 'staff']) }}" class="px-3.5 py-2 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 text-xs font-bold inline-flex items-center gap-1.5 transition">
                                 <span>✏️</span>
-                                <span>Kelola Guru & Staf</span>
+                                <span>Kelola Guru, TU & Satpam</span>
                             </a>
                         </div>
                     @endif
@@ -887,6 +902,9 @@
                     </button>
                     <button type="button" onclick="filterStaffWebsite('staf_tu', this)" class="staff-cat-btn px-4 sm:px-5 py-2.5 rounded-2xl text-xs sm:text-sm font-bold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer whitespace-nowrap">
                         💼 Staf Tata Usaha ({{ $tuCount }})
+                    </button>
+                    <button type="button" onclick="filterStaffWebsite('satpam', this)" class="staff-cat-btn px-4 sm:px-5 py-2.5 rounded-2xl text-xs sm:text-sm font-bold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer whitespace-nowrap">
+                        🛡️ Satpam ({{ $satpamCount }})
                     </button>
                 </div>
 
@@ -958,7 +976,9 @@
                                     $photoExists = $cleanPhoto && file_exists(public_path($cleanPhoto));
                                     $photoUrl = $photoExists ? (asset($cleanPhoto) . '?v=' . filemtime(public_path($cleanPhoto))) : null;
                                     $isTu = ($member['category'] ?? 'guru') === 'staf_tu';
+                                    $isSatpam = ($member['category'] ?? '') === 'satpam';
                                     $tuDuty = $member['tu_duty'] ?? ($member['duty'] ?? 'Pelaksana Administrasi');
+                                    $satpamDuty = $member['satpam_duty'] ?? ($member['duty'] ?? 'Petugas Keamanan / Satpam');
                                     $status = $member['employment_status'] ?? 'PNS';
                                     $statusClass = match(strtoupper($status)) {
                                         'PNS' => 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20',
@@ -974,16 +994,28 @@
                                      data-name="{{ strtolower($member['name'] ?? '') }}"
                                      data-nip="{{ strtolower($member['nip'] ?? '') }}"
                                      data-mapel="{{ strtolower($member['mapel'] ?? '') }}"
-                                     data-duty="{{ strtolower($isTu ? $tuDuty : ($member['duty'] ?? '')) }}">
+                                     data-duty="{{ strtolower($isSatpam ? $satpamDuty : ($isTu ? $tuDuty : ($member['duty'] ?? ''))) }}">
                                     
                                     <!-- Photo Block (Besar, Jelas, Proporsional & Hero Element) -->
                                     <div class="h-52 sm:h-56 w-full relative overflow-hidden bg-slate-100 dark:bg-slate-900 shrink-0">
                                         @if($photoExists)
                                             <img src="{{ $photoUrl }}" alt="{{ $member['name'] }}" class="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500" loading="lazy">
                                         @else
-                                            <div class="w-full h-full {{ $isTu ? 'bg-gradient-to-tr from-amber-600 via-amber-500 to-yellow-400 text-slate-950' : 'bg-gradient-to-tr from-emerald-700 via-emerald-600 to-teal-400 text-white' }} flex flex-col items-center justify-center shadow-inner group-hover:scale-105 transition-transform duration-500 p-4">
+                                            @php
+                                                $avatarBg = match(true) {
+                                                    $isSatpam => 'bg-gradient-to-tr from-cyan-800 via-teal-700 to-emerald-500 text-white',
+                                                    $isTu => 'bg-gradient-to-tr from-amber-600 via-amber-500 to-yellow-400 text-slate-950',
+                                                    default => 'bg-gradient-to-tr from-emerald-700 via-emerald-600 to-teal-400 text-white',
+                                                };
+                                                $avatarLabel = match(true) {
+                                                    $isSatpam => 'Satpam / Keamanan',
+                                                    $isTu => 'Staf Tata Usaha',
+                                                    default => 'Dewan Guru',
+                                                };
+                                            @endphp
+                                            <div class="w-full h-full {{ $avatarBg }} flex flex-col items-center justify-center shadow-inner group-hover:scale-105 transition-transform duration-500 p-4">
                                                 <span class="font-heading font-black text-5xl sm:text-6xl tracking-wider opacity-90 drop-shadow-sm">{{ $initials }}</span>
-                                                <span class="text-[10px] font-bold tracking-widest uppercase mt-2 opacity-80">{{ $isTu ? 'Staf Tata Usaha' : 'Dewan Guru' }}</span>
+                                                <span class="text-[10px] font-bold tracking-widest uppercase mt-2 opacity-80">{{ $avatarLabel }}</span>
                                             </div>
                                         @endif
 
@@ -992,7 +1024,12 @@
 
                                         <!-- Floating Top Badges -->
                                         <div class="absolute top-3 inset-x-3 flex items-center justify-between gap-1.5 z-10 pointer-events-none">
-                                            @if($isTu)
+                                            @if($isSatpam)
+                                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[9px] font-extrabold uppercase tracking-wide bg-cyan-600 text-white shadow-md backdrop-blur-md">
+                                                    <span>🛡️</span>
+                                                    <span>Satpam</span>
+                                                </span>
+                                            @elseif($isTu)
                                                 <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[9px] font-extrabold uppercase tracking-wide bg-amber-500 text-slate-950 shadow-md backdrop-blur-md">
                                                     <span>💼</span>
                                                     <span>Staf TU</span>
@@ -1022,7 +1059,12 @@
                                             </div>
 
                                             <div class="mt-2">
-                                                @if($isTu)
+                                                @if($isSatpam)
+                                                    <div class="px-2.5 py-1.5 rounded-xl bg-cyan-500/10 dark:bg-cyan-950/40 border border-cyan-500/20 text-center">
+                                                        <span class="sr-only">Tugas Petugas Keamanan:</span>
+                                                        <span class="font-bold text-[11px] text-cyan-700 dark:text-cyan-300 line-clamp-1" title="{{ $satpamDuty }}">{{ $satpamDuty }}</span>
+                                                    </div>
+                                                @elseif($isTu)
                                                     <div class="px-2.5 py-1.5 rounded-xl bg-amber-500/10 dark:bg-amber-950/40 border border-amber-500/20 text-center">
                                                         <span class="sr-only">Tugas / Unit Kerja Tata Usaha:</span>
                                                         <span class="font-bold text-[11px] text-amber-700 dark:text-amber-300 line-clamp-1" title="{{ $tuDuty }}">{{ $tuDuty }}</span>
@@ -1044,14 +1086,22 @@
                                         </div>
 
                                         <div class="pt-2 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-[10px] text-slate-400">
-                                            <span>{{ ($member['gender'] ?? 'L') === 'P' ? '👩 Guru Putri' : '👨 Guru Putra' }}</span>
-                                            <span class="font-semibold text-emerald-600 dark:text-emerald-400">● Aktif Mengajar</span>
+                                            @if($isSatpam)
+                                                <span>👮‍♂️ Petugas Keamanan</span>
+                                                <span class="font-semibold text-cyan-600 dark:text-cyan-400">● Tim Pengamanan</span>
+                                            @elseif($isTu)
+                                                <span>💼 Administrasi Sekolah</span>
+                                                <span class="font-semibold text-amber-600 dark:text-amber-400">● Tenaga Kependidikan</span>
+                                            @else
+                                                <span>{{ ($member['gender'] ?? 'L') === 'P' ? '👩 Guru Putri' : '👨 Guru Putra' }}</span>
+                                                <span class="font-semibold text-emerald-600 dark:text-emerald-400">● Aktif Mengajar</span>
+                                            @endif
                                         </div>
                                     </div>
                                 </div>
                             @empty
                                 <div class="py-12 text-center text-slate-500 text-xs">
-                                    Belum ada data guru atau staf tata usaha yang ditambahkan.
+                                    Belum ada data guru, staf tata usaha, atau satpam yang ditambahkan.
                                 </div>
                             @endforelse
                         </div>
@@ -2367,7 +2417,16 @@
             </div>
 
             <!-- Role Pane: TAMU / ALUMNI -->
-            <div id="role-pane-tamu" class="role-pane hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-6xl mx-auto">
+            <div id="role-pane-tamu" class="role-pane hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 max-w-7xl mx-auto">
+                <div class="p-5 rounded-3xl glass-card border border-sky-400/50 bg-gradient-to-b from-sky-500/10 to-indigo-500/10 text-center hover:border-sky-400 hover:shadow-xl transition-all duration-300">
+                    <span class="text-3xl block mb-2">🎓</span>
+                    <h4 class="font-heading font-bold text-slate-900 dark:text-white text-base mb-1">Tracer Alumni Resmi</h4>
+                    <p class="text-xs text-slate-500 mb-4 leading-relaxed">Form penelusuran rekam jejak lulusan: perguruan tinggi, dunia kerja, wirausaha, & kemitraan alumni.</p>
+                    <a href="{{ route('bk.tracer.public_form') }}" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-white text-xs font-bold transition shadow-md shadow-sky-600/25">
+                        <span>Isi Tracer Alumni</span>
+                        <span>↗</span>
+                    </a>
+                </div>
                 <div class="p-5 rounded-3xl glass-card border border-amber-400/40 text-center hover:border-amber-400 hover:shadow-xl transition-all duration-300">
                     <span class="text-3xl block mb-2">🔔</span>
                     <h4 class="font-heading font-bold text-slate-900 dark:text-white text-base mb-1">Bel Sekolah Digital</h4>
@@ -2554,6 +2613,44 @@
         </div>
     </section>
 
+    <!-- ==================== TRACER STUDY ALUMNI BANNER ==================== -->
+    <section id="tracer-alumni" class="py-12 sm:py-16 relative overflow-hidden bg-gradient-to-br from-indigo-950 via-slate-950 to-blue-950 text-white border-t border-b border-indigo-800/40">
+        <div class="absolute -right-20 -bottom-20 w-80 h-80 rounded-full bg-indigo-500/15 blur-3xl pointer-events-none"></div>
+        <div class="absolute -left-20 -top-20 w-80 h-80 rounded-full bg-cyan-500/15 blur-3xl pointer-events-none"></div>
+
+        <div class="max-w-7xl 2xl:max-w-[1536px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="p-8 sm:p-12 rounded-3xl bg-slate-900/80 border border-indigo-500/30 backdrop-blur-xl shadow-2xl flex flex-col lg:flex-row items-center justify-between gap-8">
+                <div class="space-y-4 max-w-2xl text-center lg:text-left">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                        <span>🎓</span>
+                        <span>Bimbingan Konseling &amp; Penelusuran Rekam Jejak Alumni</span>
+                    </div>
+                    <h3 class="font-heading font-black text-2xl sm:text-3xl md:text-4xl text-white tracking-tight">
+                        Temu Alumni &amp; Kuesioner Tracer Study Lulusan
+                    </h3>
+                    <p class="text-sm text-slate-300 leading-relaxed">
+                        Kepada seluruh alumni SMAN 1 Lengkong tercinta di mana pun berada, mari bantu almamater dengan mengisi data tracer study. Rekam jejak studi lanjut di Perguruan Tinggi, dunia kerja industri, dan wirausaha Anda sangat berharga untuk peningkatan mutu, akreditasi, dan inspirasi karier adik kelas.
+                    </p>
+                    <div class="flex flex-wrap items-center justify-center lg:justify-start gap-4 text-xs text-indigo-200">
+                        <span class="flex items-center gap-1.5">✓ Kuliah (PTN / PTS / Kedinasan)</span>
+                        <span class="flex items-center gap-1.5">✓ Bekerja / Karier Profesional</span>
+                        <span class="flex items-center gap-1.5">✓ Berwirausaha / Mandiri</span>
+                        <span class="flex items-center gap-1.5">✓ Terhubung Jejaring Alumni</span>
+                    </div>
+                </div>
+                <div class="flex flex-col sm:flex-row lg:flex-col gap-3 shrink-0 w-full sm:w-auto">
+                    <a href="{{ route('bk.tracer.public_form') }}" class="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-slate-950 font-black text-sm text-center transition-all shadow-xl shadow-emerald-500/25 flex items-center justify-center gap-2 group">
+                        <span>📝 Isi Kuesioner Tracer Alumni</span>
+                        <span class="group-hover:translate-x-1 transition-transform">→</span>
+                    </a>
+                    <a href="#kontak" class="px-6 py-3 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/20 text-white font-bold text-xs text-center transition">
+                        Hubungi Ruang BK SMAN 1 Lengkong
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- ==================== 12. INFORMASI & LAYANAN PUBLIK ==================== -->
     <section id="kontak" class="py-12 sm:py-16 md:py-24 bg-slate-100/60 dark:bg-slate-900/40 border-t border-slate-200/60 dark:border-slate-800/60">
         <div class="max-w-7xl 2xl:max-w-[1536px] mx-auto px-4 sm:px-6 lg:px-8">
@@ -2722,7 +2819,7 @@
                         <li><a href="#sambutan" class="hover:text-white transition">Sambutan Kepala Sekolah</a></li>
                         <li><a href="#profil" class="hover:text-white transition">Profil Lembaga</a></li>
                         <li><a href="#berita" class="hover:text-white transition">Kabar & Warta Sekolah</a></li>
-                        <li><a href="#guru-staf" class="hover:text-white transition">Tenaga Pendidik & Kependidikan</a></li>
+                        <li><a href="#guru-staf" class="hover:text-white transition">Dewan Guru, Staf TU & Satpam</a></li>
                         <li><a href="#fasilitas" class="hover:text-white transition">Sarana & Lingkungan Belajar</a></li>
                         <li><a href="#agenda" class="hover:text-white transition">Kalender Akademik</a></li>
                         <li><a href="#ekstrakurikuler" class="hover:text-white transition">Minat, Bakat & Kepemimpinan</a></li>
@@ -2730,6 +2827,7 @@
                         <li><a href="#prestasi" class="hover:text-white transition text-amber-400 font-semibold">Klasemen & Torehan Prestasi Siswa</a></li>
                         <li><a href="#ekosistem-sis" class="hover:text-white transition text-indigo-400 font-semibold">Transformasi Digital Terpadu</a></li>
                         <li><a href="#layanan-peran" class="hover:text-white transition">Akses Fleksibel Berdasarkan Kebutuhan</a></li>
+                        <li><a href="#tracer-alumni" class="hover:text-white transition text-sky-400 font-semibold">🎓 Tracer Study Alumni</a></li>
                         <li><a href="#kontak" class="hover:text-white transition">Informasi & Layanan Publik</a></li>
                     </ul>
                 </div>
@@ -2760,6 +2858,12 @@
                             <a href="{{ route('parent.portal') }}" class="hover:text-white transition flex items-center gap-1.5">
                                 <span class="w-1.5 h-1.5 rounded-full bg-sky-400"></span>
                                 <span>Adm. Ketatausahaan & Portal Ortu (SIP)</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('bk.tracer.public_form') }}" class="hover:text-white transition flex items-center gap-1.5 text-cyan-300 font-semibold">
+                                <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
+                                <span>BK: Kuesioner Tracer Alumni 🎓</span>
                             </a>
                         </li>
                         <li>

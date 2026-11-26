@@ -300,6 +300,32 @@ class WebsiteContentController extends Controller
     }
 
     /**
+     * Data Petugas Satpam / Keamanan Sekolah Bawaan
+     */
+    public static function getDefaultSatpamStaff(int $startOrder = 1): array
+    {
+        $order = $startOrder;
+
+        return [
+            [
+                'id' => 'satpam_1',
+                'category' => 'satpam',
+                'name' => 'Asep Saepudin',
+                'nip' => '20202265004',
+                'gender' => 'L',
+                'employment_status' => 'Satpam / Keamanan',
+                'mapel' => '-',
+                'duty' => 'Petugas Keamanan / Satpam Gerbang Utama',
+                'tu_duty' => 'Petugas Keamanan / Satpam Gerbang Utama',
+                'photo' => null,
+                'phone' => '081234567896',
+                'order' => $order++,
+                'is_active' => true,
+            ],
+        ];
+    }
+
+    /**
      * Data Standar Dewan Guru & Staf Tata Usaha (TU)
      */
     public static function getDefaultStaff(): array
@@ -402,13 +428,9 @@ class WebsiteContentController extends Controller
             ];
         }
 
-        return array_merge($staff, self::getDefaultTuStaff($order));
+        return array_merge($staff, self::getDefaultTuStaff($order), self::getDefaultSatpamStaff($order + count(self::getDefaultTuStaff($order))));
     }
 
-    /**
-     * Mengambil daftar seluruh dewan guru & staf secara live, real-time tersinkronisasi
-     * dengan database master Teacher & User SIS-SMA1LE, digabungkan dengan kustomisasi (foto, urutan).
-     */
     /**
      * Membangun daftar awal seluruh dewan guru & staf dari Master Data Teacher & User (PTK).
      */
@@ -428,52 +450,95 @@ class WebsiteContentController extends Controller
 
         if ($teachers->isNotEmpty()) {
             foreach ($teachers as $t) {
-                $duty = 'Guru Pengajar';
-                if ($t->title && stripos($t->title, 'Kepala') !== false) {
-                    $duty = 'Kepala SMAN 1 Lengkong';
-                } elseif ($t->user && in_array('wakasek_kurikulum', $t->user->all_roles, true)) {
-                    $duty = 'Wakasek Bid. Kurikulum';
-                } elseif ($t->user && in_array('wakasek_kesiswaan', $t->user->all_roles, true)) {
-                    $duty = 'Wakasek Bid. Kesiswaan';
-                } elseif ($t->user && in_array('wakasek_humas', $t->user->all_roles, true)) {
-                    $duty = 'Wakasek Bid. Humas';
-                } elseif ($t->user && in_array('wakasek_sarpras', $t->user->all_roles, true)) {
-                    $duty = 'Wakasek Bid. Sarpras';
-                } elseif ($t->user && in_array('bk', $t->user->all_roles, true)) {
-                    $duty = 'Guru Bimbingan & Konseling (BK)';
-                } elseif ($t->homeroomClass) {
-                    $duty = 'Wali Kelas '.$t->homeroomClass->name;
-                }
-
-                if (stripos($t->name, 'Pian Sopian') !== false) {
-                    $duty = 'Kepala SMAN 1 Lengkong';
-                }
-
-                $mapel = $t->title ?: 'Mata Pelajaran Umum';
-                if (stripos($t->name, 'Pian Sopian') !== false) {
-                    $mapel = 'Kimia';
-                }
-
                 $photo = null;
                 if ($t->user?->avatar) {
                     $photo = 'storage/'.$t->user->avatar;
                 }
 
-                $staff[] = [
-                    'id' => 'teacher_'.$t->id,
-                    'category' => 'guru',
-                    'name' => $t->name,
-                    'nip' => $t->nip ?: '-',
-                    'gender' => $t->gender ?: 'L',
-                    'employment_status' => 'PNS / ASN',
-                    'mapel' => $mapel,
-                    'duty' => $duty,
-                    'tu_duty' => '',
-                    'photo' => $photo,
-                    'phone' => $t->phone ?: '',
-                    'order' => $order++,
-                    'is_active' => true,
-                ];
+                $isSatpam = ($t->employment_type && (stripos($t->employment_type, 'Keamanan') !== false || stripos($t->employment_type, 'Satpam') !== false))
+                    || ($t->position && (stripos($t->position, 'Satpam') !== false || stripos($t->position, 'Keamanan') !== false))
+                    || ($t->employment_status && (stripos($t->employment_status, 'Satpam') !== false || stripos($t->employment_status, 'Keamanan') !== false))
+                    || ($t->user && (in_array('satpam', $t->user->all_roles, true) || $t->user->role === 'satpam'));
+
+                $isTendik = ! $isSatpam && (($t->employment_type && stripos($t->employment_type, 'Kependidikan') !== false)
+                    || ($t->title && stripos($t->title, 'Kependidikan') !== false)
+                    || ($t->position && stripos($t->position, 'Kependidikan') !== false));
+
+                if ($isSatpam) {
+                    $staff[] = [
+                        'id' => 'teacher_'.$t->id,
+                        'category' => 'satpam',
+                        'name' => $t->name,
+                        'nip' => $t->nip ?: '-',
+                        'gender' => $t->gender ?: 'L',
+                        'employment_status' => $t->employment_status ?: 'Satpam / Keamanan',
+                        'mapel' => '-',
+                        'duty' => $t->position ?: 'Petugas Keamanan / Satpam',
+                        'tu_duty' => $t->position ?: 'Petugas Keamanan / Satpam',
+                        'photo' => $photo,
+                        'phone' => $t->phone ?: '',
+                        'order' => $order++,
+                        'is_active' => true,
+                    ];
+                } elseif ($isTendik) {
+                    $staff[] = [
+                        'id' => 'teacher_'.$t->id,
+                        'category' => 'staf_tu',
+                        'name' => $t->name,
+                        'nip' => $t->nip ?: '-',
+                        'gender' => $t->gender ?: 'L',
+                        'employment_status' => $t->employment_status ?: 'Tenaga Kependidikan',
+                        'mapel' => '',
+                        'duty' => $t->position ?: ($t->title ?: 'Staf Tenaga Kependidikan'),
+                        'tu_duty' => $t->position ?: ($t->title ?: 'Staf Tenaga Kependidikan'),
+                        'photo' => $photo,
+                        'phone' => $t->phone ?: '',
+                        'order' => $order++,
+                        'is_active' => true,
+                    ];
+                } else {
+                    $duty = 'Guru Pengajar';
+                    if ($t->title && stripos($t->title, 'Kepala') !== false) {
+                        $duty = 'Kepala SMAN 1 Lengkong';
+                    } elseif ($t->user && in_array('wakasek_kurikulum', $t->user->all_roles, true)) {
+                        $duty = 'Wakasek Bid. Kurikulum';
+                    } elseif ($t->user && in_array('wakasek_kesiswaan', $t->user->all_roles, true)) {
+                        $duty = 'Wakasek Bid. Kesiswaan';
+                    } elseif ($t->user && in_array('wakasek_humas', $t->user->all_roles, true)) {
+                        $duty = 'Wakasek Bid. Humas';
+                    } elseif ($t->user && in_array('wakasek_sarpras', $t->user->all_roles, true)) {
+                        $duty = 'Wakasek Bid. Sarpras';
+                    } elseif ($t->user && in_array('bk', $t->user->all_roles, true)) {
+                        $duty = 'Guru Bimbingan & Konseling (BK)';
+                    } elseif ($t->homeroomClass) {
+                        $duty = 'Wali Kelas '.$t->homeroomClass->name;
+                    }
+
+                    if (stripos($t->name, 'Pian Sopian') !== false) {
+                        $duty = 'Kepala SMAN 1 Lengkong';
+                    }
+
+                    $mapel = $t->title ?: 'Mata Pelajaran Umum';
+                    if (stripos($t->name, 'Pian Sopian') !== false) {
+                        $mapel = 'Kimia';
+                    }
+
+                    $staff[] = [
+                        'id' => 'teacher_'.$t->id,
+                        'category' => 'guru',
+                        'name' => $t->name,
+                        'nip' => $t->nip ?: '-',
+                        'gender' => $t->gender ?: 'L',
+                        'employment_status' => $t->employment_status ?: 'PNS / ASN',
+                        'mapel' => $mapel,
+                        'duty' => $duty,
+                        'tu_duty' => '',
+                        'photo' => $photo,
+                        'phone' => $t->phone ?: '',
+                        'order' => $order++,
+                        'is_active' => true,
+                    ];
+                }
             }
         } else {
             $staff = self::getDefaultStaff();
@@ -515,6 +580,52 @@ class WebsiteContentController extends Controller
             $defaultTu = self::getDefaultTuStaff($order);
             foreach ($defaultTu as $tu) {
                 $staff[] = $tu;
+                $order++;
+            }
+        }
+
+        // Ambil Satpam dari User atau default
+        try {
+            $satpamUsers = User::where('is_active', true)
+                ->where(function ($q) {
+                    $q->whereIn('role', ['satpam', 'security'])
+                        ->orWhereJsonContains('roles', 'satpam')
+                        ->orWhereJsonContains('roles', 'security');
+                })
+                ->orderBy('name')
+                ->get();
+        } catch (\Throwable $e) {
+            $satpamUsers = collect();
+        }
+
+        if ($satpamUsers->isNotEmpty()) {
+            foreach ($satpamUsers as $u) {
+                $alreadyExists = collect($staff)->contains(fn ($s) => ($s['nip'] ?? '') === ($u->nip ?? 'NONE') || ($s['name'] ?? '') === $u->name);
+                if (! $alreadyExists) {
+                    $staff[] = [
+                        'id' => 'satpam_user_'.$u->id,
+                        'category' => 'satpam',
+                        'name' => $u->name,
+                        'nip' => $u->nip ?: '-',
+                        'gender' => $u->gender ?: 'L',
+                        'employment_status' => 'Satpam / Keamanan',
+                        'mapel' => '-',
+                        'duty' => 'Petugas Keamanan / Satpam',
+                        'tu_duty' => 'Petugas Keamanan / Satpam',
+                        'photo' => $u->avatar ? 'storage/'.$u->avatar : null,
+                        'phone' => $u->phone ?: '',
+                        'order' => $order++,
+                        'is_active' => true,
+                    ];
+                }
+            }
+        }
+
+        $hasSatpam = collect($staff)->contains(fn ($s) => ($s['category'] ?? '') === 'satpam');
+        if (! $hasSatpam) {
+            foreach (self::getDefaultSatpamStaff($order) as $satpam) {
+                $staff[] = $satpam;
+                $order++;
             }
         }
 
@@ -530,7 +641,7 @@ class WebsiteContentController extends Controller
     {
         $list = [];
 
-        // 1. Data Dewan Guru
+        // 1. Data Dewan Guru, Tenaga Kependidikan & Satpam dari Master Teachers
         try {
             $teachers = Teacher::with('homeroomClass', 'user')
                 ->where('is_active', true)
@@ -538,35 +649,72 @@ class WebsiteContentController extends Controller
                 ->get();
 
             foreach ($teachers as $t) {
-                $duty = 'Guru Pengajar';
-                if ($t->title && stripos($t->title, 'Kepala') !== false) {
-                    $duty = 'Kepala SMAN 1 Lengkong';
-                } elseif ($t->user && in_array('wakasek_kurikulum', $t->user->all_roles, true)) {
-                    $duty = 'Wakasek Bid. Kurikulum';
-                } elseif ($t->user && in_array('wakasek_kesiswaan', $t->user->all_roles, true)) {
-                    $duty = 'Wakasek Bid. Kesiswaan';
-                } elseif ($t->user && in_array('wakasek_humas', $t->user->all_roles, true)) {
-                    $duty = 'Wakasek Bid. Humas';
-                } elseif ($t->user && in_array('wakasek_sarpras', $t->user->all_roles, true)) {
-                    $duty = 'Wakasek Bid. Sarpras';
-                } elseif ($t->user && in_array('bk', $t->user->all_roles, true)) {
-                    $duty = 'Guru Bimbingan & Konseling (BK)';
-                } elseif ($t->homeroomClass) {
-                    $duty = 'Wali Kelas '.$t->homeroomClass->name;
-                }
+                $isSatpam = ($t->employment_type && (stripos($t->employment_type, 'Keamanan') !== false || stripos($t->employment_type, 'Satpam') !== false))
+                    || ($t->position && (stripos($t->position, 'Satpam') !== false || stripos($t->position, 'Keamanan') !== false))
+                    || ($t->employment_status && (stripos($t->employment_status, 'Satpam') !== false || stripos($t->employment_status, 'Keamanan') !== false))
+                    || ($t->user && (in_array('satpam', $t->user->all_roles, true) || $t->user->role === 'satpam'));
 
-                $list[] = [
-                    'id' => 'teacher_'.$t->id,
-                    'type' => 'guru',
-                    'name' => $t->name,
-                    'nip' => $t->nip ?: '-',
-                    'gender' => $t->gender ?: 'L',
-                    'employment_status' => 'PNS / ASN',
-                    'duty' => $duty,
-                    'mapel' => $t->title ?: 'Mata Pelajaran Umum',
-                    'phone' => $t->phone ?: '',
-                    'photo' => $t->user?->avatar ? 'storage/'.$t->user->avatar : null,
-                ];
+                $isTendik = ! $isSatpam && (($t->employment_type && stripos($t->employment_type, 'Kependidikan') !== false)
+                    || ($t->title && stripos($t->title, 'Kependidikan') !== false)
+                    || ($t->position && stripos($t->position, 'Kependidikan') !== false));
+
+                if ($isSatpam) {
+                    $list[] = [
+                        'id' => 'teacher_'.$t->id,
+                        'type' => 'satpam',
+                        'name' => $t->name,
+                        'nip' => $t->nip ?: '-',
+                        'gender' => $t->gender ?: 'L',
+                        'employment_status' => $t->employment_status ?: 'Satpam / Keamanan',
+                        'duty' => $t->position ?: 'Petugas Keamanan / Satpam',
+                        'mapel' => '-',
+                        'phone' => $t->phone ?: '',
+                        'photo' => $t->user?->avatar ? 'storage/'.$t->user->avatar : null,
+                    ];
+                } elseif ($isTendik) {
+                    $list[] = [
+                        'id' => 'teacher_'.$t->id,
+                        'type' => 'staf_tu',
+                        'name' => $t->name,
+                        'nip' => $t->nip ?: '-',
+                        'gender' => $t->gender ?: 'L',
+                        'employment_status' => $t->employment_status ?: 'Tenaga Kependidikan',
+                        'duty' => $t->position ?: ($t->title ?: 'Staf Tenaga Kependidikan'),
+                        'mapel' => '',
+                        'phone' => $t->phone ?: '',
+                        'photo' => $t->user?->avatar ? 'storage/'.$t->user->avatar : null,
+                    ];
+                } else {
+                    $duty = 'Guru Pengajar';
+                    if ($t->title && stripos($t->title, 'Kepala') !== false) {
+                        $duty = 'Kepala SMAN 1 Lengkong';
+                    } elseif ($t->user && in_array('wakasek_kurikulum', $t->user->all_roles, true)) {
+                        $duty = 'Wakasek Bid. Kurikulum';
+                    } elseif ($t->user && in_array('wakasek_kesiswaan', $t->user->all_roles, true)) {
+                        $duty = 'Wakasek Bid. Kesiswaan';
+                    } elseif ($t->user && in_array('wakasek_humas', $t->user->all_roles, true)) {
+                        $duty = 'Wakasek Bid. Humas';
+                    } elseif ($t->user && in_array('wakasek_sarpras', $t->user->all_roles, true)) {
+                        $duty = 'Wakasek Bid. Sarpras';
+                    } elseif ($t->user && in_array('bk', $t->user->all_roles, true)) {
+                        $duty = 'Guru Bimbingan & Konseling (BK)';
+                    } elseif ($t->homeroomClass) {
+                        $duty = 'Wali Kelas '.$t->homeroomClass->name;
+                    }
+
+                    $list[] = [
+                        'id' => 'teacher_'.$t->id,
+                        'type' => 'guru',
+                        'name' => $t->name,
+                        'nip' => $t->nip ?: '-',
+                        'gender' => $t->gender ?: 'L',
+                        'employment_status' => 'PNS / ASN',
+                        'duty' => $duty,
+                        'mapel' => $t->title ?: 'Mata Pelajaran Umum',
+                        'phone' => $t->phone ?: '',
+                        'photo' => $t->user?->avatar ? 'storage/'.$t->user->avatar : null,
+                    ];
+                }
             }
         } catch (\Throwable $e) {
         }
@@ -596,6 +744,54 @@ class WebsiteContentController extends Controller
                 ];
             }
         } catch (\Throwable $e) {
+        }
+
+        // 3. Data Satpam / Keamanan dari User
+        try {
+            $satpamUsers = User::where('is_active', true)
+                ->where(function ($q) {
+                    $q->whereIn('role', ['satpam', 'security'])
+                        ->orWhereJsonContains('roles', 'satpam')
+                        ->orWhereJsonContains('roles', 'security');
+                })
+                ->orderBy('name')
+                ->get();
+
+            foreach ($satpamUsers as $u) {
+                $alreadyInList = collect($list)->contains(fn ($item) => ($item['name'] ?? '') === $u->name);
+                if (! $alreadyInList) {
+                    $list[] = [
+                        'id' => 'user_satpam_'.$u->id,
+                        'type' => 'satpam',
+                        'name' => $u->name,
+                        'nip' => $u->nip ?: '-',
+                        'gender' => $u->gender ?: 'L',
+                        'employment_status' => 'Satpam / Keamanan',
+                        'duty' => 'Petugas Keamanan / Satpam Gerbang Utama',
+                        'mapel' => '-',
+                        'phone' => $u->phone ?: '',
+                        'photo' => $u->avatar ? 'storage/'.$u->avatar : null,
+                    ];
+                }
+            }
+        } catch (\Throwable $e) {
+        }
+
+        // Fallback jika belum ada satpam terdaftar di master: berikan opsi satpam default
+        $hasSatpamInList = collect($list)->contains(fn ($item) => ($item['type'] ?? '') === 'satpam');
+        if (! $hasSatpamInList) {
+            $list[] = [
+                'id' => 'sample_ptk_satpam_1',
+                'type' => 'satpam',
+                'name' => 'Asep Saepudin',
+                'nip' => '20202265004',
+                'gender' => 'L',
+                'employment_status' => 'Satpam / Keamanan',
+                'duty' => 'Petugas Keamanan / Satpam Gerbang Utama',
+                'mapel' => '-',
+                'phone' => '081234567896',
+                'photo' => null,
+            ];
         }
 
         return $list;
@@ -1693,22 +1889,27 @@ class WebsiteContentController extends Controller
     }
 
     /**
-     * Tambah Guru atau Staf TU Baru
+     * Tambah Guru, Staf TU atau Satpam Baru
      */
     public function storeStaff(Request $request): RedirectResponse
     {
         $this->authorizeTab('staff');
 
-        $isGuru = $request->input('category') === 'guru';
+        $category = $request->input('category');
+        $isGuru = $category === 'guru';
+        $isTu = $category === 'staf_tu';
+        $isSatpam = $category === 'satpam';
+
         $validated = $request->validate([
-            'category' => ['required', 'in:guru,staf_tu'],
+            'category' => ['required', 'in:guru,staf_tu,satpam'],
             'name' => ['required', 'string', 'max:255'],
             'nip' => ['nullable', 'string', 'max:50'],
             'gender' => ['required', 'in:L,P'],
             'employment_status' => ['nullable', 'string', 'max:50'],
             'mapel' => [$isGuru ? 'required' : 'nullable', 'string', 'max:100'],
             'duty' => ['nullable', 'string', 'max:150'],
-            'tu_duty' => [! $isGuru ? 'required' : 'nullable', 'string', 'max:150'],
+            'tu_duty' => [$isTu ? 'required' : 'nullable', 'string', 'max:150'],
+            'satpam_duty' => ['nullable', 'string', 'max:150'],
             'phone' => ['nullable', 'string', 'max:30'],
             'photo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
             'order' => ['nullable', 'integer'],
@@ -1717,7 +1918,12 @@ class WebsiteContentController extends Controller
 
         $staffMembers = self::getLiveStaff();
 
-        $staffId = ($validated['category'] === 'guru' ? 'teacher_' : 'tu_').time().'_'.Str::random(4);
+        $prefix = match ($validated['category']) {
+            'guru' => 'teacher_',
+            'satpam' => 'satpam_',
+            default => 'tu_',
+        };
+        $staffId = $prefix.time().'_'.Str::random(4);
         $photoPath = null;
 
         if ($request->hasFile('photo')) {
@@ -1731,16 +1937,34 @@ class WebsiteContentController extends Controller
             $photoPath = 'images/website/staff/'.$filename;
         }
 
+        $duty = match ($validated['category']) {
+            'guru' => trim($validated['duty'] ?? 'Guru Pengajar') ?: 'Guru Pengajar',
+            'satpam' => trim($request->input('satpam_duty') ?? ($validated['duty'] ?? 'Petugas Keamanan / Satpam')) ?: 'Petugas Keamanan / Satpam',
+            default => trim($validated['tu_duty'] ?? 'Staf Tata Usaha') ?: 'Staf Tata Usaha',
+        };
+        $tuDuty = match ($validated['category']) {
+            'staf_tu' => trim($validated['tu_duty'] ?? ''),
+            'satpam' => trim($request->input('satpam_duty') ?? 'Petugas Keamanan / Satpam'),
+            default => '',
+        };
+        $mapel = $validated['category'] === 'guru' ? trim($validated['mapel'] ?? '') : ($validated['category'] === 'satpam' ? '-' : '');
+        $empStatus = $validated['employment_status'] ?? match ($validated['category']) {
+            'guru' => 'PNS / ASN',
+            'satpam' => 'Satpam / Keamanan',
+            default => 'Staf TU',
+        };
+
         $newMember = [
             'id' => $staffId,
             'category' => $validated['category'],
             'name' => trim($validated['name']),
             'nip' => ! empty($validated['nip']) ? trim($validated['nip']) : '-',
             'gender' => $validated['gender'],
-            'employment_status' => $validated['employment_status'] ?? ($validated['category'] === 'guru' ? 'PNS / ASN' : 'Staf TU'),
-            'mapel' => $validated['category'] === 'guru' ? trim($validated['mapel'] ?? '') : '',
-            'duty' => $validated['category'] === 'guru' ? trim($validated['duty'] ?? 'Guru Pengajar') : trim($validated['tu_duty'] ?? 'Staf Tata Usaha'),
-            'tu_duty' => $validated['category'] === 'staf_tu' ? trim($validated['tu_duty'] ?? '') : '',
+            'employment_status' => $empStatus,
+            'mapel' => $mapel,
+            'duty' => $duty,
+            'tu_duty' => $tuDuty,
+            'satpam_duty' => $request->input('satpam_duty') ?? ($validated['satpam_duty'] ?? $duty),
             'photo' => $photoPath,
             'phone' => $validated['phone'] ?? '',
             'order' => (int) ($validated['order'] ?? (count($staffMembers) + 1)),
@@ -1750,33 +1974,42 @@ class WebsiteContentController extends Controller
         $staffMembers[] = $newMember;
         usort($staffMembers, fn ($a, $b) => ($a['order'] ?? 999) <=> ($b['order'] ?? 999));
 
-        SchoolSetting::set('website_staff_json', json_encode(array_values($staffMembers)), 'website', 'Daftar Guru & Staf TU Website');
+        SchoolSetting::set('website_staff_json', json_encode(array_values($staffMembers)), 'website', 'Daftar Guru, Staf TU & Satpam Website');
 
         AuditLog::log('CREATE_WEBSITE_STAFF', 'SchoolSetting', null, null, ['id' => $staffId, 'name' => $newMember['name']]);
 
-        $roleLabel = $validated['category'] === 'guru' ? 'Guru' : 'Staf TU';
+        $roleLabel = match ($validated['category']) {
+            'guru' => 'Guru',
+            'satpam' => 'Satpam / Keamanan',
+            default => 'Staf TU',
+        };
 
         return redirect()->route('master.website_content', ['tab' => 'staff'])
             ->with('success', "Data {$roleLabel} '{$newMember['name']}' berhasil ditambahkan ke website!");
     }
 
     /**
-     * Update Guru atau Staf TU
+     * Update Guru, Staf TU atau Satpam
      */
     public function updateStaff(Request $request, string $id): RedirectResponse
     {
         $this->authorizeTab('staff');
 
-        $isGuru = $request->input('category') === 'guru';
+        $category = $request->input('category');
+        $isGuru = $category === 'guru';
+        $isTu = $category === 'staf_tu';
+        $isSatpam = $category === 'satpam';
+
         $validated = $request->validate([
-            'category' => ['required', 'in:guru,staf_tu'],
+            'category' => ['required', 'in:guru,staf_tu,satpam'],
             'name' => ['required', 'string', 'max:255'],
             'nip' => ['nullable', 'string', 'max:50'],
             'gender' => ['required', 'in:L,P'],
             'employment_status' => ['nullable', 'string', 'max:50'],
             'mapel' => [$isGuru ? 'required' : 'nullable', 'string', 'max:100'],
             'duty' => ['nullable', 'string', 'max:150'],
-            'tu_duty' => [! $isGuru ? 'required' : 'nullable', 'string', 'max:150'],
+            'tu_duty' => [$isTu ? 'required' : 'nullable', 'string', 'max:150'],
+            'satpam_duty' => ['nullable', 'string', 'max:150'],
             'phone' => ['nullable', 'string', 'max:30'],
             'photo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
             'order' => ['nullable', 'integer'],
@@ -1785,6 +2018,23 @@ class WebsiteContentController extends Controller
 
         $staffMembers = self::getLiveStaff();
 
+        $duty = match ($validated['category']) {
+            'guru' => trim($validated['duty'] ?? 'Guru Pengajar') ?: 'Guru Pengajar',
+            'satpam' => trim($request->input('satpam_duty') ?? ($validated['duty'] ?? 'Petugas Keamanan / Satpam')) ?: 'Petugas Keamanan / Satpam',
+            default => trim($validated['tu_duty'] ?? 'Staf Tata Usaha') ?: 'Staf Tata Usaha',
+        };
+        $tuDuty = match ($validated['category']) {
+            'staf_tu' => trim($validated['tu_duty'] ?? ''),
+            'satpam' => trim($request->input('satpam_duty') ?? 'Petugas Keamanan / Satpam'),
+            default => '',
+        };
+        $mapel = $validated['category'] === 'guru' ? trim($validated['mapel'] ?? '') : ($validated['category'] === 'satpam' ? '-' : '');
+        $empStatus = $validated['employment_status'] ?? match ($validated['category']) {
+            'guru' => 'PNS / ASN',
+            'satpam' => 'Satpam / Keamanan',
+            default => 'Staf TU',
+        };
+
         $found = false;
         foreach ($staffMembers as &$member) {
             if ((string) ($member['id'] ?? '') === (string) $id) {
@@ -1792,10 +2042,11 @@ class WebsiteContentController extends Controller
                 $member['name'] = trim($validated['name']);
                 $member['nip'] = ! empty($validated['nip']) ? trim($validated['nip']) : '-';
                 $member['gender'] = $validated['gender'];
-                $member['employment_status'] = $validated['employment_status'] ?? ($validated['category'] === 'guru' ? 'PNS / ASN' : 'Staf TU');
-                $member['mapel'] = $validated['category'] === 'guru' ? trim($validated['mapel'] ?? '') : '';
-                $member['duty'] = $validated['category'] === 'guru' ? trim($validated['duty'] ?? 'Guru Pengajar') : trim($validated['tu_duty'] ?? 'Staf Tata Usaha');
-                $member['tu_duty'] = $validated['category'] === 'staf_tu' ? trim($validated['tu_duty'] ?? '') : '';
+                $member['employment_status'] = $empStatus;
+                $member['mapel'] = $mapel;
+                $member['duty'] = $duty;
+                $member['tu_duty'] = $tuDuty;
+                $member['satpam_duty'] = $request->input('satpam_duty') ?? ($validated['satpam_duty'] ?? $duty);
                 $member['phone'] = $validated['phone'] ?? '';
                 $member['order'] = (int) ($validated['order'] ?? ($member['order'] ?? 1));
                 $member['is_active'] = $request->boolean('is_active', true);
@@ -1825,10 +2076,11 @@ class WebsiteContentController extends Controller
                 'name' => trim($validated['name']),
                 'nip' => ! empty($validated['nip']) ? trim($validated['nip']) : '-',
                 'gender' => $validated['gender'],
-                'employment_status' => $validated['employment_status'] ?? ($validated['category'] === 'guru' ? 'PNS / ASN' : 'Staf TU'),
-                'mapel' => $validated['category'] === 'guru' ? trim($validated['mapel'] ?? '') : '',
-                'duty' => $validated['category'] === 'guru' ? trim($validated['duty'] ?? 'Guru Pengajar') : trim($validated['tu_duty'] ?? 'Staf Tata Usaha'),
-                'tu_duty' => $validated['category'] === 'staf_tu' ? trim($validated['tu_duty'] ?? '') : '',
+                'employment_status' => $empStatus,
+                'mapel' => $mapel,
+                'duty' => $duty,
+                'tu_duty' => $tuDuty,
+                'satpam_duty' => $request->input('satpam_duty') ?? ($validated['satpam_duty'] ?? $duty),
                 'phone' => $validated['phone'] ?? '',
                 'photo' => null,
                 'order' => (int) ($validated['order'] ?? 99),
@@ -1850,7 +2102,7 @@ class WebsiteContentController extends Controller
 
         usort($staffMembers, fn ($a, $b) => ($a['order'] ?? 999) <=> ($b['order'] ?? 999));
 
-        SchoolSetting::set('website_staff_json', json_encode(array_values($staffMembers)), 'website', 'Daftar Guru & Staf TU Website');
+        SchoolSetting::set('website_staff_json', json_encode(array_values($staffMembers)), 'website', 'Daftar Guru, Staf TU & Satpam Website');
         AuditLog::log('UPDATE_WEBSITE_STAFF', 'SchoolSetting', null, null, ['id' => $id]);
 
         return redirect()->route('master.website_content', ['tab' => 'staff'])
@@ -1868,7 +2120,7 @@ class WebsiteContentController extends Controller
 
         $filtered = array_values(array_filter($staffMembers, fn ($item) => (string) ($item['id'] ?? '') !== (string) $id));
 
-        SchoolSetting::set('website_staff_json', json_encode($filtered), 'website', 'Daftar Guru & Staf TU Website');
+        SchoolSetting::set('website_staff_json', json_encode($filtered), 'website', 'Daftar Guru, Staf TU & Satpam Website');
         AuditLog::log('DELETE_WEBSITE_STAFF', 'SchoolSetting', null, null, ['id' => $id]);
 
         return redirect()->route('master.website_content', ['tab' => 'staff'])
@@ -1883,11 +2135,11 @@ class WebsiteContentController extends Controller
         $this->authorizeTab('staff');
 
         $liveStaff = self::buildInitialStaffFromMaster();
-        SchoolSetting::set('website_staff_json', json_encode(array_values($liveStaff)), 'website', 'Daftar Guru & Staf TU Website');
+        SchoolSetting::set('website_staff_json', json_encode(array_values($liveStaff)), 'website', 'Daftar Guru, Staf TU & Satpam Website');
         AuditLog::log('SYNC_WEBSITE_STAFF', 'SchoolSetting', null, null, ['count' => count($liveStaff)]);
 
         return redirect()->route('master.website_content', ['tab' => 'staff'])
-            ->with('success', 'Sinkronisasi berhasil! Seluruh data dewan guru & staf PTK ('.count($liveStaff).' pegawai) telah diperbarui dari Master Data SIS-SMA1LE.');
+            ->with('success', 'Sinkronisasi berhasil! Seluruh data dewan guru, staf PTK & satpam ('.count($liveStaff).' pegawai) telah diperbarui dari Master Data SIS-SMA1LE.');
     }
 
     /**
@@ -1922,7 +2174,7 @@ class WebsiteContentController extends Controller
             case 'staff':
                 SchoolSetting::where('key', 'website_staff_json')->delete();
                 $tab = 'staff';
-                $label = 'Guru & Staf Tata Usaha';
+                $label = 'Guru, Staf TU & Satpam';
                 break;
             case 'news':
                 SchoolSetting::where('key', 'website_news_json')->delete();

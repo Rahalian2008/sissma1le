@@ -154,6 +154,22 @@ class Extracurricular extends Model
         $currentTimeStr = $now->format('H:i');
 
         $hasCustom = $this->hasCustomSchedule();
+        if (! $hasCustom) {
+            $isDefaultEnabled = SchoolSetting::get('enable_default_extra_schedule', '1') === '1';
+            if (! $isDefaultEnabled) {
+                return [
+                    'allowed' => false,
+                    'status' => 'DISABLED_DEFAULT_SCHEDULE',
+                    'reason' => "Jadwal Standar Ekstrakurikuler sedang dinonaktifkan. Kegiatan {$this->name} wajib menggunakan Jadwal Khusus untuk membuka sesi presensi.",
+                    'current_day_name' => $currentDayName,
+                    'current_time' => $currentTimeStr,
+                    'start_time' => $startTimeStr,
+                    'end_time' => $endTimeStr,
+                    'schedule_type' => 'default',
+                ];
+            }
+        }
+
         $startTimeStr = $this->effective_start_time;
         $endTimeStr = $this->effective_end_time;
         $effectiveDays = $this->effective_days;

@@ -1782,6 +1782,14 @@ class MasterDataController extends Controller
             $inputs['enable_geofence_radius'] = $request->input('enable_geofence_radius') == '1' ? '1' : '0';
         }
 
+        // Toggle Jadwal Standar / Umum Ekstrakurikuler (Default Acuan Utama)
+        if ($request->has('enable_default_extra_schedule')) {
+            $val = $request->input('enable_default_extra_schedule');
+            $inputs['enable_default_extra_schedule'] = in_array($val, ['1', 1, true, 'on', 'true'], true) ? '1' : '0';
+        } else {
+            $inputs['enable_default_extra_schedule'] = '0';
+        }
+
         // Keep barcode and legacy QR synchronized
         if ($request->has('enable_attendance_barcode')) {
             $inputs['enable_attendance_qr'] = $inputs['enable_attendance_barcode'];

@@ -520,21 +520,33 @@
 
                                 <!-- SUB-BAGIAN A: Jadwal Standar / Umum Default Acuan -->
                                 <div class="p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800/60 space-y-4 shadow-2xs">
-                                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-700/80 pb-3">
-                                        <div>
-                                            <div class="flex items-center gap-2">
+                                    @php
+                                        $isDefaultExtraActive = \App\Models\SchoolSetting::get('enable_default_extra_schedule', '1') === '1';
+                                    @endphp
+                                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-700/80 pb-3">
+                                        <div class="flex-1">
+                                            <div class="flex items-center gap-2 flex-wrap">
                                                 <span class="w-6 h-6 rounded-lg bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 font-black text-xs flex items-center justify-center">A</span>
                                                 <h4 class="font-extrabold text-sm text-slate-900 dark:text-white">Jadwal Standar / Umum Ekstrakurikuler (Default Acuan Utama)</h4>
+                                                <span id="default_extra_schedule_badge" class="px-2.5 py-0.5 rounded-full text-[10px] font-black {{ $isDefaultExtraActive ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800' : 'bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300 border border-rose-300 dark:border-rose-800' }}">
+                                                    {{ $isDefaultExtraActive ? '● Aktif Digunakan' : '○ Dinonaktifkan' }}
+                                                </span>
                                             </div>
-                                            <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
-                                                Jadwal ini digunakan secara otomatis untuk kegiatan ekstrakurikuler yang mengikuti jadwal umum, serta menjadi <strong>default otomatis bagi setiap jenis ekstrakurikuler baru yang nantinya baru dientri</strong> di Master Data.
+                                            <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
+                                                Jadwal ini digunakan secara otomatis untuk kegiatan ekstrakurikuler yang mengikuti jadwal umum. Anda dapat <strong>mengaktifkan atau menonaktifkan</strong> jadwal umum ini, serta memilih hari & jam latihan yang dapat disimpan.
                                             </p>
                                         </div>
-                                        <span class="px-3 py-1 rounded-xl text-[11px] font-black bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 flex items-center gap-1.5 shrink-0 self-start sm:self-center">
-                                            <span>📅 {{ $daysLabel }}</span>
-                                            <span>•</span>
-                                            <span>⏰ {{ $actStart }} - {{ $actEnd }} WIB</span>
-                                        </span>
+                                        <div class="flex items-center gap-3 self-start sm:self-center shrink-0 flex-wrap">
+                                            <label class="relative inline-flex items-center cursor-pointer select-none px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 transition shadow-2xs">
+                                                <input type="checkbox" name="enable_default_extra_schedule" value="1" id="enable_default_extra_schedule" {{ $isDefaultExtraActive ? 'checked' : '' }} onchange="toggleDefaultExtraSchedule(this.checked)" class="w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500 cursor-pointer">
+                                                <span class="ml-2 text-xs font-bold text-slate-700 dark:text-slate-300" id="default_extra_schedule_label">{{ $isDefaultExtraActive ? 'Aktif' : 'Nonaktif' }}</span>
+                                            </label>
+                                            <span class="px-3 py-1 rounded-xl text-[11px] font-black bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 flex items-center gap-1.5 shrink-0">
+                                                <span>📅 {{ $daysLabel }}</span>
+                                                <span>•</span>
+                                                <span>⏰ {{ $actStart }} - {{ $actEnd }} WIB</span>
+                                            </span>
+                                        </div>
                                     </div>
 
                                     <!-- Hidden input untuk mendeteksi submit form jika user uncheck semua hari -->
@@ -785,6 +797,23 @@
                         cb.checked = targetDays.includes(cb.value);
                         toggleDayPill(cb);
                     });
+                }
+
+                function toggleDefaultExtraSchedule(checked) {
+                    const badge = document.getElementById('default_extra_schedule_badge');
+                    const label = document.getElementById('default_extra_schedule_label');
+                    if (badge) {
+                        if (checked) {
+                            badge.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-black bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800';
+                            badge.innerText = '● Aktif Digunakan';
+                        } else {
+                            badge.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-black bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300 border border-rose-300 dark:border-rose-800';
+                            badge.innerText = '○ Dinonaktifkan';
+                        }
+                    }
+                    if (label) {
+                        label.innerText = checked ? 'Aktif' : 'Nonaktif';
+                    }
                 }
 
                 function toggleExtraCustomSchedule(extraId, isCustom) {

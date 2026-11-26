@@ -1528,7 +1528,7 @@
             </a>
 
             <!-- CENTER FAB: Presensi Selfie -->
-            <a href="{{ route('attendance.selfie') }}" class="flex-1 min-w-0 flex flex-col items-center justify-center -mt-5 group" title="Presensi Selfie Siswa">
+            <button type="button" onclick="openSelfieModal(event)" class="flex-1 min-w-0 flex flex-col items-center justify-center -mt-5 group cursor-pointer" title="Menu Presensi Selfie">
                 <div class="nav-fab-btn w-12 h-12 rounded-full bg-gradient-to-tr from-emerald-500 to-teal-400 text-slate-950 flex items-center justify-center shadow-lg shadow-emerald-500/35 border-3 border-white dark:border-slate-900 group-hover:scale-105 transition-transform">
                     <svg class="w-5.5 h-5.5 text-slate-950" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
@@ -1536,7 +1536,7 @@
                     </svg>
                 </div>
                 <span class="text-[11px] font-extrabold text-emerald-600 dark:text-emerald-400 -mt-1 truncate">Selfie</span>
-            </a>
+            </button>
 
             <!-- Presensi Siswa -->
             <button type="button" onclick="openPresensiModal(event)" class="flex-1 min-w-0 flex flex-col items-center justify-center gap-0.5 py-1 px-1 touch-target text-[11px] xs:text-[12px] font-semibold tracking-tight transition active:scale-95 cursor-pointer text-slate-500 dark:text-slate-400 hover:text-indigo-500">
@@ -1555,7 +1555,7 @@
             </a>
 
             <!-- CENTER FAB: Presensi Selfie Siswa -->
-            <a href="{{ route('attendance.selfie') }}" class="flex-1 min-w-0 flex flex-col items-center justify-center -mt-5 group" title="Presensi Selfie Kamera">
+            <button type="button" onclick="openSelfieModal(event)" class="flex-1 min-w-0 flex flex-col items-center justify-center -mt-5 group cursor-pointer" title="Menu Presensi Selfie">
                 <div class="nav-fab-btn w-12 h-12 rounded-full bg-gradient-to-tr from-emerald-500 to-teal-400 text-slate-950 flex items-center justify-center shadow-lg shadow-emerald-500/35 border-3 border-white dark:border-slate-900 group-hover:scale-105 transition-transform">
                     <svg class="w-5.5 h-5.5 text-slate-950" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
@@ -1563,7 +1563,7 @@
                     </svg>
                 </div>
                 <span class="text-[11px] font-extrabold text-emerald-600 dark:text-emerald-400 -mt-1 truncate">Selfie</span>
-            </a>
+            </button>
 
             <!-- 7 Karakter Hebat -->
             <a href="{{ route('habits.journal') }}" class="flex-1 min-w-0 flex flex-col items-center justify-center gap-0.5 py-1 px-1 touch-target text-[11px] xs:text-[12px] font-semibold tracking-tight transition active:scale-95 {{ request()->routeIs('habits.*') ? 'text-indigo-600 dark:text-indigo-400 font-extrabold bg-indigo-50/80 dark:bg-indigo-950/60 rounded-xl' : 'text-slate-500 dark:text-slate-400 hover:text-indigo-500' }}">
@@ -2105,8 +2105,40 @@
             document.body.style.overflow = '';
         }
 
+        // Modal Pop-up Selfie Terpadu (Saat klik tombol Selfie di Bottom Nav Mobile)
+        function openSelfieModal(event) {
+            if (event) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            const backdrop = document.getElementById('selfie-modal-backdrop');
+            const panel = document.getElementById('selfie-modal-panel');
+            if (!backdrop || !panel) return;
+
+            backdrop.classList.remove('opacity-0', 'pointer-events-none');
+            backdrop.classList.add('opacity-100');
+            panel.classList.remove('translate-y-full', 'sm:translate-y-4', 'sm:scale-95');
+            panel.classList.add('translate-y-0', 'sm:translate-y-0', 'sm:scale-100');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeSelfieModal() {
+            const backdrop = document.getElementById('selfie-modal-backdrop');
+            const panel = document.getElementById('selfie-modal-panel');
+            if (!backdrop || !panel) return;
+
+            backdrop.classList.remove('opacity-100');
+            backdrop.classList.add('opacity-0', 'pointer-events-none');
+            panel.classList.remove('translate-y-0', 'sm:translate-y-0', 'sm:scale-100');
+            panel.classList.add('translate-y-full', 'sm:translate-y-4', 'sm:scale-95');
+            document.body.style.overflow = '';
+        }
+
         document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') closePresensiModal();
+            if (e.key === 'Escape') {
+                closePresensiModal();
+                closeSelfieModal();
+            }
         });
     </script>
 
@@ -2277,6 +2309,156 @@
             <div class="p-3 bg-slate-50 dark:bg-slate-800/40 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[11px] text-slate-500">
                 <span>SIS-SMA1LE &bull; Presensi Terpadu</span>
                 <button type="button" onclick="closePresensiModal()" class="px-3 py-1 rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold hover:bg-slate-300 transition">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================
+         MODAL POP-UP MENU PRESENSI SELFIE TERPADU
+         (Pilihan modul presensi kamera selfie saat klik Selfie di Bottom Nav)
+         ======================================================== -->
+    @php
+        $selfieUser = Auth::user();
+        $selfieStudent = $selfieUser?->student;
+        $selfieIsFemale = ($selfieStudent?->gender === 'P') || ($selfieUser?->gender === 'P');
+        $selfieHasExtra = false;
+        if ($selfieStudent) {
+            $selfieHasExtra = $selfieStudent->extracurriculars()->where('is_active', true)->exists();
+        } elseif ($selfieUser?->hasAnyRole(['pembina_ekstra', 'sekretaris_ekstra', 'admin', 'super_admin'])) {
+            $selfieHasExtra = true;
+        }
+    @endphp
+    <div id="selfie-modal-backdrop"
+         class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4 opacity-0 pointer-events-none transition-all duration-300"
+         onclick="if(event.target === this) closeSelfieModal()">
+        
+        <div id="selfie-modal-panel"
+             class="w-full sm:max-w-md bg-white dark:bg-slate-900 border-t sm:border border-slate-200 dark:border-slate-800 rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden transform translate-y-full sm:translate-y-4 sm:scale-95 transition-all duration-300 max-h-[90vh] flex flex-col">
+            
+            <!-- Handle Drag Indicator untuk Mobile Bottom Sheet -->
+            <div class="pt-3 pb-1 flex justify-center sm:hidden">
+                <div class="w-12 h-1.5 rounded-full bg-slate-300 dark:bg-slate-700"></div>
+            </div>
+
+            <!-- Modal Header -->
+            <div class="p-4 sm:p-5 border-b border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 text-slate-950 flex items-center justify-center shadow-md shadow-emerald-500/25">
+                        <svg class="w-5.5 h-5.5 text-slate-950" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                            <circle cx="12" cy="13" r="3" stroke-width="2.2"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-extrabold text-slate-900 dark:text-white">Presensi Selfie Kamera</h3>
+                        <p class="text-[11px] text-slate-500 dark:text-slate-400">Pilih jenis presensi selfie yang akan dilakukan</p>
+                    </div>
+                </div>
+                <button type="button"
+                        onclick="closeSelfieModal()"
+                        class="p-2 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                        title="Tutup Menu">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+
+            <!-- Modal Content Menu Options -->
+            <div class="p-3 sm:p-4 overflow-y-auto space-y-2 flex-1">
+                <!-- 1. Selfie Presensi Harian (Masuk & Pulang) -->
+                <a href="{{ route('attendance.selfie') }}"
+                   class="group flex items-center gap-3.5 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 border border-slate-100 dark:border-slate-800 hover:border-emerald-200 dark:hover:border-emerald-800 transition">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                            <circle cx="12" cy="13" r="3" stroke-width="2.2"/>
+                        </svg>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center justify-between">
+                            <h4 class="text-xs font-bold text-slate-800 dark:text-slate-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400">Selfie Presensi Harian</h4>
+                            <span class="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950 px-2 py-0.5 rounded-full">Masuk & Pulang &rarr;</span>
+                        </div>
+                        <p class="text-[11px] text-slate-500 dark:text-slate-400 truncate">Presensi kehadiran masuk dan pulang sekolah dengan kamera langsung & GPS</p>
+                    </div>
+                </a>
+
+                <!-- 2. Selfie Presensi Ekstra (Hanya jika masuk anggota ekstra) -->
+                @if($selfieHasExtra)
+                <a href="{{ route('extracurricular.index', ['tab' => 'selfie']) }}"
+                   class="group flex items-center gap-3.5 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50 hover:bg-purple-50 dark:hover:bg-purple-950/40 border border-slate-100 dark:border-slate-800 hover:border-purple-200 dark:hover:border-purple-800 transition">
+                    <div class="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                        </svg>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center justify-between">
+                            <h4 class="text-xs font-bold text-slate-800 dark:text-slate-100 group-hover:text-purple-600 dark:group-hover:text-purple-400">Selfie Presensi Ekstra</h4>
+                            <span class="text-[10px] font-bold text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-950 px-2 py-0.5 rounded-full">Anggota Ekskul &rarr;</span>
+                        </div>
+                        <p class="text-[11px] text-slate-500 dark:text-slate-400 truncate">Presensi kehadiran kegiatan latihan ekstrakurikuler & klub siswa</p>
+                    </div>
+                </a>
+                @endif
+
+                <!-- 3. Selfie Presensi Shalat Dzuhur -->
+                <a href="{{ route('worship.index', ['activity' => 'dzuhur', 'tab' => 'selfie']) }}"
+                   class="group flex items-center gap-3.5 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50 hover:bg-teal-50 dark:hover:bg-teal-950/40 border border-slate-100 dark:border-slate-800 hover:border-teal-200 dark:hover:border-teal-800 transition">
+                    <div class="w-10 h-10 rounded-xl bg-teal-500/10 text-teal-600 dark:text-teal-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                        </svg>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center justify-between">
+                            <h4 class="text-xs font-bold text-slate-800 dark:text-slate-100 group-hover:text-teal-600 dark:group-hover:text-teal-400">Selfie Presensi Shalat Dzuhur</h4>
+                            <span class="text-[10px] font-bold text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-950 px-2 py-0.5 rounded-full">Berjamaah &rarr;</span>
+                        </div>
+                        <p class="text-[11px] text-slate-500 dark:text-slate-400 truncate">Presensi ibadah Shalat Dzuhur / Jum'at berjamaah di masjid sekolah</p>
+                    </div>
+                </a>
+
+                <!-- 4. Selfie Presensi Shalat Dzuha -->
+                <a href="{{ route('worship.index', ['activity' => 'dhuha', 'tab' => 'selfie']) }}"
+                   class="group flex items-center gap-3.5 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50 hover:bg-amber-50 dark:hover:bg-amber-950/40 border border-slate-100 dark:border-slate-800 hover:border-amber-200 dark:hover:border-amber-800 transition">
+                    <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center justify-between">
+                            <h4 class="text-xs font-bold text-slate-800 dark:text-slate-100 group-hover:text-amber-600 dark:group-hover:text-amber-400">Selfie Presensi Shalat Dzuha</h4>
+                            <span class="text-[10px] font-bold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950 px-2 py-0.5 rounded-full">Sunnah Pagi &rarr;</span>
+                        </div>
+                        <p class="text-[11px] text-slate-500 dark:text-slate-400 truncate">Pembiasaan ibadah Shalat Sunnah Dhuha pagi hari</p>
+                    </div>
+                </a>
+
+                <!-- 5. Selfie Presensi Keputrian (Hanya jika jenis kelamin perempuan) -->
+                @if($selfieIsFemale)
+                <a href="{{ route('worship.index', ['activity' => 'keputrian', 'tab' => 'selfie']) }}"
+                   class="group flex items-center gap-3.5 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50 hover:bg-rose-50 dark:hover:bg-rose-950/40 border border-slate-100 dark:border-slate-800 hover:border-rose-200 dark:hover:border-rose-800 transition">
+                    <div class="w-10 h-10 rounded-xl bg-rose-500/10 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                        </svg>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center justify-between">
+                            <h4 class="text-xs font-bold text-slate-800 dark:text-slate-100 group-hover:text-rose-600 dark:group-hover:text-rose-400">Selfie Presensi Keputrian</h4>
+                            <span class="text-[10px] font-bold text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950 px-2 py-0.5 rounded-full">Khusus Putri &rarr;</span>
+                        </div>
+                        <p class="text-[11px] text-slate-500 dark:text-slate-400 truncate">Kajian & amaliyah ibadah keputrian siswi hari Jumat</p>
+                    </div>
+                </a>
+                @endif
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="p-3 bg-slate-50 dark:bg-slate-800/40 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[11px] text-slate-500">
+                <span>SIS-SMA1LE &bull; Presensi Kamera Selfie</span>
+                <button type="button" onclick="closeSelfieModal()" class="px-3 py-1 rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold hover:bg-slate-300 transition">Tutup</button>
             </div>
         </div>
     </div>

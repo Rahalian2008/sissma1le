@@ -353,7 +353,7 @@ class SchoolWebsiteController extends Controller
                 'targetArticle',
                 'targetAgenda'
             ))
-            ->header('Cache-Control', 'public, max-age=120, s-maxage=300')
+            ->header('Cache-Control', 'no-cache, must-revalidate, public, max-age=120, s-maxage=300')
             ->header('Vary', 'Accept-Encoding, User-Agent');
     }
 

@@ -157,12 +157,12 @@
             </a>
             @endif
 
-            <!-- 8. Guru & Staf TU -->
+            <!-- 8. Guru, Staf TU & Satpam -->
             @if($canTab('staff'))
             <a href="{{ route('master.website_content', ['tab' => 'staff']) }}" 
                class="px-3.5 py-2 sm:py-2.5 rounded-2xl text-xs sm:text-sm font-extrabold transition-all duration-200 flex items-center gap-2 shrink-0 {{ $activeTab === 'staff' ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30 ring-2 ring-indigo-500/50' : 'bg-slate-100/80 dark:bg-slate-800/60 text-slate-600 dark:text-slate-400 hover:bg-slate-200/80 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white' }}">
                 <span class="text-sm">👨‍🏫</span>
-                <span>Guru & Staf TU</span>
+                <span>Guru, Staf TU & Satpam</span>
                 <span class="px-2 py-0.5 rounded-full text-[10px] font-black {{ $activeTab === 'staff' ? 'bg-white/20 text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300' }}">
                     {{ count($staffMembers) }}
                 </span>
@@ -1910,7 +1910,7 @@
     </script>
     @endif
 
-    <!-- ==================== TAB: DEWAN GURU & STAF TATA USAHA ==================== -->
+    <!-- ==================== TAB: DEWAN GURU, STAF TU & SATPAM ==================== -->
     @if($activeTab === 'staff' && $canTab('staff'))
     <div class="space-y-6">
         
@@ -1918,13 +1918,13 @@
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs">
             <div>
                 <h3 class="font-heading font-black text-base text-slate-900 dark:text-white flex items-center gap-2">
-                    <span>👨‍🏫 Dewan Guru & Staf Tata Usaha (TU)</span>
+                    <span>👨‍🏫 Dewan Guru, Staf Tata Usaha (TU) & Satpam</span>
                     <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400">
                         {{ count($staffMembers) }} Total Pegawai
                     </span>
                 </h3>
                 <p class="text-xs text-slate-500 mt-0.5">
-                    Kelola data identitas guru (mapel & tugas) serta staf TU (tugas pengganti mapel) beserta foto resmi yang ditampilkan di website sekolah.
+                    Kelola data identitas guru (mapel & tugas), staf TU (administrasi), dan petugas keamanan / satpam sekolah beserta foto resmi untuk ditampilkan di website sekolah.
                 </p>
             </div>
 
@@ -1934,15 +1934,15 @@
                     <span id="staff-compose-btn-text">Tambah Pegawai</span>
                 </button>
 
-                <form action="{{ route('master.website_content.staff.sync') }}" method="POST" onsubmit="return confirm('Sinkronkan data dari Master Guru? Data baru yang belum ada akan ditambahkan otomatis.')">
+                <form action="{{ route('master.website_content.staff.sync') }}" method="POST" onsubmit="return confirm('Sinkronkan data dari Master Guru & PTK? Seluruh dewan guru, staf TU & satpam yang terdaftar akan diperbarui otomatis.')">
                     @csrf
-                    <button type="submit" class="px-3.5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm shadow-emerald-600/20" title="Impor otomatis dari Master Guru">
+                    <button type="submit" class="px-3.5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm shadow-emerald-600/20" title="Impor otomatis dari Master Guru & PTK">
                         <span>🔄</span>
                         <span>Sinkronkan Master</span>
                     </button>
                 </form>
 
-                <form action="{{ route('master.website_content.reset') }}" method="POST" onsubmit="return confirm('Reset semua data guru & staf TU ke standar bawaan sistem?')">
+                <form action="{{ route('master.website_content.reset') }}" method="POST" onsubmit="return confirm('Reset semua data guru, staf TU & satpam ke standar bawaan sistem?')">
                     @csrf
                     <input type="hidden" name="section" value="staff">
                     <button type="submit" class="px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-500 hover:text-rose-600 hover:border-rose-300 text-xs font-semibold transition" title="Reset ke susunan awal">
@@ -1960,8 +1960,8 @@
                         👨‍🏫
                     </div>
                     <div>
-                        <h3 class="font-heading font-black text-slate-900 dark:text-white text-base" id="staff-form-heading">Tambah Pegawai Baru (Guru / TU)</h3>
-                        <p class="text-xs text-slate-500">Isi formulir identitas, posisi, mapel (guru) atau tugas (TU), serta unggah foto resmi.</p>
+                        <h3 class="font-heading font-black text-slate-900 dark:text-white text-base" id="staff-form-heading">Tambah Pegawai Baru (Guru / TU / Satpam)</h3>
+                        <p class="text-xs text-slate-500">Isi formulir identitas, posisi, mapel (guru), tugas (TU), atau tugas pos pengamanan (satpam).</p>
                     </div>
                 </div>
                 <button type="button" onclick="toggleStaffCompose(false)" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-sm p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">
@@ -1984,10 +1984,10 @@
                         <span class="text-[10.5px] font-normal text-indigo-600 dark:text-indigo-400">Tersedia {{ count($ptkMasterList) }} Pegawai Terdaftar</span>
                     </label>
                     <select id="ptk-master-select" onchange="fillFromPtkMaster(this)" class="w-full text-xs rounded-xl border border-indigo-300 dark:border-indigo-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 py-2.5 px-3 font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                        <option value="">-- Pilih Guru atau Staf TU untuk Mengisi Formulir Otomatis --</option>
+                        <option value="">-- Pilih Guru, Staf TU atau Satpam untuk Mengisi Formulir Otomatis --</option>
                         <optgroup label="👨‍🏫 Dewan Guru (Tenaga Pendidik)">
                             @foreach($ptkMasterList as $ptk)
-                                @if($ptk['type'] === 'guru')
+                                @if(($ptk['type'] ?? '') === 'guru')
                                     <option value="{{ $ptk['id'] }}" data-json="{{ json_encode($ptk) }}">
                                         {{ $ptk['name'] }} &bull; NIP: {{ $ptk['nip'] }} &bull; {{ $ptk['duty'] }}
                                     </option>
@@ -1996,7 +1996,16 @@
                         </optgroup>
                         <optgroup label="💼 Tenaga Kependidikan (Staf TU)">
                             @foreach($ptkMasterList as $ptk)
-                                @if($ptk['type'] === 'staf_tu')
+                                @if(($ptk['type'] ?? '') === 'staf_tu')
+                                    <option value="{{ $ptk['id'] }}" data-json="{{ json_encode($ptk) }}">
+                                        {{ $ptk['name'] }} &bull; NIP: {{ $ptk['nip'] }} &bull; {{ $ptk['duty'] }}
+                                    </option>
+                                @endif
+                            @endforeach
+                        </optgroup>
+                        <optgroup label="🛡️ Petugas Keamanan (Satpam)">
+                            @foreach($ptkMasterList as $ptk)
+                                @if(($ptk['type'] ?? '') === 'satpam')
                                     <option value="{{ $ptk['id'] }}" data-json="{{ json_encode($ptk) }}">
                                         {{ $ptk['name'] }} &bull; NIP: {{ $ptk['nip'] }} &bull; {{ $ptk['duty'] }}
                                     </option>
@@ -2005,29 +2014,36 @@
                         </optgroup>
                     </select>
                     <p class="text-[11px] text-indigo-700 dark:text-indigo-300 mt-1.5">
-                        Memilih nama guru/staf akan otomatis mengisi formulir nama, NIP, jenis kelamin, mapel, tugas pokok, nomor kontak, dan status kepegawaian.
+                        Memilih nama guru, staf TU, atau satpam akan otomatis mengisi formulir nama, NIP, jenis kelamin, tugas pokok, nomor kontak, dan status kepegawaian.
                     </p>
                 </div>
                 @endif
 
-                <!-- 1. Pemilihan Posisi: GURU vs STAF TU -->
+                <!-- 1. Pemilihan Posisi: GURU vs STAF TU vs SATPAM -->
                 <div>
                     <label class="block text-xs font-black uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2">
                         Pilih Posisi / Kategori Pegawai <span class="text-rose-500">*</span>
                     </label>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                         <label class="relative flex items-center gap-3 p-4 rounded-2xl border cursor-pointer transition has-checked:border-emerald-500 has-checked:bg-emerald-50/50 dark:has-checked:bg-emerald-950/30 border-slate-200 dark:border-slate-800">
                             <input type="radio" name="category" value="guru" id="radio_cat_guru" checked onchange="onStaffCategoryChange('guru')" class="w-4 h-4 text-emerald-600">
                             <div>
-                                <span class="block text-xs sm:text-sm font-black text-slate-900 dark:text-white">👨‍🏫 Guru / Tenaga Pendidik</span>
-                                <span class="block text-[11px] text-slate-500">Memiliki formulir Mata Pelajaran (Mapel) yang dipegang & tugas tambahan.</span>
+                                <span class="block text-xs sm:text-sm font-black text-slate-900 dark:text-white">👨‍🏫 Guru / Pendidik</span>
+                                <span class="block text-[11px] text-slate-500">Mata Pelajaran (Mapel) & tugas tambahan.</span>
                             </div>
                         </label>
                         <label class="relative flex items-center gap-3 p-4 rounded-2xl border cursor-pointer transition has-checked:border-amber-500 has-checked:bg-amber-50/50 dark:has-checked:bg-amber-950/30 border-slate-200 dark:border-slate-800">
                             <input type="radio" name="category" value="staf_tu" id="radio_cat_tu" onchange="onStaffCategoryChange('staf_tu')" class="w-4 h-4 text-amber-600">
                             <div>
-                                <span class="block text-xs sm:text-sm font-black text-slate-900 dark:text-white">💼 Staf Tata Usaha (TU)</span>
-                                <span class="block text-[11px] text-slate-500">Mengisi nama penugasan / unit kerja TU sebagai pengganti form mapel.</span>
+                                <span class="block text-xs sm:text-sm font-black text-slate-900 dark:text-white">💼 Staf Tata Usaha</span>
+                                <span class="block text-[11px] text-slate-500">Unit kerja administrasi & layanan tata usaha.</span>
+                            </div>
+                        </label>
+                        <label class="relative flex items-center gap-3 p-4 rounded-2xl border cursor-pointer transition has-checked:border-teal-500 has-checked:bg-teal-50/50 dark:has-checked:bg-teal-950/30 border-slate-200 dark:border-slate-800">
+                            <input type="radio" name="category" value="satpam" id="radio_cat_satpam" onchange="onStaffCategoryChange('satpam')" class="w-4 h-4 text-teal-600">
+                            <div>
+                                <span class="block text-xs sm:text-sm font-black text-slate-900 dark:text-white">🛡️ Satpam / Keamanan</span>
+                                <span class="block text-[11px] text-slate-500">Pos penjagaan gerbang & pengamanan sekolah.</span>
                             </div>
                         </label>
                     </div>
@@ -2123,7 +2139,7 @@
                             Nama Tugas / Penugasan Tata Usaha (Pengganti Form Mapel) <span class="text-rose-500">*</span>
                         </label>
                         <input type="text" name="tu_duty" id="input_staff_tu_duty" placeholder="Contoh: Pengadministrasi Layanan Kesiswaan & Operator Dapodik / Bendahara Sekolah" class="w-full px-3.5 py-2.5 rounded-xl border border-amber-300 dark:border-amber-700 bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500">
-                        <div class="flex items-center gap-2 mt-1.5 text-[11px] text-amber-800 dark:text-amber-300 font-medium">
+                        <div class="flex items-center gap-2 mt-1.5 text-[11px] text-amber-800 dark:text-amber-300 font-medium flex-wrap">
                             <span>💡 Contoh tugas:</span>
                             <span class="underline cursor-pointer hover:text-amber-600" onclick="setTuDutyPreset('Kepala Urusan Tata Usaha (Kaur TU)')">Kaur TU</span> •
                             <span class="underline cursor-pointer hover:text-amber-600" onclick="setTuDutyPreset('Pengadministrasi Layanan Kesiswaan & Operator Dapodik')">Kesiswaan & Dapodik</span> •
@@ -2134,11 +2150,35 @@
                     </div>
                 </div>
 
+                <!-- C. Container Satpam: Tugas Pos & Pengamanan Sekolah -->
+                <div id="satpam-specific-fields" class="hidden p-5 rounded-2xl bg-teal-50/60 dark:bg-teal-950/20 border border-teal-200 dark:border-teal-800/60 space-y-4">
+                    <div class="flex items-center gap-2">
+                        <span class="text-base">🛡️</span>
+                        <div>
+                            <span class="text-xs font-black text-teal-900 dark:text-teal-300 block">Formulir Penugasan Petugas Keamanan (Satpam)</span>
+                            <span class="text-[11px] text-teal-700 dark:text-teal-400">Pengganti form mapel: Isikan penugasan pos keamanan atau shift satpam sekolah.</span>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-800 dark:text-slate-200 mb-1">
+                            Tugas / Pos Penjagaan Satpam (Pengganti Form Mapel) <span class="text-rose-500">*</span>
+                        </label>
+                        <input type="text" name="satpam_duty" id="input_staff_satpam_duty" placeholder="Contoh: Petugas Keamanan Gerbang Utama / Pos Penjagaan Depan" class="w-full px-3.5 py-2.5 rounded-xl border border-teal-300 dark:border-teal-700 bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500">
+                        <div class="flex items-center gap-2 mt-1.5 text-[11px] text-teal-800 dark:text-teal-300 font-medium flex-wrap">
+                            <span>💡 Contoh tugas satpam:</span>
+                            <span class="underline cursor-pointer hover:text-teal-600" onclick="setSatpamDutyPreset('Petugas Keamanan Gerbang Utama (Satpam)')">Gerbang Utama</span> •
+                            <span class="underline cursor-pointer hover:text-teal-600" onclick="setSatpamDutyPreset('Pengawas Keamanan & Perizinan Siswa Pos Satpam')">Pos Satpam & Perizinan</span> •
+                            <span class="underline cursor-pointer hover:text-teal-600" onclick="setSatpamDutyPreset('Koordinator Keamanan & Ketertiban Lingkungan Sekolah')">Koordinator Keamanan</span> •
+                            <span class="underline cursor-pointer hover:text-teal-600" onclick="setSatpamDutyPreset('Petugas Keamanan Shift Pagi / Siang')">Shift Pagi/Siang</span>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- 4. Unggah Foto & Pengaturan Tampilan -->
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-4 border-t border-slate-100 dark:border-slate-800">
                     <div class="sm:col-span-2 space-y-3">
                         <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                            Foto Resmi Pegawai (Guru / TU)
+                            Foto Resmi Pegawai (Guru / TU / Satpam)
                         </label>
                         <input type="file" name="photo" id="input_staff_photo" accept="image/png,image/jpeg,image/webp" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-indigo-50 file:text-indigo-700 dark:file:bg-indigo-950 dark:file:text-indigo-300 hover:file:bg-indigo-100 dark:hover:file:bg-indigo-900">
                         <p class="text-[11px] text-slate-400">Format: JPG, PNG, atau WebP (Rasio potret 3:4 disarankan, maks. 5MB). Jika dikosongkan, website akan menampilkan avatar inisial modern.</p>
@@ -2188,6 +2228,9 @@
                 <button type="button" onclick="filterStaffTableAdmin('staf_tu', this)" class="staff-admin-filter-btn px-3.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition">
                     💼 Staf TU ({{ collect($staffMembers)->where('category', 'staf_tu')->count() }})
                 </button>
+                <button type="button" onclick="filterStaffTableAdmin('satpam', this)" class="staff-admin-filter-btn px-3.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition">
+                    🛡️ Satpam ({{ collect($staffMembers)->where('category', 'satpam')->count() }})
+                </button>
             </div>
 
             <div class="w-full sm:w-64">
@@ -2204,7 +2247,7 @@
                             <th class="p-4 w-12 text-center">Urutan</th>
                             <th class="p-4">Pegawai (Nama & Identitas)</th>
                             <th class="p-4">Posisi</th>
-                            <th class="p-4">Mapel (Guru) / Tugas (TU)</th>
+                            <th class="p-4">Mapel / Tugas Penugasan</th>
                             <th class="p-4">Status Kerja</th>
                             <th class="p-4 text-center">Tayang</th>
                             <th class="p-4 text-right">Aksi</th>
@@ -2213,10 +2256,13 @@
                     <tbody class="divide-y divide-slate-100 dark:divide-slate-800" id="staff-admin-tbody">
                         @forelse($staffMembers as $member)
                             @php
-                                $isGuru = ($member['category'] ?? '') === 'guru';
+                                $cat = $member['category'] ?? 'guru';
+                                $isGuru = $cat === 'guru';
+                                $isTu = $cat === 'staf_tu';
+                                $isSatpam = $cat === 'satpam';
                                 $searchText = strtolower(($member['name'] ?? '') . ' ' . ($member['nip'] ?? '') . ' ' . ($member['mapel'] ?? '') . ' ' . ($member['duty'] ?? '') . ' ' . ($member['tu_duty'] ?? ''));
                             @endphp
-                            <tr class="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition staff-row" data-category="{{ $member['category'] ?? 'guru' }}" data-search="{{ $searchText }}">
+                            <tr class="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition staff-row" data-category="{{ $cat }}" data-search="{{ $searchText }}">
                                 <td class="p-4 text-center font-mono font-bold text-slate-400">
                                     {{ $member['order'] ?? $loop->iteration }}
                                 </td>
@@ -2251,6 +2297,10 @@
                                         <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
                                             👨‍🏫 Guru / Pendidik
                                         </span>
+                                    @elseif($isSatpam)
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 border border-teal-200 dark:border-teal-800">
+                                            🛡️ Satpam / Keamanan
+                                        </span>
                                     @else
                                         <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
                                             💼 Staf Tata Usaha
@@ -2268,6 +2318,13 @@
                                                     📌 {{ $member['duty'] }}
                                                 </span>
                                             @endif
+                                        </div>
+                                    @elseif($isSatpam)
+                                        <div>
+                                            <span class="px-2 py-0.5 rounded-lg bg-teal-50 dark:bg-teal-950 text-teal-800 dark:text-teal-300 font-bold text-[11px] border border-teal-200 dark:border-teal-800">
+                                                🛡️ {{ $member['duty'] ?? 'Petugas Keamanan / Satpam' }}
+                                            </span>
+                                            <span class="block text-[10px] text-slate-400 mt-0.5">(Tugas Pos Keamanan Sekolah)</span>
                                         </div>
                                     @else
                                         <div>
@@ -2746,7 +2803,7 @@
 
         form.action = "{{ route('master.website_content.staff.store') }}";
         if (methodContainer) methodContainer.innerHTML = '';
-        if (heading) heading.innerText = 'Tambah Pegawai Baru (Guru / TU)';
+        if (heading) heading.innerText = 'Tambah Pegawai Baru (Guru / TU / Satpam)';
 
         form.reset();
         document.getElementById('radio_cat_guru').checked = true;
@@ -2759,24 +2816,42 @@
     function onStaffCategoryChange(category) {
         const guruFields = document.getElementById('guru-specific-fields');
         const tuFields = document.getElementById('tu-specific-fields');
+        const satpamFields = document.getElementById('satpam-specific-fields');
         const mapelInput = document.getElementById('input_staff_mapel');
         const tuDutyInput = document.getElementById('input_staff_tu_duty');
+        const satpamDutyInput = document.getElementById('input_staff_satpam_duty');
 
         if (category === 'guru') {
             if (guruFields) guruFields.classList.remove('hidden');
             if (tuFields) tuFields.classList.add('hidden');
+            if (satpamFields) satpamFields.classList.add('hidden');
             if (mapelInput) mapelInput.required = true;
             if (tuDutyInput) tuDutyInput.required = false;
+            if (satpamDutyInput) satpamDutyInput.required = false;
+        } else if (category === 'satpam') {
+            if (guruFields) guruFields.classList.add('hidden');
+            if (tuFields) tuFields.classList.add('hidden');
+            if (satpamFields) satpamFields.classList.remove('hidden');
+            if (mapelInput) mapelInput.required = false;
+            if (tuDutyInput) tuDutyInput.required = false;
+            if (satpamDutyInput) satpamDutyInput.required = true;
         } else {
             if (guruFields) guruFields.classList.add('hidden');
             if (tuFields) tuFields.classList.remove('hidden');
+            if (satpamFields) satpamFields.classList.add('hidden');
             if (mapelInput) mapelInput.required = false;
             if (tuDutyInput) tuDutyInput.required = true;
+            if (satpamDutyInput) satpamDutyInput.required = false;
         }
     }
 
     function setTuDutyPreset(dutyName) {
         const input = document.getElementById('input_staff_tu_duty');
+        if (input) input.value = dutyName;
+    }
+
+    function setSatpamDutyPreset(dutyName) {
+        const input = document.getElementById('input_staff_satpam_duty');
         if (input) input.value = dutyName;
     }
 
@@ -2786,21 +2861,33 @@
         try {
             const ptk = JSON.parse(option.dataset.json);
 
-            if (ptk.type === 'staf_tu') {
-                document.getElementById('radio_cat_tu').checked = true;
+            if (ptk.type === 'satpam') {
+                const radioSatpam = document.getElementById('radio_cat_satpam');
+                if (radioSatpam) radioSatpam.checked = true;
+                onStaffCategoryChange('satpam');
+                const satpamDuty = document.getElementById('input_staff_satpam_duty');
+                if (satpamDuty) satpamDuty.value = ptk.duty || 'Petugas Keamanan / Satpam';
+            } else if (ptk.type === 'staf_tu') {
+                const radioTu = document.getElementById('radio_cat_tu');
+                if (radioTu) radioTu.checked = true;
                 onStaffCategoryChange('staf_tu');
-                document.getElementById('input_staff_tu_duty').value = ptk.duty || '';
+                const tuDuty = document.getElementById('input_staff_tu_duty');
+                if (tuDuty) tuDuty.value = ptk.duty || '';
             } else {
-                document.getElementById('radio_cat_guru').checked = true;
+                const radioGuru = document.getElementById('radio_cat_guru');
+                if (radioGuru) radioGuru.checked = true;
                 onStaffCategoryChange('guru');
-                document.getElementById('input_staff_mapel').value = ptk.mapel || '';
-                document.getElementById('input_staff_duty').value = ptk.duty || '';
+                const mapel = document.getElementById('input_staff_mapel');
+                if (mapel) mapel.value = ptk.mapel || '';
+                const duty = document.getElementById('input_staff_duty');
+                if (duty) duty.value = ptk.duty || '';
             }
 
             document.getElementById('input_staff_name').value = ptk.name || '';
             document.getElementById('input_staff_nip').value = ptk.nip || '-';
             document.getElementById('input_staff_gender').value = ptk.gender || 'L';
-            document.getElementById('input_staff_employment_status').value = ptk.employment_status || (ptk.type === 'guru' ? 'PNS / ASN' : 'Staf TU');
+            const defaultStatus = ptk.type === 'guru' ? 'PNS / ASN' : (ptk.type === 'satpam' ? 'Satpam / Keamanan' : 'Staf TU');
+            document.getElementById('input_staff_employment_status').value = ptk.employment_status || defaultStatus;
             document.getElementById('input_staff_phone').value = ptk.phone || '';
 
             const preview = document.getElementById('staff_preview_img');
@@ -2827,19 +2914,33 @@
             heading.innerText = 'Edit Pegawai: ' + member.name;
         }
 
-        const isTu = member.category === 'staf_tu';
-        if (isTu) {
-            document.getElementById('radio_cat_tu').checked = true;
+        if (member.category === 'satpam') {
+            const radioSatpam = document.getElementById('radio_cat_satpam');
+            if (radioSatpam) radioSatpam.checked = true;
+            onStaffCategoryChange('satpam');
+            const satpamDuty = document.getElementById('input_staff_satpam_duty');
+            if (satpamDuty) satpamDuty.value = member.tu_duty || member.duty || 'Petugas Keamanan / Satpam';
+        } else if (member.category === 'staf_tu') {
+            const radioTu = document.getElementById('radio_cat_tu');
+            if (radioTu) radioTu.checked = true;
             onStaffCategoryChange('staf_tu');
+            const tuDuty = document.getElementById('input_staff_tu_duty');
+            if (tuDuty) tuDuty.value = member.tu_duty || member.duty || '';
         } else {
-            document.getElementById('radio_cat_guru').checked = true;
+            const radioGuru = document.getElementById('radio_cat_guru');
+            if (radioGuru) radioGuru.checked = true;
             onStaffCategoryChange('guru');
+            const mapel = document.getElementById('input_staff_mapel');
+            if (mapel) mapel.value = member.mapel || '';
+            const duty = document.getElementById('input_staff_duty');
+            if (duty) duty.value = member.duty || '';
         }
 
         document.getElementById('input_staff_name').value = member.name || '';
         document.getElementById('input_staff_nip').value = member.nip || '';
         document.getElementById('input_staff_gender').value = member.gender || 'L';
-        document.getElementById('input_staff_employment_status').value = member.employment_status || (isTu ? 'PPPK' : 'PNS / ASN');
+        const defaultStatus = member.category === 'guru' ? 'PNS / ASN' : (member.category === 'satpam' ? 'Satpam / Keamanan' : 'PPPK');
+        document.getElementById('input_staff_employment_status').value = member.employment_status || defaultStatus;
         document.getElementById('input_staff_phone').value = member.phone || '';
         document.getElementById('input_staff_order').value = member.order || 1;
         document.getElementById('input_staff_is_active').checked = member.is_active !== false;
