@@ -19,6 +19,11 @@ class BkCounselingSession extends Model
         'session_code',
         'session_type',
         'field_of_service',
+        'career_path',
+        'study_admission_track',
+        'campus_name',
+        'study_program',
+        'work_field',
         'service_category',
         'date',
         'start_time',
@@ -29,12 +34,15 @@ class BkCounselingSession extends Model
         'counseling_approach',
         'agreement_result',
         'follow_up_plan',
+        'follow_up_date',
+        'follow_up_status',
         'status',
         'is_confidential',
     ];
 
     protected $casts = [
         'date' => 'date',
+        'follow_up_date' => 'date',
         'is_confidential' => 'boolean',
     ];
 
@@ -83,5 +91,33 @@ class BkCounselingSession extends Model
             'KARIER' => ['label' => 'Bimbingan Karier', 'class' => 'bg-sky-500/10 text-sky-400 border border-sky-500/20'],
             default => ['label' => $this->field_of_service, 'class' => 'bg-slate-500/10 text-slate-400 border border-slate-500/20'],
         };
+    }
+
+    public function getCareerSummaryAttribute(): ?string
+    {
+        if ($this->field_of_service !== 'KARIER' || empty($this->career_path)) {
+            return null;
+        }
+
+        if ($this->career_path === 'KULIAH') {
+            $parts = [];
+            if ($this->study_admission_track) {
+                $parts[] = 'Jalur '.$this->study_admission_track;
+            }
+            if ($this->campus_name) {
+                $parts[] = $this->campus_name;
+            }
+            if ($this->study_program) {
+                $parts[] = 'Prodi '.$this->study_program;
+            }
+
+            return 'Kuliah'.(! empty($parts) ? ' ('.implode(' - ', $parts).')' : '');
+        }
+
+        if ($this->career_path === 'BEKERJA') {
+            return 'Bekerja'.($this->work_field ? ' ('.$this->work_field.')' : '');
+        }
+
+        return $this->career_path;
     }
 }

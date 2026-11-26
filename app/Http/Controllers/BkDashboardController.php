@@ -104,7 +104,16 @@ class BkDashboardController extends Controller
             ->take(6)
             ->get();
 
-        // 7. Hasil Psikotes Terkini
+        // 7. Jadwal Pertemuan Rencana Tindak Lanjut (RTL) Mendatang
+        $upcomingRtlSessions = BkCounselingSession::with(['student.schoolClass', 'counselor'])
+            ->whereNotNull('follow_up_date')
+            ->whereDate('follow_up_date', '>=', now()->toDateString())
+            ->when($isHomeroomOnly && $classId, fn ($q) => $q->whereHas('student', fn ($sq) => $sq->where('class_id', $classId)))
+            ->orderBy('follow_up_date', 'asc')
+            ->take(6)
+            ->get();
+
+        // 8. Hasil Psikotes Terkini
         $recentPsychResults = BkPsychologicalTestResult::with(['student.schoolClass', 'test'])
             ->when($isHomeroomOnly && $classId, fn ($q) => $q->whereHas('student', fn ($sq) => $sq->where('class_id', $classId)))
             ->latest('taken_at')
@@ -131,6 +140,7 @@ class BkDashboardController extends Controller
             'riasecDistribution',
             'priorityStudents',
             'recentSessions',
+            'upcomingRtlSessions',
             'recentPsychResults',
             'classes'
         ));

@@ -83,6 +83,43 @@
             </div>
         </div>
 
+        @if($session->field_of_service === 'KARIER' && $session->career_path)
+        <!-- Peminatan Bimbingan Karier (Kuliah / Bekerja) -->
+        <div class="p-5 rounded-2xl bg-gradient-to-br from-sky-50 to-indigo-50/40 dark:from-sky-950/40 dark:to-slate-900 border border-sky-200 dark:border-sky-900/60 space-y-3">
+            <div class="flex items-center justify-between pb-2 border-b border-sky-200/60 dark:border-sky-800/60">
+                <div class="flex items-center gap-2">
+                    <span class="w-7 h-7 rounded-lg bg-sky-600 text-white flex items-center justify-center font-bold text-xs">🎓</span>
+                    <h3 class="text-xs font-bold text-sky-950 dark:text-sky-200 uppercase tracking-wider">Hasil Peminatan Bimbingan Karier</h3>
+                </div>
+                <span class="px-2.5 py-0.5 rounded-full text-xs font-black {{ $session->career_path === 'KULIAH' ? 'bg-sky-600 text-white' : 'bg-emerald-600 text-white' }}">
+                    {{ $session->career_path === 'KULIAH' ? '🏛️ RENCANA STUDI LANJUT (KULIAH)' : '💼 RENCANA BEKERJA / WIRAUSAHA' }}
+                </span>
+            </div>
+
+            @if($session->career_path === 'KULIAH')
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+                <div class="p-3 rounded-xl bg-white/80 dark:bg-slate-800/80 border border-sky-100 dark:border-sky-900/40">
+                    <span class="text-[10px] text-slate-500 dark:text-slate-400 block font-semibold mb-0.5">Jalur Masuk Kuliah</span>
+                    <span class="text-sm font-black text-sky-700 dark:text-sky-300">{{ $session->study_admission_track ?: 'Belum ditentukan' }}</span>
+                </div>
+                <div class="p-3 rounded-xl bg-white/80 dark:bg-slate-800/80 border border-sky-100 dark:border-sky-900/40">
+                    <span class="text-[10px] text-slate-500 dark:text-slate-400 block font-semibold mb-0.5">Perguruan Tinggi Target</span>
+                    <span class="text-sm font-bold text-slate-900 dark:text-white">{{ $session->campus_name ?: '-' }}</span>
+                </div>
+                <div class="p-3 rounded-xl bg-white/80 dark:bg-slate-800/80 border border-sky-100 dark:border-sky-900/40">
+                    <span class="text-[10px] text-slate-500 dark:text-slate-400 block font-semibold mb-0.5">Program Studi / Jurusan</span>
+                    <span class="text-sm font-bold text-indigo-700 dark:text-indigo-300">{{ $session->study_program ?: '-' }}</span>
+                </div>
+            </div>
+            @elseif($session->career_path === 'BEKERJA')
+            <div class="p-3 rounded-xl bg-white/80 dark:bg-slate-800/80 border border-sky-100 dark:border-sky-900/40">
+                <span class="text-[10px] text-slate-500 dark:text-slate-400 block font-semibold mb-0.5">Bidang Pekerjaan / Perusahaan yang Diminati</span>
+                <span class="text-sm font-bold text-slate-900 dark:text-white">{{ $session->work_field ?: 'Pencarian lowongan kerja / wirausaha mandiri' }}</span>
+            </div>
+            @endif
+        </div>
+        @endif
+
         <!-- Problem Description -->
         <div>
             <h3 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Deskripsi Masalah / Latar Belakang Konseling</h3>
@@ -110,15 +147,39 @@
         </div>
         @endif
 
-        <!-- Follow-up Plan -->
-        @if($session->follow_up_plan)
-        <div>
-            <h3 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Rencana Tindak Lanjut (RTL)</h3>
-            <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 text-xs leading-relaxed text-slate-800 dark:text-slate-200 whitespace-pre-line">
-                {{ $session->follow_up_plan }}
+        <!-- Follow-up Plan & Tanggal RTL -->
+        <div class="p-4 rounded-2xl bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/50 space-y-3">
+            <div class="flex items-center justify-between flex-wrap gap-2">
+                <div class="flex items-center gap-2">
+                    <span class="text-base">📅</span>
+                    <h3 class="text-xs font-bold text-amber-950 dark:text-amber-200 uppercase tracking-wider">Rencana Tindak Lanjut (RTL) & Pertemuan Lanjutan</h3>
+                </div>
+                @if($session->follow_up_date)
+                    <div class="flex items-center gap-2">
+                        <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 dark:bg-amber-900/60 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-700 flex items-center gap-1">
+                            <span>Jadwal RTL:</span>
+                            <strong class="underline">{{ \Carbon\Carbon::parse($session->follow_up_date)->translatedFormat('l, d F Y') }}</strong>
+                        </span>
+                        <span class="px-2 py-0.5 rounded text-[10px] font-extrabold {{ $session->follow_up_status === 'SELESAI' ? 'bg-emerald-600 text-white' : 'bg-rose-600 text-white animate-pulse' }}">
+                            {{ $session->follow_up_status === 'SELESAI' ? 'TERLAKSANA' : 'MENUNGGU PERTEMUAN' }}
+                        </span>
+                    </div>
+                @endif
             </div>
+
+            @if($session->follow_up_plan)
+                <div class="p-3 rounded-xl bg-white/80 dark:bg-slate-800/80 border border-amber-100 dark:border-amber-900/30 text-xs leading-relaxed text-slate-800 dark:text-slate-200 whitespace-pre-line">
+                    {{ $session->follow_up_plan }}
+                </div>
+            @endif
+
+            @if($session->follow_up_date)
+                <div class="text-[11px] text-amber-700 dark:text-amber-400 flex items-center gap-1.5 pt-1 border-t border-amber-200/50 dark:border-amber-900/30">
+                    <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+                    Notifikasi pengingat sesi ini telah dikirimkan ke akun Koordinator BK dan Guru BK.
+                </div>
+            @endif
         </div>
-        @endif
     </div>
 </div>
 @endsection

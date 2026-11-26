@@ -397,6 +397,58 @@
         </div>
     </div>
 
+    <!-- Pengingat Rencana Tindak Lanjut (RTL) Konseling Mendatang -->
+    @if(isset($upcomingRtlSessions) && $upcomingRtlSessions->isNotEmpty())
+    <div class="rounded-3xl bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-rose-500/10 border border-amber-200 dark:border-amber-900/40 p-5 shadow-xs">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+            <div class="flex items-center gap-2.5">
+                <span class="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-700 dark:text-amber-400 flex items-center justify-center font-bold">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                </span>
+                <div>
+                    <h3 class="font-bold text-slate-900 dark:text-white text-sm flex items-center gap-2">
+                        <span>Agenda Pertemuan Tindak Lanjut (RTL) Konseling</span>
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-amber-500 text-white">{{ $upcomingRtlSessions->count() }} Agenda</span>
+                    </h3>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Jadwal pertemuan evaluasi tindak lanjut dengan peserta didik yang telah disepakati pada sesi konseling</p>
+                </div>
+            </div>
+            <a href="{{ route('bk.counseling.index') }}" class="text-xs font-bold text-amber-700 dark:text-amber-400 hover:underline shrink-0">Buka Semua Sesi &rarr;</a>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            @foreach($upcomingRtlSessions as $rtl)
+            @php
+                $rtlDate = \Carbon\Carbon::parse($rtl->follow_up_date);
+                $isToday = $rtlDate->isToday();
+                $isTomorrow = $rtlDate->isTomorrow();
+                $daysDiff = (int) now()->startOfDay()->diffInDays($rtlDate->startOfDay(), false);
+                $badgeColor = $isToday ? 'bg-rose-500 text-white animate-pulse' : ($isTomorrow ? 'bg-amber-500 text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200');
+                $dayLabel = $isToday ? 'HARI INI' : ($isTomorrow ? 'BESOK' : ($daysDiff > 0 ? 'H-' . $daysDiff : 'Lewat'));
+            @endphp
+            <div class="p-3.5 rounded-2xl bg-white dark:bg-slate-900 border border-amber-200/60 dark:border-amber-900/40 shadow-xs hover:border-amber-400 transition flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between gap-2 mb-2">
+                        <span class="px-2 py-0.5 rounded-md text-[10px] font-black {{ $badgeColor }}">
+                            {{ $dayLabel }} &bull; {{ $rtlDate->translatedFormat('d M Y') }}
+                        </span>
+                        <span class="text-[10px] font-mono text-slate-400">{{ $rtl->session_code }}</span>
+                    </div>
+                    <h4 class="font-bold text-xs text-slate-900 dark:text-white line-clamp-1">{{ $rtl->student?->name ?? 'Siswa' }}</h4>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400">{{ $rtl->student?->schoolClass?->name ?? 'Kelas -' }} &bull; Guru BK: {{ $rtl->counselor?->name ?? 'Guru BK' }}</p>
+                    <p class="text-xs text-slate-600 dark:text-slate-300 mt-2 bg-slate-50 dark:bg-slate-800/80 p-2 rounded-xl text-[11px] line-clamp-2 border border-slate-100 dark:border-slate-800">
+                        <span class="font-bold text-slate-800 dark:text-slate-200">RTL:</span> {{ $rtl->follow_up_plan ?: 'Evaluasi komitmen hasil konseling' }}
+                    </p>
+                </div>
+                <div class="mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                    <span class="text-[10px] text-slate-400">Bidang: {{ $rtl->field_of_service }}</span>
+                    <a href="{{ route('bk.counseling.show', $rtl) }}" class="text-xs font-bold text-teal-600 dark:text-teal-400 hover:underline">Detail Sesi &rarr;</a>
+                </div>
+            </div>
+            @endforeach
+        </div>
+    </div>
+    @endif
+
     <!-- Sesi Konseling & Hasil Psikotes Terkini -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Sesi Konseling Terkini -->

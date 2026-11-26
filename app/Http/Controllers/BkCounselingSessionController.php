@@ -3,9 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\BkCounselingSession;
+use App\Models\Notification;
 use App\Models\SchoolClass;
 use App\Models\SchoolIdentity;
 use App\Models\Student;
+use App\Models\Teacher;
+use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -33,6 +37,10 @@ class BkCounselingSessionController extends Controller
             $query->where('field_of_service', $request->field_of_service);
         }
 
+        if ($request->filled('career_path')) {
+            $query->where('career_path', $request->career_path);
+        }
+
         if ($request->filled('session_type')) {
             $query->where('session_type', $request->session_type);
         }
@@ -41,18 +49,43 @@ class BkCounselingSessionController extends Controller
             $query->where('status', $request->status);
         }
 
+        if ($request->filled('class_id')) {
+            $query->whereHas('student', fn ($sq) => $sq->where('class_id', $request->class_id));
+        }
+
+        if ($request->filled('date_from')) {
+            $query->whereDate('date', '>=', $request->date_from);
+        }
+
+        if ($request->filled('date_to')) {
+            $query->whereDate('date', '<=', $request->date_to);
+        }
+
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('topic', 'like', "%{$search}%")
                     ->orWhere('session_code', 'like', "%{$search}%")
+                    ->orWhere('campus_name', 'like', "%{$search}%")
+                    ->orWhere('study_program', 'like', "%{$search}%")
+                    ->orWhere('work_field', 'like', "%{$search}%")
                     ->orWhereHas('student', fn ($sq) => $sq->where('name', 'like', "%{$search}%")->orWhere('nisn', 'like', "%{$search}%"));
             });
         }
 
         $sessions = $query->paginate(15)->withQueryString();
+        $classes = SchoolClass::orderBy('name')->get();
 
-        return view('bk.counseling.index', compact('sessions'));
+        // Statistik Cepat untuk Baris Header
+        $summary = [
+            'total' => BkCounselingSession::count(),
+            'career' => BkCounselingSession::where('field_of_service', 'KARIER')->count(),
+            'college' => BkCounselingSession::where('field_of_service', 'KARIER')->where('career_path', 'KULIAH')->count(),
+            'work' => BkCounselingSession::where('field_of_service', 'KARIER')->where('career_path', 'BEKERJA')->count(),
+            'upcoming_rtl' => BkCounselingSession::whereNotNull('follow_up_date')->whereDate('follow_up_date', '>=', Carbon::today())->count(),
+        ];
+
+        return view('bk.counseling.index', compact('sessions', 'classes', 'summary'));
     }
 
     public function create(Request $request): View
@@ -70,6 +103,11 @@ class BkCounselingSessionController extends Controller
             'student_id' => ['required', 'exists:students,id'],
             'session_type' => ['required', 'in:INDIVIDUAL,KELOMPOK,KLASIKAL,MEDIASI,KONFERENSI_KASUS,KOLABORASI,REFERRAL'],
             'field_of_service' => ['required', 'in:PRIBADI,SOSIAL,BELAJAR,KARIER'],
+            'career_path' => ['nullable', 'string', 'in:KULIAH,BEKERJA'],
+            'study_admission_track' => ['nullable', 'string', 'max:50'],
+            'campus_name' => ['nullable', 'string', 'max:191'],
+            'study_program' => ['nullable', 'string', 'max:191'],
+            'work_field' => ['nullable', 'string', 'max:191'],
             'service_category' => ['required', 'in:LAYANAN_DASAR,LAYANAN_RESPONSIF,PERENCANAAN_INDIVIDUAL,DUKUNGAN_SISTEM'],
             'date' => ['required', 'date'],
             'start_time' => ['nullable'],
@@ -80,9 +118,26 @@ class BkCounselingSessionController extends Controller
             'counseling_approach' => ['nullable', 'string', 'max:255'],
             'agreement_result' => ['nullable', 'string'],
             'follow_up_plan' => ['nullable', 'string'],
+            'follow_up_date' => ['nullable', 'date'],
+            'follow_up_status' => ['nullable', 'string', 'in:PENDING,SELESAI'],
             'status' => ['required', 'in:TERJADWAL,SEDANG_BERLANGSUNG,SELESAI,DIRUJUK'],
             'is_confidential' => ['nullable', 'boolean'],
         ]);
+
+        // Sanitasi field peminatan karier sesuai pilihan
+        if ($validated['field_of_service'] !== 'KARIER') {
+            $validated['career_path'] = null;
+            $validated['study_admission_track'] = null;
+            $validated['campus_name'] = null;
+            $validated['study_program'] = null;
+            $validated['work_field'] = null;
+        } elseif (($validated['career_path'] ?? null) === 'KULIAH') {
+            $validated['work_field'] = null;
+        } elseif (($validated['career_path'] ?? null) === 'BEKERJA') {
+            $validated['study_admission_track'] = null;
+            $validated['campus_name'] = null;
+            $validated['study_program'] = null;
+        }
 
         $sessionCode = 'BK-'.date('Ym').'-'.strtoupper(Str::random(5));
         while (BkCounselingSession::where('session_code', $sessionCode)->exists()) {
@@ -95,7 +150,13 @@ class BkCounselingSessionController extends Controller
             'counselor_id' => Auth::id(),
             'place' => (! empty($validated['place'])) ? $validated['place'] : 'Ruang Bimbingan Konseling',
             'is_confidential' => $request->boolean('is_confidential', true),
+            'follow_up_status' => $validated['follow_up_status'] ?? 'PENDING',
         ]);
+
+        // Kirim Notifikasi RTL ke Koordinator BK dan Guru BK jika tanggal pertemuan diisi
+        if (! empty($session->follow_up_date)) {
+            $this->sendFollowUpNotifications($session);
+        }
 
         return redirect()->route('bk.counseling.show', $session)
             ->with('success', "Sesi Bimbingan & Konseling [{$session->session_code}] berhasil dicatat.");
@@ -120,9 +181,10 @@ class BkCounselingSessionController extends Controller
     public function edit(BkCounselingSession $session): View
     {
         $session->load(['student.schoolClass']);
+        $classes = SchoolClass::with('students')->orderBy('name')->get();
         $students = Student::where('is_active', true)->orderBy('name')->get();
 
-        return view('bk.counseling.edit', compact('session', 'students'));
+        return view('bk.counseling.edit', compact('session', 'classes', 'students'));
     }
 
     public function update(Request $request, BkCounselingSession $session): RedirectResponse
@@ -130,6 +192,11 @@ class BkCounselingSessionController extends Controller
         $validated = $request->validate([
             'session_type' => ['required', 'in:INDIVIDUAL,KELOMPOK,KLASIKAL,MEDIASI,KONFERENSI_KASUS,KOLABORASI,REFERRAL'],
             'field_of_service' => ['required', 'in:PRIBADI,SOSIAL,BELAJAR,KARIER'],
+            'career_path' => ['nullable', 'string', 'in:KULIAH,BEKERJA'],
+            'study_admission_track' => ['nullable', 'string', 'max:50'],
+            'campus_name' => ['nullable', 'string', 'max:191'],
+            'study_program' => ['nullable', 'string', 'max:191'],
+            'work_field' => ['nullable', 'string', 'max:191'],
             'service_category' => ['required', 'in:LAYANAN_DASAR,LAYANAN_RESPONSIF,PERENCANAAN_INDIVIDUAL,DUKUNGAN_SISTEM'],
             'date' => ['required', 'date'],
             'start_time' => ['nullable'],
@@ -140,14 +207,37 @@ class BkCounselingSessionController extends Controller
             'counseling_approach' => ['nullable', 'string', 'max:255'],
             'agreement_result' => ['nullable', 'string'],
             'follow_up_plan' => ['nullable', 'string'],
+            'follow_up_date' => ['nullable', 'date'],
+            'follow_up_status' => ['nullable', 'string', 'in:PENDING,SELESAI'],
             'status' => ['required', 'in:TERJADWAL,SEDANG_BERLANGSUNG,SELESAI,DIRUJUK'],
             'is_confidential' => ['nullable', 'boolean'],
         ]);
+
+        if ($validated['field_of_service'] !== 'KARIER') {
+            $validated['career_path'] = null;
+            $validated['study_admission_track'] = null;
+            $validated['campus_name'] = null;
+            $validated['study_program'] = null;
+            $validated['work_field'] = null;
+        } elseif (($validated['career_path'] ?? null) === 'KULIAH') {
+            $validated['work_field'] = null;
+        } elseif (($validated['career_path'] ?? null) === 'BEKERJA') {
+            $validated['study_admission_track'] = null;
+            $validated['campus_name'] = null;
+            $validated['study_program'] = null;
+        }
+
+        $previousFollowUpDate = $session->follow_up_date?->toDateString();
 
         $session->update([
             ...$validated,
             'is_confidential' => $request->boolean('is_confidential', true),
         ]);
+
+        // Kirim notifikasi jika tanggal RTL baru ditentukan atau berubah
+        if (! empty($session->follow_up_date) && $session->follow_up_date->toDateString() !== $previousFollowUpDate) {
+            $this->sendFollowUpNotifications($session);
+        }
 
         return redirect()->route('bk.counseling.show', $session)
             ->with('success', 'Catatan sesi bimbingan konseling berhasil diperbarui.');
@@ -167,5 +257,126 @@ class BkCounselingSessionController extends Controller
         $school = SchoolIdentity::first();
 
         return view('bk.counseling.print', compact('session', 'school'));
+    }
+
+    /**
+     * Cetak Rekapitulasi Layanan Konseling (Keseluruhan atau Custom Filter)
+     */
+    public function printRecap(Request $request): View
+    {
+        $user = Auth::user();
+        $isHomeroomOnly = $user && $user->hasRole('wali_kelas') && ! $user->hasAnyRole(['admin', 'super_admin', 'koordinator_bk', 'guru_bk', 'bk', 'kepala_sekolah']);
+
+        $query = BkCounselingSession::with(['student.schoolClass', 'counselor'])
+            ->orderBy('date', $request->query('sort', 'asc'));
+
+        if ($isHomeroomOnly) {
+            $homeroomClass = $user->teacher?->homeroomClass ?? $user->getHomeroomClasses()->first();
+            if ($homeroomClass) {
+                $query->whereHas('student', fn ($sq) => $sq->where('class_id', $homeroomClass->id));
+            }
+        }
+
+        $filters = [
+            'field_of_service' => $request->query('field_of_service'),
+            'career_path' => $request->query('career_path'),
+            'session_type' => $request->query('session_type'),
+            'status' => $request->query('status'),
+            'class_id' => $request->query('class_id'),
+            'date_from' => $request->query('date_from'),
+            'date_to' => $request->query('date_to'),
+            'paper_size' => in_array($request->query('paper_size'), ['A4', 'F4']) ? $request->query('paper_size') : 'A4',
+        ];
+
+        if (! empty($filters['field_of_service'])) {
+            $query->where('field_of_service', $filters['field_of_service']);
+        }
+
+        if (! empty($filters['career_path'])) {
+            $query->where('career_path', $filters['career_path']);
+        }
+
+        if (! empty($filters['session_type'])) {
+            $query->where('session_type', $filters['session_type']);
+        }
+
+        if (! empty($filters['status'])) {
+            $query->where('status', $filters['status']);
+        }
+
+        if (! empty($filters['class_id'])) {
+            $query->whereHas('student', fn ($sq) => $sq->where('class_id', $filters['class_id']));
+        }
+
+        if (! empty($filters['date_from'])) {
+            $query->whereDate('date', '>=', $filters['date_from']);
+        }
+
+        if (! empty($filters['date_to'])) {
+            $query->whereDate('date', '<=', $filters['date_to']);
+        }
+
+        $sessions = $query->get();
+        $school = SchoolIdentity::first();
+        $headmaster = Teacher::getHeadmaster();
+        $bkCoordinator = Teacher::getBkCoordinator();
+        $selectedClass = ! empty($filters['class_id']) ? SchoolClass::find($filters['class_id']) : null;
+
+        // Statistik Ringkas Rekap
+        $stats = [
+            'total' => $sessions->count(),
+            'unique_students' => $sessions->pluck('student_id')->unique()->count(),
+            'pribadi' => $sessions->where('field_of_service', 'PRIBADI')->count(),
+            'sosial' => $sessions->where('field_of_service', 'SOSIAL')->count(),
+            'belajar' => $sessions->where('field_of_service', 'BELAJAR')->count(),
+            'karier' => $sessions->where('field_of_service', 'KARIER')->count(),
+            'kuliah' => $sessions->where('field_of_service', 'KARIER')->where('career_path', 'KULIAH')->count(),
+            'bekerja' => $sessions->where('field_of_service', 'KARIER')->where('career_path', 'BEKERJA')->count(),
+            'selesai' => $sessions->where('status', 'SELESAI')->count(),
+            'terjadwal' => $sessions->where('status', 'TERJADWAL')->count(),
+        ];
+
+        return view('bk.counseling.recap-print', compact('sessions', 'school', 'headmaster', 'bkCoordinator', 'filters', 'selectedClass', 'stats'));
+    }
+
+    /**
+     * Kirim Notifikasi RTL ke Koordinator BK dan Guru BK
+     */
+    protected function sendFollowUpNotifications(BkCounselingSession $session): void
+    {
+        if (empty($session->follow_up_date)) {
+            return;
+        }
+
+        $studentName = $session->student?->name ?? 'Siswa';
+        $className = $session->student?->schoolClass?->name ?? '-';
+        $formattedDate = Carbon::parse($session->follow_up_date)->translatedFormat('l, d F Y');
+
+        $title = "📅 Jadwal Pertemuan Tindak Lanjut (RTL) BK: {$studentName}";
+        $message = "Pertemuan lanjutan konseling untuk {$studentName} ({$className}) direncanakan pada {$formattedDate}. Topik: {$session->topic}.";
+        $linkUrl = route('bk.counseling.show', $session);
+
+        // Ambil akun Koordinator BK, Guru BK, dan Konselor yang bersangkutan
+        $bkUsers = User::where(function ($q) use ($session) {
+            $q->whereIn('role', ['koordinator_bk', 'guru_bk', 'bk'])
+                ->orWhereJsonContains('roles', 'koordinator_bk')
+                ->orWhereJsonContains('roles', 'guru_bk')
+                ->orWhereJsonContains('roles', 'bk');
+
+            if ($session->counselor_id) {
+                $q->orWhere('id', $session->counselor_id);
+            }
+        })->get()->unique('id');
+
+        foreach ($bkUsers as $user) {
+            Notification::create([
+                'user_id' => $user->id,
+                'title' => $title,
+                'message' => $message,
+                'type' => 'GUIDANCE',
+                'link_url' => $linkUrl,
+                'is_read' => false,
+            ]);
+        }
     }
 }

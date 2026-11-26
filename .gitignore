@@ -30,6 +30,7 @@ powershell.bat
 powershell.cmd
 powershell.exe
 *.zip
+*.rar
 /database/presensi_export.sql
 *.sql
 !database/database_hostinger.sql

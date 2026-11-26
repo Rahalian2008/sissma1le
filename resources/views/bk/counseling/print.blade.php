@@ -74,6 +74,19 @@
             <td>:</td>
             <td>{{ $session->topic }}</td>
         </tr>
+        @if($session->field_of_service === 'KARIER' && $session->career_path)
+        <tr>
+            <td>Peminatan Arah Karier</td>
+            <td>:</td>
+            <td>
+                @if($session->career_path === 'KULIAH')
+                    <strong>Kuliah Perguruan Tinggi</strong> (Jalur: {{ $session->study_admission_track ?: '-' }} | Kampus: {{ $session->campus_name ?: '-' }} | Prodi: {{ $session->study_program ?: '-' }})
+                @else
+                    <strong>Bekerja / Wirausaha</strong> (Bidang: {{ $session->work_field ?: '-' }})
+                @endif
+            </td>
+        </tr>
+        @endif
     </table>
 
     <!-- Ringkasan Uraian Konseling -->
@@ -94,10 +107,18 @@
         <p style="margin: 0; text-align: justify;">{{ $session->agreement_result ?: 'Siswa menyatakan komitmen untuk memperbaiki sikap, mematuhi tata tertib, dan melaksanakan jadwal bimbingan secara berkala.' }}</p>
     </div>
 
-    @if($session->follow_up_plan)
+    @if($session->follow_up_plan || $session->follow_up_date)
     <div class="section-box">
         <h5>4. Rencana Tindak Lanjut & Pemantauan (RTL)</h5>
-        <p style="margin: 0; text-align: justify;">{{ $session->follow_up_plan }}</p>
+        @if($session->follow_up_date)
+            <p style="margin: 0 0 6px 0; font-weight: bold;">
+                📅 Jadwal Pertemuan Lanjutan: {{ \Carbon\Carbon::parse($session->follow_up_date)->translatedFormat('l, d F Y') }}
+                <span style="font-size: 9pt; font-weight: normal; color: #444;">({{ $session->follow_up_status === 'SELESAI' ? 'Status: Terlaksana' : 'Status: Menunggu Pertemuan' }})</span>
+            </p>
+        @endif
+        @if($session->follow_up_plan)
+            <p style="margin: 0; text-align: justify;">{{ $session->follow_up_plan }}</p>
+        @endif
     </div>
     @endif
 

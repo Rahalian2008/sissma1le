@@ -335,6 +335,7 @@ Route::middleware('auth')->group(function () {
         Route::middleware('role:super_admin,admin,koordinator_bk,kepala_sekolah,wakasek_kesiswaan,guru_bk,bk')->group(function () {
             // Sesi Konseling
             Route::get('/konseling/create', [BkCounselingSessionController::class, 'create'])->name('counseling.create');
+            Route::get('/konseling/recap/print', [BkCounselingSessionController::class, 'printRecap'])->name('counseling.recap.print');
             Route::post('/konseling', [BkCounselingSessionController::class, 'store'])->name('counseling.store');
             Route::get('/konseling/{session}/edit', [BkCounselingSessionController::class, 'edit'])->name('counseling.edit');
             Route::put('/konseling/{session}', [BkCounselingSessionController::class, 'update'])->name('counseling.update');
