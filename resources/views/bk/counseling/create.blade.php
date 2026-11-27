@@ -114,19 +114,20 @@
                 <!-- Sub-Pilihan 1: Jika Memilih Kuliah (Multi Kampus & Prodi Target) -->
                 <div id="college_detail_group" class="hidden space-y-4 pt-3 border-t border-sky-100 dark:border-sky-900/30">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <!-- Pilihan Jalur Kuliah -->
+                        <!-- Pilihan Jalur Masuk Kuliah -->
                         <div>
                             <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                                Pilihan Jalur Masuk Kuliah *
+                                Jalur Penerimaan Masuk *
                             </label>
                             <select name="study_admission_track" id="study_admission_track" class="w-full text-xs rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 py-2.5 px-3 focus:ring-1 focus:ring-sky-500">
-                                <option value="">-- Pilih Jalur Masuk --</option>
-                                <option value="SNBP" {{ old('study_admission_track') == 'SNBP' ? 'selected' : '' }}>SNBP (Prestasi / Rapor)</option>
-                                <option value="SNBT" {{ old('study_admission_track') == 'SNBT' ? 'selected' : '' }}>SNBT (Tes UTBK SNPMB)</option>
-                                <option value="SPMB" {{ old('study_admission_track') == 'SPMB' ? 'selected' : '' }}>SPMB (Politeknik / Vokasi)</option>
-                                <option value="MANDIRI" {{ old('study_admission_track') == 'MANDIRI' ? 'selected' : '' }}>Seleksi Mandiri (PTN / PTS)</option>
-                                <option value="KEDINASAN" {{ old('study_admission_track') == 'KEDINASAN' ? 'selected' : '' }}>Sekolah Kedinasan</option>
-                                <option value="BEASISWA" {{ old('study_admission_track') == 'BEASISWA' ? 'selected' : '' }}>Beasiswa Penuh (KIP-K / Prestasi)</option>
+                                <option value="">-- Pilih Jalur --</option>
+                                <option value="SNBP (Prestasi / Rapor)" {{ in_array(old('study_admission_track'), ['SNBP', 'SNBP (Prestasi / Rapor)']) ? 'selected' : '' }}>SNBP (Prestasi / Rapor)</option>
+                                <option value="SNBT (UTBK / Tes)" {{ in_array(old('study_admission_track'), ['SNBT', 'SNBT (UTBK / Tes)', 'SNBT (Tes UTBK SNPMB)']) ? 'selected' : '' }}>SNBT (UTBK / Tes)</option>
+                                <option value="Jalur Mandiri PTN" {{ in_array(old('study_admission_track'), ['MANDIRI', 'Jalur Mandiri PTN', 'Seleksi Mandiri (PTN / PTS)']) ? 'selected' : '' }}>Jalur Mandiri PTN</option>
+                                <option value="PTS Reguler / Seleksi Rapor" {{ in_array(old('study_admission_track'), ['PTS Reguler / Seleksi Rapor']) ? 'selected' : '' }}>PTS Reguler / Seleksi Rapor</option>
+                                <option value="Beasiswa KIP-Kuliah" {{ in_array(old('study_admission_track'), ['BEASISWA', 'Beasiswa KIP-Kuliah', 'Beasiswa Penuh (KIP-K / Prestasi)']) ? 'selected' : '' }}>Beasiswa KIP-Kuliah</option>
+                                <option value="Beasiswa Swasta / Pemda" {{ in_array(old('study_admission_track'), ['Beasiswa Swasta / Pemda']) ? 'selected' : '' }}>Beasiswa Swasta / Pemda</option>
+                                <option value="Sekolah Kedinasan" {{ in_array(old('study_admission_track'), ['KEDINASAN', 'Sekolah Kedinasan']) ? 'selected' : '' }}>Sekolah Kedinasan</option>
                             </select>
                         </div>
                     </div>

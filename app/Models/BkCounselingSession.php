@@ -104,7 +104,9 @@ class BkCounselingSession extends Model
         if ($this->career_path === 'KULIAH') {
             $parts = [];
             if ($this->study_admission_track) {
-                $parts[] = 'Jalur '.$this->study_admission_track;
+                $parts[] = str_starts_with(strtolower($this->study_admission_track), 'jalur')
+                    ? $this->study_admission_track
+                    : 'Jalur '.$this->study_admission_track;
             }
             if (! empty($this->campus_choices) && is_array($this->campus_choices)) {
                 $choiceList = [];
