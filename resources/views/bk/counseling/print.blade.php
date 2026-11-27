@@ -326,12 +326,20 @@
             </td>
         </tr>
         <tr>
-            <td colspan="3" style="padding-top: 20px;">
+            <td style="width: 48%; padding-top: 25px;">
                 Mengetahui,<br>
-                Kepala SMAN 1 Lengkong
+                Kepala {{ $school->name ?? 'SMAN 1 Lengkong' }}
                 <div class="ttd-space"></div>
                 <strong><u>{{ $headmaster['name'] ?? 'Pian Sopian, S.Pd., MM.Pd.' }}</u></strong><br>
                 NIP. {{ $headmaster['nip'] ?? '198009132008011005' }}
+            </td>
+            <td style="width: 4%; padding-top: 25px;"></td>
+            <td style="width: 48%; padding-top: 25px;">
+                Mengetahui,<br>
+                Koordinator Bimbingan &amp; Konseling (BK)
+                <div class="ttd-space"></div>
+                <strong><u>{{ $bkCoordinator['name'] ?? 'Ida Marttin Maolidah SE, SP.,M.Pd.' }}</u></strong><br>
+                NIP. {{ !empty($bkCoordinator['nip']) && $bkCoordinator['nip'] !== '-' ? $bkCoordinator['nip'] : '-' }}
             </td>
         </tr>
     </table>

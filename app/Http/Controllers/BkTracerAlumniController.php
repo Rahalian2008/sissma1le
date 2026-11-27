@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\BkTracerAlumnus;
 use App\Models\SchoolIdentity;
 use App\Models\Student;
+use App\Models\Teacher;
 use App\Services\AuditTrailService;
 use App\Services\HigherEducationService;
 use Illuminate\Http\RedirectResponse;
@@ -263,6 +264,8 @@ class BkTracerAlumniController extends Controller
 
         $alumni = $query->get();
         $school = SchoolIdentity::first();
+        $headmaster = Teacher::getHeadmaster();
+        $bkCoordinator = Teacher::getBkCoordinator();
 
         // Statistik Khusus untuk Filter Cetak
         $total = $alumni->count();
@@ -278,6 +281,8 @@ class BkTracerAlumniController extends Controller
         return view('bk.tracer.print', compact(
             'alumni',
             'school',
+            'headmaster',
+            'bkCoordinator',
             'total',
             'kuliahCount',
             'kerjaCount',

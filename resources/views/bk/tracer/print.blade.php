@@ -185,15 +185,15 @@
                 Mengetahui,<br>
                 Kepala {{ $school->name ?? 'SMAN 1 Lengkong' }}
                 <br><br><br><br>
-                <strong><u>{{ $school->headmaster_name ?? 'Pian Sopian, S.Pd., M.M.Pd' }}</u></strong><br>
-                NIP. {{ $school->headmaster_nip ?? '198009132008011005' }}
+                <strong><u>{{ $headmaster['name'] ?? ($school->headmaster_name ?? 'Pian Sopian, S.Pd., MM.Pd.') }}</u></strong><br>
+                NIP. {{ $headmaster['nip'] ?? ($school->headmaster_nip ?? '198009132008011005') }}
             </td>
             <td>
                 Lengkong, {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}<br>
                 Koordinator Bimbingan Konseling (BK)
                 <br><br><br><br>
-                <strong><u>Rahmat Hidayat, S.Kom.</u></strong><br>
-                NIP. -
+                <strong><u>{{ $bkCoordinator['name'] ?? 'Ida Marttin Maolidah SE, SP.,M.Pd.' }}</u></strong><br>
+                NIP. {{ !empty($bkCoordinator['nip']) && $bkCoordinator['nip'] !== '-' ? $bkCoordinator['nip'] : '-' }}
             </td>
         </tr>
     </table>

@@ -249,15 +249,32 @@ class Teacher extends Model
      */
     public static function getBkCoordinator(): array
     {
+        $settingName = SchoolSetting::where('key', 'bk_coordinator_name')->value('value');
+        $settingNip = SchoolSetting::where('key', 'bk_coordinator_nip')->value('value');
+
         $user = User::where('role', 'koordinator_bk')
             ->orWhereJsonContains('roles', 'koordinator_bk')
             ->first();
 
+        $teacher = $user?->teacher;
+        if (! $teacher && ! $user) {
+            $teacher = self::where('is_active', true)
+                ->where(function ($q) {
+                    $q->where('title', 'like', '%Koordinator%BK%')
+                        ->orWhere('position', 'like', '%Koordinator%BK%')
+                        ->orWhere('additional_tasks', 'like', '%Koordinator%BK%');
+                })->first();
+            $user = $teacher?->user;
+        }
+
+        $name = $settingName ?: ($teacher?->formatted_name ?: ($teacher?->name ?? ($user?->name ?? 'Ida Marttin Maolidah SE, SP.,M.Pd.')));
+        $nip = $settingNip ?: ($teacher?->nip ?: ($user?->nip ?? ($user?->username ?? '197803102008012006')));
+
         return [
-            'name' => $user?->name ?? 'Koordinator BP/BK SMAN 1 Lengkong',
-            'nip' => $user?->nip ?? ($user?->username ?? ($user?->teacher?->nip ?? '-')),
+            'name' => $name,
+            'nip' => $nip ?: '-',
             'user' => $user,
-            'teacher' => $user?->teacher,
+            'teacher' => $teacher,
         ];
     }
 

@@ -288,4 +288,5 @@ test('bk print official renders berita acara with multi campus choices and pop-b
     $response->assertSee('Ruang Konseling Khusus', false);
     $response->assertSee('13:00', false);
     $response->assertSee('Kepala SMAN 1 Lengkong', false);
+    $response->assertSee('Koordinator Bimbingan &amp; Konseling (BK)', false);
 });

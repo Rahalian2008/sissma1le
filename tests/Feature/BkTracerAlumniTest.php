@@ -113,4 +113,6 @@ test('bk counselor can view tracer alumni index dashboard and print report', fun
     $printResponse->assertStatus(200);
     $printResponse->assertSee('LAPORAN HASIL PENELUSURAN TAMATAN (TRACER STUDY ALUMNI)', false);
     $printResponse->assertSee('Alumni Berprestasi', false);
+    $printResponse->assertSee('Koordinator Bimbingan Konseling (BK)', false);
+    $printResponse->assertDontSee('Rahmat Hidayat, S.Kom.', false);
 });
