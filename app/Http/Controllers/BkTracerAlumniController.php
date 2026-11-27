@@ -46,22 +46,31 @@ class BkTracerAlumniController extends Controller
             'email' => ['nullable', 'email', 'max:100'],
             'current_address' => ['nullable', 'string'],
             'current_city' => ['nullable', 'string', 'max:100'],
+            'high_school_major' => ['nullable', 'string', 'max:100'],
+            'study_funding_source' => ['nullable', 'string', 'max:100'],
 
-            'activity_status' => ['required', 'in:KULIAH,BEKERJA,WIRAUSAHA,KURSUS_PELATIHAN,MENCARI_KERJA'],
+            'activity_status' => ['required', 'in:KULIAH,BEKERJA,WIRAUSAHA,BELUM_MEMUNGKINKAN,MENCARI_KERJA,KURSUS_PELATIHAN'],
+            'work_type' => ['nullable', 'string', 'max:50'],
 
             // Kuliah
             'college_level' => ['nullable', 'string', 'max:30'],
             'campus_name' => ['nullable', 'string', 'max:191'],
             'study_program' => ['nullable', 'string', 'max:191'],
+            'college_start_date' => ['nullable', 'string', 'max:50'],
+            'college_funding_source' => ['nullable', 'string', 'max:100'],
             'admission_track' => ['nullable', 'string', 'max:50'],
             'major_alignment' => ['nullable', 'string', 'max:50'],
 
-            // Bekerja
+            // Bekerja & Transisi Dunia Kerja
             'company_name' => ['nullable', 'string', 'max:191'],
+            'company_type' => ['nullable', 'string', 'max:100'],
+            'company_location' => ['nullable', 'string', 'max:191'],
             'work_field' => ['nullable', 'string', 'max:100'],
             'job_position' => ['nullable', 'string', 'max:100'],
             'monthly_income_range' => ['nullable', 'string', 'max:50'],
             'job_waiting_time' => ['nullable', 'string', 'max:50'],
+            'job_search_start' => ['nullable', 'string', 'max:50'],
+            'job_search_method' => ['nullable', 'string', 'max:100'],
 
             // Wirausaha
             'business_name' => ['nullable', 'string', 'max:191'],
@@ -69,11 +78,29 @@ class BkTracerAlumniController extends Controller
             'business_revenue_range' => ['nullable', 'string', 'max:50'],
             'employee_count' => ['nullable', 'integer', 'min:0'],
 
-            // Evaluasi BK
+            // Relevansi Pendidikan & Evaluasi Kompetensi
+            'job_major_relevance' => ['nullable', 'string', 'max:50'],
+            'job_education_level_match' => ['nullable', 'string', 'max:50'],
+            'job_mismatch_reason' => ['nullable', 'string', 'max:191'],
+            'competencies' => ['nullable', 'array'],
+            'learning_methods' => ['nullable', 'array'],
+            'competencies_evaluation' => ['nullable', 'array'],
+            'learning_methods_evaluation' => ['nullable', 'array'],
+
+            // Evaluasi BK & Sekolah
             'bk_service_rating' => ['nullable', 'integer', 'min:1', 'max:5'],
             'bk_career_guidance_impact' => ['nullable', 'string'],
             'school_feedback' => ['nullable', 'string'],
+            'improvement_suggestions' => ['nullable', 'string'],
         ]);
+
+        if (! empty($validated['competencies']) && empty($validated['competencies_evaluation'])) {
+            $validated['competencies_evaluation'] = $validated['competencies'];
+        }
+        if (! empty($validated['learning_methods']) && empty($validated['learning_methods_evaluation'])) {
+            $validated['learning_methods_evaluation'] = $validated['learning_methods'];
+        }
+        unset($validated['competencies'], $validated['learning_methods']);
 
         // Coba tautkan dengan student_id jika NISN atau Nama cocok
         $matchedStudent = null;
@@ -139,6 +166,7 @@ class BkTracerAlumniController extends Controller
         $collegeCount = BkTracerAlumnus::where('activity_status', 'KULIAH')->count();
         $workCount = BkTracerAlumnus::where('activity_status', 'BEKERJA')->count();
         $businessCount = BkTracerAlumnus::where('activity_status', 'WIRAUSAHA')->count();
+        $notWorkingCount = BkTracerAlumnus::where('activity_status', 'BELUM_MEMUNGKINKAN')->count();
         $trainingCount = BkTracerAlumnus::where('activity_status', 'KURSUS_PELATIHAN')->count();
         $seekingCount = BkTracerAlumnus::where('activity_status', 'MENCARI_KERJA')->count();
 
@@ -160,6 +188,7 @@ class BkTracerAlumniController extends Controller
             'collegeCount',
             'workCount',
             'businessCount',
+            'notWorkingCount',
             'trainingCount',
             'seekingCount',
             'graduationYears'
@@ -203,25 +232,61 @@ class BkTracerAlumniController extends Controller
             'email' => ['nullable', 'email', 'max:100'],
             'current_address' => ['nullable', 'string'],
             'current_city' => ['nullable', 'string', 'max:100'],
-            'activity_status' => ['required', 'in:KULIAH,BEKERJA,WIRAUSAHA,KURSUS_PELATIHAN,MENCARI_KERJA'],
+            'high_school_major' => ['nullable', 'string', 'max:100'],
+            'study_funding_source' => ['nullable', 'string', 'max:100'],
+
+            'activity_status' => ['required', 'in:KULIAH,BEKERJA,WIRAUSAHA,BELUM_MEMUNGKINKAN,MENCARI_KERJA,KURSUS_PELATIHAN'],
+            'work_type' => ['nullable', 'string', 'max:50'],
+
+            // Kuliah
             'college_level' => ['nullable', 'string', 'max:30'],
             'campus_name' => ['nullable', 'string', 'max:191'],
             'study_program' => ['nullable', 'string', 'max:191'],
+            'college_start_date' => ['nullable', 'string', 'max:50'],
+            'college_funding_source' => ['nullable', 'string', 'max:100'],
             'admission_track' => ['nullable', 'string', 'max:50'],
             'major_alignment' => ['nullable', 'string', 'max:50'],
+
+            // Bekerja
             'company_name' => ['nullable', 'string', 'max:191'],
+            'company_type' => ['nullable', 'string', 'max:100'],
+            'company_location' => ['nullable', 'string', 'max:191'],
             'work_field' => ['nullable', 'string', 'max:100'],
             'job_position' => ['nullable', 'string', 'max:100'],
             'monthly_income_range' => ['nullable', 'string', 'max:50'],
             'job_waiting_time' => ['nullable', 'string', 'max:50'],
+            'job_search_start' => ['nullable', 'string', 'max:50'],
+            'job_search_method' => ['nullable', 'string', 'max:100'],
+
+            // Wirausaha
             'business_name' => ['nullable', 'string', 'max:191'],
             'business_field' => ['nullable', 'string', 'max:100'],
             'business_revenue_range' => ['nullable', 'string', 'max:50'],
             'employee_count' => ['nullable', 'integer', 'min:0'],
+
+            // Relevansi Pendidikan & Evaluasi Kompetensi
+            'job_major_relevance' => ['nullable', 'string', 'max:50'],
+            'job_education_level_match' => ['nullable', 'string', 'max:50'],
+            'job_mismatch_reason' => ['nullable', 'string', 'max:191'],
+            'competencies' => ['nullable', 'array'],
+            'learning_methods' => ['nullable', 'array'],
+            'competencies_evaluation' => ['nullable', 'array'],
+            'learning_methods_evaluation' => ['nullable', 'array'],
+
+            // Evaluasi BK & Sekolah
             'bk_service_rating' => ['nullable', 'integer', 'min:1', 'max:5'],
             'bk_career_guidance_impact' => ['nullable', 'string'],
             'school_feedback' => ['nullable', 'string'],
+            'improvement_suggestions' => ['nullable', 'string'],
         ]);
+
+        if (! empty($validated['competencies']) && empty($validated['competencies_evaluation'])) {
+            $validated['competencies_evaluation'] = $validated['competencies'];
+        }
+        if (! empty($validated['learning_methods']) && empty($validated['learning_methods_evaluation'])) {
+            $validated['learning_methods_evaluation'] = $validated['learning_methods'];
+        }
+        unset($validated['competencies'], $validated['learning_methods']);
 
         $tracer->update($validated);
 
@@ -272,6 +337,7 @@ class BkTracerAlumniController extends Controller
         $kuliahCount = $alumni->where('activity_status', 'KULIAH')->count();
         $kerjaCount = $alumni->where('activity_status', 'BEKERJA')->count();
         $wirausahaCount = $alumni->where('activity_status', 'WIRAUSAHA')->count();
+        $notWorkingCount = $alumni->where('activity_status', 'BELUM_MEMUNGKINKAN')->count();
         $kursusCount = $alumni->where('activity_status', 'KURSUS_PELATIHAN')->count();
         $mencariCount = $alumni->where('activity_status', 'MENCARI_KERJA')->count();
 
@@ -287,6 +353,7 @@ class BkTracerAlumniController extends Controller
             'kuliahCount',
             'kerjaCount',
             'wirausahaCount',
+            'notWorkingCount',
             'kursusCount',
             'mencariCount',
             'filterYear',

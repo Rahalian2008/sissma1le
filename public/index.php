@@ -8,12 +8,26 @@ define('LARAVEL_START', microtime(true));
 // Auto-invalidate stale route and config cache on shared hosting (Hostinger) after git updates
 $routeCacheFile = __DIR__.'/../bootstrap/cache/routes-v7.php';
 $routesWebFile = __DIR__.'/../routes/web.php';
-if (file_exists($routeCacheFile) && file_exists($routesWebFile) && filemtime($routeCacheFile) < filemtime($routesWebFile)) {
-    @unlink($routeCacheFile);
+$reqUri = $_SERVER['REQUEST_URI'] ?? '';
+
+if (file_exists($routeCacheFile)) {
+    $isOlder = file_exists($routesWebFile) && filemtime($routeCacheFile) < filemtime($routesWebFile);
+    $isEmergency = str_contains($reqUri, 'artisan-optimize-clear') || str_contains($reqUri, 'clear_cache');
+    $contentCheck = false;
+    if (! $isOlder && ! $isEmergency && filesize($routeCacheFile) > 0) {
+        $sample = @file_get_contents($routeCacheFile, false, null, 0, 10000);
+        if ($sample !== false && (! str_contains($sample, 'pengaduan') || ! str_contains($sample, 'kiosk-tamu'))) {
+            $contentCheck = true;
+        }
+    }
+
+    if ($isOlder || $isEmergency || $contentCheck) {
+        @unlink($routeCacheFile);
+    }
 }
 
-// Emergency cache clearing trigger via browser (e.g. ?clear_cache=sma1le_refresh)
-if (isset($_GET['clear_cache']) && in_array($_GET['clear_cache'], ['1', 'true', 'sma1le_refresh'], true)) {
+// Emergency cache clearing trigger via browser (e.g. ?clear_cache=sma1le_refresh or /artisan-optimize-clear)
+if (isset($_GET['clear_cache']) || str_contains($reqUri, 'artisan-optimize-clear')) {
     @unlink(__DIR__.'/../bootstrap/cache/routes-v7.php');
     @unlink(__DIR__.'/../bootstrap/cache/config.php');
     @unlink(__DIR__.'/../bootstrap/cache/events.php');

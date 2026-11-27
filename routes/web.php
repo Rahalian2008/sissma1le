@@ -112,21 +112,42 @@ Route::get('/aspirasi', fn () => redirect()->route('complaints.create'));
 Route::get('/artisan-optimize-clear', function () {
     try {
         Artisan::call('optimize:clear');
+        $clearOutput = Artisan::output();
+
         Artisan::call('migrate', ['--force' => true]);
+        $migrateOutput = Artisan::output();
 
         return response("
-            <div style='font-family: sans-serif; max-width: 600px; margin: 40px auto; padding: 24px; border: 2px solid #10b981; border-radius: 16px; background: #ecfdf5; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);'>
-                <h2 style='color: #065f46; margin-top: 0;'>✓ Sukses! Cache Bersih &amp; Database Terupdate</h2>
-                <p style='color: #047857; font-size: 14px;'>Semua cache rute, template tampilan, dan konfigurasi server telah dibersihkan. Migrasi database telah berhasil dijalankan.</p>
-                <div style='margin-top: 20px; display: flex; gap: 10px;'>
-                    <a href='/' style='display: inline-block; padding: 10px 18px; background: #059669; color: #fff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 13px;'>Buka Beranda</a>
-                    <a href='/pengaduan' style='display: inline-block; padding: 10px 18px; background: #4f46e5; color: #fff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 13px;'>Buka Form Pengaduan</a>
-                    <a href='/admin/pengaduan' style='display: inline-block; padding: 10px 18px; background: #e11d48; color: #fff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 13px;'>Pusat Kontrol Kepsek</a>
+            <div style='font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif; max-width: 680px; margin: 40px auto; padding: 28px; border: 2px solid #10b981; border-radius: 20px; background: #ecfdf5; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);'>
+                <div style='display: flex; align-items: center; gap: 12px; margin-bottom: 12px;'>
+                    <div style='width: 44px; height: 44px; border-radius: 12px; background: #059669; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold;'>✓</div>
+                    <div>
+                        <h2 style='color: #065f46; margin: 0; font-size: 20px;'>Sukses! Cache Bersih &amp; Database Terupdate</h2>
+                        <span style='color: #047857; font-size: 12px;'>SMAN 1 Lengkong (SIS-SMA1LE Production Hostinger)</span>
+                    </div>
+                </div>
+                <p style='color: #047857; font-size: 13.5px; line-height: 1.5;'>Semua cache rute, template tampilan, dan konfigurasi server telah dibersihkan. Perintah migrasi database terbaru berhasil dijalankan.</p>
+
+                <div style='background: #064e3b; color: #a7f3d0; padding: 12px 16px; border-radius: 12px; font-family: monospace; font-size: 12px; margin: 16px 0; overflow-x: auto; max-height: 180px;'>
+                    <strong>[Migrate Output]:</strong><br>" . nl2br(e(trim($migrateOutput) ?: 'Tidak ada migrasi baru (Database sudah up to date).')) . "
+                </div>
+
+                <div style='margin-top: 24px; display: flex; flex-wrap: gap: 10px; gap: 10px;'>
+                    <a href='/' style='display: inline-block; padding: 10px 18px; background: #059669; color: #fff; text-decoration: none; border-radius: 10px; font-weight: bold; font-size: 13px;'>Buka Beranda</a>
+                    <a href='/pengaduan' style='display: inline-block; padding: 10px 18px; background: #4f46e5; color: #fff; text-decoration: none; border-radius: 10px; font-weight: bold; font-size: 13px;'>Kanal Pengaduan</a>
+                    <a href='/bk/konseling' style='display: inline-block; padding: 10px 18px; background: #0284c7; color: #fff; text-decoration: none; border-radius: 10px; font-weight: bold; font-size: 13px;'>Layanan BK Konseling</a>
+                    <a href='/bk/tracer' style='display: inline-block; padding: 10px 18px; background: #7c3aed; color: #fff; text-decoration: none; border-radius: 10px; font-weight: bold; font-size: 13px;'>Tracer Study</a>
+                    <a href='/admin/pengaduan' style='display: inline-block; padding: 10px 18px; background: #e11d48; color: #fff; text-decoration: none; border-radius: 10px; font-weight: bold; font-size: 13px;'>Pusat Kontrol Kepsek</a>
                 </div>
             </div>
         ", 200, ['Content-Type' => 'text/html']);
     } catch (Throwable $e) {
-        return response('Error: '.$e->getMessage(), 500);
+        return response("
+            <div style='font-family: sans-serif; max-width: 600px; margin: 40px auto; padding: 24px; border: 2px solid #ef4444; border-radius: 16px; background: #fef2f2;'>
+                <h3 style='color: #991b1b; margin-top: 0;'>Terjadi Kendala:</h3>
+                <p style='color: #b91c1c; font-size: 13px; font-family: monospace;'>" . e($e->getMessage()) . "</p>
+            </div>
+        ", 500, ['Content-Type' => 'text/html']);
     }
 });
 

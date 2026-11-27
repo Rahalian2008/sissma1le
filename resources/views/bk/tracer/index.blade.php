@@ -53,10 +53,11 @@
         $pctKuliah = round(($collegeCount / $total) * 100, 1);
         $pctKerja = round(($workCount / $total) * 100, 1);
         $pctWirausaha = round(($businessCount / $total) * 100, 1);
+        $pctNotWorking = round(($notWorkingCount / $total) * 100, 1);
         $pctTraining = round(($trainingCount / $total) * 100, 1);
         $pctSeeking = round(($seekingCount / $total) * 100, 1);
     @endphp
-    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+    <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
         <!-- Total Alumni -->
         <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs">
             <div class="flex items-center justify-between mb-2">
@@ -95,6 +96,16 @@
             </div>
             <div class="text-2xl font-black text-amber-600 dark:text-amber-400">{{ number_format($businessCount) }}</div>
             <span class="text-[10px] text-amber-500 font-bold">{{ $pctWirausaha }}% dari total</span>
+        </div>
+
+        <!-- Belum Memungkinkan Bekerja -->
+        <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-rose-200/80 dark:border-rose-900/50 shadow-xs">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-[11px] font-bold text-rose-600 dark:text-rose-400">Belum Kerja</span>
+                <span class="text-base">🏠</span>
+            </div>
+            <div class="text-2xl font-black text-rose-600 dark:text-rose-400">{{ number_format($notWorkingCount) }}</div>
+            <span class="text-[10px] text-rose-500 font-bold">{{ $pctNotWorking }}% (keluarga/lain)</span>
         </div>
 
         <!-- Kursus & Pelatihan -->
@@ -140,6 +151,7 @@
                     <option value="KULIAH" {{ request('activity_status') === 'KULIAH' ? 'selected' : '' }}>Kuliah / PT</option>
                     <option value="BEKERJA" {{ request('activity_status') === 'BEKERJA' ? 'selected' : '' }}>Bekerja</option>
                     <option value="WIRAUSAHA" {{ request('activity_status') === 'WIRAUSAHA' ? 'selected' : '' }}>Wirausaha</option>
+                    <option value="BELUM_MEMUNGKINKAN" {{ request('activity_status') === 'BELUM_MEMUNGKINKAN' ? 'selected' : '' }}>Belum Memungkinkan Bekerja</option>
                     <option value="KURSUS_PELATIHAN" {{ request('activity_status') === 'KURSUS_PELATIHAN' ? 'selected' : '' }}>Kursus / Pelatihan</option>
                     <option value="MENCARI_KERJA" {{ request('activity_status') === 'MENCARI_KERJA' ? 'selected' : '' }}>Mencari Kerja</option>
                 </select>
@@ -248,6 +260,10 @@
                                         Bidang: {{ $item->business_field }}
                                     </div>
                                 @endif
+                            @elseif($item->activity_status === 'BELUM_MEMUNGKINKAN')
+                                <div class="text-xs text-slate-500 dark:text-slate-400 italic mt-1">
+                                    Fokus keluarga / kondisi pribadi
+                                </div>
                             @endif
                         </td>
                         <td class="py-3 px-4">

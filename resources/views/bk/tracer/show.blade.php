@@ -12,7 +12,7 @@
             <div class="flex items-center gap-2 text-xs text-slate-500 mb-1">
                 <a href="{{ route('bk.tracer.index') }}" class="hover:text-indigo-600 font-medium">Tracer Alumni</a>
                 <span>/</span>
-                <span class="text-slate-800 dark:text-white font-bold">Detail Profil</span>
+                <span class="text-slate-800 dark:text-white font-bold">Detail Instrumen Standar</span>
             </div>
             <h1 class="text-2xl font-black text-slate-900 dark:text-white">{{ $tracer->full_name }}</h1>
             <p class="text-xs text-slate-400 mt-0.5">Tamatan Tahun {{ $tracer->graduation_year }} &bull; Diinput pada {{ $tracer->created_at->translatedFormat('d F Y, H:i') }} WIB</p>
@@ -42,7 +42,7 @@
                     {{ strtoupper(substr($tracer->full_name, 0, 2)) }}
                 </div>
                 <div>
-                    <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-2 flex-wrap">
                         <h2 class="text-lg font-black text-slate-900 dark:text-white">{{ $tracer->full_name }}</h2>
                         <span class="inline-block px-2.5 py-0.5 rounded-full text-[11px] font-bold {{ $tracer->activity_badge_class }}">
                             {{ $tracer->activity_status_label }}
@@ -50,6 +50,7 @@
                     </div>
                     <p class="text-xs text-slate-400 mt-0.5">
                         Lulus Tahun {{ $tracer->graduation_year }} &bull; Rombel: {{ $tracer->last_class ?? '-' }} &bull; {{ $tracer->gender === 'L' ? 'Laki-laki' : 'Perempuan' }}
+                        @if($tracer->high_school_major) &bull; <span class="font-semibold text-indigo-600 dark:text-indigo-400">{{ $tracer->high_school_major }}</span> @endif
                     </p>
                 </div>
             </div>
@@ -61,19 +62,26 @@
             @endif
         </div>
 
-        <!-- 3 Kolom Detail Informasi -->
+        <!-- 2 Kolom: Identitas Latar Belakang & Aktivitas Utama -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Kolom 1: Data Identitas & Kontak -->
+            <!-- 1. Identitas & Latar Belakang Alumni -->
             <div class="space-y-3">
-                <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Identitas &amp; Kontak</h3>
+                <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-indigo-500"></span>
+                    1. Identitas &amp; Latar Belakang Alumni
+                </h3>
                 <div class="bg-slate-50 dark:bg-slate-800/40 rounded-xl p-4 text-xs space-y-2.5">
                     <div class="flex justify-between">
-                        <span class="text-slate-500">NISN:</span>
-                        <span class="font-bold text-slate-800 dark:text-slate-200">{{ $tracer->nisn ?: '-' }}</span>
+                        <span class="text-slate-500">Peminatan / Jurusan SMA:</span>
+                        <span class="font-bold text-slate-800 dark:text-slate-200">{{ $tracer->high_school_major ?: '-' }}</span>
                     </div>
                     <div class="flex justify-between">
-                        <span class="text-slate-500">NIS Sekolah:</span>
-                        <span class="font-bold text-slate-800 dark:text-slate-200">{{ $tracer->nis ?: '-' }}</span>
+                        <span class="text-slate-500">Sumber Pembiayaan Sekolah:</span>
+                        <span class="font-bold text-slate-800 dark:text-slate-200">{{ $tracer->study_funding_source ?: 'Biaya sendiri / keluarga' }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-500">NISN / NIS:</span>
+                        <span class="font-bold text-slate-800 dark:text-slate-200">{{ $tracer->nisn ?: '-' }} / {{ $tracer->nis ?: '-' }}</span>
                     </div>
                     <div class="flex justify-between">
                         <span class="text-slate-500">WhatsApp / HP:</span>
@@ -84,31 +92,45 @@
                         <span class="font-bold text-slate-800 dark:text-slate-200">{{ $tracer->email ?: '-' }}</span>
                     </div>
                     <div class="flex justify-between">
-                        <span class="text-slate-500">Domisili Kota:</span>
+                        <span class="text-slate-500">Domisili Kota / Wilayah:</span>
                         <span class="font-bold text-slate-800 dark:text-slate-200">{{ $tracer->current_city ?: '-' }}</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Kolom 2: Aktivitas & Karier Saat Ini -->
+            <!-- 2. Status Kegiatan Saat Ini -->
             <div class="space-y-3">
-                <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Detail Aktivitas Pasca Lulus</h3>
+                <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                    2. Status Kegiatan Saat Ini
+                </h3>
                 <div class="bg-slate-50 dark:bg-slate-800/40 rounded-xl p-4 text-xs space-y-2.5">
+                    <div class="flex justify-between items-center">
+                        <span class="text-slate-500">Status Aktivitas:</span>
+                        <span class="px-2 py-0.5 rounded-full font-bold text-[11px] {{ $tracer->activity_badge_class }}">
+                            {{ $tracer->activity_status_label }}
+                        </span>
+                    </div>
+
                     @if($tracer->activity_status === 'KULIAH')
                         <div class="flex justify-between">
                             <span class="text-slate-500">Perguruan Tinggi:</span>
                             <span class="font-bold text-indigo-600 dark:text-indigo-400 text-right">{{ $tracer->campus_name ?: '-' }}</span>
                         </div>
                         <div class="flex justify-between">
-                            <span class="text-slate-500">Program Studi:</span>
+                            <span class="text-slate-500">Program Studi &amp; Jenjang:</span>
                             <span class="font-bold text-slate-800 dark:text-slate-200 text-right">{{ $tracer->study_program ?: '-' }} ({{ $tracer->college_level ?? 'S1' }})</span>
                         </div>
                         <div class="flex justify-between">
-                            <span class="text-slate-500">Jalur Masuk:</span>
+                            <span class="text-slate-500">Jalur Masuk Kuliah:</span>
                             <span class="font-bold text-slate-800 dark:text-slate-200">{{ $tracer->admission_track ?: '-' }}</span>
                         </div>
                         <div class="flex justify-between">
-                            <span class="text-slate-500">Keselarasan Minat:</span>
+                            <span class="text-slate-500">Mulai Masuk &amp; Biaya:</span>
+                            <span class="font-bold text-slate-800 dark:text-slate-200">{{ $tracer->college_start_date ?: '-' }} &bull; {{ $tracer->college_funding_source ?: 'Mandiri' }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-slate-500">Keselarasan Peminatan:</span>
                             <span class="font-bold text-slate-800 dark:text-slate-200 text-right">{{ $tracer->major_alignment ?: '-' }}</span>
                         </div>
                     @elseif($tracer->activity_status === 'BEKERJA')
@@ -117,20 +139,20 @@
                             <span class="font-bold text-emerald-600 dark:text-emerald-400 text-right">{{ $tracer->company_name ?: '-' }}</span>
                         </div>
                         <div class="flex justify-between">
-                            <span class="text-slate-500">Posisi / Jabatan:</span>
-                            <span class="font-bold text-slate-800 dark:text-slate-200">{{ $tracer->job_position ?: '-' }}</span>
+                            <span class="text-slate-500">Jenis Instansi:</span>
+                            <span class="font-bold text-slate-800 dark:text-slate-200">{{ $tracer->company_type ?: '-' }}</span>
                         </div>
                         <div class="flex justify-between">
-                            <span class="text-slate-500">Bidang Sektor:</span>
-                            <span class="font-bold text-slate-800 dark:text-slate-200">{{ $tracer->work_field ?: '-' }}</span>
+                            <span class="text-slate-500">Jabatan &amp; Sifat Kerja:</span>
+                            <span class="font-bold text-slate-800 dark:text-slate-200">{{ $tracer->job_position ?: '-' }} ({{ $tracer->work_type ?: 'Full Time' }})</span>
                         </div>
                         <div class="flex justify-between">
-                            <span class="text-slate-500">Masa Tunggu:</span>
-                            <span class="font-bold text-slate-800 dark:text-slate-200">{{ $tracer->job_waiting_time ?: '-' }}</span>
+                            <span class="text-slate-500">Lokasi Kantor:</span>
+                            <span class="font-bold text-slate-800 dark:text-slate-200">{{ $tracer->company_location ?: '-' }}</span>
                         </div>
                         <div class="flex justify-between">
-                            <span class="text-slate-500">Penghasilan:</span>
-                            <span class="font-bold text-slate-800 dark:text-slate-200">{{ $tracer->monthly_income_range ?: '-' }}</span>
+                            <span class="text-slate-500">Kisaran Take Home Pay:</span>
+                            <span class="font-bold text-emerald-600 dark:text-emerald-400">{{ $tracer->monthly_income_range ?: '-' }}</span>
                         </div>
                     @elseif($tracer->activity_status === 'WIRAUSAHA')
                         <div class="flex justify-between">
@@ -142,25 +164,124 @@
                             <span class="font-bold text-slate-800 dark:text-slate-200">{{ $tracer->business_field ?: '-' }}</span>
                         </div>
                         <div class="flex justify-between">
-                            <span class="text-slate-500">Estimasi Omzet:</span>
+                            <span class="text-slate-500">Estimasi Omzet Bulanan:</span>
                             <span class="font-bold text-slate-800 dark:text-slate-200">{{ $tracer->business_revenue_range ?: '-' }}</span>
                         </div>
                         <div class="flex justify-between">
-                            <span class="text-slate-500">Jumlah Tenaga Kerja:</span>
+                            <span class="text-slate-500">Jumlah Karyawan:</span>
                             <span class="font-bold text-slate-800 dark:text-slate-200">{{ $tracer->employee_count ?? 0 }} Orang</span>
+                        </div>
+                    @elseif($tracer->activity_status === 'BELUM_MEMUNGKINKAN')
+                        <div class="text-slate-600 dark:text-slate-300 italic py-2">
+                            Belum memungkinkan bekerja saat ini (misal: fokus mengurus keluarga, mempersiapkan diri, atau pertimbangan kesehatan).
                         </div>
                     @else
                         <div class="text-slate-500 italic py-2">
-                            Sedang dalam fase persiapan studi lanjut atau proses pencarian pekerjaan yang sesuai dengan minat dan keterampilan.
+                            Sedang dalam fase persiapan studi lanjut, kursus peningkatan kompetensi, atau proses seleksi pencarian pekerjaan.
                         </div>
                     @endif
                 </div>
             </div>
         </div>
 
-        <!-- Masukan & Dampak Layanan BK -->
-        @if($tracer->bk_career_guidance_impact || $tracer->school_feedback)
+        <!-- 3. Transisi ke Dunia Kerja (Khusus Bekerja & Wirausaha) -->
+        @if(in_array($tracer->activity_status, ['BEKERJA', 'WIRAUSAHA']))
+        <div class="mt-6 pt-5 border-t border-slate-100 dark:border-slate-800 space-y-3">
+            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                3. Transisi ke Dunia Kerja &amp; Relevansi Pendidikan
+            </h3>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40">
+                    <span class="text-slate-400 block text-[11px]">Kapan Mulai Mencari:</span>
+                    <span class="font-bold text-slate-800 dark:text-slate-200">{{ $tracer->job_search_start ?: '-' }}</span>
+                </div>
+                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40">
+                    <span class="text-slate-400 block text-[11px]">Masa Tunggu Dapat Kerja:</span>
+                    <span class="font-bold text-slate-800 dark:text-slate-200">{{ $tracer->job_waiting_time ?: '-' }}</span>
+                </div>
+                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40">
+                    <span class="text-slate-400 block text-[11px]">Cara Mendapatkan Kerja:</span>
+                    <span class="font-bold text-slate-800 dark:text-slate-200">{{ $tracer->job_search_method ?: '-' }}</span>
+                </div>
+                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40">
+                    <span class="text-slate-400 block text-[11px]">Keeratan Hubungan Bidang:</span>
+                    <span class="font-bold text-indigo-600 dark:text-indigo-400">{{ $tracer->job_major_relevance ?: '-' }}</span>
+                </div>
+                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40">
+                    <span class="text-slate-400 block text-[11px]">Kesesuaian Jenjang Pendidikan:</span>
+                    <span class="font-bold text-slate-800 dark:text-slate-200">{{ $tracer->job_education_level_match ?: '-' }}</span>
+                </div>
+                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40">
+                    <span class="text-slate-400 block text-[11px]">Alasan Ketidaksesuaian (Jika Ada):</span>
+                    <span class="font-bold text-slate-800 dark:text-slate-200">{{ $tracer->job_mismatch_reason ?: '-' }}</span>
+                </div>
+            </div>
+        </div>
+        @endif
+
+        <!-- 5. Penilaian 6 Kompetensi Lulusan (Skala 1 - 5) -->
+        <div class="mt-6 pt-5 border-t border-slate-100 dark:border-slate-800 space-y-3">
+            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-purple-500"></span>
+                5. Penilaian Kompetensi Lulusan (Standar Kemdikbudristek / DIKTI)
+            </h3>
+            @php
+                $stdCompetencies = \App\Models\BkTracerAlumnus::standardCompetencies();
+                $evalCompetencies = (array) ($tracer->competencies_evaluation ?? []);
+            @endphp
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                @foreach($stdCompetencies as $kKey => $kLabel)
+                    @php $score = (int) ($evalCompetencies[$kKey] ?? 0); @endphp
+                    <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-700/60">
+                        <div class="flex items-center justify-between mb-1.5">
+                            <span class="text-xs font-bold text-slate-800 dark:text-slate-200">{{ $kLabel }}</span>
+                            <span class="text-xs font-black text-amber-500">{{ $score > 0 ? $score . ' / 5 ⭐' : '-' }}</span>
+                        </div>
+                        <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2 overflow-hidden">
+                            <div class="bg-indigo-600 h-2 rounded-full" style="width: {{ $score * 20 }}%"></div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+
+        <!-- 6. Evaluasi 5 Metode Pembelajaran (Skala 1 - 5) -->
+        <div class="mt-6 pt-5 border-t border-slate-100 dark:border-slate-800 space-y-3">
+            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-teal-500"></span>
+                6. Evaluasi Penekanan Metode Pembelajaran
+            </h3>
+            @php
+                $stdMethods = \App\Models\BkTracerAlumnus::standardLearningMethods();
+                $evalMethods = (array) ($tracer->learning_methods_evaluation ?? []);
+            @endphp
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+                @foreach($stdMethods as $mKey => $mLabel)
+                    @php $mScore = (int) ($evalMethods[$mKey] ?? 0); @endphp
+                    <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-700/60 text-center">
+                        <span class="text-[11px] font-bold text-slate-700 dark:text-slate-300 block mb-1">{{ $mLabel }}</span>
+                        <div class="text-sm font-black text-teal-600 dark:text-teal-400">{{ $mScore > 0 ? $mScore . ' / 5' : '-' }}</div>
+                        <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-1.5 mt-1.5 overflow-hidden">
+                            <div class="bg-teal-500 h-1.5 rounded-full" style="width: {{ $mScore * 20 }}%"></div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+
+        <!-- Masukan, Saran Peningkatan Mutu & Dampak BK -->
+        @if($tracer->improvement_suggestions || $tracer->bk_career_guidance_impact || $tracer->school_feedback)
         <div class="mt-6 pt-5 border-t border-slate-100 dark:border-slate-800 space-y-4">
+            @if($tracer->improvement_suggestions)
+            <div>
+                <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Hal yang Paling Perlu Ditingkatkan di Sekolah</h4>
+                <div class="p-3.5 rounded-xl bg-indigo-50/60 dark:bg-indigo-950/30 text-xs text-indigo-950 dark:text-indigo-200 leading-relaxed font-medium">
+                    "{{ $tracer->improvement_suggestions }}"
+                </div>
+            </div>
+            @endif
+
             @if($tracer->bk_career_guidance_impact)
             <div>
                 <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Dampak Bimbingan Karier &amp; Konseling</h4>
@@ -172,7 +293,7 @@
 
             @if($tracer->school_feedback)
             <div>
-                <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Pesan &amp; Saran untuk Almamater</h4>
+                <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Pesan &amp; Saran Tambahan untuk Almamater</h4>
                 <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/40 text-xs text-slate-800 dark:text-slate-200 leading-relaxed italic">
                     "{{ $tracer->school_feedback }}"
                 </div>

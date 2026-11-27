@@ -62,6 +62,7 @@
         $pctK = round(($kuliahCount / $divisor) * 100, 1);
         $pctW = round(($kerjaCount / $divisor) * 100, 1);
         $pctU = round(($wirausahaCount / $divisor) * 100, 1);
+        $pctN = round(($notWorkingCount / $divisor) * 100, 1);
         $pctP = round(($kursusCount / $divisor) * 100, 1);
         $pctM = round(($mencariCount / $divisor) * 100, 1);
     @endphp
@@ -85,28 +86,35 @@
             </tr>
             <tr>
                 <td>2</td>
-                <td style="text-align: left; font-weight: bold;">Bekerja (Karyawan / ASN / TNI / Swasta)</td>
+                <td style="text-align: left; font-weight: bold;">Bekerja (Karyawan / ASN / Swasta)</td>
                 <td>{{ $kerjaCount }}</td>
                 <td>{{ $pctW }}%</td>
                 <td style="text-align: left;">Dunia Usaha dan Dunia Industri (DUDI)</td>
             </tr>
             <tr>
                 <td>3</td>
-                <td style="text-align: left; font-weight: bold;">Wirausaha / Bisnis Mandiri</td>
+                <td style="text-align: left; font-weight: bold;">Wiraswasta / Bisnis Mandiri</td>
                 <td>{{ $wirausahaCount }}</td>
                 <td>{{ $pctU }}%</td>
                 <td style="text-align: left;">Pengusaha Muda, Startup, Freelance</td>
             </tr>
             <tr>
                 <td>4</td>
-                <td style="text-align: left; font-weight: bold;">Kursus / Pelatihan / Magang LN</td>
+                <td style="text-align: left; font-weight: bold;">Belum Memungkinkan Bekerja</td>
+                <td>{{ $notWorkingCount }}</td>
+                <td>{{ $pctN }}%</td>
+                <td style="text-align: left;">Fokus Keluarga / Kondisi Pribadi</td>
+            </tr>
+            <tr>
+                <td>5</td>
+                <td style="text-align: left; font-weight: bold;">Kursus / Pelatihan / Magang</td>
                 <td>{{ $kursusCount }}</td>
                 <td>{{ $pctP }}%</td>
                 <td style="text-align: left;">Peningkatan Keterampilan &amp; Vokasional</td>
             </tr>
             <tr>
-                <td>5</td>
-                <td style="text-align: left; font-weight: bold;">Sedang Mencari Kerja / Persiapan Studi</td>
+                <td>6</td>
+                <td style="text-align: left; font-weight: bold;">Sedang Mencari Kerja / Persiapan</td>
                 <td>{{ $mencariCount }}</td>
                 <td>{{ $pctM }}%</td>
                 <td style="text-align: left;">Persiapan UTBK / Seleksi Kerja</td>
@@ -159,8 +167,10 @@
                     @elseif($item->activity_status === 'WIRAUSAHA')
                         <strong>{{ $item->business_name }}</strong>
                         @if($item->business_field)<br>Bidang: {{ $item->business_field }}@endif
+                    @elseif($item->activity_status === 'BELUM_MEMUNGKINKAN')
+                        <span style="color: #666; font-style: italic;">Fokus keluarga / pribadi</span>
                     @else
-                        <span style="color: #666; font-style: italic;">Sedang persiapan</span>
+                        <span style="color: #666; font-style: italic;">Sedang persiapan / mencari kerja</span>
                     @endif
                 </td>
                 <td>
