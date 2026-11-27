@@ -12,6 +12,12 @@
             <span class="text-slate-800 dark:text-white font-bold">Profil 360° Siswa</span>
         </div>
         <div class="flex items-center gap-2">
+            <a href="{{ route('bk.students.buku-induk.print', $student->id) }}" target="_blank"
+               class="px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs transition flex items-center gap-1.5 shadow-sm shadow-blue-600/20"
+               title="Cetak Lembar Buku Induk Siswa Lengkap">
+                <svg class="w-3.5 h-3.5 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                <span>Cetak Buku Induk</span>
+            </a>
             <a href="{{ route('bk.psychological.holistic', $student->id) }}" class="px-3.5 py-1.5 rounded-xl bg-indigo-600 text-white font-bold text-xs hover:bg-indigo-700 transition flex items-center gap-1.5 shadow-sm shadow-indigo-600/20" title="Buka Grand Laporan Asesmen Psikologis 360° AI">
                 <span>🧠 Grand Asesmen 360° AI</span>
             </a>

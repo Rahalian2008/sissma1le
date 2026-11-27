@@ -18,6 +18,7 @@ use App\Http\Controllers\BkPsychologicalTestController;
 use App\Http\Controllers\BkReferralController;
 use App\Http\Controllers\BkRplController;
 use App\Http\Controllers\BkSociometryController;
+use App\Http\Controllers\BkStudentController;
 use App\Http\Controllers\BkTracerAlumniController;
 use App\Http\Controllers\Cbt\CbtController;
 use App\Http\Controllers\Cbt\CbtStudentController;
@@ -348,7 +349,11 @@ Route::middleware('auth')->group(function () {
     Route::prefix('bk')->name('bk.')->group(function () {
         // Akses Terbuka / Khusus Peserta Didik & Guru Bina
         Route::get('/', [BkDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/siswa', [BkStudentController::class, 'index'])->name('students.index');
         Route::get('/siswa/{student}/360', [BkDashboardController::class, 'studentProfile360'])->name('student.profile360');
+        Route::get('/siswa/{student}/buku-induk', [BkStudentController::class, 'showBukuInduk'])->name('students.buku-induk.show');
+        Route::get('/siswa/{student}/buku-induk/cetak', [BkStudentController::class, 'printBukuInduk'])->name('students.buku-induk.print');
+        Route::get('/siswa/{student}/cetak-buku-induk', [BkStudentController::class, 'printBukuInduk'])->name('student.buku-induk.print');
 
         // Ruang Curhat & Konseling Online Siswa (Interaktif Chat Gaya WhatsApp)
         Route::get('/curhat', [BkCurhatController::class, 'index'])->name('curhat.index');

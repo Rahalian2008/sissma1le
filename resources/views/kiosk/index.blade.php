@@ -1402,7 +1402,17 @@
                     </div>
                 </div>
                 <div class="flex items-center gap-2">
-                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1.5 shadow-xs">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        <span><strong id="bkSessionsToday">{{ $data['bk']['sessions_today'] ?? 0 }}</strong> Sesi Hari Ini</span>
+                    </span>
+                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                        <span><strong id="bkTotalSessions">{{ $data['bk']['total_sessions'] ?? 0 }}</strong> Total Sesi</span>
+                    </span>
+                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-sky-500/20 text-sky-300 border border-sky-500/30">
+                        <span><strong id="bkCareerKuliah">{{ $data['bk']['career_kuliah_count'] ?? 0 }}</strong> Bimbingan PTN</span>
+                    </span>
+                    <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-white/10 text-white border border-white/10">
                         🤝 Ramah &bull; Aman &bull; Rahasia
                     </span>
                 </div>
@@ -1414,14 +1424,22 @@
                 <div class="lg:col-span-7 flex flex-col h-full min-h-0 gap-3">
                     <!-- 4 Bidang Layanan Utama BK Grid -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 shrink-0">
-                        @foreach($data['bk']['fields'] ?? [] as $bf)
+                        @foreach($data['bk']['fields'] ?? [] as $idx => $bf)
+                            @php
+                                $fLower = strtolower($bf['field'] ?? '');
+                                $badgeId = 'bkFieldCount_' . $idx;
+                                if (str_contains($fLower, 'pribadi')) $badgeId = 'bkFieldPribadiCount';
+                                elseif (str_contains($fLower, 'sosial')) $badgeId = 'bkFieldSosialCount';
+                                elseif (str_contains($fLower, 'belajar')) $badgeId = 'bkFieldBelajarCount';
+                                elseif (str_contains($fLower, 'karir') || str_contains($fLower, 'karier')) $badgeId = 'bkFieldKarirCount';
+                            @endphp
                             <div class="glass-panel p-3 rounded-2xl border border-white/5 space-y-1.5 hover:border-purple-500/40 transition">
                                 <div class="flex items-center justify-between">
                                     <div class="flex items-center gap-2">
                                         <span class="text-xl">{{ $bf['icon'] }}</span>
                                         <h3 class="text-xs font-black text-white">{{ $bf['field'] }}</h3>
                                     </div>
-                                    <span class="px-2 py-0.5 rounded-full text-[9px] font-mono font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                                    <span id="{{ $badgeId }}" class="px-2 py-0.5 rounded-full text-[9px] font-mono font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30">
                                         {{ $bf['count'] }} Sesi
                                     </span>
                                 </div>
@@ -1457,8 +1475,8 @@
                             </div>
                         </div>
                         <div class="p-2.5 rounded-xl bg-purple-950/40 border border-purple-500/20 text-purple-200 text-[10px] flex items-center justify-between shrink-0">
-                            <span>💬 Butuh konsultasi pribadi? Siswa dapat mengajukan sesi konsultasi tatap muka atau online melalui SIS-SMA1LE.</span>
-                            <span class="font-bold text-white shrink-0 ml-2">GRATIS &amp; RAHASIA</span>
+                            <span id="bkLiveSummary">💬 <strong>Layanan BK Aktif:</strong> Terdata <strong>{{ $data['bk']['sessions_today'] ?? 0 }} sesi</strong> hari ini &bull; <strong>{{ $data['bk']['career_kuliah_count'] ?? 0 }} siswa</strong> bimbingan masuk PTN/Kedinasan &bull; <strong>{{ $data['bk']['total_sessions'] ?? 0 }} total layanan</strong> tercatat.</span>
+                            <span class="font-bold text-emerald-400 shrink-0 ml-2 flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> LIVE REAL-TIME</span>
                         </div>
                     </div>
                 </div>
@@ -3721,6 +3739,37 @@
                     const gHours = document.getElementById('kioskGuestServiceHours');
                     if (gHours && d.guests.service_hours) {
                         gHours.textContent = d.guests.service_hours;
+                    }
+                }
+
+                // 10. Update Bimbingan & Konseling (BK) Real-Time
+                if (d.bk) {
+                    const sToday = document.getElementById('bkSessionsToday');
+                    const sTot = document.getElementById('bkTotalSessions');
+                    const cKuliah = document.getElementById('bkCareerKuliah');
+                    if (sToday) sToday.textContent = d.bk.sessions_today ?? 0;
+                    if (sTot) sTot.textContent = d.bk.total_sessions ?? 0;
+                    if (cKuliah) cKuliah.textContent = d.bk.career_kuliah_count ?? 0;
+
+                    if (Array.isArray(d.bk.fields)) {
+                        d.bk.fields.forEach(f => {
+                            const fieldName = (f.field || '').toLowerCase();
+                            let elId = null;
+                            if (fieldName.includes('pribadi')) elId = 'bkFieldPribadiCount';
+                            else if (fieldName.includes('sosial')) elId = 'bkFieldSosialCount';
+                            else if (fieldName.includes('belajar')) elId = 'bkFieldBelajarCount';
+                            else if (fieldName.includes('karir') || fieldName.includes('karier')) elId = 'bkFieldKarirCount';
+
+                            if (elId) {
+                                const countEl = document.getElementById(elId);
+                                if (countEl) countEl.textContent = `${f.count} Sesi`;
+                            }
+                        });
+                    }
+
+                    const liveSumm = document.getElementById('bkLiveSummary');
+                    if (liveSumm) {
+                        liveSumm.innerHTML = `💬 <strong>Layanan BK Aktif:</strong> Terdata <strong>${d.bk.sessions_today ?? 0} sesi</strong> hari ini &bull; <strong>${d.bk.career_kuliah_count ?? 0} siswa</strong> bimbingan masuk PTN/Kedinasan &bull; <strong>${d.bk.total_sessions ?? 0} total layanan</strong> tercatat.`;
                     }
                 }
 

@@ -1236,6 +1236,13 @@ class KioskController extends Controller
         $bkSessionsCount = 0;
         $bkSessionsToday = 0;
         $bkConsultationsCount = 0;
+        $bkConsultationsActive = 0;
+        $careerKuliahCount = 0;
+        $careerKerjaCount = 0;
+        $tracerTotal = 0;
+        $tracerKuliah = 0;
+        $tracerKerja = 0;
+        $recentActivities = collect();
         $bkFields = [
             ['field' => 'Bimbingan Pribadi', 'icon' => '🧘', 'desc' => 'Pengembangan karakter, kedisiplinan & pemahaman diri', 'count' => 0],
             ['field' => 'Bimbingan Sosial', 'icon' => '🤝', 'desc' => 'Hubungan pertemanan, anti-perundungan & adaptasi', 'count' => 0],
@@ -1248,13 +1255,38 @@ class KioskController extends Controller
             $bkSessionsCount = BkCounselingSession::count();
             $bkSessionsToday = BkCounselingSession::whereDate('date', $today)->count();
             $bkConsultationsCount = BkConsultation::count();
+            $bkConsultationsActive = BkConsultation::whereIn('status', ['MENUNGGU', 'PROSES', 'BERLANGSUNG', 'open', 'pending'])->count();
+
+            if (Schema::hasColumn('bk_counseling_sessions', 'career_path')) {
+                $careerKuliahCount = BkCounselingSession::where('career_path', 'KULIAH')->count();
+                $careerKerjaCount = BkCounselingSession::where('career_path', 'BEKERJA')->count();
+            }
+
+            if (class_exists(\App\Models\BkTracerAlumnus::class)) {
+                $tracerTotal = \App\Models\BkTracerAlumnus::count();
+                $tracerKuliah = \App\Models\BkTracerAlumnus::where('activity_status', 'KULIAH')->count();
+                $tracerKerja = \App\Models\BkTracerAlumnus::where('activity_status', 'BEKERJA')->count();
+            }
 
             $bkFields = [
                 ['field' => 'Bimbingan Pribadi', 'icon' => '🧘', 'desc' => 'Pengembangan karakter, kedisiplinan & pemahaman diri', 'count' => BkCounselingSession::where('field_of_service', 'like', '%pribadi%')->count()],
                 ['field' => 'Bimbingan Sosial', 'icon' => '🤝', 'desc' => 'Hubungan pertemanan, anti-perundungan & adaptasi', 'count' => BkCounselingSession::where('field_of_service', 'like', '%sosial%')->count()],
                 ['field' => 'Bimbingan Belajar', 'icon' => '📚', 'desc' => 'Strategi belajar efektif, motivasi & prestasi belajar', 'count' => BkCounselingSession::where('field_of_service', 'like', '%belajar%')->count()],
-                ['field' => 'Bimbingan Karir & Kuliah', 'icon' => '🎓', 'desc' => 'Jalur SNBP, SNBT, Kedinasan & peminatan vokasi', 'count' => BkCounselingSession::where('field_of_service', 'like', '%karir%')->count()],
+                ['field' => 'Bimbingan Karir & Kuliah', 'icon' => '🎓', 'desc' => 'Jalur SNBP, SNBT, Kedinasan & peminatan vokasi', 'count' => BkCounselingSession::where(fn ($q) => $q->where('field_of_service', 'like', '%karir%')->orWhere('field_of_service', 'like', '%karier%'))->count()],
             ];
+
+            $recentActivities = BkCounselingSession::with(['student.schoolClass'])
+                ->latest('date')
+                ->latest('id')
+                ->take(4)
+                ->get()
+                ->map(fn ($s) => [
+                    'class' => $s->student?->schoolClass?->name ?? 'Siswa',
+                    'field' => ucfirst(strtolower($s->field_of_service ?? 'Konseling')),
+                    'topic' => $s->topic ?? 'Bimbingan & Konseling Terpadu',
+                    'detail' => $s->career_target_university ? "Target: {$s->career_target_university}" : ($s->counseling_approach ?? 'Selesai'),
+                    'time' => $s->date ? Carbon::parse($s->date)->translatedFormat('d M') : '-',
+                ]);
 
             // 17. Koordinator BK & Tim Guru Bimbingan Konseling (BK)
             $bkCounselors = collect();
@@ -1592,8 +1624,15 @@ class KioskController extends Controller
                 'total_sessions' => $bkSessionsCount,
                 'sessions_today' => $bkSessionsToday,
                 'consultations_count' => $bkConsultationsCount,
+                'consultations_active' => $bkConsultationsActive,
+                'career_kuliah_count' => $careerKuliahCount,
+                'career_kerja_count' => $careerKerjaCount,
+                'tracer_total' => $tracerTotal,
+                'tracer_kuliah' => $tracerKuliah,
+                'tracer_kerja' => $tracerKerja,
                 'fields' => $bkFields,
                 'counselors' => $bkCounselors,
+                'recent_activities' => $recentActivities,
             ],
             'guests' => [
                 'total_today' => $guestsTotalToday,
