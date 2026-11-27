@@ -47,8 +47,10 @@ test('public alumni can view the tracer study questionnaire form', function () {
 
     $response->assertStatus(200);
     $response->assertSee('Kuesioner Tracer Study Alumni', false);
-    $response->assertSee('Identitas Diri Alumni', false);
-    $response->assertSee('Kuliah / Studi Lanjut', false);
+    $response->assertSee('Identitas &amp; Latar Belakang Alumni', false);
+    $response->assertSee('Melanjutkan Pendidikan (Kuliah)', false);
+    $response->assertSee('Tahun 2005', false);
+    $response->assertSee('Tahun 2026', false);
 });
 
 test('alumni can submit tracer study form and redirect to success page', function () {

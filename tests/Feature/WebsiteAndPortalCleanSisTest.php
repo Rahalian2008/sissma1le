@@ -75,7 +75,7 @@ test('website navigation drawer and footer reflect the exact 12-item ordered men
     $response->assertSee('Sambutan Kepala Sekolah');
     $response->assertSee('Profil Lembaga');
     $response->assertSee('Warta Sekolah');
-    $response->assertSee('Tenaga Pendidik & Kependidikan', false);
+    $response->assertSee('Guru, Staf TU & Satpam', false);
     $response->assertSee('Sarana & Lingkungan Belajar', false);
     $response->assertSee('Kalender Akademik');
     $response->assertSee('Minat, Bakat & Kepemimpinan', false);
@@ -92,5 +92,6 @@ test('website top announcement bar renders mobile-friendly text and theme-color 
     $response->assertStatus(200);
     $response->assertSee('name="theme-color"', false);
     $response->assertSee('viewport-fit=cover', false);
-    $response->assertSee('Terakreditasi A • NPSN:', false);
+    $response->assertSee('Akreditasi A', false);
+    $response->assertSee('NPSN:', false);
 });

@@ -25,7 +25,7 @@ class BkTracerAlumniController extends Controller
         $standardMajors = HigherEducationService::getAllStandardMajors();
 
         $currentYear = (int) date('Y');
-        $graduationYears = range($currentYear, $currentYear - 10);
+        $graduationYears = range($currentYear, 2005);
 
         return view('bk.tracer.public_form', compact('school', 'universities', 'standardMajors', 'graduationYears'));
     }
@@ -172,15 +172,15 @@ class BkTracerAlumniController extends Controller
 
         $alumni = $query->paginate(20)->withQueryString();
 
-        $graduationYears = BkTracerAlumnus::select('graduation_year')
+        $existingYears = BkTracerAlumnus::select('graduation_year')
             ->distinct()
-            ->orderByDesc('graduation_year')
             ->pluck('graduation_year')
+            ->filter()
             ->toArray();
 
-        if (empty($graduationYears)) {
-            $graduationYears = range((int) date('Y'), (int) date('Y') - 5);
-        }
+        $defaultRange = range((int) date('Y'), 2005);
+        $graduationYears = array_values(array_unique(array_merge($existingYears, $defaultRange)));
+        rsort($graduationYears);
 
         return view('bk.tracer.index', compact(
             'alumni',

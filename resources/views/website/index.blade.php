@@ -225,9 +225,9 @@
                         <span>📺 Kios TV</span>
                     </a>
 
-                    <!-- Bel Sekolah Kiosk Direct Link (Layar md+) -->
-                    <a href="{{ route('school_bell.index') }}" target="_blank" class="hidden md:inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-amber-400/15 hover:bg-amber-400/25 text-amber-300 font-bold text-[10px] sm:text-[11px] transition border border-amber-400/30 shadow-2xs whitespace-nowrap" title="Bel Sekolah Digital & Murottal 114 Surah">
-                        <span>🔔 Bel<span class="hidden xl:inline"> Sekolah</span></span>
+                    <!-- Bel Sekolah Kiosk Direct Link (Layar 2xl+) -->
+                    <a href="{{ route('school_bell.index') }}" target="_blank" class="hidden 2xl:inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-amber-400/15 hover:bg-amber-400/25 text-amber-300 font-bold text-[10px] sm:text-[11px] transition border border-amber-400/30 shadow-2xs whitespace-nowrap" title="Bel Sekolah Digital & Murottal 114 Surah">
+                        <span>🔔 Bel Sekolah</span>
                     </a>
 
                     <!-- Kios Tamu Resepsionis (Layar lg+) -->
@@ -301,36 +301,30 @@
                 </div>
             </a>
 
-            <!-- Desktop Center Navigation Pill Bar (Modifikasi Menarik, Estetik & Modern) -->
-            <nav class="hidden lg:flex items-center gap-1 xl:gap-2 px-3 py-1.5 rounded-full bg-slate-100/90 dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800/80 shadow-xs backdrop-blur-md">
-                <a href="#hero" class="px-3 py-1.5 rounded-full text-xs font-bold text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800 transition shadow-2xs whitespace-nowrap">
+            <!-- Desktop Center Navigation Pill Bar (Estetik, Proporsional, Tidak Berdesakan) -->
+            <nav class="hidden lg:flex items-center gap-1 xl:gap-1.5 px-2.5 xl:px-3 py-1.5 rounded-full bg-slate-100/90 dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800/80 shadow-xs backdrop-blur-md shrink-0">
+                <a href="#hero" class="px-2.5 xl:px-3 py-1.5 rounded-full text-[11px] xl:text-xs font-bold text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800 transition shadow-2xs whitespace-nowrap">
                     Beranda
                 </a>
-                <a href="#sambutan" class="px-3 py-1.5 rounded-full text-xs font-bold text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800 transition shadow-2xs whitespace-nowrap">
+                <a href="#sambutan" class="px-2.5 xl:px-3 py-1.5 rounded-full text-[11px] xl:text-xs font-bold text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800 transition shadow-2xs whitespace-nowrap">
                     Sambutan
                 </a>
-                <a href="#profil" class="px-3 py-1.5 rounded-full text-xs font-bold text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800 transition shadow-2xs whitespace-nowrap">
+                <a href="#profil" class="px-2.5 xl:px-3 py-1.5 rounded-full text-[11px] xl:text-xs font-bold text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800 transition shadow-2xs whitespace-nowrap">
                     Profil
                 </a>
-                <a href="#berita" class="px-3 py-1.5 rounded-full text-xs font-bold text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800 transition shadow-2xs whitespace-nowrap">
+                <a href="#berita" class="px-2.5 xl:px-3 py-1.5 rounded-full text-[11px] xl:text-xs font-bold text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800 transition shadow-2xs whitespace-nowrap">
                     Berita
                 </a>
-                <a href="#guru-staf" class="px-3 py-1.5 rounded-full text-xs font-bold text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800 transition shadow-2xs whitespace-nowrap">
-                    Guru, TU & Satpam
+                <a href="#guru-staf" class="px-2.5 xl:px-3 py-1.5 rounded-full text-[11px] xl:text-xs font-bold text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800 transition shadow-2xs whitespace-nowrap">
+                    Guru &amp; Staf
                 </a>
-                <a href="#agenda" class="px-3 py-1.5 rounded-full text-xs font-bold text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800 transition shadow-2xs whitespace-nowrap">
+                <a href="#agenda" class="px-2.5 xl:px-3 py-1.5 rounded-full text-[11px] xl:text-xs font-bold text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800 transition shadow-2xs whitespace-nowrap">
                     Agenda
                 </a>
-                <a href="#prestasi" class="px-3 py-1.5 rounded-full text-xs font-bold text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800 transition shadow-2xs whitespace-nowrap">
+                <a href="#prestasi" class="px-2.5 xl:px-3 py-1.5 rounded-full text-[11px] xl:text-xs font-bold text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800 transition shadow-2xs whitespace-nowrap">
                     Prestasi
                 </a>
-                <a href="{{ route('bk.tracer.public_form') }}" class="px-3 py-1.5 rounded-full text-xs font-bold text-amber-600 dark:text-amber-400 hover:text-amber-700 hover:bg-amber-50 dark:hover:bg-amber-950/50 transition shadow-2xs whitespace-nowrap flex items-center gap-1" title="Kuesioner Tracer Alumni">
-                    <span>🎓 Tracer Alumni</span>
-                </a>
-                <a href="{{ url('/pengaduan') }}" class="px-3 py-1.5 rounded-full text-xs font-bold text-rose-600 dark:text-rose-400 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/50 transition shadow-2xs whitespace-nowrap flex items-center gap-1">
-                    <span>📢 Pengaduan</span>
-                </a>
-                <a href="#ekosistem-sis" class="px-3.5 py-1.5 rounded-full text-xs font-extrabold text-indigo-600 dark:text-indigo-300 bg-white dark:bg-slate-800 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 border border-indigo-200/80 dark:border-indigo-800/80 transition shadow-xs flex items-center gap-1.5 whitespace-nowrap">
+                <a href="#ekosistem-sis" class="px-2.5 xl:px-3.5 py-1.5 rounded-full text-[11px] xl:text-xs font-extrabold text-indigo-600 dark:text-indigo-300 bg-white dark:bg-slate-800 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 border border-indigo-200/80 dark:border-indigo-800/80 transition shadow-xs flex items-center gap-1.5 whitespace-nowrap">
                     <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                     <span>SIS-SMA1LE</span>
                 </a>
@@ -338,7 +332,7 @@
 
             <!-- Actions: Dark Mode & Gateways -->
             <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
-                <button type="button" id="theme-toggle" class="p-1.5 sm:p-2.5 rounded-xl text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/70 border border-slate-200/60 dark:border-slate-800 transition" aria-label="Ganti Tema">
+                <button type="button" id="theme-toggle" class="p-1.5 sm:p-2.5 rounded-xl text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/70 border border-slate-200/60 dark:border-slate-800 transition shrink-0" aria-label="Ganti Tema">
                     <svg id="theme-toggle-light-icon" class="hidden w-4 h-4 sm:w-5 sm:h-5 text-amber-500" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"/>
                     </svg>
@@ -347,23 +341,21 @@
                     </svg>
                 </button>
 
-                <!-- Primary Portal Auth Button -->
+                <!-- Primary Portal Auth Button (Kuat, Responsif, Tidak Pernah Terpotong) -->
                 @auth
-                    <a href="{{ route('dashboard') }}" class="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-1.5 sm:py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-700 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-bold text-xs sm:text-sm shadow-md shadow-indigo-600/30 transition-all hover:scale-[1.02]">
-                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-                        <span class="hidden xs:inline truncate max-w-[100px] sm:max-w-none">Dashboard</span>
-                        <span class="xs:hidden">Masuk</span>
-                        <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <a href="{{ route('dashboard') }}" class="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-700 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-bold text-xs sm:text-sm shadow-md shadow-indigo-600/30 transition-all hover:scale-[1.02] shrink-0 whitespace-nowrap">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping shrink-0"></span>
+                        <span>Dashboard</span>
+                        <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 hidden sm:block shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
                         </svg>
                     </a>
                 @else
-                    <a href="{{ route('login') }}" class="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-1.5 sm:py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-700 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-bold text-xs sm:text-sm shadow-md shadow-indigo-600/30 transition-all hover:scale-[1.02]">
-                        <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <a href="{{ route('login') }}" class="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-700 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-bold text-xs sm:text-sm shadow-md shadow-indigo-600/30 transition-all hover:scale-[1.02] shrink-0 whitespace-nowrap">
+                        <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
                         </svg>
-                        <span class="hidden sm:inline">Masuk SIS-SMA1LE</span>
-                        <span class="sm:hidden">Masuk</span>
+                        <span>Masuk</span>
                     </a>
                 @endauth
 
@@ -430,7 +422,7 @@
                     <span>{{ $runningBadge }}</span>
                 </div>
 
-                <div class="relative flex-1 overflow-hidden h-5 sm:h-6 flex items-center group cursor-pointer" title="Arahkan kursor mouse untuk berhenti dan membaca informasi">
+                <div class="relative flex-1 overflow-hidden h-5 sm:h-6 flex items-center group cursor-pointer [mask-image:linear-gradient(to_right,transparent,black_16px,black_calc(100%-16px),transparent)] [-webkit-mask-image:linear-gradient(to_right,transparent,black_16px,black_calc(100%-16px),transparent)]" title="Arahkan kursor mouse untuk berhenti dan membaca informasi">
                     <div class="header-running-track flex items-center whitespace-nowrap text-[11px] sm:text-xs lg:text-sm font-semibold text-slate-800 dark:text-slate-200 group-hover:[animation-play-state:paused] select-none"
                          style="--header-marquee-duration: {{ $speedDuration }};">
                         <span class="inline-block px-3 sm:px-4">{{ $runningText }}</span>
