@@ -169,8 +169,8 @@ class KioskController extends Controller
             'status' => strtoupper($e->status),
         ]);
 
-        // 15. Data Dewan Guru & Tenaga Kependidikan dari Website (Master Data Guru & PTK)
-        $staffMembers = WebsiteContentController::getLiveStaff();
+        // 15. Data Dewan Guru, Staf TU & Satpam dari Website (Satpam selalu di slide terakhir setelah TU)
+        $staffMembers = WebsiteContentController::sortStaffByTier(WebsiteContentController::getLiveStaff());
         $staffCollection = collect($staffMembers);
         $guruStaffPool = $staffCollection->filter(fn ($s) => ($s['type'] ?? ($s['category'] ?? '')) !== 'kepala_sekolah' && stripos($s['name'] ?? '', 'Pian Sopian') === false)->values();
 

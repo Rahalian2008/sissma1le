@@ -77,6 +77,7 @@
             border: 1px solid rgba(255, 255, 255, 0.06);
         }
         .glow-teal { box-shadow: 0 0 30px -5px rgba(20, 184, 166, 0.25); }
+        .glow-cyan { box-shadow: 0 0 30px -5px rgba(6, 182, 212, 0.25); }
         .glow-indigo { box-shadow: 0 0 30px -5px rgba(99, 102, 241, 0.25); }
         .glow-emerald { box-shadow: 0 0 30px -5px rgba(16, 185, 129, 0.25); }
         .glow-amber { box-shadow: 0 0 30px -5px rgba(245, 158, 11, 0.25); }
@@ -757,7 +758,7 @@
             <!-- Content Area: Chunked Grid of Teachers & Staff with Enlarged Photos -->
             <div class="flex-1 min-h-0 relative overflow-hidden">
                 @php
-                    $allStaff = $data['staff'] ?? [];
+                    $allStaff = \App\Http\Controllers\WebsiteContentController::sortStaffByTier($data['staff'] ?? []);
                     $chunkedStaff = array_chunk($allStaff, 8);
                 @endphp
 
@@ -775,27 +776,59 @@
                                         $photoUrl = asset('storage/' . $st['photo']);
                                     }
                                 }
-                                $isHeadmaster = ($st['type'] ?? ($st['category'] ?? '')) === 'kepala_sekolah' || str_contains(strtolower($st['duty'] ?? ''), 'kepala sekolah');
-                                $isGuru = ($st['type'] ?? ($st['category'] ?? '')) === 'guru' || !empty($st['mapel']);
+
+                                $nameLower = strtolower($st['name'] ?? '');
+                                $catLower = strtolower($st['category'] ?? ($st['type'] ?? ''));
+                                $dutyLower = strtolower($st['duty'] ?? '');
+                                $tuDutyLower = strtolower($st['tu_duty'] ?? '');
+                                $empLower = strtolower($st['employment_status'] ?? '');
+                                $mapel = trim($st['mapel'] ?? '');
+
+                                $isHeadmaster = $catLower === 'kepala_sekolah'
+                                    || str_contains($dutyLower, 'kepala sekolah')
+                                    || str_contains($nameLower, 'pian sopian');
+
+                                $isSatpam = $catLower === 'satpam'
+                                    || str_contains($dutyLower, 'satpam')
+                                    || str_contains($dutyLower, 'keamanan')
+                                    || str_contains($tuDutyLower, 'satpam')
+                                    || str_contains($tuDutyLower, 'keamanan')
+                                    || str_contains($empLower, 'satpam')
+                                    || str_contains($empLower, 'keamanan');
+
+                                $isTu = !$isHeadmaster && !$isSatpam && (
+                                    $catLower === 'staf_tu'
+                                    || $catLower === 'tu'
+                                    || $catLower === 'staff'
+                                    || str_contains($dutyLower, 'tata usaha')
+                                    || str_contains($dutyLower, 'administrasi')
+                                    || str_contains($tuDutyLower, 'tata usaha')
+                                    || str_contains($empLower, 'tata usaha')
+                                    || str_contains($empLower, 'kependidikan')
+                                    || empty($mapel)
+                                    || $mapel === '-'
+                                );
+
+                                $isGuru = !$isHeadmaster && !$isSatpam && !$isTu;
                             @endphp
-                            <div class="glass-card rounded-2xl border border-white/10 p-2 sm:p-2.5 xl:p-3 flex flex-col items-center text-center justify-between hover:border-teal-500/40 transition duration-300 group relative min-h-0 h-full {{ $isHeadmaster ? 'glow-gold border-amber-500/30 bg-amber-950/20' : 'glow-teal' }}">
+                            <div class="glass-card rounded-2xl border border-white/10 p-2 sm:p-2.5 xl:p-3 flex flex-col items-center text-center justify-between hover:border-teal-500/40 transition duration-300 group relative min-h-0 h-full {{ $isHeadmaster ? 'glow-gold border-amber-500/30 bg-amber-950/20' : ($isSatpam ? 'glow-cyan border-cyan-500/30 bg-cyan-950/15' : 'glow-teal') }}">
                                 <!-- Top Status Pill -->
                                 <div class="w-full flex items-center justify-between gap-1 mb-1 shrink-0">
-                                    <span class="px-1.5 py-0.5 rounded text-[8px] sm:text-[8.5px] xl:text-[9.5px] font-black uppercase tracking-wider truncate {{ $isHeadmaster ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40' : ($isGuru ? 'bg-teal-500/20 text-teal-300 border border-teal-500/30' : 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30') }}">
-                                        {{ $isHeadmaster ? '👑 Kepala Sekolah' : ($isGuru ? '🎓 Dewan Guru' : '🏢 Staf TU') }}
+                                    <span class="px-1.5 py-0.5 rounded text-[8px] sm:text-[8.5px] xl:text-[9.5px] font-black uppercase tracking-wider truncate {{ $isHeadmaster ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40' : ($isSatpam ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40' : ($isGuru ? 'bg-teal-500/20 text-teal-300 border border-teal-500/30' : 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30')) }}">
+                                        {{ $isHeadmaster ? '👑 Kepala Sekolah' : ($isSatpam ? '🛡️ Satpam' : ($isGuru ? '🎓 Dewan Guru' : '🏢 Staf TU')) }}
                                     </span>
                                     <span class="text-[7.5px] sm:text-[8px] xl:text-[9px] font-mono text-slate-400 truncate">
-                                        {{ $st['employment_status'] ?? 'ASN' }}
+                                        {{ $st['employment_status'] ?? ($isSatpam ? 'Satpam / Keamanan' : 'ASN') }}
                                     </span>
                                 </div>
 
                                 <!-- Photo Container with Elegant Ring (Portrait Ratio, No Head Cutoff) -->
-                                <div class="staff-card-photo w-14 h-16 sm:w-16 sm:h-20 md:w-18 md:h-22 lg:w-20 lg:h-24 xl:w-24 xl:h-28 2xl:w-26 2xl:h-30 rounded-xl overflow-hidden p-0.5 sm:p-1 bg-gradient-to-tr {{ $isHeadmaster ? 'from-amber-400 via-yellow-500 to-amber-600' : 'from-teal-400 via-indigo-500 to-sky-400' }} shadow-md my-0.5 sm:my-1 shrink-0 group-hover:scale-105 transition duration-300">
+                                <div class="staff-card-photo w-14 h-16 sm:w-16 sm:h-20 md:w-18 md:h-22 lg:w-20 lg:h-24 xl:w-24 xl:h-28 2xl:w-26 2xl:h-30 rounded-xl overflow-hidden p-0.5 sm:p-1 bg-gradient-to-tr {{ $isHeadmaster ? 'from-amber-400 via-yellow-500 to-amber-600' : ($isSatpam ? 'from-cyan-400 via-teal-500 to-blue-500' : 'from-teal-400 via-indigo-500 to-sky-400') }} shadow-md my-0.5 sm:my-1 shrink-0 group-hover:scale-105 transition duration-300">
                                     <div class="w-full h-full bg-slate-950 rounded-[9px] overflow-hidden flex items-center justify-center">
                                         @if($photoUrl)
                                             <img src="{{ $photoUrl }}" alt="{{ $st['name'] }}" class="w-full h-full object-cover object-top" style="object-position: top center;">
                                         @else
-                                            <div class="w-full h-full flex flex-col items-center justify-center bg-gradient-to-tr from-slate-900 via-slate-800 to-teal-950 text-teal-300 font-extrabold text-sm sm:text-base">
+                                            <div class="w-full h-full flex flex-col items-center justify-center bg-gradient-to-tr {{ $isSatpam ? 'from-slate-900 via-cyan-950 to-slate-950 text-cyan-300' : 'from-slate-900 via-slate-800 to-teal-950 text-teal-300' }} font-extrabold text-sm sm:text-base">
                                                 <span>{{ strtoupper(substr($st['name'], 0, 2)) }}</span>
                                             </div>
                                         @endif
@@ -813,21 +846,47 @@
                                             NIP: {{ !empty($st['nip']) && $st['nip'] !== '-' ? $st['nip'] : '-' }}
                                         </span>
                                     </div>
-                                    <!-- Tugas Tambahan & Mata Pelajaran -->
+                                    <!-- Tugas Tambahan & Mata Pelajaran / Pos Pengamanan -->
                                     <div class="w-full pt-1 border-t border-white/5 space-y-0.5 text-left text-[8px] sm:text-[8.5px] md:text-[9px] leading-tight">
-                                        @if($isGuru)
+                                        @if($isHeadmaster)
+                                            <div class="truncate text-slate-300 flex items-center gap-1" title="Jabatan: Kepala SMAN 1 Lengkong">
+                                                <span class="text-amber-400 font-bold shrink-0">👑 Jabatan:</span>
+                                                <span class="truncate font-medium text-white">Kepala SMAN 1 Lengkong</span>
+                                            </div>
+                                            <div class="truncate text-slate-300 flex items-center gap-1" title="Mata Pelajaran: {{ !empty($st['mapel']) && $st['mapel'] !== '-' ? $st['mapel'] : 'Kimia' }}">
+                                                <span class="text-teal-400 font-bold shrink-0">📚 Mapel:</span>
+                                                <span class="truncate font-medium text-teal-200">{{ !empty($st['mapel']) && $st['mapel'] !== '-' ? $st['mapel'] : 'Kimia' }}</span>
+                                            </div>
+                                        @elseif($isSatpam)
+                                            @php
+                                                $satpamDutyText = !empty($st['satpam_duty']) && $st['satpam_duty'] !== '-'
+                                                    ? $st['satpam_duty']
+                                                    : (!empty($st['duty']) && $st['duty'] !== '-' && $st['duty'] !== 'Guru Pengajar' ? $st['duty'] : 'Petugas Keamanan Gerbang Utama');
+                                                $posText = !empty($st['tu_duty']) && $st['tu_duty'] !== '-' && $st['tu_duty'] !== $satpamDutyText
+                                                    ? $st['tu_duty']
+                                                    : 'Pos Keamanan & Pengawasan Gerbang';
+                                            @endphp
+                                            <div class="truncate text-slate-300 flex items-center gap-1" title="Tugas: {{ $satpamDutyText }}">
+                                                <span class="text-cyan-400 font-bold shrink-0">🛡️ Tugas:</span>
+                                                <span class="truncate font-medium text-white">{{ $satpamDutyText }}</span>
+                                            </div>
+                                            <div class="truncate text-slate-400 flex items-center gap-1" title="Pos: {{ $posText }}">
+                                                <span class="text-teal-400 font-bold shrink-0">📍 Pos:</span>
+                                                <span class="truncate font-medium text-slate-300">{{ $posText }}</span>
+                                            </div>
+                                        @elseif($isGuru)
                                             <div class="truncate text-slate-300 flex items-center gap-1" title="Mata Pelajaran: {{ $st['mapel'] ?? '-' }}">
                                                 <span class="text-teal-400 font-bold shrink-0">📚 Mapel:</span>
-                                                <span class="truncate font-medium text-white">{{ !empty($st['mapel']) ? $st['mapel'] : 'Mata Pelajaran Umum' }}</span>
+                                                <span class="truncate font-medium text-white">{{ !empty($st['mapel']) && $st['mapel'] !== '-' ? $st['mapel'] : 'Mata Pelajaran Umum' }}</span>
                                             </div>
                                             <div class="truncate text-slate-300 flex items-center gap-1" title="Tugas Tambahan: {{ $st['duty'] ?? '-' }}">
                                                 <span class="text-indigo-400 font-bold shrink-0">⭐ Tugas:</span>
-                                                <span class="truncate font-medium text-teal-200">{{ !empty($st['duty']) && $st['duty'] !== 'Guru Pengajar' ? $st['duty'] : ($isHeadmaster ? 'Kepala Sekolah' : 'Guru Pengajar') }}</span>
+                                                <span class="truncate font-medium text-teal-200">{{ !empty($st['duty']) && $st['duty'] !== 'Guru Pengajar' && $st['duty'] !== '-' ? $st['duty'] : 'Guru Pengajar' }}</span>
                                             </div>
                                         @else
                                             <div class="truncate text-slate-300 flex items-center gap-1" title="Tugas: {{ $st['duty'] ?? 'Staf Administrasi' }}">
                                                 <span class="text-indigo-400 font-bold shrink-0">🏢 Tugas:</span>
-                                                <span class="truncate font-medium text-white">{{ $st['duty'] ?? 'Staf Administrasi' }}</span>
+                                                <span class="truncate font-medium text-white">{{ !empty($st['duty']) && $st['duty'] !== '-' ? $st['duty'] : 'Staf Administrasi' }}</span>
                                             </div>
                                             <div class="truncate text-slate-400 flex items-center gap-1" title="Bidang: {{ !empty($st['tu_duty']) ? $st['tu_duty'] : '-' }}">
                                                 <span class="text-teal-400 font-bold shrink-0">📋 Bidang:</span>

@@ -432,12 +432,89 @@ class WebsiteContentController extends Controller
     }
 
     /**
+     * Menentukan hierarki/tingkatan pegawai:
+     * 1: Kepala Sekolah
+     * 2: Dewan Guru
+     * 3: Staf Tata Usaha (TU)
+     * 4: Satpam / Petugas Keamanan (disimpan di slide terakhir setelah TU)
+     */
+    public static function getStaffTier(array $s): int
+    {
+        $name = strtolower($s['name'] ?? '');
+        $category = strtolower($s['category'] ?? ($s['type'] ?? ''));
+        $duty = strtolower($s['duty'] ?? '');
+        $tuDuty = strtolower($s['tu_duty'] ?? '');
+        $empStatus = strtolower($s['employment_status'] ?? '');
+        $mapel = trim($s['mapel'] ?? '');
+
+        // 1. Kepala Sekolah
+        if ($category === 'kepala_sekolah' || str_contains($duty, 'kepala sekolah') || str_contains($name, 'pian sopian')) {
+            return 1;
+        }
+
+        // 4. Satpam / Petugas Keamanan (slide terakhir setelah TU)
+        if ($category === 'satpam'
+            || str_contains($duty, 'satpam')
+            || str_contains($duty, 'keamanan')
+            || str_contains($tuDuty, 'satpam')
+            || str_contains($tuDuty, 'keamanan')
+            || str_contains($empStatus, 'satpam')
+            || str_contains($empStatus, 'keamanan')) {
+            return 4;
+        }
+
+        // 3. Staf Tata Usaha (TU)
+        if ($category === 'staf_tu' || $category === 'tu' || $category === 'staff'
+            || str_contains($duty, 'tata usaha') || str_contains($duty, 'administrasi')
+            || str_contains($tuDuty, 'tata usaha') || str_contains($tuDuty, 'administrasi')
+            || str_contains($empStatus, 'tata usaha') || str_contains($empStatus, 'kependidikan')
+            || empty($mapel) || $mapel === '-') {
+            return 3;
+        }
+
+        // 2. Dewan Guru
+        return 2;
+    }
+
+    /**
+     * Mengurutkan daftar pegawai sesuai hierarki resmi:
+     * 1. Kepala Sekolah
+     * 2. Dewan Guru
+     * 3. Staf Tata Usaha
+     * 4. Satpam / Petugas Keamanan (Slide terakhir setelah TU)
+     */
+    public static function sortStaffByTier(array $staff): array
+    {
+        usort($staff, function ($a, $b) {
+            $tierA = self::getStaffTier($a);
+            $tierB = self::getStaffTier($b);
+
+            if ($tierA !== $tierB) {
+                return $tierA <=> $tierB;
+            }
+
+            $orderA = (int) ($a['order'] ?? 999);
+            $orderB = (int) ($b['order'] ?? 999);
+
+            if ($orderA !== $orderB) {
+                return $orderA <=> $orderB;
+            }
+
+            return strcasecmp($a['name'] ?? '', $b['name'] ?? '');
+        });
+
+        return array_values($staff);
+    }
+
+    /**
      * Membangun daftar awal seluruh dewan guru & staf dari Master Data Teacher & User (PTK).
      */
     public static function buildInitialStaffFromMaster(): array
     {
-        $staff = [];
-        $order = 1;
+        $headmaster = null;
+        $guruList = [];
+        $tuList = [];
+        $satpamList = [];
 
         try {
             $teachers = Teacher::with('homeroomClass', 'user')
@@ -465,7 +542,7 @@ class WebsiteContentController extends Controller
                     || ($t->position && stripos($t->position, 'Kependidikan') !== false));
 
                 if ($isSatpam) {
-                    $staff[] = [
+                    $satpamList[] = [
                         'id' => 'teacher_'.$t->id,
                         'category' => 'satpam',
                         'name' => $t->name,
@@ -475,13 +552,14 @@ class WebsiteContentController extends Controller
                         'mapel' => '-',
                         'duty' => $t->position ?: 'Petugas Keamanan / Satpam',
                         'tu_duty' => $t->position ?: 'Petugas Keamanan / Satpam',
+                        'satpam_duty' => $t->position ?: 'Petugas Keamanan / Satpam',
                         'photo' => $photo,
                         'phone' => $t->phone ?: '',
-                        'order' => $order++,
+                        'order' => 900 + count($satpamList),
                         'is_active' => true,
                     ];
                 } elseif ($isTendik) {
-                    $staff[] = [
+                    $tuList[] = [
                         'id' => 'teacher_'.$t->id,
                         'category' => 'staf_tu',
                         'name' => $t->name,
@@ -493,7 +571,7 @@ class WebsiteContentController extends Controller
                         'tu_duty' => $t->position ?: ($t->title ?: 'Staf Tenaga Kependidikan'),
                         'photo' => $photo,
                         'phone' => $t->phone ?: '',
-                        'order' => $order++,
+                        'order' => 500 + count($tuList),
                         'is_active' => true,
                     ];
                 } else {
@@ -514,18 +592,19 @@ class WebsiteContentController extends Controller
                         $duty = 'Wali Kelas '.$t->homeroomClass->name;
                     }
 
-                    if (stripos($t->name, 'Pian Sopian') !== false) {
+                    $isKepalaSekolah = stripos($t->name, 'Pian Sopian') !== false || stripos($duty, 'Kepala') !== false;
+                    if ($isKepalaSekolah) {
                         $duty = 'Kepala SMAN 1 Lengkong';
                     }
 
                     $mapel = $t->title ?: 'Mata Pelajaran Umum';
-                    if (stripos($t->name, 'Pian Sopian') !== false) {
+                    if ($isKepalaSekolah) {
                         $mapel = 'Kimia';
                     }
 
-                    $staff[] = [
+                    $teacherItem = [
                         'id' => 'teacher_'.$t->id,
-                        'category' => 'guru',
+                        'category' => $isKepalaSekolah ? 'guru' : 'guru',
                         'name' => $t->name,
                         'nip' => $t->nip ?: '-',
                         'gender' => $t->gender ?: 'L',
@@ -535,14 +614,31 @@ class WebsiteContentController extends Controller
                         'tu_duty' => '',
                         'photo' => $photo,
                         'phone' => $t->phone ?: '',
-                        'order' => $order++,
+                        'order' => $isKepalaSekolah ? 1 : (100 + count($guruList)),
                         'is_active' => true,
                     ];
+
+                    if ($isKepalaSekolah) {
+                        $headmaster = $teacherItem;
+                    } else {
+                        $guruList[] = $teacherItem;
+                    }
                 }
             }
         } else {
-            $staff = self::getDefaultStaff();
-            $order = count($staff) + 1;
+            $defaultList = self::getDefaultStaff();
+            foreach ($defaultList as $item) {
+                $tier = self::getStaffTier($item);
+                if ($tier === 1) {
+                    $headmaster = $item;
+                } elseif ($tier === 4) {
+                    $satpamList[] = $item;
+                } elseif ($tier === 3) {
+                    $tuList[] = $item;
+                } else {
+                    $guruList[] = $item;
+                }
+            }
         }
 
         // Ambil Staf TU dari User atau default
@@ -559,28 +655,30 @@ class WebsiteContentController extends Controller
 
         if ($tuUsers->isNotEmpty()) {
             foreach ($tuUsers as $u) {
-                $dutyTitle = $u->getRoleTitleFor($u->active_role ?: $u->role);
-                $staff[] = [
-                    'id' => 'tu_user_'.$u->id,
-                    'category' => 'staf_tu',
-                    'name' => $u->name,
-                    'nip' => $u->nip ?: '-',
-                    'gender' => $u->gender ?: 'L',
-                    'employment_status' => 'Staf Tata Usaha',
-                    'mapel' => '',
-                    'duty' => $dutyTitle ?: 'Staf Administrasi',
-                    'tu_duty' => $dutyTitle ?: 'Staf Tata Usaha',
-                    'photo' => $u->avatar ? 'storage/'.$u->avatar : null,
-                    'phone' => $u->phone ?: '',
-                    'order' => $order++,
-                    'is_active' => true,
-                ];
+                $alreadyInTu = collect($tuList)->contains(fn ($s) => ($s['nip'] ?? '') === ($u->nip ?? 'NONE') || ($s['name'] ?? '') === $u->name);
+                if (! $alreadyInTu) {
+                    $dutyTitle = $u->getRoleTitleFor($u->active_role ?: $u->role);
+                    $tuList[] = [
+                        'id' => 'tu_user_'.$u->id,
+                        'category' => 'staf_tu',
+                        'name' => $u->name,
+                        'nip' => $u->nip ?: '-',
+                        'gender' => $u->gender ?: 'L',
+                        'employment_status' => 'Staf Tata Usaha',
+                        'mapel' => '',
+                        'duty' => $dutyTitle ?: 'Staf Administrasi',
+                        'tu_duty' => $dutyTitle ?: 'Staf Tata Usaha',
+                        'photo' => $u->avatar ? 'storage/'.$u->avatar : null,
+                        'phone' => $u->phone ?: '',
+                        'order' => 500 + count($tuList),
+                        'is_active' => true,
+                    ];
+                }
             }
-        } else {
-            $defaultTu = self::getDefaultTuStaff($order);
+        } elseif (empty($tuList)) {
+            $defaultTu = self::getDefaultTuStaff(500);
             foreach ($defaultTu as $tu) {
-                $staff[] = $tu;
-                $order++;
+                $tuList[] = $tu;
             }
         }
 
@@ -600,9 +698,9 @@ class WebsiteContentController extends Controller
 
         if ($satpamUsers->isNotEmpty()) {
             foreach ($satpamUsers as $u) {
-                $alreadyExists = collect($staff)->contains(fn ($s) => ($s['nip'] ?? '') === ($u->nip ?? 'NONE') || ($s['name'] ?? '') === $u->name);
+                $alreadyExists = collect($satpamList)->contains(fn ($s) => ($s['nip'] ?? '') === ($u->nip ?? 'NONE') || ($s['name'] ?? '') === $u->name);
                 if (! $alreadyExists) {
-                    $staff[] = [
+                    $satpamList[] = [
                         'id' => 'satpam_user_'.$u->id,
                         'category' => 'satpam',
                         'name' => $u->name,
@@ -612,26 +710,37 @@ class WebsiteContentController extends Controller
                         'mapel' => '-',
                         'duty' => 'Petugas Keamanan / Satpam',
                         'tu_duty' => 'Petugas Keamanan / Satpam',
+                        'satpam_duty' => 'Petugas Keamanan / Satpam',
                         'photo' => $u->avatar ? 'storage/'.$u->avatar : null,
                         'phone' => $u->phone ?: '',
-                        'order' => $order++,
+                        'order' => 900 + count($satpamList),
                         'is_active' => true,
                     ];
                 }
             }
         }
 
-        $hasSatpam = collect($staff)->contains(fn ($s) => ($s['category'] ?? '') === 'satpam');
-        if (! $hasSatpam) {
-            foreach (self::getDefaultSatpamStaff($order) as $satpam) {
-                $staff[] = $satpam;
-                $order++;
+        if (empty($satpamList)) {
+            foreach (self::getDefaultSatpamStaff(900) as $satpam) {
+                $satpamList[] = $satpam;
             }
         }
 
-        usort($staff, fn ($a, $b) => ($a['order'] ?? 999) <=> ($b['order'] ?? 999));
+        // Susun berurutan: Kepala Sekolah (1) -> Dewan Guru (2) -> Staf TU (3) -> Satpam (4 - slide terakhir setelah TU)
+        $merged = array_merge(
+            $headmaster ? [$headmaster] : [],
+            $guruList,
+            $tuList,
+            $satpamList
+        );
 
-        return $staff;
+        $sorted = self::sortStaffByTier($merged);
+        foreach ($sorted as $idx => &$item) {
+            $item['order'] = $idx + 1;
+        }
+        unset($item);
+
+        return $sorted;
     }
 
     /**
@@ -808,11 +917,11 @@ class WebsiteContentController extends Controller
         if ($customStaff !== null) {
             $decoded = json_decode($customStaff, true);
             if (is_array($decoded)) {
-                return $decoded;
+                return self::sortStaffByTier($decoded);
             }
         }
 
-        return self::buildInitialStaffFromMaster();
+        return self::sortStaffByTier(self::buildInitialStaffFromMaster());
     }
 
     /**
@@ -1972,7 +2081,11 @@ class WebsiteContentController extends Controller
         ];
 
         $staffMembers[] = $newMember;
-        usort($staffMembers, fn ($a, $b) => ($a['order'] ?? 999) <=> ($b['order'] ?? 999));
+        $staffMembers = self::sortStaffByTier($staffMembers);
+        foreach ($staffMembers as $idx => &$m) {
+            $m['order'] = $idx + 1;
+        }
+        unset($m);
 
         SchoolSetting::set('website_staff_json', json_encode(array_values($staffMembers)), 'website', 'Daftar Guru, Staf TU & Satpam Website');
 
@@ -2100,7 +2213,11 @@ class WebsiteContentController extends Controller
             $staffMembers[] = $newMember;
         }
 
-        usort($staffMembers, fn ($a, $b) => ($a['order'] ?? 999) <=> ($b['order'] ?? 999));
+        $staffMembers = self::sortStaffByTier($staffMembers);
+        foreach ($staffMembers as $idx => &$m) {
+            $m['order'] = $idx + 1;
+        }
+        unset($m);
 
         SchoolSetting::set('website_staff_json', json_encode(array_values($staffMembers)), 'website', 'Daftar Guru, Staf TU & Satpam Website');
         AuditLog::log('UPDATE_WEBSITE_STAFF', 'SchoolSetting', null, null, ['id' => $id]);
