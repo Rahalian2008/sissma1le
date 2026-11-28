@@ -78,7 +78,7 @@ class BkTracerAlumnus extends Model
     {
         return match ($this->activity_status) {
             'KULIAH' => ['label' => 'Kuliah / Studi Lanjut', 'color' => 'bg-sky-500/10 text-sky-400 border border-sky-500/30', 'icon' => '🎓'],
-            'BEKERJA' => ['label' => 'Bekerja' . ($this->work_type ? ' (' . $this->work_type . ')' : ''), 'color' => 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30', 'icon' => '💼'],
+            'BEKERJA' => ['label' => 'Bekerja'.($this->work_type ? ' ('.$this->work_type.')' : ''), 'color' => 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30', 'icon' => '💼'],
             'WIRAUSAHA' => ['label' => 'Wiraswasta / Wirausaha', 'color' => 'bg-amber-500/10 text-amber-400 border border-amber-500/30', 'icon' => '🚀'],
             'BELUM_MEMUNGKINKAN' => ['label' => 'Belum Memungkinkan Bekerja', 'color' => 'bg-rose-500/10 text-rose-400 border border-rose-500/30', 'icon' => '🏡'],
             'MENCARI_KERJA' => ['label' => 'Mencari Kerja / Persiapan', 'color' => 'bg-slate-500/10 text-slate-400 border border-slate-500/30', 'icon' => '🔍'],

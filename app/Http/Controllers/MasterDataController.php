@@ -1925,6 +1925,35 @@ class MasterDataController extends Controller
     }
 
     /**
+     * Jalankan Pembaruan Otomatis Aplikasi & Database (Super Admin)
+     */
+    public function systemUpdate(Request $request): RedirectResponse
+    {
+        $user = $request->user();
+        $isSuperAdmin = ($user && ($user->role === 'super_admin' || (method_exists($user, 'hasRole') && $user->hasRole('super_admin'))));
+        if (! $isSuperAdmin) {
+            abort(403, 'Akses pembaruan sistem terbatas untuk Super Administrator.');
+        }
+
+        try {
+            $exitCode = Artisan::call('app:update', [
+                '--force' => true,
+            ]);
+
+            $output = trim(Artisan::output());
+
+            AuditLog::log('SYSTEM_AUTO_UPDATE', 'System', null, null, [
+                'exit_code' => $exitCode,
+                'user_id' => $user->id,
+            ]);
+
+            return back()->with('update_success', $output ?: 'Pembaruan aplikasi dan database berhasil diselesaikan.');
+        } catch (\Throwable $e) {
+            return back()->with('update_error', 'Gagal memperbarui aplikasi & database: '.$e->getMessage());
+        }
+    }
+
+    /**
      * Master Butir Tata Tertib (Katalog Prestasi & Pelanggaran)
      */
     public function categories(): View

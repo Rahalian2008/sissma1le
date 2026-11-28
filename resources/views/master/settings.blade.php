@@ -13,6 +13,57 @@
         <p class="text-xs text-slate-300 mt-1">Kelola koordinat GPS presensi selfie, jam operasional presensi, dan ambang batas tata tertib sekolah.</p>
     </div>
 
+    @if(session('update_success'))
+        <div class="p-5 rounded-3xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-900 dark:text-emerald-100 shadow-sm animate-in fade-in">
+            <div class="flex items-center gap-2.5 font-bold text-sm mb-2">
+                <span class="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs">✓</span>
+                <span>Pembaruan Otomatis Aplikasi &amp; Database Berhasil!</span>
+            </div>
+            <pre class="bg-slate-950 text-emerald-400 p-3 rounded-xl font-mono text-[11px] overflow-x-auto whitespace-pre-wrap max-h-60 overflow-y-auto">{{ session('update_success') }}</pre>
+        </div>
+    @endif
+
+    @if(session('update_error'))
+        <div class="p-5 rounded-3xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-900 dark:text-rose-100 shadow-sm animate-in fade-in">
+            <div class="flex items-center gap-2.5 font-bold text-sm mb-1">
+                <span class="w-6 h-6 rounded-full bg-rose-600 text-white flex items-center justify-center text-xs">✕</span>
+                <span>Gagal Memperbarui Sistem:</span>
+            </div>
+            <p class="text-xs">{{ session('update_error') }}</p>
+        </div>
+    @endif
+
+    <!-- Panel Pembaruan Otomatis Aplikasi & Database -->
+    <div class="bg-gradient-to-r from-emerald-900/90 via-teal-900/80 to-slate-900 rounded-3xl p-6 sm:p-7 text-white shadow-xl border border-emerald-500/30">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-xs font-bold mb-2">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                    <span>AUTO-UPDATER TERINTEGRASI</span>
+                </div>
+                <h3 class="text-lg font-black text-white">Pembaruan Otomatis Aplikasi &amp; Database</h3>
+                <p class="text-xs text-emerald-100/80 mt-1 max-w-xl">
+                    Jalankan pembaruan otomatis untuk menarik kode terbaru dari GitHub repository, menjalankan migrasi database, memverifikasi akun pengguna, dan mengoptimalkan performa cache.
+                </p>
+                <div class="mt-3 flex flex-wrap items-center gap-2 text-[11px] font-mono text-emerald-200/90">
+                    <span class="px-2.5 py-1 rounded-lg bg-black/30 border border-white/10">CLI: <code class="text-white">php artisan app:update</code></span>
+                    <span class="px-2.5 py-1 rounded-lg bg-black/30 border border-white/10">Windows: <code class="text-white">update.bat</code></span>
+                    <span class="px-2.5 py-1 rounded-lg bg-black/30 border border-white/10">Linux/VPS: <code class="text-white">./update.sh</code></span>
+                </div>
+            </div>
+
+            <div class="shrink-0">
+                <form action="{{ route('master.settings.system_update') }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menjalankan pembaruan otomatis aplikasi dan database sekarang? Sistem akan menarik kode terbaru dari GitHub dan menjalankan migrasi database.')">
+                    @csrf
+                    <button type="submit" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-xs shadow-lg shadow-emerald-500/20 hover:scale-105 transition-all cursor-pointer">
+                        <svg class="w-4 h-4 text-slate-950" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                        <span>Update Aplikasi &amp; Database</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- Main Settings Form -->
     <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm p-6 sm:p-8">
         <form action="{{ route('master.settings.update') }}" method="POST" class="space-y-6 text-xs">

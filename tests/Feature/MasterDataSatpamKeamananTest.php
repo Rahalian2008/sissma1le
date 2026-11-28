@@ -1,8 +1,6 @@
 <?php
 
 use App\Models\AcademicYear;
-use App\Models\Employee;
-use App\Models\Role;
 use App\Models\SchoolIdentity;
 use App\Models\Teacher;
 use App\Models\User;

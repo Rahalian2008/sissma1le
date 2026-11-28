@@ -130,7 +130,7 @@ Route::get('/artisan-optimize-clear', function () {
                 <p style='color: #047857; font-size: 13.5px; line-height: 1.5;'>Semua cache rute, template tampilan, dan konfigurasi server telah dibersihkan. Perintah migrasi database terbaru berhasil dijalankan.</p>
 
                 <div style='background: #064e3b; color: #a7f3d0; padding: 12px 16px; border-radius: 12px; font-family: monospace; font-size: 12px; margin: 16px 0; overflow-x: auto; max-height: 180px;'>
-                    <strong>[Migrate Output]:</strong><br>" . nl2br(e(trim($migrateOutput) ?: 'Tidak ada migrasi baru (Database sudah up to date).')) . "
+                    <strong>[Migrate Output]:</strong><br>".nl2br(e(trim($migrateOutput) ?: 'Tidak ada migrasi baru (Database sudah up to date).'))."
                 </div>
 
                 <div style='margin-top: 24px; display: flex; flex-wrap: gap: 10px; gap: 10px;'>
@@ -146,9 +146,9 @@ Route::get('/artisan-optimize-clear', function () {
         return response("
             <div style='font-family: sans-serif; max-width: 600px; margin: 40px auto; padding: 24px; border: 2px solid #ef4444; border-radius: 16px; background: #fef2f2;'>
                 <h3 style='color: #991b1b; margin-top: 0;'>Terjadi Kendala:</h3>
-                <p style='color: #b91c1c; font-size: 13px; font-family: monospace;'>" . e($e->getMessage()) . "</p>
+                <p style='color: #b91c1c; font-size: 13px; font-family: monospace;'>".e($e->getMessage()).'</p>
             </div>
-        ", 500, ['Content-Type' => 'text/html']);
+        ', 500, ['Content-Type' => 'text/html']);
     }
 });
 
@@ -647,6 +647,7 @@ Route::middleware('auth')->group(function () {
         // Pengaturan Sistem & Geofence (Termasuk Toggle Pilihan Absen)
         Route::get('/settings', [MasterDataController::class, 'settings'])->name('settings');
         Route::post('/settings', [MasterDataController::class, 'updateSettings'])->name('settings.update');
+        Route::post('/settings/system-update', [MasterDataController::class, 'systemUpdate'])->name('settings.system_update');
 
         // Master Butir Tata Tertib (Bisa Diedit, Ditambahkan, dan Diimpor)
         Route::get('/categories/achievement-item/template', [MasterDataController::class, 'achievementItemTemplate'])->name('achievement_item.template');
