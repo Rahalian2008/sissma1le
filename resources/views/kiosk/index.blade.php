@@ -3198,12 +3198,12 @@
                                     <div class="bg-white/5 border border-white/5 p-2 rounded-xl flex flex-col justify-between">
                                         <div class="flex items-center justify-between text-[10px] mb-1">
                                             <span class="font-bold text-slate-200 truncate pr-2">{{ $ds['icon'] }} {{ $ds['name'] }}</span>
-                                            <span class="font-mono font-bold text-teal-300">{{ $ds['pct'] }}%</span>
+                                            <span class="font-mono font-bold text-slate-400">0%</span>
                                         </div>
                                         <div class="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
-                                            <div class="bg-gradient-to-r from-teal-500 to-emerald-400 h-1.5 rounded-full" style="width: {{ $ds['pct'] }}%"></div>
+                                            <div class="bg-gradient-to-r from-teal-500 to-emerald-400 h-1.5 rounded-full" style="width: 0%"></div>
                                         </div>
-                                        <span class="text-[9px] text-slate-400 mt-1 block">Alokasi RKAS Resmi Satuan Pendidikan</span>
+                                        <span class="text-[9px] text-slate-500 mt-1 block">Belum ada realisasi belanja</span>
                                     </div>
                                 @endforeach
                             @endforelse

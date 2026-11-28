@@ -1626,8 +1626,8 @@ class KioskController extends Controller
             $kioskTotalAllocated = (float) BudgetItem::sum('allocated_amount');
             $kioskTotalRealized = (float) BudgetItem::sum('realized_amount');
         }
-        if ($kioskTotalAllocated == 0) {
-            $kioskTotalAllocated = 1250000000.0; // Default Pagu Utama BOSP SMAN 1 Lengkong
+        if ($kioskTotalRealized == 0) {
+            $kioskTotalRealized = (float) CashTransaction::where('type', 'Pengeluaran')->sum('credit');
         }
         $kioskRemainingBudget = max(0.0, $kioskTotalAllocated - $kioskTotalRealized);
         $kioskAbsorptionPct = $kioskTotalAllocated > 0 ? round(($kioskTotalRealized / $kioskTotalAllocated) * 100, 1) : 0.0;
