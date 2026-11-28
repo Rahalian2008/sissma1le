@@ -251,6 +251,7 @@ Route::middleware([
         // Pemeliharaan & Servis Aset
         Route::get('/maintenance', [AssetMaintenanceController::class, 'index'])->name('maintenance.index');
         Route::post('/maintenance', [AssetMaintenanceController::class, 'store'])->name('maintenance.store');
+        Route::get('/maintenance/print', [AssetMaintenanceController::class, 'print'])->name('maintenance.print');
         Route::patch('/maintenance/{maintenance}/status', [AssetMaintenanceController::class, 'updateStatus'])->name('maintenance.update-status');
 
         // Usulan Penghapusan Barang Inventaris (Afkir / Disposal BMD)

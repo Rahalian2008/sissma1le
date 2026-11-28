@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Finance;
 use App\Http\Controllers\Controller;
 use App\Models\CashTransaction;
 use App\Models\SchoolIdentity;
+use App\Models\Teacher;
 use App\Services\AuditTrailService;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -101,6 +102,8 @@ class SubsidiaryBookController extends Controller
         $closingBalance = $totalDebit - $totalCredit;
 
         $school = SchoolIdentity::current();
+        $headmaster = Teacher::getHeadmaster();
+        $treasurer = Teacher::getTreasurer();
 
         AuditTrailService::log('print', 'keuangan', "Mencetak {$bookTitle} Bulan {$month}/{$year}");
 
@@ -114,7 +117,9 @@ class SubsidiaryBookController extends Controller
             'totalDebit',
             'totalCredit',
             'closingBalance',
-            'school'
+            'school',
+            'headmaster',
+            'treasurer'
         ));
     }
 }

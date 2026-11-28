@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Sarpras;
 use App\Http\Controllers\Controller;
 use App\Models\Asset;
 use App\Models\AssetMaintenance;
+use App\Models\SchoolIdentity;
+use App\Models\Teacher;
 use App\Services\AuditTrailService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -64,5 +66,27 @@ class AssetMaintenanceController extends Controller
         AuditTrailService::log('update', 'sarpras', "Memperbarui status pemeliharaan aset [{$maintenance->asset->name}] -> {$maintenance->status}");
 
         return back()->with('success', 'Status pemeliharaan aset berhasil diperbarui.');
+    }
+
+    /**
+     * Cetak Buku / Rekapitulasi Pemeliharaan & Servis Barang Inventaris (BMD)
+     */
+    public function print(Request $request): View
+    {
+        $status = $request->query('status');
+        $query = AssetMaintenance::with('asset');
+
+        if ($status) {
+            $query->where('status', $status);
+        }
+
+        $maintenances = $query->latest('request_date')->get();
+        $school = SchoolIdentity::current();
+        $headmaster = Teacher::getHeadmaster();
+        $sarprasManager = Teacher::getSarprasManager();
+
+        AuditTrailService::log('print', 'sarpras', 'Mencetak Buku Pemeliharaan Barang Inventaris (BMD)');
+
+        return view('sarpras.maintenance.print', compact('maintenances', 'status', 'school', 'headmaster', 'sarprasManager'));
     }
 }

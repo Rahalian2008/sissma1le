@@ -7,6 +7,7 @@ use App\Models\Archive;
 use App\Models\Budget;
 use App\Models\CashTransaction;
 use App\Models\SchoolIdentity;
+use App\Models\Teacher;
 use App\Services\AuditTrailService;
 use App\Services\NumberHelper;
 use Illuminate\Http\RedirectResponse;
@@ -35,10 +36,12 @@ class FinancialReportController extends Controller
         $year = $request->query('year', (string) date('Y'));
         $budgets = Budget::with('items')->where('fiscal_year', $year)->get();
         $school = SchoolIdentity::current();
+        $headmaster = Teacher::getHeadmaster();
+        $treasurer = Teacher::getTreasurer();
 
         AuditTrailService::log('print', 'keuangan', "Mencetak Laporan Realisasi Anggaran TA {$year}");
 
-        return view('finance.reports.print', compact('budgets', 'year', 'school'));
+        return view('finance.reports.print', compact('budgets', 'year', 'school', 'headmaster', 'treasurer'));
     }
 
     /**
@@ -125,6 +128,8 @@ class FinancialReportController extends Controller
         $terbilangBank = NumberHelper::terbilang($bankBalance).' Rupiah';
 
         $school = SchoolIdentity::current();
+        $headmaster = Teacher::getHeadmaster();
+        $treasurer = Teacher::getTreasurer();
 
         AuditTrailService::log('print', 'keuangan', "Mencetak Berita Acara Pemeriksaan Kas & Penutupan BKU Bulan {$month}/{$year}");
 
@@ -140,7 +145,9 @@ class FinancialReportController extends Controller
             'terbilangBku',
             'terbilangCash',
             'terbilangBank',
-            'school'
+            'school',
+            'headmaster',
+            'treasurer'
         ));
     }
 

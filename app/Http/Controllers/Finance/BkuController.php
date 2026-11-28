@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Finance;
 use App\Http\Controllers\Controller;
 use App\Models\CashTransaction;
 use App\Models\SchoolIdentity;
+use App\Models\Teacher;
 use App\Services\AuditTrailService;
 use App\Services\BkuLedgerService;
 use Illuminate\Http\Request;
@@ -61,10 +62,12 @@ class BkuController extends Controller
         $closingBalance = $totalDebit - $totalCredit;
 
         $school = SchoolIdentity::current();
+        $headmaster = Teacher::getHeadmaster();
+        $treasurer = Teacher::getTreasurer();
 
         AuditTrailService::log('print', 'bku', "Mencetak Buku Kas Umum (BKU) Bulan {$month}/{$year}");
 
-        return view('finance.bku.print', compact('transactions', 'month', 'year', 'source', 'totalDebit', 'totalCredit', 'closingBalance', 'school'));
+        return view('finance.bku.print', compact('transactions', 'month', 'year', 'source', 'totalDebit', 'totalCredit', 'closingBalance', 'school', 'headmaster', 'treasurer'));
     }
 
     public function exportCsv(Request $request): StreamedResponse

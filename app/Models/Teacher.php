@@ -344,4 +344,43 @@ class Teacher extends Model
             'teacher' => $teacher,
         ];
     }
+
+    /**
+     * Dapatkan identitas Bendahara resmi dari Master Data Tenaga Guru & TU (Posisi/Tugas: Bendahara)
+     *
+     * @return array{name: string, nip: string, user: ?User, teacher: ?self}
+     */
+    public static function getTreasurer(): array
+    {
+        $settingName = SchoolSetting::where('key', 'treasurer_name')->value('value');
+        $settingNip = SchoolSetting::where('key', 'treasurer_nip')->value('value');
+
+        // Cari user yang memiliki role bendahara / bendahara_bosp
+        $user = User::whereJsonContains('roles', 'bendahara')
+            ->orWhere('role', 'bendahara')
+            ->orWhereJsonContains('roles', 'bendahara_bosp')
+            ->orWhere('role', 'bendahara_bosp')
+            ->first();
+
+        $teacher = $user?->teacher;
+        if (! $teacher && ! $user) {
+            $teacher = self::where('is_active', true)
+                ->where(function ($q) {
+                    $q->where('additional_tasks', 'like', '%bendahara%')
+                        ->orWhere('position', 'like', '%bendahara%')
+                        ->orWhere('title', 'like', '%bendahara%');
+                })->first();
+            $user = $teacher?->user;
+        }
+
+        $name = $settingName ?: ($teacher?->formatted_name ?: ($teacher?->name ?? ($user?->name ?? 'Rian Hadiansyah, S.Pd.')));
+        $nip = $settingNip ?: ($teacher?->nip ?: ($user?->nip ?? ($user?->username ?? '199501172025211109')));
+
+        return [
+            'name' => $name,
+            'nip' => $nip ?: '-',
+            'user' => $user,
+            'teacher' => $teacher,
+        ];
+    }
 }

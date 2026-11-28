@@ -9,7 +9,11 @@
             <h1 class="text-xl font-bold text-slate-900">Pemeliharaan & Perbaikan Sarpras</h1>
             <p class="text-xs text-slate-500 mt-0.5">Pengajuan perbaikan aset rusak, estimasi biaya, alokasi teknisi/vendor, dan pelaporan perbaikan selesai.</p>
         </div>
-        <div>
+        <div class="flex items-center gap-2">
+            <a href="{{ route('sarpras.maintenance.print', request()->query()) }}" target="_blank" class="inline-flex items-center px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs rounded-xl shadow-xs transition cursor-pointer">
+                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                Cetak Buku Pemeliharaan
+            </a>
             <button onclick="document.getElementById('modal-maintenance').classList.remove('hidden')" class="inline-flex items-center px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs rounded-xl shadow-xs transition cursor-pointer">
                 <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                 Ajukan Perbaikan Aset

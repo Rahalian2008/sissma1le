@@ -169,275 +169,285 @@
 
 @push('modals')
 <!-- Modal Catat Transaksi -->
-<div id="modal-trans" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center z-50 p-4 overflow-y-auto">
-    <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-xl w-full shadow-xl my-8">
-        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+<div id="modal-trans" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-start sm:items-center justify-center z-50 p-2 sm:p-4 md:p-6 overflow-y-auto">
+    <div class="bg-white rounded-2xl sm:rounded-3xl max-w-2xl w-full shadow-2xl my-auto sm:my-6 flex flex-col max-h-[94vh] sm:max-h-[90vh] overflow-hidden border border-slate-100 animate-in fade-in zoom-in-95 duration-150">
+        <!-- Modal Header -->
+        <div class="flex items-center justify-between px-5 sm:px-6 py-4 border-b border-slate-100 bg-white shrink-0 sticky top-0 z-10">
             <div>
-                <h2 class="text-base font-bold text-slate-900">Catat Transaksi Kas & SPJ Belanja</h2>
-                <p class="text-xs text-slate-500">Mendukung keterkaitan dengan logistik BAST gudang & pengadaan aset.</p>
+                <h2 class="text-base font-bold text-slate-900">Catat Transaksi Kas &amp; SPJ Belanja</h2>
+                <p class="text-xs text-slate-500">Mendukung keterkaitan dengan logistik BAST gudang &amp; pengadaan aset.</p>
             </div>
-            <button onclick="document.getElementById('modal-trans').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 p-1">
+            <button type="button" onclick="document.getElementById('modal-trans').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition cursor-pointer">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
         </div>
 
-        <form action="{{ route('finance.transactions.store') }}" method="POST" class="space-y-4 text-xs mt-4">
+        <!-- Modal Body (Scrollable) -->
+        <form action="{{ route('finance.transactions.store') }}" method="POST" class="flex flex-col flex-1 min-h-0 overflow-hidden">
             @csrf
-            <div class="grid grid-cols-2 gap-3">
-                <div>
-                    <label class="block font-semibold text-slate-700 mb-1">Jenis Transaksi <span class="text-rose-500">*</span></label>
-                    <select name="type" id="select_type" required class="w-full px-3 py-2 border border-slate-300 rounded-xl font-bold bg-slate-50">
-                        <option value="Pengeluaran">Pengeluaran (Kas Keluar / SPJ)</option>
-                        <option value="Penerimaan">Penerimaan (Kas Masuk / Droping)</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block font-semibold text-slate-700 mb-1">Tanggal Transaksi <span class="text-rose-500">*</span></label>
-                    <input type="date" name="transaction_date" value="{{ date('Y-m-d') }}" required class="w-full px-3 py-2 border border-slate-300 rounded-xl">
-                </div>
-            </div>
-
-            {{-- Keterkaitan Logistik Gudang (BAST) & Sarpras --}}
-            <div class="p-3.5 bg-blue-50/60 rounded-xl border border-blue-200/80 space-y-3">
-                <div class="font-bold text-blue-900 flex items-center">
-                    <svg class="w-4 h-4 mr-1.5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
-                    Tautan Pembayaran Logistik / Aset Sarpras (Opsional)
-                </div>
+            <div class="p-5 sm:px-6 sm:py-5 space-y-4 text-xs overflow-y-auto flex-1 overscroll-contain">
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                        <label class="block font-medium text-slate-600 mb-1">Penerimaan Barang Gudang (BAST)</label>
-                        <select name="goods_receipt_id" id="select_goods_receipt" onchange="autoFillFromReceipt(this)" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg bg-white">
-                            <option value="">-- Bukan Belanja Logistik Gudang --</option>
-                            @foreach($goodsReceipts as $gr)
-                                <option value="{{ $gr->id }}" 
-                                        data-supplier="{{ $gr->supplier_name ?: 'Penyedia' }}" 
-                                        data-amount="{{ (int)$gr->total_amount }}" 
-                                        data-notes="{{ $gr->notes ?? 'Pengadaan barang persediaan logistik gudang' }}"
-                                        data-receipt-num="{{ $gr->receipt_number }}">
-                                    {{ $gr->receipt_number }} - {{ $gr->supplier_name ?: 'Penyedia' }} (Rp {{ number_format($gr->total_amount, 0, ',', '.') }})
-                                </option>
-                            @endforeach
+                        <label class="block font-semibold text-slate-700 mb-1">Jenis Transaksi <span class="text-rose-500">*</span></label>
+                        <select name="type" id="select_type" required class="w-full px-3 py-2 border border-slate-300 rounded-xl font-bold bg-slate-50">
+                            <option value="Pengeluaran">Pengeluaran (Kas Keluar / SPJ)</option>
+                            <option value="Penerimaan">Penerimaan (Kas Masuk / Droping)</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block font-medium text-slate-600 mb-1">Pengadaan Aset Sarpras (BMD)</label>
-                        <select name="asset_id" id="select_asset" onchange="autoFillFromAsset(this)" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg bg-white">
-                            <option value="">-- Bukan Belanja Modal Aset --</option>
-                            @foreach($assets as $ast)
-                                <option value="{{ $ast->id }}" 
-                                        data-name="{{ $ast->name }}" 
-                                        data-price="{{ (int)$ast->price }}"
-                                        data-code="{{ $ast->code }}">
-                                    {{ $ast->code }} - {{ $ast->name }} (Rp {{ number_format($ast->price, 0, ',', '.') }})
-                                </option>
-                            @endforeach
+                        <label class="block font-semibold text-slate-700 mb-1">Tanggal Transaksi <span class="text-rose-500">*</span></label>
+                        <input type="date" name="transaction_date" value="{{ date('Y-m-d') }}" required class="w-full px-3 py-2 border border-slate-300 rounded-xl">
+                    </div>
+                </div>
+
+                {{-- Keterkaitan Logistik Gudang (BAST) & Sarpras --}}
+                <div class="p-3.5 bg-blue-50/60 rounded-xl border border-blue-200/80 space-y-3">
+                    <div class="font-bold text-blue-900 flex items-center">
+                        <svg class="w-4 h-4 mr-1.5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+                        Tautan Pembayaran Logistik / Aset Sarpras (Opsional)
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block font-medium text-slate-600 mb-1">Penerimaan Barang Gudang (BAST)</label>
+                            <select name="goods_receipt_id" id="select_goods_receipt" onchange="autoFillFromReceipt(this)" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg bg-white">
+                                <option value="">-- Bukan Belanja Logistik Gudang --</option>
+                                @foreach($goodsReceipts as $gr)
+                                    <option value="{{ $gr->id }}" 
+                                            data-supplier="{{ $gr->supplier_name ?: 'Penyedia' }}" 
+                                            data-amount="{{ (int)$gr->total_amount }}" 
+                                            data-notes="{{ $gr->notes ?? 'Pengadaan barang persediaan logistik gudang' }}"
+                                            data-receipt-num="{{ $gr->receipt_number }}">
+                                        {{ $gr->receipt_number }} - {{ $gr->supplier_name ?: 'Penyedia' }} (Rp {{ number_format($gr->total_amount, 0, ',', '.') }})
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block font-medium text-slate-600 mb-1">Pengadaan Aset Sarpras (BMD)</label>
+                            <select name="asset_id" id="select_asset" onchange="autoFillFromAsset(this)" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg bg-white">
+                                <option value="">-- Bukan Belanja Modal Aset --</option>
+                                @foreach($assets as $ast)
+                                    <option value="{{ $ast->id }}" 
+                                            data-name="{{ $ast->name }}" 
+                                            data-price="{{ (int)$ast->price }}"
+                                            data-code="{{ $ast->code }}">
+                                        {{ $ast->code }} - {{ $ast->name }} (Rp {{ number_format($ast->price, 0, ',', '.') }})
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Sumber Dana <span class="text-rose-500">*</span></label>
+                        <select name="funding_source" required class="w-full px-3 py-2 border border-slate-300 rounded-xl">
+                            <option value="BOSP Reguler">BOSP Reguler</option>
+                            <option value="BOSP Kinerja">BOSP Kinerja</option>
+                            <option value="BOPD Pemprov">BOPD Pemprov</option>
+                            <option value="Hibah">Hibah</option>
+                            <option value="Komite Sekolah">Komite Sekolah</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Metode Pembayaran <span class="text-rose-500">*</span></label>
+                        <select name="payment_method" required class="w-full px-3 py-2 border border-slate-300 rounded-xl">
+                            <option value="Transfer Bank">Transfer Bank (Non-Tunai)</option>
+                            <option value="Tunai">Kas Tunai</option>
                         </select>
                     </div>
                 </div>
-            </div>
 
-            <div class="grid grid-cols-2 gap-3">
                 <div>
-                    <label class="block font-semibold text-slate-700 mb-1">Sumber Dana <span class="text-rose-500">*</span></label>
-                    <select name="funding_source" required class="w-full px-3 py-2 border border-slate-300 rounded-xl">
-                        <option value="BOSP Reguler">BOSP Reguler</option>
-                        <option value="BOSP Kinerja">BOSP Kinerja</option>
-                        <option value="BOPD Pemprov">BOPD Pemprov</option>
-                        <option value="Hibah">Hibah</option>
-                        <option value="Komite Sekolah">Komite Sekolah</option>
+                    <label class="block font-semibold text-slate-700 mb-1">Alokasi Sub Kegiatan RKAS (Jika Pengeluaran)</label>
+                    <select name="budget_item_id" id="select_budget_item" onchange="autoFillAccountCodeFromBudget(this, 'input_trans_account_code')" class="w-full px-3 py-2 border border-slate-300 rounded-xl">
+                        <option value="">-- Tidak Terkait Sub Kegiatan / Umum --</option>
+                        @foreach($budgetItems as $bi)
+                            <option value="{{ $bi->id }}" data-account-code="{{ $bi->account_code }}">{{ $bi->activity_name }} ({{ $bi->account_code ?? '5.1.02' }} - Pagu: Rp {{ number_format($bi->allocated_amount, 0, ',', '.') }})</option>
+                        @endforeach
                     </select>
                 </div>
+
                 <div>
-                    <label class="block font-semibold text-slate-700 mb-1">Metode Pembayaran <span class="text-rose-500">*</span></label>
-                    <select name="payment_method" required class="w-full px-3 py-2 border border-slate-300 rounded-xl">
-                        <option value="Transfer Bank">Transfer Bank (Non-Tunai)</option>
-                        <option value="Tunai">Kas Tunai</option>
-                    </select>
+                    <div class="flex items-center justify-between mb-1">
+                        <label class="block font-semibold text-slate-700">Kode Rekening Keuangan (BOSP / SIPD / BAS)</label>
+                        <button type="button" onclick="openAccountCodeModal('account-code-trans-modal', {targetCodeId: 'input_trans_account_code', targetActivityId: 'input_description'})" class="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-lg text-[11px] font-bold border border-emerald-200 cursor-pointer transition">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                            <span>Cari Kode Rekening</span>
+                        </button>
+                    </div>
+                    <input type="text" name="account_code" id="input_trans_account_code" placeholder="5.1.02.01.01.0024" class="w-full px-3 py-2 border border-slate-300 rounded-xl font-mono">
+                    <span class="text-[10px] text-slate-400 mt-1 block">💡 Otomatis terisi jika memilih Sub Kegiatan RKAS di atas, atau dapat dicari via katalog &amp; diisi manual secara bebas.</span>
                 </div>
-            </div>
 
-            <div>
-                <label class="block font-semibold text-slate-700 mb-1">Alokasi Sub Kegiatan RKAS (Jika Pengeluaran)</label>
-                <select name="budget_item_id" id="select_budget_item" onchange="autoFillAccountCodeFromBudget(this, 'input_trans_account_code')" class="w-full px-3 py-2 border border-slate-300 rounded-xl">
-                    <option value="">-- Tidak Terkait Sub Kegiatan / Umum --</option>
-                    @foreach($budgetItems as $bi)
-                        <option value="{{ $bi->id }}" data-account-code="{{ $bi->account_code }}">{{ $bi->activity_name }} ({{ $bi->account_code ?? '5.1.02' }} - Pagu: Rp {{ number_format($bi->allocated_amount, 0, ',', '.') }})</option>
-                    @endforeach
-                </select>
-            </div>
-
-            <div>
-                <div class="flex items-center justify-between mb-1">
-                    <label class="block font-semibold text-slate-700">Kode Rekening Keuangan (BOSP / SIPD / BAS)</label>
-                    <button type="button" onclick="openAccountCodeModal('account-code-trans-modal', {targetCodeId: 'input_trans_account_code', targetActivityId: 'input_description'})" class="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-lg text-[11px] font-bold border border-emerald-200 cursor-pointer transition">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                        <span>Cari Kode Rekening</span>
-                    </button>
-                </div>
-                <input type="text" name="account_code" id="input_trans_account_code" placeholder="5.1.02.01.01.0024" class="w-full px-3 py-2 border border-slate-300 rounded-xl font-mono">
-                <span class="text-[10px] text-slate-400 mt-1 block">💡 Otomatis terisi jika memilih Sub Kegiatan RKAS di atas, atau dapat dicari via katalog & diisi manual secara bebas.</span>
-            </div>
-
-            <div>
-                <label class="block font-semibold text-slate-700 mb-1">Uraian Keperluan Transaksi <span class="text-rose-500">*</span></label>
-                <textarea name="description" id="input_description" rows="2" placeholder="Pembelian ATK persiapan Asesmen Nasional..." required class="w-full px-3 py-2 border border-slate-300 rounded-xl"></textarea>
-            </div>
-
-            <div class="grid grid-cols-2 gap-3">
                 <div>
-                    <label class="block font-semibold text-slate-700 mb-1">Penerima / Pembayar <span class="text-rose-500">*</span></label>
-                    <input type="text" name="recipient_or_payer" id="input_recipient" placeholder="Toko Buku Berkah Mandiri" required class="w-full px-3 py-2 border border-slate-300 rounded-xl">
+                    <label class="block font-semibold text-slate-700 mb-1">Uraian Keperluan Transaksi <span class="text-rose-500">*</span></label>
+                    <textarea name="description" id="input_description" rows="2" placeholder="Pembelian ATK persiapan Asesmen Nasional..." required class="w-full px-3 py-2 border border-slate-300 rounded-xl"></textarea>
                 </div>
-                <div>
-                    <label class="block font-semibold text-slate-700 mb-1">Nominal Transaksi (Rp) <span class="text-rose-500">*</span></label>
-                    <input type="number" name="amount" id="input_amount" value="1500000" min="1" required class="w-full px-3 py-2 border border-slate-300 rounded-xl font-bold font-mono">
-                </div>
-            </div>
 
-            <div class="grid grid-cols-2 gap-3">
-                <div>
-                    <label class="block font-medium text-slate-600 mb-1">Nomor SPK / Surat Pesanan (Opsional)</label>
-                    <input type="text" name="spk_number" placeholder="SPK/2026/015" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg">
-                </div>
-                <div>
-                    <label class="block font-medium text-slate-600 mb-1">Nomor Faktur / Nota Toko (Opsional)</label>
-                    <input type="text" name="invoice_number" placeholder="INV-2026-99" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg">
-                </div>
-            </div>
-
-            <!-- Tax Section -->
-            <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
-                <label class="inline-flex items-center gap-2 cursor-pointer font-bold text-slate-800">
-                    <input type="checkbox" name="has_tax" value="1" onchange="document.getElementById('tax-inputs').classList.toggle('hidden', !this.checked)" class="w-4 h-4 text-blue-600 rounded">
-                    <span>Transaksi ini dikenakan Pungutan Pajak</span>
-                </label>
-                <div id="tax-inputs" class="hidden grid grid-cols-2 gap-3 pt-2">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                        <label class="block font-semibold text-slate-600 mb-1">Jenis Pajak</label>
-                        <select name="tax_type" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg">
-                            <option value="PPN 11%">PPN (11%)</option>
-                            <option value="PPh Pasal 21">PPh Pasal 21</option>
-                            <option value="PPh Pasal 22">PPh Pasal 22</option>
-                            <option value="PPh Pasal 23">PPh Pasal 23</option>
-                        </select>
+                        <label class="block font-semibold text-slate-700 mb-1">Penerima / Pembayar <span class="text-rose-500">*</span></label>
+                        <input type="text" name="recipient_or_payer" id="input_recipient" placeholder="Toko Buku Berkah Mandiri" required class="w-full px-3 py-2 border border-slate-300 rounded-xl">
                     </div>
                     <div>
-                        <label class="block font-semibold text-slate-600 mb-1">Nominal Pajak Dipotong (Rp)</label>
-                        <input type="number" name="tax_amount" value="0" min="0" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg">
+                        <label class="block font-semibold text-slate-700 mb-1">Nominal Transaksi (Rp) <span class="text-rose-500">*</span></label>
+                        <input type="number" name="amount" id="input_amount" value="1500000" min="1" required class="w-full px-3 py-2 border border-slate-300 rounded-xl font-bold font-mono">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-medium text-slate-600 mb-1">Nomor SPK / Surat Pesanan (Opsional)</label>
+                        <input type="text" name="spk_number" placeholder="SPK/2026/015" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block font-medium text-slate-600 mb-1">Nomor Faktur / Nota Toko (Opsional)</label>
+                        <input type="text" name="invoice_number" placeholder="INV-2026-99" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg">
+                    </div>
+                </div>
+
+                <!-- Tax Section -->
+                <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+                    <label class="inline-flex items-center gap-2 cursor-pointer font-bold text-slate-800">
+                        <input type="checkbox" name="has_tax" value="1" onchange="document.getElementById('tax-inputs').classList.toggle('hidden', !this.checked)" class="w-4 h-4 text-blue-600 rounded">
+                        <span>Transaksi ini dikenakan Pungutan Pajak</span>
+                    </label>
+                    <div id="tax-inputs" class="hidden grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                        <div>
+                            <label class="block font-semibold text-slate-600 mb-1">Jenis Pajak</label>
+                            <select name="tax_type" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg">
+                                <option value="PPN 11%">PPN (11%)</option>
+                                <option value="PPh Pasal 21">PPh Pasal 21</option>
+                                <option value="PPh Pasal 22">PPh Pasal 22</option>
+                                <option value="PPh Pasal 23">PPh Pasal 23</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block font-semibold text-slate-600 mb-1">Nominal Pajak Dipotong (Rp)</label>
+                            <input type="number" name="tax_amount" value="0" min="0" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg">
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
-                <button type="button" onclick="document.getElementById('modal-trans').classList.add('hidden')" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-semibold cursor-pointer">Batal</button>
-                <button type="submit" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold cursor-pointer">Simpan Transaksi Kas</button>
+            <!-- Modal Footer (Sticky) -->
+            <div class="flex items-center justify-end gap-2 px-5 sm:px-6 py-3.5 border-t border-slate-100 bg-slate-50 shrink-0">
+                <button type="button" onclick="document.getElementById('modal-trans').classList.add('hidden')" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl font-semibold cursor-pointer transition">Batal</button>
+                <button type="submit" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold cursor-pointer shadow-sm hover:shadow transition">Simpan Transaksi Kas</button>
             </div>
         </form>
     </div>
 </div>
 
 <!-- Modal Edit Transaksi Kas -->
-<div id="modal-edit-trans" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center z-50 p-4 overflow-y-auto">
-    <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-xl w-full shadow-xl my-8">
-        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+<div id="modal-edit-trans" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-start sm:items-center justify-center z-50 p-2 sm:p-4 md:p-6 overflow-y-auto">
+    <div class="bg-white rounded-2xl sm:rounded-3xl max-w-2xl w-full shadow-2xl my-auto sm:my-6 flex flex-col max-h-[94vh] sm:max-h-[90vh] overflow-hidden border border-slate-100 animate-in fade-in zoom-in-95 duration-150">
+        <!-- Modal Header -->
+        <div class="flex items-center justify-between px-5 sm:px-6 py-4 border-b border-slate-100 bg-white shrink-0 sticky top-0 z-10">
             <div>
                 <h2 class="text-base font-bold text-slate-900">Edit Transaksi Kas</h2>
                 <p class="text-xs text-slate-500 font-mono" id="edit-trans-evidence"></p>
             </div>
-            <button onclick="document.getElementById('modal-edit-trans').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 p-1">
+            <button type="button" onclick="document.getElementById('modal-edit-trans').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition cursor-pointer">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
         </div>
 
-        <form id="form-edit-trans" method="POST" class="space-y-4 text-xs mt-4">
+        <!-- Modal Body (Scrollable) -->
+        <form id="form-edit-trans" method="POST" class="flex flex-col flex-1 min-h-0 overflow-hidden">
             @csrf
             @method('PUT')
-            <div class="grid grid-cols-2 gap-3">
+            <div class="p-5 sm:px-6 sm:py-5 space-y-4 text-xs overflow-y-auto flex-1 overscroll-contain">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Jenis Transaksi <span class="text-rose-500">*</span></label>
+                        <select name="type" id="edit_type" required class="w-full px-3 py-2 border border-slate-300 rounded-xl font-bold bg-slate-50">
+                            <option value="Pengeluaran">Pengeluaran (Kas Keluar / SPJ)</option>
+                            <option value="Penerimaan">Penerimaan (Kas Masuk / Droping)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Tanggal Transaksi <span class="text-rose-500">*</span></label>
+                        <input type="date" name="transaction_date" id="edit_transaction_date" required class="w-full px-3 py-2 border border-slate-300 rounded-xl">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Sumber Dana <span class="text-rose-500">*</span></label>
+                        <select name="funding_source" id="edit_funding_source" required class="w-full px-3 py-2 border border-slate-300 rounded-xl">
+                            <option value="BOSP Reguler">BOSP Reguler</option>
+                            <option value="BOSP Kinerja">BOSP Kinerja</option>
+                            <option value="BOPD Pemprov">BOPD Pemprov</option>
+                            <option value="Hibah">Hibah</option>
+                            <option value="Komite Sekolah">Komite Sekolah</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Metode Pembayaran <span class="text-rose-500">*</span></label>
+                        <select name="payment_method" id="edit_payment_method" required class="w-full px-3 py-2 border border-slate-300 rounded-xl">
+                            <option value="Transfer Bank">Transfer Bank (Non-Tunai)</option>
+                            <option value="Tunai">Kas Tunai</option>
+                        </select>
+                    </div>
+                </div>
+
                 <div>
-                    <label class="block font-semibold text-slate-700 mb-1">Jenis Transaksi <span class="text-rose-500">*</span></label>
-                    <select name="type" id="edit_type" required class="w-full px-3 py-2 border border-slate-300 rounded-xl font-bold bg-slate-50">
-                        <option value="Pengeluaran">Pengeluaran (Kas Keluar / SPJ)</option>
-                        <option value="Penerimaan">Penerimaan (Kas Masuk / Droping)</option>
+                    <label class="block font-semibold text-slate-700 mb-1">Alokasi Sub Kegiatan RKAS (Jika Pengeluaran)</label>
+                    <select name="budget_item_id" id="edit_budget_item_id" onchange="autoFillAccountCodeFromBudget(this, 'edit_trans_account_code')" class="w-full px-3 py-2 border border-slate-300 rounded-xl">
+                        <option value="">-- Tidak Terkait Sub Kegiatan / Umum --</option>
+                        @foreach($budgetItems as $bi)
+                            <option value="{{ $bi->id }}" data-account-code="{{ $bi->account_code }}">{{ $bi->activity_name }} ({{ $bi->account_code ?? '5.1.02' }} - Pagu: Rp {{ number_format($bi->allocated_amount, 0, ',', '.') }})</option>
+                        @endforeach
                     </select>
                 </div>
+
                 <div>
-                    <label class="block font-semibold text-slate-700 mb-1">Tanggal Transaksi <span class="text-rose-500">*</span></label>
-                    <input type="date" name="transaction_date" id="edit_transaction_date" required class="w-full px-3 py-2 border border-slate-300 rounded-xl">
+                    <div class="flex items-center justify-between mb-1">
+                        <label class="block font-semibold text-slate-700">Kode Rekening Keuangan (BOSP / SIPD / BAS)</label>
+                        <button type="button" onclick="openAccountCodeModal('account-code-trans-modal', {targetCodeId: 'edit_trans_account_code', targetActivityId: 'edit_description'})" class="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-lg text-[11px] font-bold border border-emerald-200 cursor-pointer transition">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                            <span>Cari Kode Rekening</span>
+                        </button>
+                    </div>
+                    <input type="text" name="account_code" id="edit_trans_account_code" class="w-full px-3 py-2 border border-slate-300 rounded-xl font-mono">
+                    <span class="text-[10px] text-slate-400 mt-1 block">💡 Otomatis terisi jika memilih Sub Kegiatan RKAS di atas, atau dapat dicari via katalog &amp; diisi manual secara bebas.</span>
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">Uraian Keperluan Transaksi <span class="text-rose-500">*</span></label>
+                    <textarea name="description" id="edit_description" rows="2" required class="w-full px-3 py-2 border border-slate-300 rounded-xl"></textarea>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Penerima / Pembayar <span class="text-rose-500">*</span></label>
+                        <input type="text" name="recipient_or_payer" id="edit_recipient_or_payer" required class="w-full px-3 py-2 border border-slate-300 rounded-xl">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Nominal Transaksi (Rp) <span class="text-rose-500">*</span></label>
+                        <input type="number" name="amount" id="edit_amount" min="1" required class="w-full px-3 py-2 border border-slate-300 rounded-xl font-bold font-mono">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-medium text-slate-600 mb-1">Nomor SPK / Surat Pesanan (Opsional)</label>
+                        <input type="text" name="spk_number" id="edit_spk_number" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block font-medium text-slate-600 mb-1">Nomor Faktur / Nota Toko (Opsional)</label>
+                        <input type="text" name="invoice_number" id="edit_invoice_number" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg">
+                    </div>
                 </div>
             </div>
 
-            <div class="grid grid-cols-2 gap-3">
-                <div>
-                    <label class="block font-semibold text-slate-700 mb-1">Sumber Dana <span class="text-rose-500">*</span></label>
-                    <select name="funding_source" id="edit_funding_source" required class="w-full px-3 py-2 border border-slate-300 rounded-xl">
-                        <option value="BOSP Reguler">BOSP Reguler</option>
-                        <option value="BOSP Kinerja">BOSP Kinerja</option>
-                        <option value="BOPD Pemprov">BOPD Pemprov</option>
-                        <option value="Hibah">Hibah</option>
-                        <option value="Komite Sekolah">Komite Sekolah</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block font-semibold text-slate-700 mb-1">Metode Pembayaran <span class="text-rose-500">*</span></label>
-                    <select name="payment_method" id="edit_payment_method" required class="w-full px-3 py-2 border border-slate-300 rounded-xl">
-                        <option value="Transfer Bank">Transfer Bank (Non-Tunai)</option>
-                        <option value="Tunai">Kas Tunai</option>
-                    </select>
-                </div>
-            </div>
-
-            <div>
-                <label class="block font-semibold text-slate-700 mb-1">Alokasi Sub Kegiatan RKAS (Jika Pengeluaran)</label>
-                <select name="budget_item_id" id="edit_budget_item_id" onchange="autoFillAccountCodeFromBudget(this, 'edit_trans_account_code')" class="w-full px-3 py-2 border border-slate-300 rounded-xl">
-                    <option value="">-- Tidak Terkait Sub Kegiatan / Umum --</option>
-                    @foreach($budgetItems as $bi)
-                        <option value="{{ $bi->id }}" data-account-code="{{ $bi->account_code }}">{{ $bi->activity_name }} ({{ $bi->account_code ?? '5.1.02' }} - Pagu: Rp {{ number_format($bi->allocated_amount, 0, ',', '.') }})</option>
-                    @endforeach
-                </select>
-            </div>
-
-            <div>
-                <div class="flex items-center justify-between mb-1">
-                    <label class="block font-semibold text-slate-700">Kode Rekening Keuangan (BOSP / SIPD / BAS)</label>
-                    <button type="button" onclick="openAccountCodeModal('account-code-trans-modal', {targetCodeId: 'edit_trans_account_code', targetActivityId: 'edit_description'})" class="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-lg text-[11px] font-bold border border-emerald-200 cursor-pointer transition">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                        <span>Cari Kode Rekening</span>
-                    </button>
-                </div>
-                <input type="text" name="account_code" id="edit_trans_account_code" class="w-full px-3 py-2 border border-slate-300 rounded-xl font-mono">
-                <span class="text-[10px] text-slate-400 mt-1 block">💡 Otomatis terisi jika memilih Sub Kegiatan RKAS di atas, atau dapat dicari via katalog & diisi manual secara bebas.</span>
-            </div>
-
-            <div>
-                <label class="block font-semibold text-slate-700 mb-1">Uraian Keperluan Transaksi <span class="text-rose-500">*</span></label>
-                <textarea name="description" id="edit_description" rows="2" required class="w-full px-3 py-2 border border-slate-300 rounded-xl"></textarea>
-            </div>
-
-            <div class="grid grid-cols-2 gap-3">
-                <div>
-                    <label class="block font-semibold text-slate-700 mb-1">Penerima / Pembayar <span class="text-rose-500">*</span></label>
-                    <input type="text" name="recipient_or_payer" id="edit_recipient_or_payer" required class="w-full px-3 py-2 border border-slate-300 rounded-xl">
-                </div>
-                <div>
-                    <label class="block font-semibold text-slate-700 mb-1">Nominal Transaksi (Rp) <span class="text-rose-500">*</span></label>
-                    <input type="number" name="amount" id="edit_amount" min="1" required class="w-full px-3 py-2 border border-slate-300 rounded-xl font-bold font-mono">
-                </div>
-            </div>
-
-            <div class="grid grid-cols-2 gap-3">
-                <div>
-                    <label class="block font-medium text-slate-600 mb-1">Nomor SPK / Surat Pesanan (Opsional)</label>
-                    <input type="text" name="spk_number" id="edit_spk_number" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg">
-                </div>
-                <div>
-                    <label class="block font-medium text-slate-600 mb-1">Nomor Faktur / Nota Toko (Opsional)</label>
-                    <input type="text" name="invoice_number" id="edit_invoice_number" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg">
-                </div>
-            </div>
-
-            <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
-                <button type="button" onclick="document.getElementById('modal-edit-trans').classList.add('hidden')" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-semibold cursor-pointer">Batal</button>
-                <button type="submit" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold cursor-pointer">Simpan Perubahan</button>
+            <!-- Modal Footer (Sticky) -->
+            <div class="flex items-center justify-end gap-2 px-5 sm:px-6 py-3.5 border-t border-slate-100 bg-slate-50 shrink-0">
+                <button type="button" onclick="document.getElementById('modal-edit-trans').classList.add('hidden')" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl font-semibold cursor-pointer transition">Batal</button>
+                <button type="submit" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold cursor-pointer shadow-sm hover:shadow transition">Simpan Perubahan</button>
             </div>
         </form>
     </div>

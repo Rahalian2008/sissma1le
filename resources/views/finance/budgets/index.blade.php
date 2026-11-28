@@ -142,14 +142,21 @@
 
 @push('modals')
 <!-- Modal Tambah Pagu Anggaran -->
-<div id="modal-budget" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-xl">
-        <h2 class="text-base font-bold text-slate-900 mb-1">Tetapkan Pagu Sumber Anggaran</h2>
-        <p class="text-xs text-slate-500 mb-4">Input pagu dana operasional sekolah.</p>
+<div id="modal-budget" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-start sm:items-center justify-center z-50 p-2 sm:p-4 overflow-y-auto">
+    <div class="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-7 max-w-lg w-full shadow-2xl my-auto max-h-[90vh] overflow-y-auto border border-slate-100">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
+            <div>
+                <h2 class="text-base font-bold text-slate-900">Tetapkan Pagu Sumber Anggaran</h2>
+                <p class="text-xs text-slate-500">Input pagu dana operasional sekolah.</p>
+            </div>
+            <button type="button" onclick="document.getElementById('modal-budget').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 p-1">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
 
         <form action="{{ route('finance.budgets.store') }}" method="POST" class="space-y-4 text-xs">
             @csrf
-            <div class="grid grid-cols-2 gap-3">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                     <label class="block font-semibold text-slate-700 mb-1">Tahun Anggaran <span class="text-rose-500">*</span></label>
                     <input type="number" name="fiscal_year" value="{{ $fiscalYear }}" min="2020" required class="w-full px-3 py-2 border border-slate-300 rounded-xl">
@@ -174,7 +181,7 @@
                 <label class="block font-semibold text-slate-700 mb-1">Uraian / Keterangan</label>
                 <textarea name="description" rows="2" placeholder="Alokasi pagu dana operasional..." class="w-full px-3 py-2 border border-slate-300 rounded-xl"></textarea>
             </div>
-            <div class="flex items-center justify-end gap-2 pt-2">
+            <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
                 <button type="button" onclick="document.getElementById('modal-budget').classList.add('hidden')" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-semibold cursor-pointer">Batal</button>
                 <button type="submit" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold cursor-pointer">Simpan Pagu</button>
             </div>
@@ -183,10 +190,17 @@
 </div>
 
 <!-- Modal Tambah Sub Kegiatan Anggaran -->
-<div id="modal-item" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-xl">
-        <h2 class="text-base font-bold text-slate-900 mb-1">Tambah Sub Kegiatan RKAS</h2>
-        <p class="text-xs text-slate-500 mb-4" id="item-modal-sub">Alokasi kegiatan.</p>
+<div id="modal-item" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-start sm:items-center justify-center z-50 p-2 sm:p-4 overflow-y-auto">
+    <div class="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-7 max-w-lg w-full shadow-2xl my-auto max-h-[90vh] overflow-y-auto border border-slate-100">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
+            <div>
+                <h2 class="text-base font-bold text-slate-900">Tambah Sub Kegiatan RKAS</h2>
+                <p class="text-xs text-slate-500" id="item-modal-sub">Alokasi kegiatan.</p>
+            </div>
+            <button type="button" onclick="document.getElementById('modal-item').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 p-1">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
 
         <form id="form-item" action="" method="POST" class="space-y-4 text-xs">
             @csrf
@@ -213,11 +227,13 @@
                 <label class="block font-semibold text-slate-700 mb-1">Alokasi Anggaran (Rp) <span class="text-rose-500">*</span></label>
                 <input type="number" name="allocated_amount" value="25000000" min="0" required class="w-full px-3 py-2 border border-slate-300 rounded-xl">
             </div>
-            <div class="flex items-center justify-end gap-2 pt-2">
+            <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
                 <button type="button" onclick="document.getElementById('modal-item').classList.add('hidden')" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-semibold cursor-pointer">Batal</button>
                 <button type="submit" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold cursor-pointer">Simpan Kegiatan</button>
             </div>
         </form>
+    </div>
+</div>
     </div>
 </div>
 
@@ -251,15 +267,22 @@ function openEditItemModal(item) {
 </script>
 
 <!-- Modal Edit Pagu Anggaran -->
-<div id="modal-edit-budget" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-xl">
-        <h2 class="text-base font-bold text-slate-900 mb-1">Edit Pagu Sumber Anggaran</h2>
-        <p class="text-xs text-slate-500 mb-4">Perbarui pagu dana operasional sekolah.</p>
+<div id="modal-edit-budget" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-start sm:items-center justify-center z-50 p-2 sm:p-4 overflow-y-auto">
+    <div class="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-7 max-w-lg w-full shadow-2xl my-auto max-h-[90vh] overflow-y-auto border border-slate-100">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
+            <div>
+                <h2 class="text-base font-bold text-slate-900">Edit Pagu Sumber Anggaran</h2>
+                <p class="text-xs text-slate-500">Perbarui pagu dana operasional sekolah.</p>
+            </div>
+            <button type="button" onclick="document.getElementById('modal-edit-budget').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 p-1">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
 
         <form id="form-edit-budget" method="POST" class="space-y-4 text-xs">
             @csrf
             @method('PUT')
-            <div class="grid grid-cols-2 gap-3">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                     <label class="block font-semibold text-slate-700 mb-1">Tahun Anggaran <span class="text-rose-500">*</span></label>
                     <input type="number" name="fiscal_year" id="edit_budget_year" min="2020" required class="w-full px-3 py-2 border border-slate-300 rounded-xl">
@@ -284,7 +307,7 @@ function openEditItemModal(item) {
                 <label class="block font-semibold text-slate-700 mb-1">Uraian / Keterangan</label>
                 <textarea name="description" id="edit_budget_desc" rows="2" class="w-full px-3 py-2 border border-slate-300 rounded-xl"></textarea>
             </div>
-            <div class="flex items-center justify-end gap-2 pt-2">
+            <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
                 <button type="button" onclick="document.getElementById('modal-edit-budget').classList.add('hidden')" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-semibold cursor-pointer">Batal</button>
                 <button type="submit" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold cursor-pointer">Simpan Perubahan</button>
             </div>
@@ -293,10 +316,17 @@ function openEditItemModal(item) {
 </div>
 
 <!-- Modal Edit Sub Kegiatan Anggaran -->
-<div id="modal-edit-item" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-xl">
-        <h2 class="text-base font-bold text-slate-900 mb-1">Edit Sub Kegiatan RKAS</h2>
-        <p class="text-xs text-slate-500 mb-4">Perbarui rincian kegiatan.</p>
+<div id="modal-edit-item" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-start sm:items-center justify-center z-50 p-2 sm:p-4 overflow-y-auto">
+    <div class="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-7 max-w-lg w-full shadow-2xl my-auto max-h-[90vh] overflow-y-auto border border-slate-100">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
+            <div>
+                <h2 class="text-base font-bold text-slate-900">Edit Sub Kegiatan RKAS</h2>
+                <p class="text-xs text-slate-500">Perbarui rincian kegiatan.</p>
+            </div>
+            <button type="button" onclick="document.getElementById('modal-edit-item').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 p-1">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
 
         <form id="form-edit-item" method="POST" class="space-y-4 text-xs">
             @csrf
@@ -324,7 +354,7 @@ function openEditItemModal(item) {
                 <label class="block font-semibold text-slate-700 mb-1">Alokasi Anggaran (Rp) <span class="text-rose-500">*</span></label>
                 <input type="number" name="allocated_amount" id="edit_item_amount" min="0" required class="w-full px-3 py-2 border border-slate-300 rounded-xl">
             </div>
-            <div class="flex items-center justify-end gap-2 pt-2">
+            <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
                 <button type="button" onclick="document.getElementById('modal-edit-item').classList.add('hidden')" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-semibold cursor-pointer">Batal</button>
                 <button type="submit" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold cursor-pointer">Simpan Perubahan</button>
             </div>

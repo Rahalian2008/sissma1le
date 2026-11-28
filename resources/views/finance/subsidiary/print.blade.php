@@ -111,19 +111,23 @@
         </table>
     </div>
 
+    @php
+        $headmaster = $headmaster ?? \App\Models\Teacher::getHeadmaster();
+        $treasurer = $treasurer ?? \App\Models\Teacher::getTreasurer();
+    @endphp
     <div class="signatures">
         <div class="sig-box float-left">
-            <p>Mengetahui,<br>Kepala Sekolah selaku KPA,</p>
+            <p>Mengetahui,<br>Kepala Sekolah,</p>
             <br><br><br>
-            <p><strong><u>{{ $school->headmaster_name ?? $school->principal_name ?? '................................................' }}</u></strong><br>
-            NIP. {{ $school->headmaster_nip ?? $school->principal_nip ?? '-' }}</p>
+            <p><strong><u>{{ $headmaster['name'] ?? $school->headmaster_name }}</u></strong><br>
+            NIP. {{ $headmaster['nip'] ?? $school->headmaster_nip }}</p>
         </div>
 
         <div class="sig-box float-right">
-            <p>{{ $school->city ?? 'Kabupaten Sukabumi' }}, {{ now()->translatedFormat('d F Y') }}<br>{{ auth()->user()?->getRoleDisplayName() ?? 'Bendahara Pengeluaran' }},</p>
+            <p>{{ $school->city ?? 'Kabupaten Sukabumi' }}, {{ now()->translatedFormat('d F Y') }}<br>Bendahara Sekolah,</p>
             <br><br><br>
-            <p><strong><u>{{ strtoupper(Auth::user()?->getOfficialName() ?? 'Bendahara Sekolah') }}</u></strong><br>
-            NIP. {{ Auth::user()?->getOfficialNip() ?? '-' }}</p>
+            <p><strong><u>{{ $treasurer['name'] ?? 'Bendahara Sekolah' }}</u></strong><br>
+            NIP. {{ $treasurer['nip'] ?? '-' }}</p>
         </div>
         <div class="clear"></div>
     </div>

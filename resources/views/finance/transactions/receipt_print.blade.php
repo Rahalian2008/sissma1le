@@ -183,19 +183,23 @@
         </div>
     @endif
 
+    @php
+        $headmaster = $headmaster ?? \App\Models\Teacher::getHeadmaster();
+        $treasurer = $treasurer ?? \App\Models\Teacher::getTreasurer();
+    @endphp
     <div class="signatures">
         <div class="sig-box">
-            <p>Setuju dibayar,<br><strong>Kepala Sekolah</strong><br>Selaku Kuasa Pengguna Anggaran</p>
+            <p>Setuju dibayar,<br><strong>Kepala Sekolah</strong></p>
             <br><br><br>
-            <p><strong><u>{{ $school->headmaster_name ?? $school->principal_name ?? '................................................' }}</u></strong><br>
-            NIP. {{ $school->headmaster_nip ?? $school->principal_nip ?? '-' }}</p>
+            <p><strong><u>{{ $headmaster['name'] ?? $school->headmaster_name }}</u></strong><br>
+            NIP. {{ $headmaster['nip'] ?? $school->headmaster_nip }}</p>
         </div>
 
         <div class="sig-box">
-            <p>Lunas dibayar,<br><strong>Bendahara Pengeluaran</strong><br>BOSP / Satuan Pendidikan</p>
+            <p>Lunas dibayar,<br><strong>Bendahara Sekolah</strong></p>
             <br><br><br>
-            <p><strong><u>{{ Auth::user()->name ?? 'Bendahara Sekolah' }}</u></strong><br>
-            NIP. ................................................</p>
+            <p><strong><u>{{ $treasurer['name'] ?? 'Bendahara Sekolah' }}</u></strong><br>
+            NIP. {{ $treasurer['nip'] ?? '-' }}</p>
         </div>
 
         <div class="sig-box">

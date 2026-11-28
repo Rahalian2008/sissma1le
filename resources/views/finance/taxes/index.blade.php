@@ -136,10 +136,17 @@
 
 @push('modals')
 <!-- Modal Input Pajak -->
-<div id="modal-tax" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-xl">
-        <h2 class="text-base font-bold text-slate-900 mb-1">Input Pungutan Pajak</h2>
-        <p class="text-xs text-slate-500 mb-4">Pencatatan kewajiban pajak atas transaksi belanja sekolah.</p>
+<div id="modal-tax" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-start sm:items-center justify-center z-50 p-2 sm:p-4 overflow-y-auto">
+    <div class="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-7 max-w-lg w-full shadow-2xl my-auto max-h-[90vh] overflow-y-auto border border-slate-100">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
+            <div>
+                <h2 class="text-base font-bold text-slate-900">Input Pungutan Pajak</h2>
+                <p class="text-xs text-slate-500">Pencatatan kewajiban pajak atas transaksi belanja sekolah.</p>
+            </div>
+            <button type="button" onclick="document.getElementById('modal-tax').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 p-1">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
 
         <form action="{{ route('finance.taxes.store') }}" method="POST" class="space-y-4 text-xs">
             @csrf
@@ -152,7 +159,7 @@
                     @endforeach
                 </select>
             </div>
-            <div class="grid grid-cols-2 gap-3">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                     <label class="block font-semibold text-slate-700 mb-1">Jenis Pajak <span class="text-rose-500">*</span></label>
                     <select name="tax_type" required class="w-full px-3 py-2 border border-slate-300 rounded-xl">
@@ -167,7 +174,7 @@
                     <input type="number" step="0.1" name="rate_percentage" value="11" required class="w-full px-3 py-2 border border-slate-300 rounded-xl">
                 </div>
             </div>
-            <div class="grid grid-cols-2 gap-3">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                     <label class="block font-semibold text-slate-700 mb-1">Dasar Pengenaan (DPP) <span class="text-rose-500">*</span></label>
                     <input type="number" name="tax_base" value="10000000" min="0" required class="w-full px-3 py-2 border border-slate-300 rounded-xl">
@@ -177,7 +184,7 @@
                     <input type="number" name="tax_amount" value="1100000" min="0" required class="w-full px-3 py-2 border border-slate-300 rounded-xl font-bold">
                 </div>
             </div>
-            <div class="grid grid-cols-2 gap-3">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                     <label class="block font-semibold text-slate-700 mb-1">Kode Billing DJP</label>
                     <input type="text" name="billing_code" placeholder="012345678901234" class="w-full px-3 py-2 border border-slate-300 rounded-xl font-mono">
@@ -190,7 +197,7 @@
                     </select>
                 </div>
             </div>
-            <div class="flex items-center justify-end gap-2 pt-2">
+            <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
                 <button type="button" onclick="document.getElementById('modal-tax').classList.add('hidden')" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-semibold cursor-pointer">Batal</button>
                 <button type="submit" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold cursor-pointer">Simpan Pajak</button>
             </div>
@@ -199,15 +206,22 @@
 </div>
 
 <!-- Modal Edit Pajak -->
-<div id="modal-edit-tax" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-xl">
-        <h2 class="text-base font-bold text-slate-900 mb-1">Edit Catatan Pajak</h2>
-        <p class="text-xs text-slate-500 mb-4">Perbarui rincian potongan atau setoran pajak.</p>
+<div id="modal-edit-tax" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-start sm:items-center justify-center z-50 p-2 sm:p-4 overflow-y-auto">
+    <div class="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-7 max-w-lg w-full shadow-2xl my-auto max-h-[90vh] overflow-y-auto border border-slate-100">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
+            <div>
+                <h2 class="text-base font-bold text-slate-900">Edit Catatan Pajak</h2>
+                <p class="text-xs text-slate-500">Perbarui rincian potongan atau setoran pajak.</p>
+            </div>
+            <button type="button" onclick="document.getElementById('modal-edit-tax').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 p-1">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
 
         <form id="form-edit-tax" method="POST" class="space-y-4 text-xs">
             @csrf
             @method('PUT')
-            <div class="grid grid-cols-2 gap-3">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                     <label class="block font-semibold text-slate-700 mb-1">Jenis Pajak <span class="text-rose-500">*</span></label>
                     <select name="tax_type" id="edit_tax_type" required class="w-full px-3 py-2 border border-slate-300 rounded-xl">
@@ -222,7 +236,7 @@
                     <input type="number" step="0.1" name="rate_percentage" id="edit_rate_percentage" required class="w-full px-3 py-2 border border-slate-300 rounded-xl">
                 </div>
             </div>
-            <div class="grid grid-cols-2 gap-3">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                     <label class="block font-semibold text-slate-700 mb-1">Dasar Pengenaan (DPP) <span class="text-rose-500">*</span></label>
                     <input type="number" name="tax_base" id="edit_tax_base" min="0" required class="w-full px-3 py-2 border border-slate-300 rounded-xl">
@@ -232,7 +246,7 @@
                     <input type="number" name="tax_amount" id="edit_tax_amount" min="0" required class="w-full px-3 py-2 border border-slate-300 rounded-xl font-bold">
                 </div>
             </div>
-            <div class="grid grid-cols-2 gap-3">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                     <label class="block font-semibold text-slate-700 mb-1">Kode Billing DJP</label>
                     <input type="text" name="billing_code" id="edit_billing_code" class="w-full px-3 py-2 border border-slate-300 rounded-xl font-mono">
@@ -242,7 +256,7 @@
                     <input type="text" name="ntpn" id="edit_ntpn" class="w-full px-3 py-2 border border-slate-300 rounded-xl font-mono">
                 </div>
             </div>
-            <div class="grid grid-cols-2 gap-3">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                     <label class="block font-semibold text-slate-700 mb-1">Tanggal Setor</label>
                     <input type="date" name="deposit_date" id="edit_deposit_date" class="w-full px-3 py-2 border border-slate-300 rounded-xl">
@@ -255,7 +269,7 @@
                     </select>
                 </div>
             </div>
-            <div class="flex items-center justify-end gap-2 pt-2">
+            <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
                 <button type="button" onclick="document.getElementById('modal-edit-tax').classList.add('hidden')" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-semibold cursor-pointer">Batal</button>
                 <button type="submit" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold cursor-pointer">Simpan Perubahan</button>
             </div>

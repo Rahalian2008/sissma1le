@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\CashTransaction;
 use App\Models\SchoolIdentity;
 use App\Models\TaxRecord;
+use App\Models\Teacher;
 use App\Services\AuditTrailService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -110,9 +111,11 @@ class TaxController extends Controller
         $pendingTaxes = $taxes->where('status', '!=', 'Disetor')->sum('tax_amount');
 
         $school = SchoolIdentity::current();
+        $headmaster = Teacher::getHeadmaster();
+        $treasurer = Teacher::getTreasurer();
 
         AuditTrailService::log('print', 'keuangan', "Mencetak Buku Pembantu Pajak Tahun {$year}");
 
-        return view('finance.taxes.print', compact('taxes', 'year', 'totalTaxes', 'depositedTaxes', 'pendingTaxes', 'school'));
+        return view('finance.taxes.print', compact('taxes', 'year', 'totalTaxes', 'depositedTaxes', 'pendingTaxes', 'school', 'headmaster', 'treasurer'));
     }
 }

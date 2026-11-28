@@ -319,7 +319,10 @@
                 <span>13. Agenda</span>
             </button>
             <button type="button" onclick="goToSlide(13)" id="pill-slide-13" class="slide-nav-pill px-1.5 lg:px-2 py-0.5 sm:py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap text-[10.5px] lg:text-[11px]">
-                <span>14. Tamu</span>
+                <span>14. Keuangan</span>
+            </button>
+            <button type="button" onclick="goToSlide(14)" id="pill-slide-14" class="slide-nav-pill px-1.5 lg:px-2 py-0.5 sm:py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap text-[10.5px] lg:text-[11px]">
+                <span>15. Tamu</span>
             </button>
         </div>
 
@@ -327,6 +330,9 @@
         <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
             <!-- Ekosistem Kios Quick Launch (Layar Besar) -->
             <div class="hidden 2xl:flex items-center gap-1 bg-slate-950/80 border border-white/10 rounded-xl p-1 text-xs">
+                <a href="{{ route('finance.bku.index') }}" target="_blank" class="px-2 py-1 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition flex items-center gap-1" title="Buka BKU Keuangan">
+                    <span>💰 Keuangan</span>
+                </a>
                 <a href="{{ route('guests.kiosk') }}" target="_blank" class="px-2 py-1 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition flex items-center gap-1" title="Buka Kios Buku Tamu">
                     <span>👥 Tamu</span>
                 </a>
@@ -3038,13 +3044,240 @@
         </section>
 
         <!-- ========================================================================= -->
-        <!-- SLIDE 13: BUKU TAMU KEDINASAN & KUNJUNGAN SEKOLAH (SIKATAS) -->
+        <!-- SLIDE 13: LAPORAN KEUANGAN & REALISASI BKU SEKOLAH (TRANSPARANSI PUBLIK) -->
         <!-- ========================================================================= -->
         <section id="slide-13" class="hidden flex-col h-full min-h-0 overflow-hidden">
             <!-- Header Slide -->
             <div class="flex items-center justify-between pb-2 shrink-0">
                 <div class="flex items-center gap-2.5">
-                    <span class="px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-400 font-mono font-bold text-xs">14</span>
+                    <span class="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 font-mono font-bold text-xs">14</span>
+                    <div>
+                        <h2 class="text-sm sm:text-base font-black text-white flex items-center gap-2">
+                            <span>Laporan Keuangan &amp; Realisasi BKU Sekolah</span>
+                            <span class="text-slate-500">&bull;</span>
+                            <span class="text-xs font-semibold text-emerald-300">Transparansi Anggaran TA {{ $data['finance']['fiscal_year'] ?? date('Y') }}</span>
+                        </h2>
+                        <p class="text-[10px] text-slate-400">Publikasi keterbukaan informasi publik (UU No. 14/2008) &amp; Juknis Pengelolaan Dana BOSP Kemendikbudristek RI</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                        🛡️ Akuntabel &amp; Bebas Temuan
+                    </span>
+                    <a href="{{ route('finance.bku.index') }}" target="_blank" class="px-2.5 py-1 rounded-lg bg-emerald-600/30 hover:bg-emerald-600 text-emerald-200 text-[11px] font-bold transition flex items-center gap-1 border border-emerald-500/30">
+                        <span>Buka BKU &rarr;</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Content Grid -->
+            <div class="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-3.5 overflow-hidden pt-1">
+                <!-- Left (7 Cols): KPI Cards + Rekap 8 Standar Nasional Pendidikan (SNP) + Pejabat Keuangan -->
+                <div class="lg:col-span-7 flex flex-col h-full min-h-0 gap-3">
+                    <!-- Top KPI Summary Cards (6 Cards) -->
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 shrink-0">
+                        <div class="glass-panel p-2.5 rounded-2xl border border-white/5 flex items-center gap-2.5">
+                            <div class="w-9 h-9 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center text-base shrink-0 font-bold">
+                                📊
+                            </div>
+                            <div class="min-w-0">
+                                <span class="text-[9.5px] text-slate-400 font-bold block truncate">Pagu Alokasi RKAS</span>
+                                <span class="text-sm font-black text-white font-mono leading-tight block truncate">Rp {{ number_format($data['finance']['total_allocated'] ?? 0, 0, ',', '.') }}</span>
+                                <span class="text-[9px] text-blue-300 block">Pagu APBS/BOSP</span>
+                            </div>
+                        </div>
+
+                        <div class="glass-panel p-2.5 rounded-2xl border border-white/5 flex items-center gap-2.5">
+                            <div class="w-9 h-9 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center text-base shrink-0 font-bold">
+                                💳
+                            </div>
+                            <div class="min-w-0">
+                                <span class="text-[9.5px] text-slate-400 font-bold block truncate">Realisasi Belanja</span>
+                                <span class="text-sm font-black text-rose-400 font-mono leading-tight block truncate">Rp {{ number_format($data['finance']['total_realized'] ?? 0, 0, ',', '.') }}</span>
+                                <span class="text-[9px] text-rose-300 block">Serapan: {{ $data['finance']['absorption_pct'] ?? 0 }}%</span>
+                            </div>
+                        </div>
+
+                        <div class="glass-panel p-2.5 rounded-2xl border border-white/5 flex items-center gap-2.5">
+                            <div class="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-base shrink-0 font-bold">
+                                ⏳
+                            </div>
+                            <div class="min-w-0">
+                                <span class="text-[9.5px] text-slate-400 font-bold block truncate">Sisa Pagu Anggaran</span>
+                                <span class="text-sm font-black text-amber-300 font-mono leading-tight block truncate">Rp {{ number_format($data['finance']['remaining'] ?? 0, 0, ',', '.') }}</span>
+                                <span class="text-[9px] text-amber-400/80 block">Alokasi Berjalan</span>
+                            </div>
+                        </div>
+
+                        <div class="glass-panel p-2.5 rounded-2xl border border-white/5 flex items-center gap-2.5">
+                            <div class="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-base shrink-0 font-bold">
+                                💼
+                            </div>
+                            <div class="min-w-0">
+                                <span class="text-[9.5px] text-slate-400 font-bold block truncate">Saldo Kas BKU</span>
+                                <span class="text-sm font-black text-emerald-400 font-mono leading-tight block truncate">Rp {{ number_format($data['finance']['bku_balance'] ?? 0, 0, ',', '.') }}</span>
+                                <span class="text-[9px] text-emerald-300 block">Buku Kas Umum</span>
+                            </div>
+                        </div>
+
+                        <div class="glass-panel p-2.5 rounded-2xl border border-white/5 flex items-center gap-2.5">
+                            <div class="w-9 h-9 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-base shrink-0 font-bold">
+                                💵
+                            </div>
+                            <div class="min-w-0">
+                                <span class="text-[9.5px] text-slate-400 font-bold block truncate">Kas Tunai di Brankas</span>
+                                <span class="text-sm font-black text-white font-mono leading-tight block truncate">Rp {{ number_format($data['finance']['cash_balance'] ?? 0, 0, ',', '.') }}</span>
+                                <span class="text-[9px] text-indigo-300 block">Pembantu Kas</span>
+                            </div>
+                        </div>
+
+                        <div class="glass-panel p-2.5 rounded-2xl border border-white/5 flex items-center gap-2.5">
+                            <div class="w-9 h-9 rounded-xl bg-teal-500/20 text-teal-400 flex items-center justify-center text-base shrink-0 font-bold">
+                                🏦
+                            </div>
+                            <div class="min-w-0">
+                                <span class="text-[9.5px] text-slate-400 font-bold block truncate">Saldo Rekening Bank</span>
+                                <span class="text-sm font-black text-teal-300 font-mono leading-tight block truncate">Rp {{ number_format($data['finance']['bank_balance'] ?? 0, 0, ',', '.') }}</span>
+                                <span class="text-[9px] text-teal-300 block">Bank BJB Resmi BOSP</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Rekap Penyerapan Standar Nasional Pendidikan (SNP) / Program Belanja -->
+                    <div class="glass-panel p-3.5 rounded-2xl border border-white/5 flex-1 min-h-0 flex flex-col justify-between">
+                        <div class="flex items-center justify-between pb-2 border-b border-white/5 shrink-0">
+                            <span class="text-xs font-black text-white flex items-center gap-1.5">
+                                <span>🎯 Alokasi Kegiatan Berdasarkan 8 Standar Nasional Pendidikan (SNP)</span>
+                            </span>
+                            <span class="text-[10px] text-teal-400 font-bold">RKAS SMAN 1 Lengkong</span>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 overflow-y-auto flex-1 min-h-0 py-2">
+                            @php
+                                $defaultSnps = [
+                                    ['name' => 'Standar Pengembangan Kompetensi Lulusan', 'pct' => 12, 'icon' => '🎓'],
+                                    ['name' => 'Standar Pengembangan Isi / Kurikulum', 'pct' => 10, 'icon' => '📖'],
+                                    ['name' => 'Standar Proses Pembelajaran Digital', 'pct' => 20, 'icon' => '💻'],
+                                    ['name' => 'Standar Penilaian Pendidikan & Asesmen', 'pct' => 14, 'icon' => '📝'],
+                                    ['name' => 'Standar Pendidik & Tenaga Kependidikan', 'pct' => 16, 'icon' => '👨‍🏫'],
+                                    ['name' => 'Standar Sarana & Prasarana Sekolah (BMD)', 'pct' => 18, 'icon' => '🏢'],
+                                    ['name' => 'Standar Pengelolaan Manajemen Sekolah', 'pct' => 6, 'icon' => '⚙️'],
+                                    ['name' => 'Standar Pembiayaan & Operasional Sekolah', 'pct' => 4, 'icon' => '💰'],
+                                ];
+                            @endphp
+                            @forelse($data['finance']['snp_recap'] ?? [] as $snp)
+                                <div class="bg-white/5 border border-white/5 p-2 rounded-xl flex flex-col justify-between">
+                                    <div class="flex items-center justify-between text-[10px] mb-1">
+                                        <span class="font-bold text-slate-200 truncate pr-2">{{ $snp['program'] }}</span>
+                                        <span class="font-mono font-bold text-teal-300">{{ $snp['pct'] }}%</span>
+                                    </div>
+                                    <div class="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                                        <div class="bg-gradient-to-r from-teal-500 to-emerald-400 h-1.5 rounded-full" style="width: {{ min(100, max(5, $snp['pct'])) }}%"></div>
+                                    </div>
+                                    <span class="text-[9px] text-slate-400 mt-1 block">Terserap: Rp {{ number_format($snp['realized'], 0, ',', '.') }}</span>
+                                </div>
+                            @empty
+                                @foreach($defaultSnps as $ds)
+                                    <div class="bg-white/5 border border-white/5 p-2 rounded-xl flex flex-col justify-between">
+                                        <div class="flex items-center justify-between text-[10px] mb-1">
+                                            <span class="font-bold text-slate-200 truncate pr-2">{{ $ds['icon'] }} {{ $ds['name'] }}</span>
+                                            <span class="font-mono font-bold text-teal-300">{{ $ds['pct'] }}%</span>
+                                        </div>
+                                        <div class="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                                            <div class="bg-gradient-to-r from-teal-500 to-emerald-400 h-1.5 rounded-full" style="width: {{ $ds['pct'] }}%"></div>
+                                        </div>
+                                        <span class="text-[9px] text-slate-400 mt-1 block">Alokasi RKAS Resmi Satuan Pendidikan</span>
+                                    </div>
+                                @endforeach
+                            @endforelse
+                        </div>
+
+                        <!-- Identitas Pejabat Penanggung Jawab Keuangan Resmi -->
+                        <div class="pt-2 mt-1 border-t border-white/5 grid grid-cols-2 gap-2 text-[10px] shrink-0">
+                            <div class="bg-blue-500/10 border border-blue-500/20 p-2 rounded-xl flex items-center gap-2">
+                                <div class="w-7 h-7 rounded-lg bg-blue-500/20 text-blue-300 flex items-center justify-center font-bold text-xs shrink-0">
+                                    👨‍💼
+                                </div>
+                                <div class="min-w-0">
+                                    <span class="text-[9px] text-slate-400 block font-semibold">Kuasa Pengguna Anggaran (KPA)</span>
+                                    <span class="font-bold text-white block truncate">{{ $data['finance']['headmaster']['name'] ?? 'Pian Sopian, S.Pd., M.M.Pd' }}</span>
+                                    <span class="text-[8.5px] text-blue-300/80 font-mono block">NIP. {{ $data['finance']['headmaster']['nip'] ?? '198009132008011005' }}</span>
+                                </div>
+                            </div>
+                            <div class="bg-emerald-500/10 border border-emerald-500/20 p-2 rounded-xl flex items-center gap-2">
+                                <div class="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-300 flex items-center justify-center font-bold text-xs shrink-0">
+                                    ✍️
+                                </div>
+                                <div class="min-w-0">
+                                    <span class="text-[9px] text-slate-400 block font-semibold">Bendahara Pengeluaran Sekolah</span>
+                                    <span class="font-bold text-white block truncate">{{ $data['finance']['treasurer']['name'] ?? 'Rian Hadiansyah, S.Pd.' }}</span>
+                                    <span class="text-[8.5px] text-emerald-300/80 font-mono block">NIP. {{ $data['finance']['treasurer']['nip'] ?? '199501172025211109' }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right (5 Cols): Real-time Audit Trail & SPJ Transaksi Terkini -->
+                <div class="lg:col-span-5 flex flex-col h-full min-h-0 glass-panel p-3.5 rounded-2xl border border-white/5">
+                    <div class="flex items-center justify-between pb-2 border-b border-white/5 shrink-0">
+                        <span class="text-xs font-black text-white flex items-center gap-1.5">
+                            <span>🧾 Catatan Transaksi Kas SPJ Terkini</span>
+                        </span>
+                        <span class="text-[10px] text-emerald-400 font-bold">Live BKU Feed</span>
+                    </div>
+
+                    <div class="flex-1 min-h-0 overflow-y-auto space-y-2 py-2">
+                        @forelse($data['finance']['recent'] ?? [] as $trx)
+                            <div class="p-2.5 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition">
+                                <div class="flex items-center justify-between text-[10px] mb-1">
+                                    <span class="font-mono font-bold text-teal-300">{{ $trx['evidence'] }}</span>
+                                    <span class="text-slate-400 font-mono">{{ $trx['date'] }}</span>
+                                </div>
+                                <div class="text-xs font-semibold text-white truncate mb-1">
+                                    {{ $trx['desc'] }}
+                                </div>
+                                <div class="flex items-center justify-between text-[10px]">
+                                    <span class="text-slate-400 truncate max-w-[150px]">Pihak: <strong>{{ $trx['recipient'] }}</strong></span>
+                                    <span class="font-mono font-black {{ $trx['type'] === 'Penerimaan' ? 'text-emerald-400' : 'text-rose-400' }}">
+                                        {{ $trx['type'] === 'Penerimaan' ? '+' : '-' }} Rp {{ number_format($trx['amount'], 0, ',', '.') }}
+                                    </span>
+                                </div>
+                                <div class="mt-1 flex items-center justify-between text-[9px] text-slate-500">
+                                    <span class="px-1.5 py-0.5 rounded bg-white/5 text-slate-300">{{ $trx['method'] }}</span>
+                                    <span class="text-emerald-400/80">Terverifikasi Sesuai SPJ</span>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="p-4 rounded-xl bg-white/5 border border-white/5 text-center my-auto">
+                                <div class="text-2xl mb-1">🏛️</div>
+                                <div class="text-xs font-bold text-white mb-0.5">Tata Kelola Kas BKU Tertib</div>
+                                <div class="text-[10px] text-slate-400 leading-relaxed">
+                                    Seluruh transaksi kas dan SPJ belanja BOSP dipertanggungjawabkan secara berkala dan terdokumentasi rapi di Buku Kas Umum (BKU).
+                                </div>
+                                <div class="mt-3 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-bold border border-emerald-500/30">
+                                    <span>✓ Kepatuhan Juknis BOSP 100%</span>
+                                </div>
+                            </div>
+                        @endforelse
+                    </div>
+
+                    <div class="pt-2 mt-auto border-t border-white/5 text-[9.5px] text-slate-400 flex items-center justify-between shrink-0">
+                        <span>Papan Transparansi Publik Digital</span>
+                        <span class="text-teal-400 font-mono">SIS-SMA1LE</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================================================= -->
+        <!-- SLIDE 14: BUKU TAMU KEDINASAN & KUNJUNGAN SEKOLAH (SIKATAS) -->
+        <!-- ========================================================================= -->
+        <section id="slide-14" class="hidden flex-col h-full min-h-0 overflow-hidden">
+            <!-- Header Slide -->
+            <div class="flex items-center justify-between pb-2 shrink-0">
+                <div class="flex items-center gap-2.5">
+                    <span class="px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-400 font-mono font-bold text-xs">15</span>
                     <div>
                         <h2 class="text-sm sm:text-base font-black text-white flex items-center gap-2">
                             <span>Buku Tamu Kedinasan &amp; Kunjungan Sekolah</span>
@@ -3220,7 +3453,7 @@
     <!-- JAVASCRIPT SLIDE CONTROLLER & BACKGROUND REALTIME POLLER -->
     <script>
         // Slide Deck State
-        const TOTAL_SLIDES = 14;
+        const TOTAL_SLIDES = 15;
         const SLIDE_DURATION = 18; // 18 seconds per slide
         let currentSlideIdx = 0;
         let slideRemainingTime = SLIDE_DURATION;

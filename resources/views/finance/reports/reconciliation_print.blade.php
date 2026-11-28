@@ -105,19 +105,23 @@
         Demikian Berita Acara Pemeriksaan Kas dan Register Penutupan BKU ini dibuat dalam rangkap secukupnya untuk dipergunakan sebagai bahan pertanggungjawaban keuangan satuan pendidikan.
     </div>
 
+    @php
+        $headmaster = $headmaster ?? \App\Models\Teacher::getHeadmaster();
+        $treasurer = $treasurer ?? \App\Models\Teacher::getTreasurer();
+    @endphp
     <div class="signatures">
         <div class="sig-box float-left">
             <p>Yang Diperiksa,<br><strong>Bendahara Pengeluaran Sekolah</strong></p>
             <br><br><br>
-            <p><strong><u>{{ Auth::user()->name ?? 'Bendahara Sekolah' }}</u></strong><br>
-            NIP. ................................................</p>
+            <p><strong><u>{{ $treasurer['name'] ?? 'Bendahara Sekolah' }}</u></strong><br>
+            NIP. {{ $treasurer['nip'] ?? '-' }}</p>
         </div>
 
         <div class="sig-box float-right">
-            <p>{{ $school->city ?? 'Kabupaten Sukabumi' }}, {{ now()->translatedFormat('d F Y') }}<br>Yang Memeriksa,<br><strong>Kepala Sekolah selaku KPA</strong></p>
+            <p>{{ $school->city ?? 'Kabupaten Sukabumi' }}, {{ now()->translatedFormat('d F Y') }}<br>Yang Memeriksa,<br><strong>Kepala Sekolah</strong></p>
             <br><br><br>
-            <p><strong><u>{{ $school->headmaster_name ?? $school->principal_name ?? '................................................' }}</u></strong><br>
-            NIP. {{ $school->headmaster_nip ?? $school->principal_nip ?? '-' }}</p>
+            <p><strong><u>{{ $headmaster['name'] ?? $school->headmaster_name }}</u></strong><br>
+            NIP. {{ $headmaster['nip'] ?? $school->headmaster_nip }}</p>
         </div>
         <div class="clear"></div>
     </div>

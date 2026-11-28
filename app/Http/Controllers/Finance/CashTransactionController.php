@@ -10,6 +10,7 @@ use App\Models\CashTransaction;
 use App\Models\GoodsReceipt;
 use App\Models\SchoolIdentity;
 use App\Models\TaxRecord;
+use App\Models\Teacher;
 use App\Services\AuditTrailService;
 use App\Services\BkuLedgerService;
 use App\Services\NumberHelper;
@@ -202,6 +203,9 @@ class CashTransactionController extends Controller
 
         AuditTrailService::log('print', 'keuangan', "Mencetak Kuitansi SPJ Kas: {$cashTransaction->evidence_number}");
 
+        $headmaster = Teacher::getHeadmaster();
+        $treasurer = Teacher::getTreasurer();
+
         return view('finance.transactions.receipt_print', compact(
             'cashTransaction',
             'school',
@@ -209,7 +213,9 @@ class CashTransactionController extends Controller
             'terbilang',
             'totalTax',
             'netAmount',
-            'netTerbilang'
+            'netTerbilang',
+            'headmaster',
+            'treasurer'
         ));
     }
 
