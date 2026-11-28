@@ -2978,8 +2978,8 @@
                             </span>
                             <span class="text-[9px] font-mono text-teal-300 bg-teal-950/60 px-2 py-0.5 rounded border border-teal-500/30 font-bold">Target Akademik</span>
                         </div>
-                        <div class="space-y-2">
-                            @foreach($data['agenda_countdowns'] ?? [] as $cd)
+                        <div id="kioskCountdownList" class="space-y-2">
+                            @forelse($data['agenda_countdowns'] ?? [] as $cd)
                                 <div class="p-2.5 rounded-xl bg-slate-900/80 border border-white/5 flex items-center justify-between gap-2 hover:border-indigo-500/40 transition">
                                     <div class="truncate flex-1">
                                         <div class="flex items-center gap-1.5 mb-0.5">
@@ -2988,12 +2988,23 @@
                                         </div>
                                         <h5 class="font-bold text-xs text-white truncate">{{ $cd['title'] }}</h5>
                                     </div>
-                                    <div class="text-right shrink-0 bg-indigo-950/70 border border-indigo-500/30 px-2.5 py-1 rounded-xl">
-                                        <span class="text-base font-black text-amber-300 font-mono block leading-none">{{ $cd['days_left'] }}</span>
-                                        <span class="text-[8.5px] text-slate-400 font-bold block uppercase mt-0.5">Hari Lagi</span>
-                                    </div>
+                                    @if(($cd['days_left'] ?? 0) === 0 || !empty($cd['is_today']))
+                                        <div class="text-right shrink-0 bg-emerald-950/80 border border-emerald-500/40 px-2.5 py-1 rounded-xl animate-pulse">
+                                            <span class="text-xs font-black text-emerald-300 font-mono block leading-none uppercase">HARI INI</span>
+                                            <span class="text-[8px] text-emerald-400/90 font-bold block uppercase mt-0.5">Berlangsung</span>
+                                        </div>
+                                    @else
+                                        <div class="text-right shrink-0 bg-indigo-950/70 border border-indigo-500/30 px-2.5 py-1 rounded-xl">
+                                            <span class="text-base font-black text-amber-300 font-mono block leading-none">{{ $cd['days_left'] }}</span>
+                                            <span class="text-[8.5px] text-slate-400 font-bold block uppercase mt-0.5">Hari Lagi</span>
+                                        </div>
+                                    @endif
                                 </div>
-                            @endforeach
+                            @empty
+                                <div class="p-3 text-center text-slate-500 text-xs italic bg-slate-950/40 rounded-xl border border-white/5">
+                                    Belum ada target agenda terdekat yang dijadwalkan.
+                                </div>
+                            @endforelse
                         </div>
                     </div>
 
@@ -3052,7 +3063,7 @@
         <!-- ========================================================================= -->
         <!-- SLIDE 13: LAPORAN KEUANGAN & REALISASI BKU SEKOLAH (TRANSPARANSI PUBLIK) -->
         <!-- ========================================================================= -->
-        <section id="slide-13" class="hidden flex-col h-full min-h-0 overflow-hidden">
+        <section id="slide-13" class="kiosk-slide h-full w-full hidden flex-col justify-between overflow-hidden gap-3">
             <!-- Header Slide -->
             <div class="flex items-center justify-between pb-2 shrink-0">
                 <div class="flex items-center gap-2.5">
@@ -3279,7 +3290,7 @@
         <!-- ========================================================================= -->
         <!-- SLIDE 14: BEASISWA & BANTUAN SISWA (PIP KEMENDIKBUD & KETM JABAR) -->
         <!-- ========================================================================= -->
-        <section id="slide-14" class="hidden flex-col h-full min-h-0 overflow-hidden">
+        <section id="slide-14" class="kiosk-slide h-full w-full hidden flex-col justify-between overflow-hidden gap-3">
             <!-- Header Slide -->
             <div class="flex items-center justify-between pb-2 shrink-0">
                 <div class="flex items-center gap-2.5">
@@ -3497,7 +3508,7 @@
         <!-- ========================================================================= -->
         <!-- SLIDE 15: BUKU TAMU KEDINASAN & KUNJUNGAN SEKOLAH (SIKATAS) -->
         <!-- ========================================================================= -->
-        <section id="slide-15" class="hidden flex-col h-full min-h-0 overflow-hidden">
+        <section id="slide-15" class="kiosk-slide h-full w-full hidden flex-col justify-between overflow-hidden gap-3">
             <!-- Header Slide -->
             <div class="flex items-center justify-between pb-2 shrink-0">
                 <div class="flex items-center gap-2.5">
@@ -4227,6 +4238,37 @@
                     const liveSumm = document.getElementById('bkLiveSummary');
                     if (liveSumm) {
                         liveSumm.innerHTML = `💬 <strong>Layanan BK Aktif:</strong> Terdata <strong>${d.bk.sessions_today ?? 0} sesi</strong> hari ini &bull; <strong>${d.bk.career_kuliah_count ?? 0} siswa</strong> bimbingan masuk PTN/Kedinasan &bull; <strong>${d.bk.total_sessions ?? 0} total layanan</strong> tercatat.`;
+                    }
+                }
+
+                // 11. Update Agenda Countdowns (Hitung Mundur Agenda Terdekat)
+                if (d.agenda_countdowns && Array.isArray(d.agenda_countdowns)) {
+                    const cdContainer = document.getElementById('kioskCountdownList');
+                    if (cdContainer && d.agenda_countdowns.length > 0) {
+                        cdContainer.innerHTML = d.agenda_countdowns.map(cd => {
+                            const isToday = (cd.days_left === 0 || cd.is_today);
+                            const badgeHtml = isToday
+                                ? `<div class="text-right shrink-0 bg-emerald-950/80 border border-emerald-500/40 px-2.5 py-1 rounded-xl animate-pulse">
+                                     <span class="text-xs font-black text-emerald-300 font-mono block leading-none uppercase">HARI INI</span>
+                                     <span class="text-[8px] text-emerald-400/90 font-bold block uppercase mt-0.5">Berlangsung</span>
+                                   </div>`
+                                : `<div class="text-right shrink-0 bg-indigo-950/70 border border-indigo-500/30 px-2.5 py-1 rounded-xl">
+                                     <span class="text-base font-black text-amber-300 font-mono block leading-none">${cd.days_left}</span>
+                                     <span class="text-[8.5px] text-slate-400 font-bold block uppercase mt-0.5">Hari Lagi</span>
+                                   </div>`;
+                            return `
+                                <div class="p-2.5 rounded-xl bg-slate-900/80 border border-white/5 flex items-center justify-between gap-2 hover:border-indigo-500/40 transition">
+                                    <div class="truncate flex-1">
+                                        <div class="flex items-center gap-1.5 mb-0.5">
+                                            <span class="px-1.5 py-0.2 rounded text-[8.5px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 uppercase">${cd.badge || 'Target'}</span>
+                                            <span class="text-[9.5px] text-slate-400 font-mono">${cd.date || ''}</span>
+                                        </div>
+                                        <h5 class="font-bold text-xs text-white truncate">${cd.title || ''}</h5>
+                                    </div>
+                                    ${badgeHtml}
+                                </div>
+                            `;
+                        }).join('');
                     }
                 }
 

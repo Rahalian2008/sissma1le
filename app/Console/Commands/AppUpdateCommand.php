@@ -6,7 +6,6 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Http;
 use Symfony\Component\Process\Process;
 
 class AppUpdateCommand extends Command
@@ -17,9 +16,6 @@ class AppUpdateCommand extends Command
      * @var string
      */
     protected $signature = 'app:update 
-                            {--push : Lakukan git commit dan git push ke GitHub secara otomatis}
-                            {--deploy : Kirim sinyal pembaruan dan migrasi database ke Hostinger}
-                            {--message= : Pesan commit git kustom}
                             {--no-pull : Lewati proses git pull dari repository}
                             {--no-cache : Lewati proses caching konfigurasi & route}
                             {--force : Jalankan pembaruan secara paksa tanpa konfirmasi}';
@@ -29,7 +25,7 @@ class AppUpdateCommand extends Command
      *
      * @var string
      */
-    protected $description = 'Pembaruan otomatis seluruh kode aplikasi SIS-SMA1LE, push GitHub, dan sinkronisasi struktur database Hostinger.';
+    protected $description = 'Pembaruan otomatis seluruh kode aplikasi SIS-SMA1LE dan sinkronisasi struktur database secara aman.';
 
     /**
      * Execute the console command.
@@ -50,54 +46,9 @@ class AppUpdateCommand extends Command
 
         $stepsSummary = [];
 
-        // 0. GIT COMMIT & PUSH KE GITHUB (Opsi --push)
-        if ($this->option('push')) {
-            $this->info('▶ [0/6] Memeriksa & Mengirim Pembaruan Kode ke GitHub (Git Push)...');
-            if (File::exists(base_path('.git'))) {
-                try {
-                    $statusProcess = Process::fromShellCommandline('git status --porcelain', base_path());
-                    $statusProcess->run();
-                    $statusOutput = trim($statusProcess->getOutput());
-
-                    $branchProcess = Process::fromShellCommandline('git rev-parse --abbrev-ref HEAD', base_path());
-                    $branchProcess->run();
-                    $currentBranch = trim($branchProcess->getOutput()) ?: 'main';
-
-                    if (! empty($statusOutput)) {
-                        $commitMsg = $this->option('message') ?: 'Pembaruan otomatis aplikasi & database SIS-SMA1LE ('.now()->format('d/m/Y H:i').')';
-                        $addProcess = Process::fromShellCommandline('git add -A', base_path());
-                        $addProcess->run();
-
-                        $commitProcess = Process::fromShellCommandline('git commit -m '.escapeshellarg($commitMsg), base_path());
-                        $commitProcess->run();
-                        $this->line("   <info>✓ Git Commit Berhasil:</info> {$commitMsg}");
-                    } else {
-                        $this->line('   <comment>• Tidak ada perubahan file lokal yang belum di-commit.</comment>');
-                    }
-
-                    $pushProcess = Process::fromShellCommandline("git push origin {$currentBranch}", base_path());
-                    $pushProcess->setTimeout(180);
-                    $pushProcess->run();
-
-                    if ($pushProcess->isSuccessful()) {
-                        $this->line("   <info>✓ Berhasil push kode terbaru ke GitHub (origin/{$currentBranch})!</info>");
-                        $stepsSummary['GitHub Repository'] = "Sukses Diperbarui ({$currentBranch})";
-                    } else {
-                        $pushErr = trim($pushProcess->getErrorOutput()) ?: trim($pushProcess->getOutput());
-                        $this->warn("   ⚠ Git push catatan: {$pushErr}");
-                        $stepsSummary['GitHub Repository'] = 'Catatan Push: '.substr($pushErr, 0, 40);
-                    }
-                } catch (\Throwable $e) {
-                    $this->error('   ✕ Gagal push ke GitHub: '.$e->getMessage());
-                    $stepsSummary['GitHub Repository'] = 'Gagal ('.$e->getMessage().')';
-                }
-            }
-            $this->newLine();
-        }
-
         // 1. GIT PULL (Pembaruan Kode Aplikasi)
         if (! $this->option('no-pull')) {
-            $this->info('▶ [1/6] Memeriksa & Mengambil Pembaruan Kode Aplikasi (Git Pull)...');
+            $this->info('▶ [1/5] Memeriksa & Mengambil Pembaruan Kode Aplikasi (Git Pull)...');
 
             if (File::exists(base_path('.git'))) {
                 try {
@@ -240,42 +191,6 @@ class AppUpdateCommand extends Command
             }
         }
         $this->newLine();
-
-        // 6. SINKRONISASI SERVER & DATABASE HOSTINGER (Opsi --deploy)
-        if ($this->option('deploy')) {
-            $this->info('▶ [Hostinger] Menghubungi Server Hostinger untuk Pembaruan & Migrasi Database Live...');
-            try {
-                $hostingerUrl = 'https://sman1lengkong.school/api/hostinger-update';
-                $this->line("   Mengirim sinyal update ke: <comment>{$hostingerUrl}</comment>");
-
-                $response = Http::timeout(45)->get($hostingerUrl);
-
-                if ($response->successful()) {
-                    $resData = $response->json();
-                    $gitPullMsg = $resData['git_pull'] ?? 'Selesai';
-                    $migrateMsg = $resData['migrate'] ?? 'Database Up to date';
-
-                    $this->line('   <info>✓ Respon Sukses dari Hostinger Production:</info>');
-                    $this->line("     • Git Pull: {$gitPullMsg}");
-                    $this->line("     • Migrasi Database: {$migrateMsg}");
-                    $stepsSummary['Hostinger & Database Live'] = 'Sukses Terupdate & Termigrasi';
-                } else {
-                    $fallbackUrl = 'https://sman1lengkong.school/artisan-optimize-clear';
-                    $resFallback = Http::timeout(30)->get($fallbackUrl);
-                    if ($resFallback->successful()) {
-                        $this->line('   <info>✓ Hostinger berhasil menjalankan optimize:clear & migrate via fallback web helper.</info>');
-                        $stepsSummary['Hostinger & Database Live'] = 'Sukses via Web Helper';
-                    } else {
-                        $this->warn('   ⚠ Server Hostinger merespon status: '.$response->status());
-                        $stepsSummary['Hostinger & Database Live'] = 'Status '.$response->status();
-                    }
-                }
-            } catch (\Throwable $e) {
-                $this->warn('   ⚠ Peringatan sinkronisasi Hostinger: '.$e->getMessage());
-                $stepsSummary['Hostinger & Database Live'] = 'Dilewati: '.$e->getMessage();
-            }
-            $this->newLine();
-        }
 
         $duration = round(microtime(true) - $startTime, 2);
 

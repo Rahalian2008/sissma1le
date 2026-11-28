@@ -112,18 +112,6 @@ Route::get('/aspirasi', fn () => redirect()->route('complaints.create'));
 // Emergency Web Helper untuk Pembersihan Cache Server & Migrasi Database Otomatis Tanpa Terminal SSH
 Route::get('/artisan-optimize-clear', function () {
     try {
-        $gitOutput = 'Git pull dilewati / tidak dijalankan.';
-        if (function_exists('shell_exec')) {
-            try {
-                $gitCheck = shell_exec('git pull origin main 2>&1');
-                if ($gitCheck) {
-                    $gitOutput = trim($gitCheck);
-                }
-            } catch (Throwable $ge) {
-                $gitOutput = 'Git pull info: '.$ge->getMessage();
-            }
-        }
-
         Artisan::call('optimize:clear');
         $clearOutput = Artisan::output();
 
@@ -139,21 +127,18 @@ Route::get('/artisan-optimize-clear', function () {
                         <span style='color: #047857; font-size: 12px;'>SMAN 1 Lengkong (SIS-SMA1LE Production Hostinger)</span>
                     </div>
                 </div>
-                <p style='color: #047857; font-size: 13.5px; line-height: 1.5;'>Pembaruan kode aplikasi dan skema database berhasil dijalankan.</p>
+                <p style='color: #047857; font-size: 13.5px; line-height: 1.5;'>Semua cache rute, template tampilan, dan konfigurasi server telah dibersihkan. Perintah migrasi database terbaru berhasil dijalankan.</p>
 
-                <div style='background: #1e293b; color: #38bdf8; padding: 12px 16px; border-radius: 12px; font-family: monospace; font-size: 12px; margin: 12px 0; overflow-x: auto; max-height: 180px;'>
-                    <strong>[Git Pull Output]:</strong><br>".nl2br(e($gitOutput))."
-                </div>
-
-                <div style='background: #064e3b; color: #a7f3d0; padding: 12px 16px; border-radius: 12px; font-family: monospace; font-size: 12px; margin: 12px 0; overflow-x: auto; max-height: 180px;'>
+                <div style='background: #064e3b; color: #a7f3d0; padding: 12px 16px; border-radius: 12px; font-family: monospace; font-size: 12px; margin: 16px 0; overflow-x: auto; max-height: 180px;'>
                     <strong>[Migrate Output]:</strong><br>".nl2br(e(trim($migrateOutput) ?: 'Tidak ada migrasi baru (Database sudah up to date).'))."
                 </div>
 
-                <div style='margin-top: 24px; display: flex; flex-wrap: wrap; gap: 10px;'>
+                <div style='margin-top: 24px; display: flex; flex-wrap: gap: 10px; gap: 10px;'>
                     <a href='/' style='display: inline-block; padding: 10px 18px; background: #059669; color: #fff; text-decoration: none; border-radius: 10px; font-weight: bold; font-size: 13px;'>Buka Beranda</a>
-                    <a href='/kiosk' style='display: inline-block; padding: 10px 18px; background: #0f766e; color: #fff; text-decoration: none; border-radius: 10px; font-weight: bold; font-size: 13px;'>Buka Kios TV</a>
-                    <a href='/students/scholarships' style='display: inline-block; padding: 10px 18px; background: #4f46e5; color: #fff; text-decoration: none; border-radius: 10px; font-weight: bold; font-size: 13px;'>Data Beasiswa</a>
-                    <a href='/tu/kesiswaan' style='display: inline-block; padding: 10px 18px; background: #7c3aed; color: #fff; text-decoration: none; border-radius: 10px; font-weight: bold; font-size: 13px;'>Adm. Kesiswaan</a>
+                    <a href='/pengaduan' style='display: inline-block; padding: 10px 18px; background: #4f46e5; color: #fff; text-decoration: none; border-radius: 10px; font-weight: bold; font-size: 13px;'>Kanal Pengaduan</a>
+                    <a href='/bk/konseling' style='display: inline-block; padding: 10px 18px; background: #0284c7; color: #fff; text-decoration: none; border-radius: 10px; font-weight: bold; font-size: 13px;'>Layanan BK Konseling</a>
+                    <a href='/bk/tracer' style='display: inline-block; padding: 10px 18px; background: #7c3aed; color: #fff; text-decoration: none; border-radius: 10px; font-weight: bold; font-size: 13px;'>Tracer Study</a>
+                    <a href='/admin/pengaduan' style='display: inline-block; padding: 10px 18px; background: #e11d48; color: #fff; text-decoration: none; border-radius: 10px; font-weight: bold; font-size: 13px;'>Pusat Kontrol Kepsek</a>
                 </div>
             </div>
         ", 200, ['Content-Type' => 'text/html']);
@@ -164,41 +149,6 @@ Route::get('/artisan-optimize-clear', function () {
                 <p style='color: #b91c1c; font-size: 13px; font-family: monospace;'>".e($e->getMessage()).'</p>
             </div>
         ', 500, ['Content-Type' => 'text/html']);
-    }
-});
-
-Route::match(['get', 'post'], '/api/hostinger-update', function () {
-    try {
-        $gitOutput = 'Git pull dilewati / tidak dijalankan.';
-        if (function_exists('shell_exec')) {
-            try {
-                $gitCheck = shell_exec('git pull origin main 2>&1');
-                if ($gitCheck) {
-                    $gitOutput = trim($gitCheck);
-                }
-            } catch (Throwable $ge) {
-                $gitOutput = $ge->getMessage();
-            }
-        }
-
-        Artisan::call('optimize:clear');
-        $clearOutput = Artisan::output();
-
-        Artisan::call('migrate', ['--force' => true]);
-        $migrateOutput = Artisan::output();
-
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Pembaruan aplikasi & database Hostinger berhasil.',
-            'git_pull' => $gitOutput,
-            'migrate' => trim($migrateOutput) ?: 'Database up to date.',
-            'timestamp' => now()->toIso8601String(),
-        ]);
-    } catch (Throwable $e) {
-        return response()->json([
-            'status' => 'error',
-            'message' => $e->getMessage(),
-        ], 500);
     }
 });
 

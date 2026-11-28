@@ -1685,6 +1685,8 @@ class WebsiteContentController extends Controller
             'agenda_description' => ['required', 'string', 'max:1000'],
             'agenda_icon' => ['nullable', 'string', 'max:30'],
             'agenda_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
+            'agenda_is_countdown' => ['nullable', 'boolean'],
+            'agenda_countdown_badge' => ['nullable', 'string', 'max:50'],
         ]);
 
         $customAgendas = SchoolSetting::get('website_agendas_json');
@@ -1719,6 +1721,8 @@ class WebsiteContentController extends Controller
             'description' => trim($validated['agenda_description']),
             'icon' => ! empty($validated['agenda_icon']) ? $validated['agenda_icon'] : 'sparkles',
             'image' => $imagePath,
+            'is_countdown' => $request->boolean('agenda_is_countdown'),
+            'countdown_badge' => ! empty($validated['agenda_countdown_badge']) ? trim($validated['agenda_countdown_badge']) : trim($validated['agenda_tag']),
             'created_by_user_id' => $user?->id,
             'created_by_name' => $creatorName,
             'created_by_role' => $creatorRoleTitle,
@@ -1751,6 +1755,8 @@ class WebsiteContentController extends Controller
             'agenda_description' => ['required', 'string', 'max:1000'],
             'agenda_icon' => ['nullable', 'string', 'max:30'],
             'agenda_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
+            'agenda_is_countdown' => ['nullable', 'boolean'],
+            'agenda_countdown_badge' => ['nullable', 'string', 'max:50'],
         ]);
 
         $customAgendas = SchoolSetting::get('website_agendas_json');
@@ -1772,6 +1778,8 @@ class WebsiteContentController extends Controller
                 $item['end_date'] = ! empty($validated['agenda_end_date']) ? $validated['agenda_end_date'] : null;
                 $item['tag'] = trim($validated['agenda_tag']);
                 $item['description'] = trim($validated['agenda_description']);
+                $item['is_countdown'] = $request->boolean('agenda_is_countdown');
+                $item['countdown_badge'] = ! empty($validated['agenda_countdown_badge']) ? trim($validated['agenda_countdown_badge']) : trim($validated['agenda_tag']);
                 $item['updated_by_user_id'] = $user?->id;
                 $item['updated_by_name'] = $editorName;
                 $item['updated_by_role'] = $editorRoleTitle;

@@ -1479,6 +1479,21 @@
                     <p class="text-[11px] text-slate-400 mt-1">Format: JPG, PNG, WEBP. Maks 3MB.</p>
                 </div>
 
+                <!-- Opsi Hitung Mundur Kios TV (Slide 13) -->
+                <div class="p-3.5 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200/80 dark:border-indigo-800/60 space-y-2">
+                    <label class="flex items-center gap-2.5 cursor-pointer">
+                        <input type="checkbox" name="agenda_is_countdown" value="1" id="agenda_is_countdown" class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 border-slate-300 dark:border-slate-700">
+                        <span class="text-xs font-bold text-slate-800 dark:text-slate-200">⏳ Tampilkan di Hitung Mundur Kios TV</span>
+                    </label>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400 pl-6.5 leading-snug">
+                        Aktifkan agar agenda ini otomatis ditampilkan sebagai target hitung mundur (countdown hari tersisa) pada Slide 13 Kios TV.
+                    </p>
+                    <div class="pl-6.5 pt-1">
+                        <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Badge Kategori Hitung Mundur (Opsional)</label>
+                        <input type="text" name="agenda_countdown_badge" maxlength="50" placeholder="Contoh: Asesmen Resmi / Target Akademik / Kalender Pendidikan" class="w-full px-3 py-1.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500/40">
+                    </div>
+                </div>
+
                 <button type="submit" class="w-full py-3 rounded-2xl bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-extrabold text-xs shadow-md shadow-indigo-600/30 flex items-center justify-center gap-2 transition hover:scale-[1.01] cursor-pointer">
                     <span>➕ Publikasikan Agenda</span>
                 </button>
@@ -1511,6 +1526,20 @@
                         <span class="hidden sm:inline">Reset Default</span>
                     </button>
                 </form>
+            </div>
+
+            <!-- Info & Status Hitung Mundur Kios TV -->
+            <div class="mb-4 p-3.5 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200/80 dark:border-indigo-800/60 flex items-center justify-between gap-3">
+                <div class="flex items-center gap-2.5">
+                    <span class="text-xl">⏳</span>
+                    <div>
+                        <h4 class="text-xs font-bold text-slate-800 dark:text-slate-200">Integrasi Hitung Mundur Kios TV (Slide 13)</h4>
+                        <p class="text-[11px] text-slate-500 dark:text-slate-400">Agenda yang ditandai atau memiliki tanggal mendatang otomatis dihitung mundur hari tersisanya di layar TV.</p>
+                    </div>
+                </div>
+                <a href="{{ route('kiosk.index') }}" target="_blank" class="px-2.5 py-1 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-[11px] transition shrink-0 flex items-center gap-1 shadow-xs">
+                    <span>Lihat di Kios TV &rarr;</span>
+                </a>
             </div>
 
             <div class="space-y-3">
@@ -1562,6 +1591,11 @@
                                     <span class="px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800">
                                         {{ $item['tag'] ?? 'Kegiatan' }}
                                     </span>
+                                    @if(!empty($item['is_countdown']))
+                                        <span class="px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/30 flex items-center gap-1">
+                                            <span>⏳</span> Target TV: {{ $item['countdown_badge'] ?? ($item['tag'] ?? 'Target') }}
+                                        </span>
+                                    @endif
                                     <span class="text-[10px] text-slate-400">
                                         📅 {{ $displayDateStr }}
                                     </span>
@@ -1657,6 +1691,21 @@
                     <input type="file" name="agenda_image" accept="image/*" class="w-full text-xs text-slate-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-indigo-600 file:text-white hover:file:bg-indigo-500 cursor-pointer">
                 </div>
 
+                <!-- Opsi Hitung Mundur Kios TV (Slide 13) -->
+                <div class="p-3.5 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200/80 dark:border-indigo-800/60 space-y-2">
+                    <label class="flex items-center gap-2.5 cursor-pointer">
+                        <input type="checkbox" name="agenda_is_countdown" value="1" id="edit-agenda-is-countdown" class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 border-slate-300 dark:border-slate-700">
+                        <span class="text-xs font-bold text-slate-800 dark:text-slate-200">⏳ Tampilkan di Hitung Mundur Kios TV</span>
+                    </label>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400 pl-6.5 leading-snug">
+                        Aktifkan agar agenda ini otomatis ditampilkan sebagai target hitung mundur pada Slide 13 Kios TV.
+                    </p>
+                    <div class="pl-6.5 pt-1">
+                        <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Badge Kategori Hitung Mundur (Opsional)</label>
+                        <input type="text" name="agenda_countdown_badge" id="edit-agenda-countdown-badge" maxlength="50" placeholder="Contoh: Asesmen Resmi / Target Akademik / Kalender Pendidikan" class="w-full px-3 py-1.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500/40">
+                    </div>
+                </div>
+
                 <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
                     <button type="button" onclick="closeEditAgendaModal()" class="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800">
                         Batal
@@ -1681,6 +1730,8 @@
             document.getElementById('edit-agenda-end-date').value = item.end_date || '';
             document.getElementById('edit-agenda-tag').value = item.tag || '';
             document.getElementById('edit-agenda-description').value = item.description || '';
+            document.getElementById('edit-agenda-is-countdown').checked = !!item.is_countdown;
+            document.getElementById('edit-agenda-countdown-badge').value = item.countdown_badge || '';
 
             const previewDiv = document.getElementById('edit-agenda-image-preview');
             const imgTag = document.getElementById('edit-agenda-image-tag');

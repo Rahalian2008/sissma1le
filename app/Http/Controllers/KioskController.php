@@ -539,26 +539,126 @@ class KioskController extends Controller
                 'status' => $tj->learning_achievement_status ?: 'TERCAPAI',
             ]);
 
-        $agendaCountdowns = [
-            [
-                'title' => 'Asesmen Sumatif Akhir Semester (ASAS)',
-                'date' => now()->addDays(12)->translatedFormat('d F Y'),
-                'days_left' => 12,
-                'badge' => 'Asesmen Resmi',
-            ],
-            [
-                'title' => 'Pembagian Rapor Digital & Buku Prestasi',
-                'date' => now()->addDays(24)->translatedFormat('d F Y'),
-                'days_left' => 24,
-                'badge' => 'Akademik',
-            ],
-            [
-                'title' => 'Libur Akhir Semester Ganjil',
-                'date' => now()->addDays(28)->translatedFormat('d F Y'),
-                'days_left' => 28,
-                'badge' => 'Kalender Pendidikan',
-            ],
-        ];
+        // Fallback jadwal KBM live dari direktori guru & mapel jika jurnal hari ini belum terinput
+        if ($liveKbm->isEmpty() && $staffCollection->isNotEmpty()) {
+            $teachersWithSubjects = $staffCollection->filter(fn ($s) => ! empty($s['mapel']) && $s['mapel'] !== '-' && strtolower($s['mapel']) !== 'kepala sekolah')->values();
+            if ($teachersWithSubjects->isNotEmpty()) {
+                $slots = ['07:30 - 09:00', '09:15 - 10:45', '11:00 - 12:30', '13:00 - 14:30'];
+                $sampleClasses = ['X Merdeka 1', 'X Merdeka 2', 'XI Merdeka 1', 'XI Merdeka 2', 'XII Merdeka 1'];
+                $liveKbm = $teachersWithSubjects->take(6)->map(function ($t, $idx) use ($slots, $sampleClasses) {
+                    $slot = $slots[$idx % count($slots)];
+                    $cls = $sampleClasses[$idx % count($sampleClasses)];
+
+                    return [
+                        'subject' => $t['mapel'],
+                        'teacher' => $t['name'],
+                        'class' => $cls,
+                        'topic' => 'KBM Aktif & Pendalaman Materi',
+                        'time' => $slot,
+                        'status' => 'BERLANGSUNG',
+                    ];
+                });
+            }
+        }
+
+        // 7e. Hitung Mundur Agenda Terdekat (Slide 13)
+        // Data diambil dinamis dari Kelola Konten Web (website_agendas_json)
+        $agendaCountdowns = collect();
+        $todayDate = $now->copy()->startOfDay();
+
+        $customAgendas = SchoolSetting::get('website_agendas_json');
+        $decodedAgendas = $customAgendas !== null ? json_decode($customAgendas, true) : null;
+        $hasCustomAgendas = is_array($decodedAgendas);
+        $allAgendas = $hasCustomAgendas ? $decodedAgendas : WebsiteContentController::DEFAULT_AGENDAS;
+
+        // Ambil agenda yang ditandai 'is_countdown' atau yang memiliki tanggal mendatang/sedang berlangsung
+        $countdownAgendas = collect($allAgendas)->filter(function ($ag) use ($todayDate) {
+            if (empty($ag['date'])) {
+                return false;
+            }
+            try {
+                $targetDate = Carbon::parse($ag['date'])->startOfDay();
+                $endDate = ! empty($ag['end_date']) ? Carbon::parse($ag['end_date'])->startOfDay() : $targetDate;
+
+                return ! empty($ag['is_countdown']) || $targetDate->greaterThanOrEqualTo($todayDate) || $endDate->greaterThanOrEqualTo($todayDate);
+            } catch (\Throwable $e) {
+                return false;
+            }
+        })->sortBy(function ($ag) {
+            try {
+                // Prioritaskan yang diceklis is_countdown, kemudian tanggal terdekat
+                $isCd = ! empty($ag['is_countdown']) ? 0 : 1;
+                $tDate = Carbon::parse($ag['date'])->timestamp;
+
+                return $isCd.'_'.str_pad((string) $tDate, 12, '0', STR_PAD_LEFT);
+            } catch (\Throwable $e) {
+                return '9_999999999999';
+            }
+        })->values();
+
+        // Jika tidak ada agenda masa depan, tapi ada agenda tersimpan di kelola web, tampilkan agenda terbaru
+        if ($countdownAgendas->isEmpty() && count($allAgendas) > 0) {
+            $countdownAgendas = collect($allAgendas)->take(3);
+        }
+
+        foreach ($countdownAgendas->take(3) as $ag) {
+            try {
+                $targetDate = Carbon::parse($ag['date'])->startOfDay();
+                $endDate = ! empty($ag['end_date']) ? Carbon::parse($ag['end_date'])->startOfDay() : $targetDate;
+
+                $diffDays = (int) $todayDate->diffInDays($targetDate, false);
+                $isUnderway = $todayDate->greaterThanOrEqualTo($targetDate) && $todayDate->lessThanOrEqualTo($endDate);
+
+                if ($isUnderway) {
+                    $daysLeft = 0;
+                    $isToday = true;
+                } else {
+                    $daysLeft = max(0, $diffDays);
+                    $isToday = ($diffDays === 0);
+                }
+
+                $formattedDate = $targetDate->translatedFormat('d F Y');
+                if (! empty($ag['end_date']) && $ag['end_date'] !== $ag['date']) {
+                    $formattedDate = $targetDate->format('d').' - '.$endDate->translatedFormat('d F Y');
+                }
+
+                $agendaCountdowns->push([
+                    'title' => $ag['title'],
+                    'date' => $formattedDate,
+                    'days_left' => $daysLeft,
+                    'badge' => ! empty($ag['countdown_badge']) ? $ag['countdown_badge'] : ($ag['tag'] ?? 'Target Akademik'),
+                    'is_today' => $isToday,
+                ]);
+            } catch (\Throwable $e) {
+            }
+        }
+
+        // Hanya jika sekolah BELUM PERNAH mengisi agenda sama sekali, sediakan default
+        if ($agendaCountdowns->isEmpty() && ! $hasCustomAgendas) {
+            $agendaCountdowns = collect([
+                [
+                    'title' => 'Asesmen Sumatif Akhir Semester (ASAS)',
+                    'date' => now()->addDays(12)->translatedFormat('d F Y'),
+                    'days_left' => 12,
+                    'badge' => 'Asesmen Resmi',
+                    'is_today' => false,
+                ],
+                [
+                    'title' => 'Pembagian Rapor Digital & Buku Prestasi',
+                    'date' => now()->addDays(24)->translatedFormat('d F Y'),
+                    'days_left' => 24,
+                    'badge' => 'Akademik',
+                    'is_today' => false,
+                ],
+                [
+                    'title' => 'Libur Akhir Semester Ganjil',
+                    'date' => now()->addDays(28)->translatedFormat('d F Y'),
+                    'days_left' => 28,
+                    'badge' => 'Kalender Pendidikan',
+                    'is_today' => false,
+                ],
+            ]);
+        }
 
         // 8. Jadwal Aktivitas Berdasarkan Master Data & Pengaturan Sekolah
         $todaySchedule = AttendanceService::getScheduleForDay($now);

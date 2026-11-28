@@ -1,11 +1,11 @@
 @echo off
 setlocal enabledelayedexpansion
 chcp 65001 >nul
-title Update Otomatis SIS-SMA1LE (GitHub & Hostinger Live)
+title Update Otomatis SIS-SMA1LE (Aplikasi & Database)
 
 echo ========================================================================
 echo        SIS-SMA1LE - SISTEM INFORMASI & EKOSISTEM SEKOLAH TERPADU
-echo     SKRIP OTOMATIS PEMBARUAN GITHUB, DATABASE LOKAL & HOSTINGER LIVE
+echo         SKRIP PEMBARUAN OTOMATIS APLIKASI DAN STRUKTUR DATABASE
 echo ========================================================================
 echo.
 
@@ -35,11 +35,10 @@ if not defined PHP_BIN (
 )
 
 echo [INFO] Menggunakan PHP: %PHP_BIN%
-echo [INFO] Menjalankan pembaruan otomatis (Git Push ke GitHub & Migrasi Hostinger)...
+echo [INFO] Menjalankan pembaruan sistem dan database...
 echo.
 
-:: Menjalankan command artisan app:update dengan push GitHub dan deploy Hostinger
-"%PHP_BIN%" artisan app:update --push --deploy %*
+"%PHP_BIN%" artisan app:update %*
 
 echo.
 echo ========================================================================
