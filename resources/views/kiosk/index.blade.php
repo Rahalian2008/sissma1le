@@ -3050,8 +3050,10 @@
                                     @endfor
                                 </div>
                             @else
-                                <div class="h-full flex items-center justify-center text-slate-400 text-xs italic py-4">
-                                    Belum ada jurnal mengajar guru yang terekam hari ini.
+                                <div class="h-full flex flex-col items-center justify-center text-center py-6 text-slate-400 text-xs space-y-1">
+                                    <span class="text-2xl">📖</span>
+                                    <span class="font-semibold text-slate-300">Belum ada KBM / jurnal mengajar guru hari ini</span>
+                                    <p class="text-[9.5px] text-slate-400">Jadwal &amp; jurnal KBM tersinkronisasi otomatis dari modul LMS saat jam pelajaran aktif.</p>
                                 </div>
                             @endif
                         </div>

@@ -525,39 +525,89 @@ class KioskController extends Controller
             ],
         ];
 
-        // 7d. Live Jurnal KBM LMS & Hitung Mundur Agenda (Slide 13)
-        $liveKbm = TeachingJournal::with(['courseClass.schoolClass', 'courseClass.subject', 'teacher'])
-            ->latest('id')
-            ->limit(10)
-            ->get()
-            ->map(fn ($tj) => [
-                'subject' => $tj->courseClass?->subject?->name ?? 'Mata Pelajaran',
-                'teacher' => $tj->teacher?->name ?? 'Guru Pengampu',
-                'class' => $tj->courseClass?->schoolClass?->name ?? 'Kelas',
-                'topic' => $tj->topic ?: 'Pembelajaran Reguler',
-                'time' => $tj->time_slot ?: 'Jam Pelajaran',
-                'status' => $tj->learning_achievement_status ?: 'TERCAPAI',
-            ]);
+        // 7d. Live Jurnal KBM & Jadwal Pelajaran LMS (Slide 13)
+        // Data resmi murni dari modul LMS: TeachingJournal riil hari ini atau CourseClass jadwal pelajaran aktif hari ini
+        $liveKbm = collect();
 
-        // Fallback jadwal KBM live dari direktori guru & mapel jika jurnal hari ini belum terinput
-        if ($liveKbm->isEmpty() && $staffCollection->isNotEmpty()) {
-            $teachersWithSubjects = $staffCollection->filter(fn ($s) => ! empty($s['mapel']) && $s['mapel'] !== '-' && strtolower($s['mapel']) !== 'kepala sekolah')->values();
-            if ($teachersWithSubjects->isNotEmpty()) {
-                $slots = ['07:30 - 09:00', '09:15 - 10:45', '11:00 - 12:30', '13:00 - 14:30'];
-                $sampleClasses = ['X Merdeka 1', 'X Merdeka 2', 'XI Merdeka 1', 'XI Merdeka 2', 'XII Merdeka 1'];
-                $liveKbm = $teachersWithSubjects->take(6)->map(function ($t, $idx) use ($slots, $sampleClasses) {
-                    $slot = $slots[$idx % count($slots)];
-                    $cls = $sampleClasses[$idx % count($sampleClasses)];
+        try {
+            // A. Ambil Jurnal Mengajar Riil Guru yang Diinput Hari Ini
+            $todayJournals = TeachingJournal::with(['courseClass.schoolClass', 'courseClass.subject', 'teacher'])
+                ->whereDate('date', $today)
+                ->latest('id')
+                ->limit(10)
+                ->get();
 
-                    return [
-                        'subject' => $t['mapel'],
-                        'teacher' => $t['name'],
-                        'class' => $cls,
-                        'topic' => 'KBM Aktif & Pendalaman Materi',
-                        'time' => $slot,
-                        'status' => 'BERLANGSUNG',
-                    ];
-                });
+            foreach ($todayJournals as $tj) {
+                $liveKbm->push([
+                    'subject' => $tj->courseClass?->subject?->name ?? 'Mata Pelajaran',
+                    'teacher' => $tj->teacher?->formatted_name ?: ($tj->teacher?->name ?? 'Guru Pengampu'),
+                    'class' => $tj->courseClass?->schoolClass?->name ?? 'Kelas',
+                    'topic' => $tj->topic ?: 'KBM Terlaksana',
+                    'time' => $tj->time_slot ?: 'Jam Pelajaran',
+                    'status' => $tj->learning_achievement_status ?: 'TERCAPAI',
+                ]);
+            }
+        } catch (\Throwable $e) {
+        }
+
+        // B. Jika jurnal hari ini belum diinput guru, ambil Jadwal Pelajaran Resmi LMS Hari Ini
+        if ($liveKbm->isEmpty()) {
+            $daysIndo = [
+                0 => 'Minggu',
+                1 => 'Senin',
+                2 => 'Selasa',
+                3 => 'Rabu',
+                4 => 'Kamis',
+                5 => 'Jumat',
+                6 => 'Sabtu',
+            ];
+            $currentDayName = $daysIndo[$now->dayOfWeek] ?? 'Senin';
+            $currentTimeStr = $now->format('H:i');
+
+            try {
+                $activeCourses = CourseClass::with(['subject', 'schoolClass', 'teacher'])
+                    ->where('is_active', true)
+                    ->get();
+
+                foreach ($activeCourses as $cc) {
+                    $slots = $cc->getSchedulesList();
+                    foreach ($slots as $slot) {
+                        $sDay = trim($slot['day'] ?? '');
+                        if (empty($sDay)) {
+                            continue;
+                        }
+
+                        $cleanSDay = str_ireplace(["'", '`'], '', $sDay);
+                        $cleanCurDay = str_ireplace(["'", '`'], '', $currentDayName);
+
+                        if (stripos($cleanSDay, $cleanCurDay) !== false || stripos($cleanCurDay, $cleanSDay) !== false) {
+                            $startTime = substr($slot['start_time'] ?? '07:30', 0, 5);
+                            $endTime = substr($slot['end_time'] ?? '09:00', 0, 5);
+
+                            $status = 'TERJADWAL';
+                            if ($currentTimeStr >= $startTime && $currentTimeStr <= $endTime) {
+                                $status = 'BERLANGSUNG';
+                            } elseif ($currentTimeStr > $endTime) {
+                                $status = 'SELESAI';
+                            }
+
+                            $liveKbm->push([
+                                'subject' => $cc->subject?->name ?? 'Mata Pelajaran',
+                                'teacher' => $cc->teacher?->formatted_name ?: ($cc->teacher?->name ?? 'Guru Pengampu'),
+                                'class' => $cc->schoolClass?->name ?? '-',
+                                'topic' => 'KBM Tatap Muka Terjadwal',
+                                'time' => "{$startTime} - {$endTime}",
+                                'status' => $status,
+                                'start_time' => $startTime,
+                            ]);
+                        }
+                    }
+                }
+
+                if ($liveKbm->isNotEmpty()) {
+                    $liveKbm = $liveKbm->sortBy('start_time')->values();
+                }
+            } catch (\Throwable $e) {
             }
         }
 
