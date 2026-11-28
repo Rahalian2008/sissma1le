@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Sarpras;
 use App\Http\Controllers\Controller;
 use App\Models\Good;
 use App\Models\SchoolIdentity;
+use App\Models\Teacher;
 use App\Services\AuditTrailService;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -264,6 +265,9 @@ class BukuIndukBhpController extends Controller
 
         AuditTrailService::log('print', 'sarpras', 'Mencetak Buku Induk Barang Habis Pakai / Non-Inventaris (BIBHP)');
 
+        $headmaster = Teacher::getHeadmaster();
+        $sarprasManager = Teacher::getSarprasManager();
+
         return view('sarpras.bibhp.print', compact(
             'school',
             'goods',
@@ -272,7 +276,9 @@ class BukuIndukBhpController extends Controller
             'totalItemsCount',
             'selectedCategory',
             'selectedStatus',
-            'sortBy'
+            'sortBy',
+            'headmaster',
+            'sarprasManager'
         ));
     }
 

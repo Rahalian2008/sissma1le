@@ -413,6 +413,35 @@ class SchoolMasterSeeder extends Seeder
             ]
         );
 
+        // Tenaga Administrasi Sarpras (TA Sarpras)
+        $nipTaSarpras = '199511252025211112';
+        $userTaSarpras = User::updateOrCreate(
+            ['email' => 'rayinopian@sman1lengkong.sch.id'],
+            [
+                'name' => 'Rayi Nopian Rosadi',
+                'username' => $nipTaSarpras,
+                'nip' => $nipTaSarpras,
+                'role' => 'staff',
+                'roles' => ['staff', 'ta_sarpras'],
+                'phone' => '087822251112',
+                'password' => Hash::make($nipTaSarpras),
+                'is_active' => true,
+            ]
+        );
+        Teacher::updateOrCreate(
+            ['nip' => $nipTaSarpras],
+            [
+                'user_id' => $userTaSarpras->id,
+                'name' => 'Rayi Nopian Rosadi',
+                'gender' => 'L',
+                'phone' => '087822251112',
+                'title' => 'Tenaga Kependidikan',
+                'position' => 'Tenaga Administrasi Sarpras',
+                'additional_tasks' => 'TA Sarpras',
+                'is_active' => true,
+            ]
+        );
+
         // Classes
         $classX1 = SchoolClass::updateOrCreate(
             ['name' => 'X-1'],

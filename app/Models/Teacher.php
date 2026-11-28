@@ -127,9 +127,20 @@ class Teacher extends Model
             ->orWhereJsonContains('roles', 'kepala_sekolah')
             ->first();
 
+        $teacher = $user?->teacher;
+        if (! $teacher && ! $user) {
+            $teacher = self::where('is_active', true)
+                ->where(function ($q) {
+                    $q->where('title', 'like', '%Kepala%Sekolah%')
+                        ->orWhere('position', 'like', '%Kepala%Sekolah%')
+                        ->orWhere('additional_tasks', 'like', '%Kepala%Sekolah%');
+                })->first();
+            $user = $teacher?->user;
+        }
+
         return [
-            'name' => $settingName ?: ($user?->name ?? 'Drs. H. Ahmad Sudrajat, M.Pd.'),
-            'nip' => $settingNip ?: ($user?->username ?? ($user?->teacher?->nip ?? '196803151994031004')),
+            'name' => $settingName ?: ($teacher?->formatted_name ?: ($teacher?->name ?? ($user?->name ?? 'Pian Sopian, S.Pd., M.M.Pd'))),
+            'nip' => $settingNip ?: ($teacher?->nip ?: ($user?->nip ?? ($user?->username ?? '198009132008011005'))),
             'user' => $user,
         ];
     }
@@ -292,6 +303,45 @@ class Teacher extends Model
             'nip' => $user?->nip ?? ($user?->username ?? ($user?->teacher?->nip ?? '-')),
             'user' => $user,
             'teacher' => $user?->teacher,
+        ];
+    }
+
+    /**
+     * Dapatkan identitas Pengelola Sarana & Prasarana resmi dari Master Data Tenaga Guru & TU (TA Sarpras)
+     *
+     * @return array{name: string, nip: string, user: ?User, teacher: ?self}
+     */
+    public static function getSarprasManager(): array
+    {
+        $settingName = SchoolSetting::where('key', 'sarpras_manager_name')->value('value');
+        $settingNip = SchoolSetting::where('key', 'sarpras_manager_nip')->value('value');
+
+        // Cari user yang memiliki role ta_sarpras secara spesifik (Master Data Tenaga Guru & TU - TA Sarpras)
+        $user = User::whereJsonContains('roles', 'ta_sarpras')
+            ->orWhere('role', 'ta_sarpras')
+            ->first();
+
+        $teacher = $user?->teacher;
+        if (! $teacher && ! $user) {
+            $teacher = self::where('is_active', true)
+                ->where(function ($q) {
+                    $q->where('additional_tasks', 'like', '%TA%Sarpras%')
+                        ->orWhere('position', 'like', '%TA%Sarpras%')
+                        ->orWhere('title', 'like', '%TA%Sarpras%')
+                        ->orWhere('additional_tasks', 'like', '%Tenaga Administrasi Sarpras%')
+                        ->orWhere('position', 'like', '%Tenaga Administrasi Sarpras%');
+                })->first();
+            $user = $teacher?->user;
+        }
+
+        $name = $settingName ?: ($teacher?->formatted_name ?: ($teacher?->name ?? ($user?->name ?? 'Rayi Nopian Rosadi')));
+        $nip = $settingNip ?: ($teacher?->nip ?: ($user?->nip ?? ($user?->username ?? '199511252025211112')));
+
+        return [
+            'name' => $name,
+            'nip' => $nip ?: '-',
+            'user' => $user,
+            'teacher' => $teacher,
         ];
     }
 }

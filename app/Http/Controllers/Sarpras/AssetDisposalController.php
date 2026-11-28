@@ -7,6 +7,7 @@ use App\Models\Archive;
 use App\Models\Asset;
 use App\Models\AssetDisposal;
 use App\Models\SchoolIdentity;
+use App\Models\Teacher;
 use App\Services\AuditTrailService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -117,7 +118,10 @@ class AssetDisposalController extends Controller
 
         AuditTrailService::log('print', 'sarpras', "Mencetak Berita Acara Usulan Penghapusan Aset: {$disposal->disposal_number}");
 
-        return view('sarpras.disposals.print', compact('disposal', 'school'));
+        $headmaster = Teacher::getHeadmaster();
+        $sarprasManager = Teacher::getSarprasManager();
+
+        return view('sarpras.disposals.print', compact('disposal', 'school', 'headmaster', 'sarprasManager'));
     }
 
     public function archive(AssetDisposal $disposal): RedirectResponse

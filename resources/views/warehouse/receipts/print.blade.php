@@ -126,6 +126,10 @@
         {{ $school->city ?? 'Kabupaten Sukabumi' }}, {{ \Carbon\Carbon::parse($receipt->receipt_date)->translatedFormat('d F Y') }}
     </div>
 
+    @php
+        $headmaster = $headmaster ?? \App\Models\Teacher::getHeadmaster();
+        $sarprasManager = $sarprasManager ?? \App\Models\Teacher::getSarprasManager();
+    @endphp
     <div class="signatures">
         <div class="sig-box float-left">
             <p>Yang Menyerahkan,<br><strong>PIHAK PERTAMA</strong></p>
@@ -134,18 +138,18 @@
             Penyedia / Rekanan</p>
         </div>
         <div class="sig-box float-right">
-            <p>Yang Menerima,<br><strong>PIHAK KEDUA</strong><br><span style="font-size: 8.5pt;">({{ $receipt->receiver?->getRoleDisplayName() ?? auth()->user()?->getRoleDisplayName() ?? 'Pengurus Barang / Petugas Logistik' }})</span></p>
+            <p>Yang Menerima,<br><strong>PIHAK KEDUA</strong><br><span style="font-size: 8.5pt;">(Pengelola Sarana & Prasarana)</span></p>
             <br><br><br>
-            <p><strong><u>{{ strtoupper($receipt->receiver?->getOfficialName() ?? auth()->user()?->getOfficialName() ?? 'Petugas Logistik') }}</u></strong><br>
-            NIP. {{ $receipt->receiver?->getOfficialNip() ?? auth()->user()?->getOfficialNip() ?? '-' }}</p>
+            <p><strong><u>{{ $sarprasManager['name'] ?? 'Rayi Nopian Rosadi' }}</u></strong><br>
+            NIP. {{ !empty($sarprasManager['nip']) && $sarprasManager['nip'] !== '-' ? $sarprasManager['nip'] : '-' }}</p>
         </div>
         <div class="clear"></div>
 
         <div style="margin-top: 20px; text-align: center;">
-            <p>Mengetahui,<br>Kepala {{ $school->name ?? 'SMA Negeri 1 Lengkong' }} selaku Pengguna Barang,</p>
+            <p>Mengetahui,<br>Kepala {{ $school->name ?? 'SMA Negeri 1 Lengkong' }},</p>
             <br><br><br>
-            <p><strong><u>{{ $school->headmaster_name ?? $school->principal_name ?? '................................................' }}</u></strong><br>
-            NIP. {{ $school->headmaster_nip ?? $school->principal_nip ?? '-' }}</p>
+            <p><strong><u>{{ $headmaster['name'] ?? ($school->headmaster_name ?? $school->principal_name ?? 'Pian Sopian, S.Pd., M.M.Pd') }}</u></strong><br>
+            NIP. {{ $headmaster['nip'] ?? ($school->headmaster_nip ?? $school->principal_nip ?? '198009132008011005') }}</p>
         </div>
     </div>
     </div>

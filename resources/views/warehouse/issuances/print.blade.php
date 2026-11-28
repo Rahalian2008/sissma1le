@@ -94,12 +94,15 @@
         Barang-barang logistik di atas telah dikeluarkan dari persediaan gudang sekolah dan diserahterimakan kepada pihak pemohon untuk digunakan sebagaimana mestinya.
     </p>
 
+    @php
+        $sarprasManager = $sarprasManager ?? \App\Models\Teacher::getSarprasManager();
+    @endphp
     <div class="signatures">
         <div class="sig-box float-left">
-            <p>{{ $issuance->approver?->getRoleDisplayName() ?? auth()->user()?->getRoleDisplayName() ?? 'Pengurus / Pengelola Gudang' }},</p>
+            <p>Pengelola Sarana & Prasarana,</p>
             <br><br><br>
-            <p><strong><u>{{ strtoupper($issuance->approver?->getOfficialName() ?? auth()->user()?->getOfficialName() ?? 'Petugas Gudang') }}</u></strong><br>
-            NIP. {{ $issuance->approver?->getOfficialNip() ?? auth()->user()?->getOfficialNip() ?? '-' }}</p>
+            <p><strong><u>{{ $sarprasManager['name'] ?? 'Rayi Nopian Rosadi' }}</u></strong><br>
+            NIP. {{ !empty($sarprasManager['nip']) && $sarprasManager['nip'] !== '-' ? $sarprasManager['nip'] : '-' }}</p>
         </div>
         <div class="sig-box float-right">
             <p>{{ $school->city ?? 'Kabupaten Sukabumi' }}, {{ \Carbon\Carbon::parse($issuance->issuance_date)->translatedFormat('d F Y') }}<br>Penerima Barang / Pemohon,</p>

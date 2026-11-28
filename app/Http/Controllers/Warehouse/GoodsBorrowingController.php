@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Warehouse;
 use App\Http\Controllers\Controller;
 use App\Models\GoodsBorrowing;
 use App\Models\SchoolIdentity;
+use App\Models\Teacher;
 use App\Services\AuditTrailService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -96,7 +97,10 @@ class GoodsBorrowingController extends Controller
 
         AuditTrailService::log('print', 'gudang', "Mencetak bukti peminjaman sarana: {$borrowing->borrowing_number}");
 
-        return view('warehouse.borrowings.print', compact('borrowing', 'school'));
+        $headmaster = Teacher::getHeadmaster();
+        $sarprasManager = Teacher::getSarprasManager();
+
+        return view('warehouse.borrowings.print', compact('borrowing', 'school', 'headmaster', 'sarprasManager'));
     }
 
     public function update(Request $request, GoodsBorrowing $borrowing): RedirectResponse

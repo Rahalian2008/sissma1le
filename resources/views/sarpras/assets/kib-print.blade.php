@@ -201,22 +201,26 @@
         </tfoot>
     </table>
 
+    @php
+        $headmaster = $headmaster ?? \App\Models\Teacher::getHeadmaster();
+        $sarprasManager = $sarprasManager ?? \App\Models\Teacher::getSarprasManager();
+    @endphp
     <div class="ttd-section">
         <table class="ttd-table">
             <tr>
                 <td style="width: 50%;">
                     Mengetahui,<br>
-                    <strong>Kepala Sekolah selaku Pengguna Barang</strong>
+                    <strong>Kepala Sekolah</strong>
                     <div class="ttd-space"></div>
-                    <strong><u>{{ $school->headmaster_name ?? $school->principal_name ?? '................................................' }}</u></strong><br>
-                    NIP. {{ $school->headmaster_nip ?? $school->principal_nip ?? '-' }}
+                    <strong><u>{{ $headmaster['name'] ?? ($school->headmaster_name ?? $school->principal_name ?? 'Pian Sopian, S.Pd., M.M.Pd') }}</u></strong><br>
+                    NIP. {{ $headmaster['nip'] ?? ($school->headmaster_nip ?? $school->principal_nip ?? '198009132008011005') }}
                 </td>
                 <td style="width: 50%;">
                     {{ $school->city ?? 'Kabupaten Sukabumi' }}, {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}<br>
-                    <strong>{{ auth()->user()?->getRoleDisplayName() ?? 'Pengurus / Pengelola BMD' }}</strong>
+                    <strong>Pengelola Sarana & Prasarana</strong>
                     <div class="ttd-space"></div>
-                    <strong><u>{{ strtoupper(auth()->user()?->getOfficialName() ?? 'Petugas Operasional') }}</u></strong><br>
-                    NIP. {{ auth()->user()?->getOfficialNip() ?? '-' }}
+                    <strong><u>{{ $sarprasManager['name'] ?? 'Rayi Nopian Rosadi' }}</u></strong><br>
+                    NIP. {{ !empty($sarprasManager['nip']) && $sarprasManager['nip'] !== '-' ? $sarprasManager['nip'] : '-' }}
                 </td>
             </tr>
         </table>

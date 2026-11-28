@@ -284,18 +284,22 @@
             </tbody>
         </table>
 
+    @php
+        $headmaster = $headmaster ?? \App\Models\Teacher::getHeadmaster();
+        $sarprasManager = $sarprasManager ?? \App\Models\Teacher::getSarprasManager();
+    @endphp
         <div class="signatures">
             <div class="sig-box float-left">
-                <p>Mengetahui,<br>{{ auth()->user()?->getRoleDisplayName() ?? 'Pengurus Barang Milik Daerah (SIPD e-BMD)' }},</p>
+                <p>Mengetahui,<br>Kepala Sekolah,</p>
                 <br><br><br>
-                <p><strong><u>{{ strtoupper(auth()->user()?->getOfficialName() ?? 'Petugas Operasional') }}</u></strong><br>
-                NIP. {{ auth()->user()?->getOfficialNip() ?? '-' }}</p>
+                <p><strong><u>{{ $headmaster['name'] ?? ($school->headmaster_name ?? $school->principal_name ?? 'Pian Sopian, S.Pd., M.M.Pd') }}</u></strong><br>
+                NIP. {{ $headmaster['nip'] ?? ($school->headmaster_nip ?? $school->principal_nip ?? '198009132008011005') }}</p>
             </div>
             <div class="sig-box float-right">
-                <p>{{ $school->city ?? 'Kabupaten Sukabumi' }}, {{ now()->translatedFormat('d F Y') }}<br>Kepala Sekolah selaku Pengguna Barang,</p>
+                <p>{{ $school->city ?? 'Kabupaten Sukabumi' }}, {{ now()->translatedFormat('d F Y') }}<br>Pengelola Sarana & Prasarana,</p>
                 <br><br><br>
-                <p><strong><u>{{ $school->headmaster_name ?? $school->principal_name ?? '................................................' }}</u></strong><br>
-                NIP. {{ $school->headmaster_nip ?? $school->principal_nip ?? '-' }}</p>
+                <p><strong><u>{{ $sarprasManager['name'] ?? 'Rayi Nopian Rosadi' }}</u></strong><br>
+                NIP. {{ !empty($sarprasManager['nip']) && $sarprasManager['nip'] !== '-' ? $sarprasManager['nip'] : '-' }}</p>
             </div>
             <div class="clear"></div>
         </div>

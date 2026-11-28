@@ -93,18 +93,22 @@
         Demikian Berita Acara ini dibuat dalam rangkap secukupnya untuk dipergunakan sebagaimana mestinya.
     </div>
 
+    @php
+        $headmaster = $headmaster ?? \App\Models\Teacher::getHeadmaster();
+        $sarprasManager = $sarprasManager ?? \App\Models\Teacher::getSarprasManager();
+    @endphp
     <div class="signatures">
         <div class="sig-box float-left">
             <p>Mengetahui,<br>Kepala Sekolah,</p>
             <br><br><br>
-            <p><strong><u>{{ $school->headmaster_name ?? $school->principal_name ?? '................................................' }}</u></strong><br>
-            NIP. {{ $school->headmaster_nip ?? $school->principal_nip ?? '-' }}</p>
+            <p><strong><u>{{ $headmaster['name'] ?? ($school->headmaster_name ?? $school->principal_name ?? 'Pian Sopian, S.Pd., M.M.Pd') }}</u></strong><br>
+            NIP. {{ $headmaster['nip'] ?? ($school->headmaster_nip ?? $school->principal_nip ?? '198009132008011005') }}</p>
         </div>
         <div class="sig-box float-right">
-            <p>{{ $school->city ?? 'Kabupaten Sukabumi' }}, {{ $disposal->disposal_date->translatedFormat('d F Y') }}<br>Pengurus Barang / Pengusul,</p>
+            <p>{{ $school->city ?? 'Kabupaten Sukabumi' }}, {{ $disposal->disposal_date->translatedFormat('d F Y') }}<br>Pengelola Sarana & Prasarana,</p>
             <br><br><br>
-            <p><strong><u>{{ $disposal->proposed_by_name }}</u></strong><br>
-            Tim Pemeriksa: {{ $disposal->inspector_names ?? 'Pengurus Barang' }}</p>
+            <p><strong><u>{{ $disposal->proposed_by_name ?: ($sarprasManager['name'] ?? 'Rayi Nopian Rosadi') }}</u></strong><br>
+            NIP. {{ !empty($sarprasManager['nip']) && $sarprasManager['nip'] !== '-' ? $sarprasManager['nip'] : '-' }}</p>
         </div>
         <div class="clear"></div>
     </div>

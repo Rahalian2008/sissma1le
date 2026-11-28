@@ -90,6 +90,9 @@
         </ol>
     </div>
 
+    @php
+        $sarprasManager = $sarprasManager ?? \App\Models\Teacher::getSarprasManager();
+    @endphp
     <div class="signatures">
         <div class="sig-box float-left">
             <p>Peminjam Sarana,</p>
@@ -98,10 +101,10 @@
             {{ $borrowing->borrower_type }}</p>
         </div>
         <div class="sig-box float-right">
-            <p>{{ $school->city ?? 'Kabupaten Sukabumi' }}, {{ \Carbon\Carbon::parse($borrowing->borrow_date)->translatedFormat('d F Y') }}<br>{{ auth()->user()?->getRoleDisplayName() ?? 'Pengelola Sarpras / Petugas Peminjaman' }},</p>
+            <p>{{ $school->city ?? 'Kabupaten Sukabumi' }}, {{ \Carbon\Carbon::parse($borrowing->borrow_date)->translatedFormat('d F Y') }}<br>Pengelola Sarana & Prasarana,</p>
             <br><br><br>
-            <p><strong><u>{{ strtoupper(auth()->user()?->getOfficialName() ?? 'Petugas Sarpras') }}</u></strong><br>
-            NIP. {{ auth()->user()?->getOfficialNip() ?? '-' }}</p>
+            <p><strong><u>{{ $sarprasManager['name'] ?? 'Rayi Nopian Rosadi' }}</u></strong><br>
+            NIP. {{ !empty($sarprasManager['nip']) && $sarprasManager['nip'] !== '-' ? $sarprasManager['nip'] : '-' }}</p>
         </div>
         <div class="clear"></div>
     </div>

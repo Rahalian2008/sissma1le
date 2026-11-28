@@ -7,6 +7,7 @@ use App\Models\Asset;
 use App\Models\ReferenceItem;
 use App\Models\Room;
 use App\Models\SchoolIdentity;
+use App\Models\Teacher;
 use App\Services\AssetGroupingService;
 use App\Services\AuditTrailService;
 use App\Services\QrCodeService;
@@ -326,7 +327,10 @@ class AssetController extends Controller
 
         AuditTrailService::log('print', 'sarpras', "Mencetak Kartu Inventaris Ruangan (KIR): {$room->name}");
 
-        return view('sarpras.kir.print', compact('school', 'room', 'assets'));
+        $headmaster = Teacher::getHeadmaster();
+        $sarprasManager = Teacher::getSarprasManager();
+
+        return view('sarpras.kir.print', compact('school', 'room', 'assets', 'headmaster', 'sarprasManager'));
     }
 
     /**
@@ -347,7 +351,10 @@ class AssetController extends Controller
 
         AuditTrailService::log('print', 'sarpras', "Mencetak Dokumen KIB {$kibType} ({$kibInfo['title']})");
 
-        return view('sarpras.assets.kib-print', compact('school', 'kibType', 'kibInfo', 'assets'));
+        $headmaster = Teacher::getHeadmaster();
+        $sarprasManager = Teacher::getSarprasManager();
+
+        return view('sarpras.assets.kib-print', compact('school', 'kibType', 'kibInfo', 'assets', 'headmaster', 'sarprasManager'));
     }
 
     /**
@@ -568,6 +575,9 @@ class AssetController extends Controller
 
         AuditTrailService::log('print', 'sarpras', 'Mencetak Buku Induk Inventaris (BII)');
 
+        $headmaster = Teacher::getHeadmaster();
+        $sarprasManager = Teacher::getSarprasManager();
+
         return view('sarpras.bibi.print', compact(
             'school',
             'assets',
@@ -580,7 +590,9 @@ class AssetController extends Controller
             'sortBy',
             'conditionSummary',
             'totalItemsCount',
-            'totalItemsValue'
+            'totalItemsValue',
+            'headmaster',
+            'sarprasManager'
         ));
     }
 }

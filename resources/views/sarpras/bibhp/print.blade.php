@@ -200,26 +200,30 @@
             </tfoot>
         </table>
 
+    @php
+        $headmaster = $headmaster ?? \App\Models\Teacher::getHeadmaster();
+        $sarprasManager = $sarprasManager ?? \App\Models\Teacher::getSarprasManager();
+    @endphp
         <!-- Kolom Tanda Tangan Resmi Sesuai Permendagri 47/2021 -->
         <div class="signatures">
             <div class="sig-box float-left">
-                <p>Mengetahui / Menyetujui,<br><strong>KEPALA {{ strtoupper($school->name ?? 'SMA NEGERI 1 LENGKONG') }}</strong></p>
+                <p>Mengetahui / Menyetujui,<br><strong>Kepala Sekolah</strong></p>
                 <div style="height: 60px;"></div>
                 <p>
-                    <strong style="text-decoration: underline;">{{ strtoupper($school->headmaster_name ?? 'NAMA KEPALA SEKOLAH, M.Pd.') }}</strong><br>
-                    <span>NIP. {{ $school->headmaster_nip ?? '19700101 199501 1 001' }}</span>
+                    <strong style="text-decoration: underline;">{{ $headmaster['name'] ?? ($school->headmaster_name ?? 'Pian Sopian, S.Pd., M.M.Pd') }}</strong><br>
+                    <span>NIP. {{ $headmaster['nip'] ?? ($school->headmaster_nip ?? '198009132008011005') }}</span>
                 </p>
             </div>
 
             <div class="sig-box float-right">
                 <p>
                     {{ $school->city ?? 'Sukabumi' }}, {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}<br>
-                    <strong>{{ strtoupper(auth()->user()?->getRoleDisplayName() ?? 'PENGURUS BARANG / PENGELOLA PERSEDIAAN') }}</strong>
+                    <strong>Pengelola Sarana & Prasarana</strong>
                 </p>
                 <div style="height: 60px;"></div>
                 <p>
-                    <strong style="text-decoration: underline;">{{ strtoupper(auth()->user()?->getOfficialName() ?? 'PETUGAS LOGISTIK & PERSEDIAAN') }}</strong><br>
-                    <span>NIP. {{ auth()->user()?->getOfficialNip() ?? '-' }}</span>
+                    <strong style="text-decoration: underline;">{{ $sarprasManager['name'] ?? 'Rayi Nopian Rosadi' }}</strong><br>
+                    <span>NIP. {{ !empty($sarprasManager['nip']) && $sarprasManager['nip'] !== '-' ? $sarprasManager['nip'] : '-' }}</span>
                 </p>
             </div>
             <div class="clear"></div>

@@ -14,6 +14,7 @@ use App\Models\GoodsReceiptItem;
 use App\Models\ReferenceItem;
 use App\Models\Room;
 use App\Models\SchoolIdentity;
+use App\Models\Teacher;
 use App\Services\AuditTrailService;
 use App\Services\SimBmdService;
 use App\Services\SipdBmdService;
@@ -418,7 +419,10 @@ class GoodsTransactionController extends Controller
 
         AuditTrailService::log('print', 'gudang', "Mencetak BAST Penerimaan Barang No: {$receipt->receipt_number}");
 
-        return view('warehouse.receipts.print', compact('receipt', 'school'));
+        $headmaster = Teacher::getHeadmaster();
+        $sarprasManager = Teacher::getSarprasManager();
+
+        return view('warehouse.receipts.print', compact('receipt', 'school', 'headmaster', 'sarprasManager'));
     }
 
     /**
@@ -470,7 +474,10 @@ class GoodsTransactionController extends Controller
 
         AuditTrailService::log('print', 'gudang', "Mencetak Surat Bukti Barang Keluar No: {$issuance->issuance_number}");
 
-        return view('warehouse.issuances.print', compact('issuance', 'school'));
+        $headmaster = Teacher::getHeadmaster();
+        $sarprasManager = Teacher::getSarprasManager();
+
+        return view('warehouse.issuances.print', compact('issuance', 'school', 'headmaster', 'sarprasManager'));
     }
 
     public function updateReceipt(Request $request, GoodsReceipt $receipt): RedirectResponse
