@@ -108,6 +108,30 @@ Route::middleware([
         Route::get('/print', [TuKesiswaanController::class, 'attendanceRecapPrint'])->name('print');
     });
 
+    // Tracer Alumni (Format & Data Terintegrasi dari Bimbingan Konseling)
+    Route::prefix('tu/kesiswaan/tracer-alumni')->name('tu.kesiswaan.tracer_alumni.')->group(function () {
+        Route::get('/', [TuKesiswaanController::class, 'tracerAlumni'])->name('index');
+        Route::get('/print', [TuKesiswaanController::class, 'tracerAlumniPrint'])->name('print');
+    });
+
+    // Siswa Berprestasi (Terintegrasi Otomatis dari Tata Tertib Siswa)
+    Route::prefix('tu/kesiswaan/achievements')->name('tu.kesiswaan.achievements.')->group(function () {
+        Route::get('/', [TuKesiswaanController::class, 'achievements'])->name('index');
+        Route::get('/print', [TuKesiswaanController::class, 'achievementsPrint'])->name('print');
+    });
+
+    // Pelanggaran & Disiplin Siswa (Terintegrasi Otomatis dari Tata Tertib Siswa)
+    Route::prefix('tu/kesiswaan/violations')->name('tu.kesiswaan.violations.')->group(function () {
+        Route::get('/', [TuKesiswaanController::class, 'violations'])->name('index');
+        Route::get('/print', [TuKesiswaanController::class, 'violationsPrint'])->name('print');
+    });
+
+    // Layanan Konseling & Peminatan BK (Se-batas Tampil & Cetak - Read-Only)
+    Route::prefix('tu/kesiswaan/bk-counseling')->name('tu.kesiswaan.bk_counseling.')->group(function () {
+        Route::get('/', [TuKesiswaanController::class, 'bkCounseling'])->name('index');
+        Route::get('/print', [TuKesiswaanController::class, 'bkCounselingPrint'])->name('print');
+    });
+
     Route::get('/tu/kepegawaian', [TuKepegawaianController::class, 'index'])->name('tu.kepegawaian.index');
     Route::post('/tu/kepegawaian/pull-from-master', [TuKepegawaianController::class, 'pullFromMaster'])->name('tu.kepegawaian.pull_from_master');
     Route::post('/tu/kepegawaian/clear', [TuKepegawaianController::class, 'clearData'])->name('tu.kepegawaian.clear');

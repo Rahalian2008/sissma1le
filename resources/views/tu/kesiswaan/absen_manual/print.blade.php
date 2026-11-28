@@ -328,21 +328,7 @@
 
         <!-- KOP Surat Kedinasan -->
         @if($showKop)
-            @if($actualKopUrl)
-                <div class="kop-wrapper">
-                    <img src="{{ $actualKopUrl }}" alt="KOP Surat SMAN 1 Lengkong" class="kop-img">
-                </div>
-            @else
-                <div class="kop-text-container">
-                    <img src="{{ !empty($school['logo']) ? asset('storage/'.$school['logo']) : asset('images/logo_jabar.png') }}" onerror="this.src='{{ asset('images/logo.png') }}'" alt="Logo" class="kop-logo">
-                    <div class="kop-text">
-                        <h4>PEMERINTAH DAERAH PROVINSI JAWA BARAT</h4>
-                        <h4>DINAS PENDIDIKAN - CABANG DINAS PENDIDIKAN WILAYAH V</h4>
-                        <h2>{{ $school['name'] ?? 'SMA NEGERI 1 LENGKONG' }}</h2>
-                        <p>{{ $school['address'] ?? 'Jl. Raya Lengkong No. 01 Kec. Lengkong Kab. Sukabumi 43174' }} | NPSN: {{ $school['npsn'] ?? '20254044' }} | Akreditasi A</p>
-                    </div>
-                </div>
-            @endif
+            <x-print-kop :school="$school" />
         @endif
 
         <!-- Judul Dokumen -->

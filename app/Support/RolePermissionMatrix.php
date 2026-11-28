@@ -161,7 +161,7 @@ class RolePermissionMatrix
             'tu' => [
                 'super_admin', 'admin', 'kepala_sekolah', 'kepala_administrasi',
                 'ta_kesiswaan', 'ta_kepegawaian', 'ta_persuratan', 'ta_sarpras',
-                'wakasek_sarpras', 'kepala_laboratorium',
+                'wakasek_sarpras', 'wakasek_kesiswaan', 'kesiswaan', 'kepala_laboratorium',
                 'bendahara_bosp', 'bendahara_bopd', 'bendahara_gaji', 'bendahara',
                 'operator_dapodik', 'operator', 'tu_piket',
                 'staff', 'tu', 'tenaga_administrasi',
@@ -169,6 +169,7 @@ class RolePermissionMatrix
 
             'tu_kesiswaan' => [
                 'super_admin', 'admin', 'kepala_sekolah', 'kepala_administrasi',
+                'wakasek_kesiswaan', 'kesiswaan',
                 'ta_kesiswaan', 'operator_dapodik', 'operator',
             ],
 

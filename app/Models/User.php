@@ -596,12 +596,8 @@ class User extends Authenticatable
             return true;
         }
 
-        if ($active === 'all_roles') {
-            return $this->hasAnyRole(['wakasek_kesiswaan', 'kesiswaan', 'admin', 'super_admin'])
-                || in_array($this->role, ['wakasek_kesiswaan', 'kesiswaan', 'admin', 'super_admin'], true);
-        }
-
-        return false;
+        return $this->hasAnyRole(['wakasek_kesiswaan', 'kesiswaan', 'admin', 'super_admin'])
+            || in_array($this->role, ['wakasek_kesiswaan', 'kesiswaan', 'admin', 'super_admin'], true);
     }
 
     public function isBkAdmin(): bool

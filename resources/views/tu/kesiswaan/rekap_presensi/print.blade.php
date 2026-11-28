@@ -313,23 +313,7 @@
     <!-- Lembar Dokumen Siap Cetak -->
     <div class="page-sheet">
         @if($showKop)
-            <div class="kop-wrapper">
-                @if($actualKopUrl)
-                    <img src="{{ $actualKopUrl }}" alt="KOP Surat" class="kop-img">
-                @else
-                    <div class="kop-text-container">
-                        @if(!empty($school?->logo_url))
-                            <img src="{{ $school->logo_url }}" alt="Logo" class="kop-logo">
-                        @endif
-                        <div class="kop-text">
-                            <h4>PEMERINTAH DAERAH PROVINSI JAWA BARAT</h4>
-                            <h4>DINAS PENDIDIKAN</h4>
-                            <h2>{{ $school?->name ?? 'SMA NEGERI 1 LENGKONG' }}</h2>
-                            <p>{{ $school?->address ?? 'Jl. Raya Lengkong No. 24, Kab. Sukabumi, Jawa Barat' }} • Telp: {{ $school?->phone ?? '(0266) -' }} • Email: {{ $school?->email ?? 'info@sman1lengkong.sch.id' }}</p>
-                        </div>
-                    </div>
-                @endif
-            </div>
+            <x-print-kop :school="$school" />
         @endif
 
         <div class="doc-title-wrapper">

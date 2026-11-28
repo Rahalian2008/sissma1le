@@ -84,6 +84,7 @@
                         <th class="py-3 px-4">Sumber Dana</th>
                         <th class="py-3 px-4 text-right">Nominal</th>
                         <th class="py-3 px-4">Periode</th>
+                        <th class="py-3 px-4">Tanggal (Usulan/SK/Cair)</th>
                         <th class="py-3 px-4 text-center">Status</th>
                         <th class="py-3 px-4 text-center">Aksi</th>
                     </tr>
@@ -101,6 +102,9 @@
                             </td>
                             <td class="py-3 px-4 font-bold text-indigo-700">
                                 {{ $sch->scholarship_name }}
+                                @if($sch->sk_number)
+                                    <div class="text-[10px] text-slate-400 font-normal">SK: {{ $sch->sk_number }}</div>
+                                @endif
                             </td>
                             <td class="py-3 px-4 text-slate-600">
                                 {{ $sch->source }}
@@ -111,24 +115,46 @@
                             <td class="py-3 px-4 text-slate-600">
                                 {{ $sch->period }}
                             </td>
+                            <td class="py-3 px-4 text-[11px] space-y-0.5">
+                                <div><span class="text-slate-400">Usulan:</span> <span class="font-medium text-slate-700">{{ $sch->proposal_date?->format('d/m/Y') ?? '-' }}</span></div>
+                                <div><span class="text-slate-400">SK:</span> <span class="font-medium text-slate-700">{{ $sch->sk_date?->format('d/m/Y') ?? '-' }}</span></div>
+                                <div><span class="text-slate-400">Cair:</span> <span class="font-medium text-emerald-700 font-bold">{{ $sch->disbursement_date?->format('d/m/Y') ?? '-' }}</span></div>
+                            </td>
                             <td class="py-3 px-4 text-center">
                                 <span class="px-2.5 py-1 rounded-full text-[10px] font-bold {{ $sch->status === 'Cair' || $sch->status === 'Tersalurkan' ? 'bg-emerald-100 text-emerald-800' : ($sch->status === 'SK Ditetapkan' ? 'bg-blue-100 text-blue-800' : 'bg-amber-100 text-amber-800') }}">
                                     {{ $sch->status }}
                                 </span>
                             </td>
                             <td class="py-3 px-4 text-center">
-                                <form action="{{ route('students.scholarships.destroy', $sch) }}" method="POST" onsubmit="return confirm('Hapus data beasiswa ini?')" class="inline">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition" title="Hapus">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                <div class="flex items-center justify-center gap-1">
+                                    <button type="button" onclick="openEditScholarshipModal({{ json_encode([
+                                        'id' => $sch->id,
+                                        'student_name' => $sch->student?->name ?? 'Siswa',
+                                        'scholarship_name' => $sch->scholarship_name,
+                                        'source' => $sch->source,
+                                        'amount' => $sch->amount,
+                                        'period' => $sch->period,
+                                        'status' => $sch->status,
+                                        'proposal_date' => $sch->proposal_date?->format('Y-m-d') ?? '',
+                                        'sk_date' => $sch->sk_date?->format('Y-m-d') ?? '',
+                                        'disbursement_date' => $sch->disbursement_date?->format('Y-m-d') ?? '',
+                                        'sk_number' => $sch->sk_number ?? '',
+                                    ]) }})" class="p-1.5 text-slate-400 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition cursor-pointer" title="Edit Data Beasiswa">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
                                     </button>
-                                </form>
+                                    <form action="{{ route('students.scholarships.destroy', $sch) }}" method="POST" onsubmit="return confirm('Hapus data beasiswa ini?')" class="inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition cursor-pointer" title="Hapus">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                        </button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="9" class="py-12 text-center text-slate-400">
+                            <td colspan="10" class="py-12 text-center text-slate-400">
                                 Belum ada data beasiswa/bantuan siswa yang tercatat.
                             </td>
                         </tr>
@@ -146,9 +172,9 @@
 
 <!-- Modal Tambah Penerima -->
 <div id="modal-scholarship" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-xl">
+    <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-xl max-h-[90vh] overflow-y-auto">
         <h2 class="text-base font-bold text-slate-900 mb-1">Catat Penerima Beasiswa / Bantuan</h2>
-        <p class="text-xs text-slate-500 mb-4">Input data siswa penerima bantuan Program PIP, KETM, atau Prestasi.</p>
+        <p class="text-xs text-slate-500 mb-4">Input data siswa penerima bantuan Program PIP, KETM, atau Prestasi (Bisa diisi oleh Staf TU &amp; Wakasek Kesiswaan).</p>
 
         <form action="{{ route('students.scholarships.store') }}" method="POST" class="space-y-4 text-xs">
             @csrf
@@ -181,6 +207,24 @@
                     <input type="text" name="period" value="{{ date('Y') }}" required class="w-full px-3 py-2 border border-slate-300 rounded-xl">
                 </div>
             </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">Tanggal Usulan</label>
+                    <input type="date" name="proposal_date" class="w-full px-3 py-2 border border-slate-300 rounded-xl">
+                </div>
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">Tanggal SK Terbit</label>
+                    <input type="date" name="sk_date" class="w-full px-3 py-2 border border-slate-300 rounded-xl">
+                </div>
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">Tanggal Cair / Disalurkan</label>
+                    <input type="date" name="disbursement_date" class="w-full px-3 py-2 border border-slate-300 rounded-xl">
+                </div>
+            </div>
+            <div>
+                <label class="block font-semibold text-slate-700 mb-1">Nomor SK Penetapan (Opsional)</label>
+                <input type="text" name="sk_number" placeholder="Contoh: No. SK Nominasi / Pemberian Puslapdik" class="w-full px-3 py-2 border border-slate-300 rounded-xl">
+            </div>
             <div>
                 <label class="block font-semibold text-slate-700 mb-1">Status Penyaluran <span class="text-rose-500">*</span></label>
                 <select name="status" required class="w-full px-3 py-2 border border-slate-300 rounded-xl">
@@ -193,6 +237,89 @@
                 <button type="button" onclick="document.getElementById('modal-scholarship').classList.add('hidden')" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-semibold cursor-pointer">Batal</button>
                 <button type="submit" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold cursor-pointer">Simpan Beasiswa</button>
             </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal Edit Penerima -->
+<div id="modal-edit-scholarship" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-xl max-h-[90vh] overflow-y-auto">
+        <h2 class="text-base font-bold text-slate-900 mb-1">Edit Penerima Beasiswa / Bantuan</h2>
+        <p class="text-xs text-slate-500 mb-4" id="edit-student-name">Perbarui rincian tanggal, status, dan nominal bantuan siswa.</p>
+
+        <form id="form-edit-scholarship" method="POST" class="space-y-4 text-xs">
+            @csrf
+            @method('PUT')
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">Nama Program <span class="text-rose-500">*</span></label>
+                    <input type="text" id="edit-scholarship-name" name="scholarship_name" required class="w-full px-3 py-2 border border-slate-300 rounded-xl">
+                </div>
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">Sumber Dana <span class="text-rose-500">*</span></label>
+                    <input type="text" id="edit-source" name="source" required class="w-full px-3 py-2 border border-slate-300 rounded-xl">
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">Nominal Bantuan (Rp) <span class="text-rose-500">*</span></label>
+                    <input type="number" id="edit-amount" name="amount" min="0" required class="w-full px-3 py-2 border border-slate-300 rounded-xl">
+                </div>
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">Periode / Tahun Anggaran <span class="text-rose-500">*</span></label>
+                    <input type="text" id="edit-period" name="period" required class="w-full px-3 py-2 border border-slate-300 rounded-xl">
+                </div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">Tanggal Usulan</label>
+                    <input type="date" id="edit-proposal-date" name="proposal_date" class="w-full px-3 py-2 border border-slate-300 rounded-xl">
+                </div>
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">Tanggal SK Terbit</label>
+                    <input type="date" id="edit-sk-date" name="sk_date" class="w-full px-3 py-2 border border-slate-300 rounded-xl">
+                </div>
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">Tanggal Cair</label>
+                    <input type="date" id="edit-disbursement-date" name="disbursement_date" class="w-full px-3 py-2 border border-slate-300 rounded-xl">
+                </div>
+            </div>
+            <div>
+                <label class="block font-semibold text-slate-700 mb-1">Nomor SK Penetapan</label>
+                <input type="text" id="edit-sk-number" name="sk_number" class="w-full px-3 py-2 border border-slate-300 rounded-xl">
+            </div>
+            <div>
+                <label class="block font-semibold text-slate-700 mb-1">Status Penyaluran <span class="text-rose-500">*</span></label>
+                <select id="edit-status" name="status" required class="w-full px-3 py-2 border border-slate-300 rounded-xl">
+                    <option value="Usulan">Usulan Sekolah</option>
+                    <option value="SK Ditetapkan">SK Ditetapkan</option>
+                    <option value="Cair">Cair / Diterima Siswa</option>
+                </select>
+            </div>
+            <div class="flex items-center justify-end gap-2 pt-2">
+                <button type="button" onclick="document.getElementById('modal-edit-scholarship').classList.add('hidden')" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-semibold cursor-pointer">Batal</button>
+                <button type="submit" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold cursor-pointer">Simpan Perubahan</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openEditScholarshipModal(data) {
+        document.getElementById('edit-student-name').textContent = 'Siswa: ' + data.student_name;
+        document.getElementById('edit-scholarship-name').value = data.scholarship_name;
+        document.getElementById('edit-source').value = data.source;
+        document.getElementById('edit-amount').value = data.amount;
+        document.getElementById('edit-period').value = data.period;
+        document.getElementById('edit-status').value = data.status;
+        document.getElementById('edit-proposal-date').value = data.proposal_date || '';
+        document.getElementById('edit-sk-date').value = data.sk_date || '';
+        document.getElementById('edit-disbursement-date').value = data.disbursement_date || '';
+        document.getElementById('edit-sk-number').value = data.sk_number || '';
+        document.getElementById('form-edit-scholarship').action = '/students/scholarships/' + data.id;
+        document.getElementById('modal-edit-scholarship').classList.remove('hidden');
+    }
+</script>
         </form>
     </div>
 </div>

@@ -322,7 +322,10 @@
                 <span>14. Keuangan</span>
             </button>
             <button type="button" onclick="goToSlide(14)" id="pill-slide-14" class="slide-nav-pill px-1.5 lg:px-2 py-0.5 sm:py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap text-[10.5px] lg:text-[11px]">
-                <span>15. Tamu</span>
+                <span>15. Beasiswa</span>
+            </button>
+            <button type="button" onclick="goToSlide(15)" id="pill-slide-15" class="slide-nav-pill px-1.5 lg:px-2 py-0.5 sm:py-1 rounded-lg font-bold text-slate-400 hover:text-white transition flex items-center gap-1 whitespace-nowrap text-[10.5px] lg:text-[11px]">
+                <span>16. Tamu</span>
             </button>
         </div>
 
@@ -332,6 +335,9 @@
             <div class="hidden 2xl:flex items-center gap-1 bg-slate-950/80 border border-white/10 rounded-xl p-1 text-xs">
                 <a href="{{ route('finance.bku.index') }}" target="_blank" class="px-2 py-1 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition flex items-center gap-1" title="Buka BKU Keuangan">
                     <span>💰 Keuangan</span>
+                </a>
+                <a href="{{ route('students.scholarships.index') }}" target="_blank" class="px-2 py-1 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition flex items-center gap-1" title="Buka Data Beasiswa">
+                    <span>🎓 Beasiswa</span>
                 </a>
                 <a href="{{ route('guests.kiosk') }}" target="_blank" class="px-2 py-1 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition flex items-center gap-1" title="Buka Kios Buku Tamu">
                     <span>👥 Tamu</span>
@@ -3271,13 +3277,231 @@
         </section>
 
         <!-- ========================================================================= -->
-        <!-- SLIDE 14: BUKU TAMU KEDINASAN & KUNJUNGAN SEKOLAH (SIKATAS) -->
+        <!-- SLIDE 14: BEASISWA & BANTUAN SISWA (PIP KEMENDIKBUD & KETM JABAR) -->
         <!-- ========================================================================= -->
         <section id="slide-14" class="hidden flex-col h-full min-h-0 overflow-hidden">
             <!-- Header Slide -->
             <div class="flex items-center justify-between pb-2 shrink-0">
                 <div class="flex items-center gap-2.5">
-                    <span class="px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-400 font-mono font-bold text-xs">15</span>
+                    <span class="px-2 py-0.5 rounded-md bg-indigo-500/20 text-indigo-400 font-mono font-bold text-xs">15</span>
+                    <div>
+                        <h2 class="text-sm sm:text-base font-black text-white flex items-center gap-2">
+                            <span>Transparansi Beasiswa &amp; Bantuan Pendidikan Siswa</span>
+                            <span class="text-slate-500">&bull;</span>
+                            <span class="text-xs font-semibold text-indigo-300">PIP Kemendikbudristek &amp; KETM Jabar</span>
+                        </h2>
+                        <p class="text-[10px] text-slate-400">Informasi penyaluran dana bantuan pendidikan, SK penetapan, dan tata kelola akun SimPel BNI</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                        🎓 Kesiswaan Terpadu
+                    </span>
+                    <a href="{{ route('students.scholarships.index') }}" target="_blank" class="px-2.5 py-1 rounded-lg bg-indigo-600/30 hover:bg-indigo-600 text-indigo-200 text-[11px] font-bold transition flex items-center gap-1 border border-indigo-500/30">
+                        <span>Buka Data Beasiswa &rarr;</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Content Grid -->
+            <div class="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-3.5 overflow-hidden pt-1">
+                <!-- Left (7 Cols): KPI Cards + Regulasi & Prosedur Penyaluran -->
+                <div class="lg:col-span-7 flex flex-col h-full min-h-0 gap-3">
+                    <!-- KPI Cards (4 Cards) -->
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 shrink-0">
+                        <div class="glass-panel p-2.5 sm:p-3 rounded-2xl border border-white/5 flex items-center gap-2.5">
+                            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-lg shrink-0 font-bold">
+                                🎓
+                            </div>
+                            <div class="min-w-0">
+                                <span class="text-[9.5px] sm:text-[10px] text-slate-400 font-bold block truncate">Total Siswa</span>
+                                <span class="text-base sm:text-lg font-black text-white font-mono leading-none">{{ $data['scholarships']['total_recipients'] ?? 0 }}</span>
+                                <span class="text-[9px] text-indigo-300 block truncate">Penerima Bantuan</span>
+                            </div>
+                        </div>
+
+                        <div class="glass-panel p-2.5 sm:p-3 rounded-2xl border border-white/5 flex items-center gap-2.5">
+                            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center text-lg shrink-0 font-bold">
+                                🇮🇩
+                            </div>
+                            <div class="min-w-0">
+                                <span class="text-[9.5px] sm:text-[10px] text-slate-400 font-bold block truncate">PIP Pusat</span>
+                                <span class="text-base sm:text-lg font-black text-white font-mono leading-none">{{ $data['scholarships']['pip_count'] ?? 0 }}</span>
+                                <span class="text-[9px] text-blue-300 block truncate">Kemendikbudristek</span>
+                            </div>
+                        </div>
+
+                        <div class="glass-panel p-2.5 sm:p-3 rounded-2xl border border-white/5 flex items-center gap-2.5">
+                            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-lg shrink-0 font-bold">
+                                🏛️
+                            </div>
+                            <div class="min-w-0">
+                                <span class="text-[9.5px] sm:text-[10px] text-slate-400 font-bold block truncate">KETM Jabar</span>
+                                <span class="text-base sm:text-lg font-black text-white font-mono leading-none">{{ $data['scholarships']['ketm_count'] ?? 0 }}</span>
+                                <span class="text-[9px] text-emerald-300 block truncate">Bantuan Provinsi</span>
+                            </div>
+                        </div>
+
+                        <div class="glass-panel p-2.5 sm:p-3 rounded-2xl border border-white/5 flex items-center gap-2.5">
+                            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-lg shrink-0 font-bold">
+                                💰
+                            </div>
+                            <div class="min-w-0">
+                                <span class="text-[9.5px] sm:text-[10px] text-slate-400 font-bold block truncate">Tersalurkan</span>
+                                <span class="text-xs sm:text-sm font-black text-white font-mono leading-tight block truncate">{{ $data['scholarships']['formatted_total_disbursed'] ?? 'Rp 0' }}</span>
+                                <span class="text-[9px] text-amber-300 block truncate">Dana Beasiswa</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ketentuan & Alur Prosedur Penyaluran Beasiswa -->
+                    <div class="flex-1 min-h-0 glass-panel rounded-2xl p-3 sm:p-3.5 border border-white/5 flex flex-col justify-between overflow-hidden">
+                        <div class="flex items-center justify-between pb-2 border-b border-white/5 shrink-0">
+                            <h3 class="text-xs sm:text-sm font-black text-white flex items-center gap-2">
+                                <span>📜</span>
+                                <span>Pedoman &amp; Ketentuan Resmi Penyaluran Bantuan Siswa (Persesjen Kemendikbudristek)</span>
+                            </h3>
+                            <span class="text-[10px] text-slate-400">Transparan &bull; Akuntabel &bull; Tepat Sasaran</span>
+                        </div>
+
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 py-2">
+                            <div class="p-2.5 rounded-xl bg-slate-900/80 border border-white/5 space-y-1">
+                                <span class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-300 font-mono font-bold text-xs flex items-center justify-center">1</span>
+                                <h4 class="text-xs font-bold text-white">Besaran PIP SMA</h4>
+                                <p class="text-[9.5px] text-slate-400 leading-snug">
+                                    <strong class="text-blue-300">Rp 1.800.000 / thn</strong> (Kelas X &amp; XI) dan <strong class="text-blue-300">Rp 900.000</strong> (Kelas XII semester akhir).
+                                </p>
+                            </div>
+                            <div class="p-2.5 rounded-xl bg-slate-900/80 border border-white/5 space-y-1">
+                                <span class="w-6 h-6 rounded-full bg-amber-500/20 text-amber-300 font-mono font-bold text-xs flex items-center justify-center">2</span>
+                                <h4 class="text-xs font-bold text-white">Bank Penyalur</h4>
+                                <p class="text-[9.5px] text-slate-400 leading-snug">
+                                    Disalurkan melalui rekening <strong class="text-amber-300">Bank BNI</strong> Buku SimPel &amp; Kartu Debit resmi tanpa potongan.
+                                </p>
+                            </div>
+                            <div class="p-2.5 rounded-xl bg-slate-900/80 border border-white/5 space-y-1">
+                                <span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-300 font-mono font-bold text-xs flex items-center justify-center">3</span>
+                                <h4 class="text-xs font-bold text-white">Basis Sasaran</h4>
+                                <p class="text-[9.5px] text-slate-400 leading-snug">
+                                    Terdata di <strong class="text-emerald-300">DTKS Kemensos</strong>, data P3KE, pemegang KIP aktif, atau usulan prioritas sekolah.
+                                </p>
+                            </div>
+                            <div class="p-2.5 rounded-xl bg-slate-900/80 border border-white/5 space-y-1">
+                                <span class="w-6 h-6 rounded-full bg-violet-500/20 text-violet-300 font-mono font-bold text-xs flex items-center justify-center">4</span>
+                                <h4 class="text-xs font-bold text-white">Aktivasi &amp; Cair</h4>
+                                <p class="text-[9.5px] text-slate-400 leading-snug">
+                                    Membawa Surat Pengantar Kepala Sekolah ke Bank BNI untuk aktivasi rekening nominasi &amp; penarikan dana.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Helpdesk / Penanggung Jawab Kesiswaan -->
+                        <div class="p-2 rounded-xl bg-slate-950/80 border border-white/5 text-[10px] text-slate-400 flex items-center justify-between shrink-0">
+                            <div class="flex items-center gap-2">
+                                <span class="text-indigo-400 font-bold">👤 Penanggung Jawab Kesiswaan:</span>
+                                <span class="text-white font-semibold">{{ $data['scholarships']['pic']['name'] ?? 'Winda Dwi Atyani, S.Pd., M.Pd.' }}</span>
+                                <span class="text-slate-500">(NIP. {{ $data['scholarships']['pic']['nip'] ?? '-' }})</span>
+                            </div>
+                            <span class="text-indigo-300 font-bold">Ruang Pelayanan Kesiswaan SMAN 1 Lengkong</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right (5 Cols): Daftar Penerima & Penyaluran Beasiswa Terkini -->
+                <div class="lg:col-span-5 glass-panel rounded-2xl p-3 sm:p-3.5 border border-white/5 flex flex-col h-full min-h-0 overflow-hidden">
+                    <div class="flex items-center justify-between pb-2 border-b border-white/5 shrink-0">
+                        <div class="flex items-center gap-2">
+                            <span class="p-1.5 rounded-lg bg-indigo-500/20 text-indigo-400 text-xs">📜</span>
+                            <div>
+                                <h3 class="text-xs sm:text-sm font-black text-white">Daftar Realisasi Penyaluran Beasiswa</h3>
+                                <p class="text-[10px] text-slate-400">Data penerima PIP / KETM terdaftar resmi</p>
+                            </div>
+                        </div>
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                            Transparansi Resmi
+                        </span>
+                    </div>
+
+                    <div class="flex-1 min-h-0 overflow-hidden relative">
+                        @if(!empty($data['scholarships']['recent']) && count($data['scholarships']['recent']) > 0)
+                            <div class="animate-vertical-ticker-slow w-full space-y-2 pt-2.5">
+                                @for($copySch = 0; $copySch < 2; $copySch++)
+                                    <div class="space-y-2 pb-2">
+                                        @foreach($data['scholarships']['recent'] as $sch)
+                                            <div class="p-2.5 rounded-xl bg-slate-900/80 border border-white/5 space-y-1.5 hover:border-indigo-500/30 transition">
+                                                <div class="flex items-start justify-between gap-2">
+                                                    <div class="min-w-0 flex-1">
+                                                        <div class="font-extrabold text-xs text-white truncate flex items-center gap-1.5">
+                                                            <span>{{ $sch['student_name'] }}</span>
+                                                            <span class="px-1.5 py-0.2 rounded text-[9px] font-bold bg-slate-800 text-slate-300">
+                                                                {{ $sch['class_name'] }}
+                                                            </span>
+                                                        </div>
+                                                        <div class="text-[10px] text-indigo-300 truncate font-semibold">
+                                                            {{ $sch['scholarship_name'] }} &bull; <span class="text-slate-400">NISN: {{ $sch['nisn_masked'] }}</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="text-right shrink-0">
+                                                        <span class="font-mono text-xs font-black text-emerald-400 block">
+                                                            {{ $sch['formatted_amount'] }}
+                                                        </span>
+                                                        <span class="text-[9px] text-slate-400 font-mono block">
+                                                            Thn {{ $sch['period'] }}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div class="pt-1.5 border-t border-white/5 flex items-center justify-between text-[10px] text-slate-400">
+                                                    <span class="truncate">
+                                                        @if(!empty($sch['sk_date']) && $sch['sk_date'] !== '-')
+                                                            Tgl SK: <strong class="text-slate-200">{{ $sch['sk_date'] }}</strong>
+                                                        @elseif(!empty($sch['proposal_date']) && $sch['proposal_date'] !== '-')
+                                                            Usulan: <strong class="text-slate-200">{{ $sch['proposal_date'] }}</strong>
+                                                        @else
+                                                            Sumber: <strong class="text-slate-200">{{ $sch['source'] }}</strong>
+                                                        @endif
+                                                    </span>
+                                                    <span class="px-2 py-0.5 rounded text-[9px] font-bold shrink-0
+                                                        @if(in_array(strtolower($sch['status']), ['cair', 'disalurkan', 'diterima', 'sudah cair']))
+                                                            bg-emerald-500/20 text-emerald-300 border border-emerald-500/30
+                                                        @elseif(in_array(strtolower($sch['status']), ['sk', 'ditetapkan', 'sk nominasi', 'sk pemberian']))
+                                                            bg-blue-500/20 text-blue-300 border border-blue-500/30
+                                                        @else
+                                                            bg-amber-500/20 text-amber-300 border border-amber-500/30
+                                                        @endif">
+                                                        {{ $sch['status'] }}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                @endfor
+                            </div>
+                        @else
+                            <div class="h-full flex flex-col items-center justify-center text-center py-8 text-slate-500 text-xs space-y-2">
+                                <span class="text-3xl">🎓</span>
+                                <span class="font-semibold text-slate-300">Sinkronisasi Data Beasiswa PIP &amp; KETM</span>
+                                <p class="text-[10px] text-slate-400 max-w-[280px] leading-relaxed">
+                                    Data usulan dan penetapan beasiswa terdata aman dan disinkronkan langsung dari aplikasi Kesiswaan &amp; Dapodik Kemendikbudristek.
+                                </p>
+                            </div>
+                        @endif
+                    </div>
+
+                    <div class="pt-2 mt-2 border-t border-white/5 text-[10px] text-slate-500 text-center shrink-0">
+                        Sistem Informasi Kesiswaan &amp; Bantuan Pendidikan &bull; SIS-SMA1LE
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================================================= -->
+        <!-- SLIDE 15: BUKU TAMU KEDINASAN & KUNJUNGAN SEKOLAH (SIKATAS) -->
+        <!-- ========================================================================= -->
+        <section id="slide-15" class="hidden flex-col h-full min-h-0 overflow-hidden">
+            <!-- Header Slide -->
+            <div class="flex items-center justify-between pb-2 shrink-0">
+                <div class="flex items-center gap-2.5">
+                    <span class="px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-400 font-mono font-bold text-xs">16</span>
                     <div>
                         <h2 class="text-sm sm:text-base font-black text-white flex items-center gap-2">
                             <span>Buku Tamu Kedinasan &amp; Kunjungan Sekolah</span>
@@ -3453,7 +3677,7 @@
     <!-- JAVASCRIPT SLIDE CONTROLLER & BACKGROUND REALTIME POLLER -->
     <script>
         // Slide Deck State
-        const TOTAL_SLIDES = 15;
+        const TOTAL_SLIDES = 16;
         const SLIDE_DURATION = 18; // 18 seconds per slide
         let currentSlideIdx = 0;
         let slideRemainingTime = SLIDE_DURATION;

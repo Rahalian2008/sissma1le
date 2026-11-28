@@ -26,6 +26,7 @@ use App\Models\SchoolExitPermit;
 use App\Models\SchoolIdentity;
 use App\Models\SchoolSetting;
 use App\Models\Student;
+use App\Models\StudentScholarship;
 use App\Models\Teacher;
 use App\Models\TeachingJournal;
 use App\Models\User;
@@ -1572,6 +1573,71 @@ class KioskController extends Controller
         $kioskTreasurer = Teacher::getTreasurer();
         $kioskHeadmaster = Teacher::getHeadmaster();
 
+        // 17. Transparansi Bantuan & Beasiswa Siswa (PIP Kemendikbudristek & KETM Pemprov Jabar)
+        $totalScholarships = StudentScholarship::count();
+        $pipCount = StudentScholarship::where(function ($q) {
+            $q->where('scholarship_name', 'like', '%PIP%')
+                ->orWhere('source', 'like', '%Pemerintah Pusat%')
+                ->orWhere('source', 'like', '%Kemendikbud%');
+        })->count();
+
+        $ketmCount = StudentScholarship::where(function ($q) {
+            $q->where('scholarship_name', 'like', '%KETM%')
+                ->orWhere('source', 'like', '%Provinsi%')
+                ->orWhere('source', 'like', '%Jabar%')
+                ->orWhere('source', 'like', '%Daerah%');
+        })->count();
+
+        $otherScholarshipCount = max(0, $totalScholarships - ($pipCount + $ketmCount));
+
+        $totalScholarshipDisbursed = (float) StudentScholarship::whereIn('status', ['Cair', 'Disalurkan', 'Diterima', 'CAIR', 'Sudah Cair'])->sum('amount');
+        if ($totalScholarshipDisbursed == 0) {
+            $totalScholarshipDisbursed = (float) StudentScholarship::sum('amount');
+        }
+
+        $countUsulan = StudentScholarship::whereIn('status', ['Usulan', 'Diajukan', 'USULAN'])->count();
+        $countSk = StudentScholarship::whereIn('status', ['SK', 'Ditetapkan', 'SK Nominasi', 'SK Pemberian', 'SK / Ditetapkan'])->count();
+        $countCair = StudentScholarship::whereIn('status', ['Cair', 'Disalurkan', 'Diterima', 'CAIR', 'Sudah Cair'])->count();
+
+        $recentScholarships = StudentScholarship::with(['student.schoolClass'])
+            ->latest('id')
+            ->limit(10)
+            ->get()
+            ->map(function ($s) {
+                $studentName = $s->student?->name ?? 'Siswa';
+                $className = $s->student?->schoolClass?->name ?? '-';
+                $nisn = $s->student?->nisn ? substr($s->student->nisn, 0, 4).'****' : '-';
+
+                return [
+                    'id' => $s->id,
+                    'student_name' => $studentName,
+                    'nisn_masked' => $nisn,
+                    'class_name' => $className,
+                    'scholarship_name' => $s->scholarship_name,
+                    'source' => $s->source,
+                    'amount' => (float) $s->amount,
+                    'formatted_amount' => 'Rp '.number_format($s->amount, 0, ',', '.'),
+                    'period' => $s->period,
+                    'status' => $s->status,
+                    'proposal_date' => $s->proposal_date?->translatedFormat('d M Y') ?? '-',
+                    'sk_date' => $s->sk_date?->translatedFormat('d M Y') ?? '-',
+                    'disbursement_date' => $s->disbursement_date?->translatedFormat('d M Y') ?? '-',
+                    'sk_number' => $s->sk_number ?? '-',
+                ];
+            });
+
+        $wakasekKesiswaanMatch = $staffCollection->first(fn ($st) => stripos($st['duty'] ?? ($st['position'] ?? ''), 'Kesiswaan') !== false);
+        $kesiswaanPic = [
+            'name' => $wakasekKesiswaanMatch['name'] ?? 'Winda Dwi Atyani, S.Pd., M.Pd.',
+            'nip' => $wakasekKesiswaanMatch['nip'] ?? '197911162008012007',
+            'role' => 'Wakil Kepala Sekolah Bidang Kesiswaan',
+            'photo' => ! empty($wakasekKesiswaanMatch['photo'])
+                ? (str_starts_with($wakasekKesiswaanMatch['photo'], 'http') ? $wakasekKesiswaanMatch['photo'] : asset($wakasekKesiswaanMatch['photo']))
+                : asset('images/website/staff/teacher_06_1794101890.jpg'),
+        ];
+
+        $tickers[] = 'Beasiswa & Bantuan Pendidikan: Penyaluran PIP Kemendikbudristek (Rp 1.800.000/thn via BNI SimPel) & KETM Pemprov Jabar diproses transparan oleh Tim Kesiswaan SMAN 1 Lengkong.';
+
         if (! empty($newsArticles[0]['title'])) {
             $tickers[] = 'Warta Sekolah: '.$newsArticles[0]['title'];
         }
@@ -1715,6 +1781,19 @@ class KioskController extends Controller
                 'snp_recap' => $kioskSnpRecap,
                 'treasurer' => $kioskTreasurer,
                 'headmaster' => $kioskHeadmaster,
+            ],
+            'scholarships' => [
+                'total_recipients' => $totalScholarships,
+                'pip_count' => $pipCount,
+                'ketm_count' => $ketmCount,
+                'other_count' => $otherScholarshipCount,
+                'total_disbursed' => $totalScholarshipDisbursed,
+                'formatted_total_disbursed' => 'Rp '.number_format($totalScholarshipDisbursed, 0, ',', '.'),
+                'count_usulan' => $countUsulan,
+                'count_sk' => $countSk,
+                'count_cair' => $countCair,
+                'recent' => $recentScholarships,
+                'pic' => $kesiswaanPic,
             ],
             'guests' => [
                 'total_today' => $guestsTotalToday,

@@ -79,6 +79,10 @@ class StudentScholarshipController extends Controller
             'amount' => ['required', 'numeric', 'min:0'],
             'period' => ['required', 'string', 'max:50'],
             'status' => ['required', 'string', 'max:50'],
+            'proposal_date' => ['nullable', 'date'],
+            'sk_date' => ['nullable', 'date'],
+            'disbursement_date' => ['nullable', 'date'],
+            'sk_number' => ['nullable', 'string', 'max:100'],
             'document_path' => ['nullable', 'string', 'max:255'],
         ]);
 
@@ -98,6 +102,10 @@ class StudentScholarshipController extends Controller
             'amount' => ['required', 'numeric', 'min:0'],
             'period' => ['required', 'string', 'max:50'],
             'status' => ['required', 'string', 'max:50'],
+            'proposal_date' => ['nullable', 'date'],
+            'sk_date' => ['nullable', 'date'],
+            'disbursement_date' => ['nullable', 'date'],
+            'sk_number' => ['nullable', 'string', 'max:100'],
             'document_path' => ['nullable', 'string', 'max:255'],
         ]);
 

@@ -26,13 +26,13 @@ class EnsureTenagaKependidikan
             return $next($request);
         }
 
-        // Akses SPMB & PPDB diizinkan untuk Admin Kesiswaan / Wakasek Kesiswaan
-        if (($request->is('spmb*') || $request->is('ppdb*')) && $user->isKesiswaanAdmin()) {
+        // Akses SPMB, PPDB, Kesiswaan & Beasiswa diizinkan untuk Admin Kesiswaan / Wakasek Kesiswaan
+        if (($request->is('spmb*') || $request->is('ppdb*') || $request->is('tu/kesiswaan*') || $request->is('students/scholarships*') || $request->is('scholarships*')) && $user->isKesiswaanAdmin()) {
             return $next($request);
         }
 
-        // Aturan: Tenaga Pendidik murni dilarang keras mengakses Adm Ketatausahaan (kecuali memiliki tugas wewenang TU/Sarpras yang sah)
-        if ($user->role === 'guru' && ! $user->hasAnyRole(['kepala_sekolah', 'wakasek_sarpras', 'ta_sarpras', 'kepala_administrasi', 'operator_dapodik'])) {
+        // Aturan: Tenaga Pendidik murni dilarang keras mengakses Adm Ketatausahaan (kecuali memiliki tugas wewenang TU/Sarpras/Kesiswaan yang sah)
+        if ($user->role === 'guru' && ! $user->hasAnyRole(['kepala_sekolah', 'wakasek_sarpras', 'wakasek_kesiswaan', 'kesiswaan', 'ta_sarpras', 'ta_kesiswaan', 'kepala_administrasi', 'operator_dapodik'])) {
             abort(403, 'Akses Ditolak: Aplikasi Adm. Ketatausahaan hanya untuk peran Tenaga Kependidikan (Staf TU). Tenaga Pendidik tidak memiliki akses ke modul ini.');
         }
 

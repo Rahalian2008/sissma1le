@@ -142,6 +142,10 @@ class StudentDisciplineController extends Controller
             'amount' => ['required', 'numeric', 'min:0'],
             'period' => ['required', 'string', 'max:30'],
             'status' => ['required', 'string', 'max:30'],
+            'proposal_date' => ['nullable', 'date'],
+            'sk_date' => ['nullable', 'date'],
+            'disbursement_date' => ['nullable', 'date'],
+            'sk_number' => ['nullable', 'string', 'max:100'],
         ]);
 
         $scholarship = StudentScholarship::create($validated);
@@ -161,6 +165,10 @@ class StudentDisciplineController extends Controller
             'amount' => ['required', 'numeric', 'min:0'],
             'period' => ['required', 'string', 'max:30'],
             'status' => ['required', 'string', 'max:30'],
+            'proposal_date' => ['nullable', 'date'],
+            'sk_date' => ['nullable', 'date'],
+            'disbursement_date' => ['nullable', 'date'],
+            'sk_number' => ['nullable', 'string', 'max:100'],
         ]);
 
         $scholarship->update($validated);

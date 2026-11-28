@@ -186,12 +186,33 @@
                 <span class="text-xs font-bold text-slate-800 dark:text-white">Ijazah & SKL</span>
                 <span class="text-[10px] text-slate-400 mt-0.5">Tanda Terima</span>
             </a>
-            <a href="{{ route('alumni.index') }}" class="group p-3.5 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-violet-500 hover:shadow-md transition-all text-center flex flex-col items-center">
+            <a href="{{ route('tu.kesiswaan.tracer_alumni.index') }}" class="group p-3.5 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-violet-500 hover:shadow-md transition-all text-center flex flex-col items-center">
                 <div class="w-10 h-10 rounded-xl bg-violet-500/10 text-violet-600 dark:text-violet-400 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>
                 </div>
                 <span class="text-xs font-bold text-slate-800 dark:text-white">Tracer Alumni</span>
-                <span class="text-[10px] text-slate-400 mt-0.5">Pelacakan Karir</span>
+                <span class="text-[10px] text-slate-400 mt-0.5">Integrasi BK</span>
+            </a>
+            <a href="{{ route('tu.kesiswaan.achievements.index') }}" class="group p-3.5 bg-gradient-to-br from-amber-50 to-yellow-50 dark:from-amber-950/20 dark:to-yellow-950/10 rounded-2xl border-2 border-amber-300 dark:border-amber-700/60 hover:border-amber-500 hover:shadow-md transition-all text-center flex flex-col items-center">
+                <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-700 dark:text-amber-300 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform font-black">
+                    🏆
+                </div>
+                <span class="text-xs font-black text-amber-900 dark:text-amber-200">Siswa Berprestasi</span>
+                <span class="text-[10px] text-amber-700 dark:text-amber-400 mt-0.5 font-semibold">Tata Tertib &amp; Apresiasi</span>
+            </a>
+            <a href="{{ route('tu.kesiswaan.violations.index') }}" class="group p-3.5 bg-gradient-to-br from-rose-50 to-pink-50 dark:from-rose-950/20 dark:to-pink-950/10 rounded-2xl border-2 border-rose-300 dark:border-rose-700/60 hover:border-rose-500 hover:shadow-md transition-all text-center flex flex-col items-center">
+                <div class="w-10 h-10 rounded-xl bg-rose-500/20 text-rose-700 dark:text-rose-300 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform font-black">
+                    ⚠️
+                </div>
+                <span class="text-xs font-black text-rose-900 dark:text-rose-200">Pelanggaran Siswa</span>
+                <span class="text-[10px] text-rose-700 dark:text-rose-400 mt-0.5 font-semibold">Poin &amp; Disiplin</span>
+            </a>
+            <a href="{{ route('tu.kesiswaan.bk_counseling.index') }}" class="group p-3.5 bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-950/20 dark:to-purple-950/10 rounded-2xl border-2 border-indigo-300 dark:border-indigo-700/60 hover:border-indigo-500 hover:shadow-md transition-all text-center flex flex-col items-center">
+                <div class="w-10 h-10 rounded-xl bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform font-black">
+                    🧭
+                </div>
+                <span class="text-xs font-black text-indigo-900 dark:text-indigo-200">Layanan Konseling BK</span>
+                <span class="text-[10px] text-indigo-700 dark:text-indigo-400 mt-0.5 font-semibold">POP-BK &amp; Peminatan</span>
             </a>
             <a href="{{ route('students.learning-agendas.index') }}" class="group p-3.5 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-blue-500 hover:shadow-md transition-all text-center flex flex-col items-center">
                 <div class="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">

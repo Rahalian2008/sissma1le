@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Achievement;
 use App\Models\Attendance;
+use App\Models\BkCounselingSession;
+use App\Models\BkTracerAlumnus;
 use App\Models\SchoolClass;
 use App\Models\SchoolHoliday;
 use App\Models\SchoolIdentity;
@@ -12,7 +15,9 @@ use App\Models\StudentDiploma;
 use App\Models\StudentLegalization;
 use App\Models\StudentMutation;
 use App\Models\StudentScholarship;
+use App\Models\Teacher;
 use App\Models\User;
+use App\Models\Violation;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -964,5 +969,303 @@ class TuKesiswaanController extends Controller
             'orientation',
             'showKop'
         ));
+    }
+
+    /**
+     * Tracer Alumni (Format & Data Terintegrasi dari Bimbingan Konseling)
+     */
+    public function tracerAlumni(Request $request): View
+    {
+        $this->authorizeKesiswaan();
+
+        $query = BkTracerAlumnus::with('student');
+
+        if ($request->filled('graduation_year')) {
+            $query->where('graduation_year', $request->graduation_year);
+        }
+
+        if ($request->filled('activity_status')) {
+            $query->where('activity_status', $request->activity_status);
+        }
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('full_name', 'like', "%{$search}%")
+                    ->orWhere('nisn', 'like', "%{$search}%")
+                    ->orWhere('campus_name', 'like', "%{$search}%")
+                    ->orWhere('study_program', 'like', "%{$search}%")
+                    ->orWhere('company_name', 'like', "%{$search}%")
+                    ->orWhere('business_name', 'like', "%{$search}%");
+            });
+        }
+
+        $alumni = $query->latest('graduation_year')->latest('id')->paginate(15)->withQueryString();
+
+        $currentYear = (int) date('Y');
+        $graduationYears = range($currentYear, 2005);
+
+        $stats = [
+            'total' => BkTracerAlumnus::count(),
+            'kuliah' => BkTracerAlumnus::where('activity_status', 'KULIAH')->count(),
+            'bekerja' => BkTracerAlumnus::where('activity_status', 'BEKERJA')->count(),
+            'wirausaha' => BkTracerAlumnus::where('activity_status', 'WIRAUSAHA')->count(),
+            'kursus' => BkTracerAlumnus::where('activity_status', 'KURSUS_PELATIHAN')->count(),
+            'mencari_kerja' => BkTracerAlumnus::where('activity_status', 'MENCARI_KERJA')->count(),
+            'belum' => BkTracerAlumnus::where('activity_status', 'BELUM_MEMUNGKINKAN')->count(),
+        ];
+
+        return view('tu.kesiswaan.tracer_alumni.index', compact('alumni', 'graduationYears', 'stats'));
+    }
+
+    /**
+     * Cetak Resmi Dokumen Rekapitulasi Tracer Alumni
+     */
+    public function tracerAlumniPrint(Request $request): View
+    {
+        $this->authorizeKesiswaan();
+
+        $school = SchoolIdentity::first();
+        $headmaster = Teacher::getHeadmaster();
+        $bkCoordinator = Teacher::getBkCoordinator();
+
+        $query = BkTracerAlumnus::with('student');
+
+        if ($request->filled('graduation_year')) {
+            $query->where('graduation_year', $request->graduation_year);
+        }
+
+        if ($request->filled('activity_status')) {
+            $query->where('activity_status', $request->activity_status);
+        }
+
+        $alumni = $query->latest('graduation_year')->get();
+
+        $stats = [
+            'total' => $alumni->count(),
+            'kuliah' => $alumni->where('activity_status', 'KULIAH')->count(),
+            'bekerja' => $alumni->where('activity_status', 'BEKERJA')->count(),
+            'wirausaha' => $alumni->where('activity_status', 'WIRAUSAHA')->count(),
+            'kursus' => $alumni->where('activity_status', 'KURSUS_PELATIHAN')->count(),
+            'mencari_kerja' => $alumni->where('activity_status', 'MENCARI_KERJA')->count(),
+            'belum' => $alumni->where('activity_status', 'BELUM_MEMUNGKINKAN')->count(),
+        ];
+
+        return view('tu.kesiswaan.tracer_alumni.print', compact('school', 'headmaster', 'bkCoordinator', 'alumni', 'stats'));
+    }
+
+    /**
+     * Tampilan Siswa Berprestasi (Terintegrasi Otomatis dari Tata Tertib Siswa)
+     */
+    public function achievements(Request $request): View
+    {
+        $this->authorizeKesiswaan();
+
+        $query = Achievement::with(['student.schoolClass', 'category', 'item'])->latest('date');
+
+        if ($request->filled('class_id')) {
+            $query->where('class_id', $request->class_id);
+        }
+
+        if ($request->filled('level')) {
+            $query->where('level', $request->level);
+        }
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                    ->orWhereHas('student', function ($sq) use ($search) {
+                        $sq->where('name', 'like', "%{$search}%")
+                            ->orWhere('nisn', 'like', "%{$search}%");
+                    });
+            });
+        }
+
+        $achievements = $query->paginate(15)->withQueryString();
+        $classes = SchoolClass::orderBy('name')->get();
+
+        $stats = [
+            'total' => Achievement::count(),
+            'total_points' => Achievement::sum('points'),
+            'internasional' => Achievement::where('level', 'internasional')->count(),
+            'nasional' => Achievement::where('level', 'nasional')->count(),
+            'provinsi' => Achievement::where('level', 'provinsi')->count(),
+            'kabupaten' => Achievement::where('level', 'kabupaten')->count(),
+            'sekolah' => Achievement::where('level', 'sekolah')->count(),
+        ];
+
+        return view('tu.kesiswaan.achievements.index', compact('achievements', 'classes', 'stats'));
+    }
+
+    /**
+     * Cetak Rekapitulasi Siswa Berprestasi
+     */
+    public function achievementsPrint(Request $request): View
+    {
+        $this->authorizeKesiswaan();
+
+        $school = SchoolIdentity::first();
+        $headmaster = Teacher::getHeadmaster();
+        $kesiswaanTeacher = Teacher::where('position', 'like', '%Kesiswaan%')
+            ->orWhere('additional_tasks', 'like', '%Kesiswaan%')
+            ->first();
+
+        $query = Achievement::with(['student.schoolClass', 'category', 'item'])->latest('date');
+
+        if ($request->filled('class_id')) {
+            $query->where('class_id', $request->class_id);
+        }
+
+        if ($request->filled('level')) {
+            $query->where('level', $request->level);
+        }
+
+        $achievements = $query->get();
+
+        return view('tu.kesiswaan.achievements.print', compact('school', 'headmaster', 'kesiswaanTeacher', 'achievements'));
+    }
+
+    /**
+     * Tampilan Pelanggaran Siswa & Disiplin (Terintegrasi Otomatis dari Tata Tertib Siswa)
+     */
+    public function violations(Request $request): View
+    {
+        $this->authorizeKesiswaan();
+
+        $query = Violation::with(['student.schoolClass', 'category', 'item'])->latest('date');
+
+        if ($request->filled('class_id')) {
+            $query->where('class_id', $request->class_id);
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                    ->orWhereHas('student', function ($sq) use ($search) {
+                        $sq->where('name', 'like', "%{$search}%")
+                            ->orWhere('nisn', 'like', "%{$search}%");
+                    });
+            });
+        }
+
+        $violations = $query->paginate(15)->withQueryString();
+        $classes = SchoolClass::orderBy('name')->get();
+
+        $stats = [
+            'total' => Violation::count(),
+            'total_points' => Violation::sum('points'),
+            'proses' => Violation::where('status', 'proses')->count(),
+            'selesai' => Violation::where('status', 'selesai')->count(),
+        ];
+
+        return view('tu.kesiswaan.violations.index', compact('violations', 'classes', 'stats'));
+    }
+
+    /**
+     * Cetak Rekapitulasi Pelanggaran & Catatan Kedisiplinan Siswa
+     */
+    public function violationsPrint(Request $request): View
+    {
+        $this->authorizeKesiswaan();
+
+        $school = SchoolIdentity::first();
+        $headmaster = Teacher::getHeadmaster();
+        $kesiswaanTeacher = Teacher::where('position', 'like', '%Kesiswaan%')
+            ->orWhere('additional_tasks', 'like', '%Kesiswaan%')
+            ->first();
+
+        $query = Violation::with(['student.schoolClass', 'category', 'item'])->latest('date');
+
+        if ($request->filled('class_id')) {
+            $query->where('class_id', $request->class_id);
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        $violations = $query->get();
+
+        return view('tu.kesiswaan.violations.print', compact('school', 'headmaster', 'kesiswaanTeacher', 'violations'));
+    }
+
+    /**
+     * Rekap Layanan Konseling & Peminatan BK (Se-batas Tampil & Cetak - Read-Only)
+     */
+    public function bkCounseling(Request $request): View
+    {
+        $this->authorizeKesiswaan();
+
+        $query = BkCounselingSession::with(['student.schoolClass', 'counselor'])->latest('date');
+
+        if ($request->filled('session_type')) {
+            $query->where('session_type', $request->session_type);
+        }
+
+        if ($request->filled('field_of_service')) {
+            $query->where('field_of_service', $request->field_of_service);
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('topic', 'like', "%{$search}%")
+                    ->orWhere('session_code', 'like', "%{$search}%")
+                    ->orWhere('campus_name', 'like', "%{$search}%")
+                    ->orWhere('study_program', 'like', "%{$search}%")
+                    ->orWhereHas('student', function ($sq) use ($search) {
+                        $sq->where('name', 'like', "%{$search}%")
+                            ->orWhere('nisn', 'like', "%{$search}%");
+                    });
+            });
+        }
+
+        $sessions = $query->paginate(15)->withQueryString();
+
+        $stats = [
+            'total' => BkCounselingSession::count(),
+            'karier' => BkCounselingSession::where('field_of_service', 'like', '%karier%')->orWhereNotNull('career_path')->count(),
+            'pribadi' => BkCounselingSession::where('field_of_service', 'like', '%pribadi%')->count(),
+            'sosial' => BkCounselingSession::where('field_of_service', 'like', '%sosial%')->count(),
+            'belajar' => BkCounselingSession::where('field_of_service', 'like', '%belajar%')->count(),
+        ];
+
+        return view('tu.kesiswaan.bk_counseling.index', compact('sessions', 'stats'));
+    }
+
+    /**
+     * Cetak Rekapitulasi Layanan Konseling & Peminatan Siswa BK
+     */
+    public function bkCounselingPrint(Request $request): View
+    {
+        $this->authorizeKesiswaan();
+
+        $school = SchoolIdentity::first();
+        $headmaster = Teacher::getHeadmaster();
+        $bkCoordinator = Teacher::getBkCoordinator();
+
+        $query = BkCounselingSession::with(['student.schoolClass', 'counselor'])->latest('date');
+
+        if ($request->filled('session_type')) {
+            $query->where('session_type', $request->session_type);
+        }
+
+        if ($request->filled('field_of_service')) {
+            $query->where('field_of_service', $request->field_of_service);
+        }
+
+        $sessions = $query->get();
+
+        return view('tu.kesiswaan.bk_counseling.print', compact('school', 'headmaster', 'bkCoordinator', 'sessions'));
     }
 }
